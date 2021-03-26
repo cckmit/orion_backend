@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.live.bo.DistribuicaoPropQtdeProg;
+import br.com.live.bo.CalculoDistribuicaoPecas;
 import br.com.live.bo.GeracaoPlanoMestre;
 import br.com.live.bo.Multiplicador;
 import br.com.live.custom.DemandaProdutoCustom;
@@ -22,7 +22,9 @@ import br.com.live.entity.PlanoMestreParamProgItem;
 import br.com.live.entity.PlanoMestreParametros;
 import br.com.live.entity.ProcessoProdutoPlano;
 import br.com.live.entity.ProdutoPlanoMestrePorCor;
+import br.com.live.entity.ProdutoReferCor;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.OcupacaoPlanoPorArtigo;
 import br.com.live.model.OcupacaoPlanoPorEstagio;
 import br.com.live.entity.ProdutoPlanoMestre;
@@ -50,18 +52,16 @@ public class PlanoMestreService {
 	private final PlanoMestreConsultaTamanhosRepository planoMestreConsultaTamanhosRepository;
 	private final ProdutoCustom produtoRepository;
 	private final PlanoMestreParamProgItemRepository planoMestreParamProgItemRepository;
-	private final OcupacaoPlanoMestreCustom ocupacaoPlanoMestreRepository; 
+	private final OcupacaoPlanoMestreCustom ocupacaoPlanoMestreRepository;
 
 	public PlanoMestreService(PlanoMestreRepository planoMestreRepository,
-			ProdutoPlanoMestreRepository produtoPlanoMestreRepository,
-			EstoqueProdutoCustom estoqueProdutoRepository, DemandaProdutoCustom demandaProdutoRepository,
-			ProcessoProdutoCustom processoProdutoRepository,
+			ProdutoPlanoMestreRepository produtoPlanoMestreRepository, EstoqueProdutoCustom estoqueProdutoRepository,
+			DemandaProdutoCustom demandaProdutoRepository, ProcessoProdutoCustom processoProdutoRepository,
 			PlanoMestreParametrosRepository planoMestreParametrosRepository,
 			ProdutoPlanoMestrePorCorRepository produtoPlanoMestrePorCorRepository,
 			PlanoMestreConsultaItensRepository planoMestreConsultaItensRepository,
 			PlanoMestreConsultaTamanhosRepository planoMestreConsultaTamanhosRepository,
-			ProdutoCustom produtoRepository,
-			PlanoMestreParamProgItemRepository planoMestreParamProgItemRepository,
+			ProdutoCustom produtoRepository, PlanoMestreParamProgItemRepository planoMestreParamProgItemRepository,
 			OcupacaoPlanoMestreCustom ocupacaoPlanoMestreRepository) {
 		this.planoMestreRepository = planoMestreRepository;
 		this.produtoPlanoMestreRepository = produtoPlanoMestreRepository;
@@ -106,7 +106,7 @@ public class PlanoMestreService {
 	public List<OcupacaoPlanoPorArtigo> findOcupacaoArtigo(long idPlanoMestre, int estagio) {
 		return ocupacaoPlanoMestreRepository.findOcupacaoArtigosByEstagio(idPlanoMestre, estagio);
 	}
-	
+
 	public void salvarItens(List<PlanoMestreConsultaItens> itensAlterados) {
 
 		for (PlanoMestreConsultaItens itemAlterado : itensAlterados) {
@@ -115,16 +115,20 @@ public class PlanoMestreService {
 
 			if (produtoCor.qtdeProgramada != itemAlterado.qtdeProgramada) {
 
+				PlanoMestreParametros parametros = planoMestreParametrosRepository
+						.findByIdPlanoMestre(itemAlterado.idPlanoMestre);
+
 				produtoCor.qtdeProgramada = itemAlterado.qtdeProgramada;
 				produtoPlanoMestrePorCorRepository.save(produtoCor);
 
-				List<ProdutoPlanoMestre> produtos = produtoPlanoMestreRepository
-						.findByIdPlanoCodGrupoCor(produtoCor.idPlanoMestre, produtoCor.grupo, produtoCor.item);
+				List<ProdutoPlanoMestre> produtos = null;
 
-				DistribuicaoPropQtdeProg distribuicao = new DistribuicaoPropQtdeProg(itemAlterado.qtdeProgramada,
-						produtos);
+ 				if (parametros.tipoDistribuicao == 1)
+					produtos = calcularGradePadrao(produtoCor);
+				
+				if (parametros.tipoDistribuicao == 3)
+					produtos = calcularGradeNegativa(produtoCor);
 
-				produtos = distribuicao.getProdutosAtualizados();
 				produtoPlanoMestreRepository.saveAll(produtos);
 
 				aplicarMultiplicador(produtoCor.idPlanoMestre, produtoCor.grupo, produtoCor.item);
@@ -205,8 +209,63 @@ public class PlanoMestreService {
 
 	private void equalizarDistribuicao(long idPlanoMestre) {
 		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
-		if (parametros.tipoDistribuicao == 3)
+
+		if (parametros.tipoDistribuicao == 1) // Grade Padrão
+			calcularGradePadraoParaPlano(idPlanoMestre, parametros.multiplicador);
+
+		if (parametros.tipoDistribuicao == 3) // Grade Negativa
 			calcularGradeNegativaParaPlano(idPlanoMestre, parametros.multiplicador);
+	}
+
+	private void calcularGradePadraoParaPlano(long idPlanoMestre, int multiplicador) {
+
+		System.out.println("calcularGradePadraoParaPlano");
+		
+		List<ProdutoPlanoMestrePorCor> produtosCor = produtoPlanoMestrePorCorRepository
+				.findByIdPlanoMestre(idPlanoMestre);
+
+		for (ProdutoPlanoMestrePorCor produtoCor : produtosCor) {
+			List<ProdutoPlanoMestre> produtos = calcularGradePadrao(produtoCor);
+			produtoPlanoMestreRepository.saveAll(produtos);
+			
+			System.out.println("Antes do multiplicador");
+						
+			for (ProdutoPlanoMestre produto : produtos) {
+				System.out.println(produto.qtdeProgramada);
+			}			
+			
+			aplicarMultiplicadorItem(idPlanoMestre, multiplicador, produtoCor);
+			
+		}
+
+	}
+
+	private List<ProdutoPlanoMestre> calcularGradePadrao(ProdutoPlanoMestrePorCor produtoCor) {
+		System.out.println("calcularGradePadrao - " + produtoCor.id);
+				
+		PlanoMestreParamProgItem parametrosProgramacao = planoMestreParamProgItemRepository
+				.findByIdItemPlanoMestre(produtoCor.id);
+
+		System.out.println("passou aqui");
+
+		int riscoPadrao = produtoRepository.findRiscoPadraoByCodigo(produtoCor.grupo);
+
+		System.out.println("risco: " + riscoPadrao);
+		
+		int seqRisco = produtoRepository.findSequenciaPrincipalRisco(produtoCor.grupo, produtoCor.item,
+				parametrosProgramacao.alternativa);
+
+		System.out.println("seqRisco: " + seqRisco + " alternativa " + parametrosProgramacao.alternativa);
+		
+		List<MarcacaoRisco> marcacoesRisco = produtoRepository.findMarcacoesRisco(produtoCor.grupo, riscoPadrao,
+				seqRisco, parametrosProgramacao.alternativa);
+
+		List<ProdutoPlanoMestre> produtos = produtoPlanoMestreRepository
+				.findByIdPlanoCodGrupoCor(produtoCor.idPlanoMestre, produtoCor.grupo, produtoCor.item);
+
+		System.out.println("distribuirPelaGradePadrao");
+		
+		return CalculoDistribuicaoPecas.distribuirPelaGradePadrao(produtoCor.qtdeProgramada, produtos, marcacoesRisco);
 	}
 
 	private void calcularGradeNegativaParaPlano(long idPlanoMestre, int multiplicador) {
@@ -219,6 +278,14 @@ public class PlanoMestreService {
 		}
 	}
 
+	private List<ProdutoPlanoMestre> calcularGradeNegativa(ProdutoPlanoMestrePorCor produtoCor) {
+		
+		List<ProdutoPlanoMestre> produtos = produtoPlanoMestreRepository
+				.findByIdPlanoCodGrupoCor(produtoCor.idPlanoMestre, produtoCor.grupo, produtoCor.item);
+		
+		return CalculoDistribuicaoPecas.distribuirPelaQtdeSugerida(produtoCor.qtdeProgramada, produtos);
+	}
+
 	private void aplicarMultiplicadorItem(long idPlanoMestre, int multiplicador, ProdutoPlanoMestrePorCor produtoCor) {
 
 		int qtdeProgramada = 0;
@@ -229,9 +296,11 @@ public class PlanoMestreService {
 		for (ProdutoPlanoMestre produto : produtos) {
 			produto.qtdeEqualizadoSugestao = Multiplicador.ajustarQuantidade(multiplicador, produto.qtdeProgramada);
 			produto.qtdeDiferencaSugestao = produto.qtdeSugestao - produto.qtdeEqualizadoSugestao;
-			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;
+			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao; 
 			produtoPlanoMestreRepository.save(produto);
 
+			System.out.println("aplicarMultiplicadorItem: " + produto.qtdeProgramada);
+			
 			qtdeProgramada += produto.qtdeProgramada;
 		}
 
@@ -258,7 +327,7 @@ public class PlanoMestreService {
 
 		aplicarMultiplicadorItem(idPlanoMestre, multiplicador, produtoPorCor);
 	}
-	
+
 	public void aplicarMultiplicador(long idPlanoMestre, String grupo, String item, int multiplicador) {
 
 		ProdutoPlanoMestrePorCor produtoPorCor = produtoPlanoMestrePorCorRepository.findByCodigo(idPlanoMestre, grupo,
@@ -275,7 +344,7 @@ public class PlanoMestreService {
 
 		aplicarMultiplicadorItem(idPlanoMestre, multiplicador, produtoPorCor);
 	}
-	
+
 	public List<PlanoMestre> delete(long idPlanoMestre) {
 
 		planoMestreParamProgItemRepository.deleteByIdPlanoMestre(idPlanoMestre);

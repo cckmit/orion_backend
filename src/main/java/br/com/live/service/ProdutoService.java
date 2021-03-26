@@ -10,6 +10,7 @@ import br.com.live.entity.Produto;
 import br.com.live.entity.ProdutoReferCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.Roteiro;
 import br.com.live.util.FiltroProduto;
 
@@ -54,4 +55,11 @@ public class ProdutoService {
 		return produtoRepository.findAlternativaRoteiroPadraoByCodigo(grupo, item);
 	}	
 	
+	public int findSequenciaPrincipalRisco(String grupo, String item, int alternativa) {
+		return produtoRepository.findSequenciaPrincipalRisco(grupo, item, alternativa);
+	}
+	
+	public List<MarcacaoRisco> findMarcacoesRisco(String grupo, int risco, int seqRisco, int alternativa) {
+		return produtoRepository.findMarcacoesRisco(grupo, risco, seqRisco, alternativa);
+	}
 }

@@ -2,17 +2,21 @@ package br.com.live.custom;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import br.com.live.entity.CorProduto;
 import br.com.live.entity.Embarque;
-import br.com.live.entity.MarcacaoRisco;
 import br.com.live.entity.Produto;
 import br.com.live.entity.ProdutoReferCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
 import br.com.live.model.ArtigoProduto;
+import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.Roteiro;
 import br.com.live.util.FiltroProduto;
 
@@ -125,7 +129,6 @@ public class ProdutoCustom {
 	}
 
 	public ProdutoReferCor findItemByCodigo(String grupo, String item) {
-
 		String query = "select new br.com.live.entity.ProdutoReferCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.sugCancelProducao, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferCor p ";
 		query += " where p.grupo = '" + grupo + "'";
 		query += " and p.item = '" + item + "'";
@@ -135,50 +138,32 @@ public class ProdutoCustom {
 		return q.getSingleResult();
 	}
 
-	public List<MarcacaoRisco> findMarcacoesByParameters(FiltroProduto filtro) {
+	public int findRiscoPadraoByCodigo(String grupo) {
 
-		String query = "select new br.com.live.entity.MarcacaoRisco (m.id, m.grupo, m.sub, m.codigoRisco, m.alternativa, m.qtdeMarcacao, m.colecao) from MarcacaoRisco m ";
-		String condicao = "where ";
+		String query = "select b.risco_padrao from basi_030 b where b.nivel_estrutura = '1' "
+				+ " and b.referencia = '" + grupo + "'";
 
-		if (!filtro.getReferencias().equalsIgnoreCase("")) {
-			query += condicao + " m.grupo in " + filtro.getReferencias();
-			condicao = " and ";
-		}
-
-		if (!filtro.getColecoes().equalsIgnoreCase("")) {
-			query += condicao + " m.colecao in " + filtro.getColecoes();
-			condicao = " and ";
-		}
-
-		System.out.println("MarcacoesRisco - query: " + query);
-
-		var q = manager.createQuery(query, MarcacaoRisco.class);
-
-		return q.getResultList();
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
 	public List<Alternativa> findAlternativasByCodigo(String grupo, String item) {
 
 		String query = "select max(rownum) id, b.alternativa_item alternativa, nvl(c.descricao, ' ') descricao from basi_050 b, basi_070 c"
-				+ " where b.nivel_item       = '1' "
-		  + " and c.nivel (+) = b.nivel_item "
-		  + " and c.grupo (+) = b.grupo_item "
-		  + " and c.alternativa (+) = b.alternativa_item " 
-		  + " and b.grupo_item = '" + grupo + "'" 
-		  + " and (b.item_item = '" + item + "' or b.item_item = '000000') "
-		+ " group by b.nivel_item, b.grupo_item, b.item_item, b.alternativa_item, c.descricao ";
-		
+				+ " where b.nivel_item       = '1' " + " and c.nivel (+) = b.nivel_item "
+				+ " and c.grupo (+) = b.grupo_item " + " and c.alternativa (+) = b.alternativa_item "
+				+ " and b.grupo_item = '" + grupo + "'" + " and (b.item_item = '" + item
+				+ "' or b.item_item = '000000') "
+				+ " group by b.nivel_item, b.grupo_item, b.item_item, b.alternativa_item, c.descricao ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Alternativa.class));
 	}
 
 	public List<Roteiro> findRoteirosByCodigo(String grupo, String item, int alternativa) {
 
-		String query = "select m.numero_roteiro codigo from mqop_050 m"
-				+ " where m.nivel_estrutura  = '1' "
-				+ " and m.grupo_estrutura  = '" + grupo + "'"       
-		        + " and m.numero_alternati = " + alternativa
-		        + " group by m.numero_roteiro";     
-		  
+		String query = "select m.numero_roteiro codigo from mqop_050 m" + " where m.nivel_estrutura  = '1' "
+				+ " and m.grupo_estrutura  = '" + grupo + "'" + " and m.numero_alternati = " + alternativa
+				+ " group by m.numero_roteiro";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Roteiro.class));
 	}
 
@@ -197,5 +182,35 @@ public class ProdutoCustom {
 				+ " where b.nivel_estrutura = '1' " + "   and b.descr_artigo <> '.' " + " order by b.artigo ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoProduto.class));
-	}	 
+	}
+
+	public int findSequenciaPrincipalRisco(String grupo, String item, int alternativa) {
+
+		String query = "select nvl(basi_050.sequencia,0) " + " from basi_050 "
+				+ " where basi_050.nivel_item       = '1' " + " and basi_050.grupo_item       = '" + grupo + "'"
+				+ " and (basi_050.item_item       = '" + item + "' or basi_050.item_item = '000000') "
+				+ " and basi_050.alternativa_item = " + alternativa + " and basi_050.tecido_principal = 1 "
+				+ " and rownum = 1 " + " order by basi_050.consumo desc ";
+
+		Integer sequencia = 0;
+
+		try {
+			sequencia = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			sequencia = 0;
+		}
+
+		return (int) sequencia;
+	}
+
+	public List<MarcacaoRisco> findMarcacoesRisco(String grupo, int risco, int seqRisco, int alternativa) {
+
+		String query = "select pcpc_200.grupo_estrutura grupo, pcpc_200.tamanho sub, pcpc_200.qtde_marc_proj quantidade "
+				+ " from pcpc_200 " + " where pcpc_200.codigo_risco     = " + risco
+				+ " and pcpc_200.grupo_estrutura  = '" + grupo + "' " + " and pcpc_200.ordem_estrutura  = " + seqRisco
+				+ " and pcpc_200.alternativa_item = " + alternativa;
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MarcacaoRisco.class));
+	}
+
 }
