@@ -1,10 +1,5 @@
 package br.com.live.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 public class MarcacaoRisco {
 
 	public String grupo;

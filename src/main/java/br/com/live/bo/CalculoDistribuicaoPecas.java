@@ -50,8 +50,6 @@ public class CalculoDistribuicaoPecas {
 			mapMarcacoes.put(marcacao.sub, (double) marcacao.quantidade);
 		}
 		
-		System.out.println("qtdeDistribuir: " + qtdeDistribuir);
-		
 		for (ProdutoPlanoMestre produto : produtos) {			
 			
      		qtdeTamanho = mapMarcacoes.get(produto.sub); 
@@ -60,16 +58,40 @@ public class CalculoDistribuicaoPecas {
 			if (qtdeMarcacoes > 0.000) proporcao = qtdeTamanho / qtdeMarcacoes;
 			else proporcao = 0.000;
 			
-			System.out.println("proporcao: " + proporcao);
-			
-			produto.qtdeProgramada = (int) (qtdeDistribuir * proporcao);
-			
-			System.out.println("produto.qtdeProgramada: " + produto.qtdeProgramada);
-			
+			produto.qtdeProgramada = (int) (qtdeDistribuir * proporcao);			
 			produtosAtualizados.add(produto);
 		}
 		
 		return produtosAtualizados;
 	}
 	
+	public static List<ProdutoPlanoMestre> distribuirPelaGradeVenda(int qtdeDistribuir, List<ProdutoPlanoMestre> produtos) {
+		
+		double qtdeTotalDemanda = 0.000;
+		double qtdeTotalSaldo = 0.000;
+		double proporcao = 0.000;
+		double qtdeProgramar = (int) qtdeDistribuir;
+		
+		List<ProdutoPlanoMestre> produtosAtualizados = new ArrayList<ProdutoPlanoMestre> ();
+		
+		for (ProdutoPlanoMestre produto : produtos) {
+			qtdeTotalDemanda += produto.qtdeDemAcumulado;
+			qtdeTotalSaldo += produto.qtdeSaldoAcumulado;			
+		}
+		
+		qtdeProgramar += qtdeTotalSaldo;
+		
+		for (ProdutoPlanoMestre produto : produtos) {
+			proporcao = produto.qtdeDemAcumulado / qtdeTotalDemanda;
+						
+			produto.qtdeProgramada = (int) (qtdeProgramar * proporcao);
+			produto.qtdeProgramada = (produto.qtdeProgramada - produto.qtdeSaldoAcumulado); 
+			
+			if (produto.qtdeProgramada < 0) produto.qtdeProgramada = 0;
+			
+			produtosAtualizados.add(produto);			
+		}
+		
+		return produtosAtualizados;
+	}	
 }

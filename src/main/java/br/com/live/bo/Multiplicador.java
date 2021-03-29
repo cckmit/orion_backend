@@ -11,9 +11,12 @@ public class Multiplicador {
 		double nQtdeAux = 0.000;
 		double nMultAux = 0.000;
 
+		if (multiplicador == 0)
+			multiplicador = 1;
+
 		nMultAux = multiplicador;
 		nQtdeAux = quantidade;
-
+		
 		iValorInt = (int) (nQtdeAux / nMultAux);
 		nValorNum = nQtdeAux / nMultAux;
 		nRestoDiv = nValorNum - iValorInt;

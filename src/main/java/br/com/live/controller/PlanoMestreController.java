@@ -31,7 +31,7 @@ public class PlanoMestreController {
 
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)
 	public List<PlanoMestre> gerar(@RequestBody ParametrosPlanoMestre parametros) {
-		return planoMestreService.gerar(parametros);
+		return planoMestreService.gerar(parametros); 
 	}
 
 	@RequestMapping(value = "/salvar-itens", method = RequestMethod.POST)
