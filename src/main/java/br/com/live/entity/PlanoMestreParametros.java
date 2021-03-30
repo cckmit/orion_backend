@@ -88,4 +88,18 @@ public class PlanoMestreParametros {
 	public int numero_interno;
 	public String pedidos;
 	
+	// Pré-Ordens
+	@Column(name="agrupa_por_refer")
+	public int agrupaOpPorRefer; 
+	@Column(name="qtde_maxima_op")
+	public int qtdeMaximaOP;
+	@Column(name="qtde_minima_op")
+	public int qtdeMinimaOP;
+	@Column(name="qtde_maxima_cor")
+	public int qtdeMaximaCor;
+	@Column(name="periodo_op")
+	public int periodoOP;	
+	@Column(name="observacao_op")
+	public String observacaoOP; 
+	 
 }

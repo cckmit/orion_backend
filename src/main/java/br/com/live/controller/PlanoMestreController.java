@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestreParametros;
+import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.OcupacaoPlanoPorArtigo;
 import br.com.live.model.OcupacaoPlanoPorEstagio;
 import br.com.live.entity.PlanoMestreConsultaItens;
@@ -49,6 +50,17 @@ public class PlanoMestreController {
 				CodigoGrupoItem.getItem(parametros.codigoGrupoCor)); 
 	}
 
+	@RequestMapping(value = "pre-ordens/gerar", method = RequestMethod.POST)
+	public List<ConsultaPreOrdemProducao> gerarPreOrdens (@RequestBody ParametrosPlanoMestre parametros) {				
+		planoMestreService.gerarPreOrdens(parametros);
+		return planoMestreService.findPreOrdensByIdPlanoMestre(parametros.idPlanoMestre);
+	}
+
+	@RequestMapping(value = "pre-ordens/{id}", method = RequestMethod.GET)
+	public List<ConsultaPreOrdemProducao> findPreOrdens (@PathVariable("id") long idPlanoMestre) {						
+		return planoMestreService.findPreOrdensByIdPlanoMestre(idPlanoMestre);
+	}
+	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<PlanoMestre> findAll() {
 		return planoMestreService.findAll();

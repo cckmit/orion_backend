@@ -71,6 +71,14 @@ create table orion_011
  numero_interno number(4),
  pedidos varchar2(200),
  
+ -- Pré-ordens
+ agrupa_por_refer number(1),
+ qtde_maxima_op number(6),
+ qtde_minima_op number(6),
+ qtde_maxima_cor number(6),
+ periodo_op number(4),
+ observacao_op varchar2(60),
+ 
  constraint orion_011_pk primary key (num_plano_mestre),
  constraint fk_orion_011_orion_010	foreign key (num_plano_mestre) references orion_010 (num_plano_mestre) 
 );

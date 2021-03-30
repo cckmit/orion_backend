@@ -74,6 +74,13 @@ public class ParametrosPlanoMestre {
 	public List<PlanoMestreConsultaItens> itensPlanoMestre;
 	public List<PlanoMestreConsultaTamanhos> gradeTamanhosItem;
 		
+	// Pré-Ordens
+    public int agrupaOpPorRefer;
+    public int qtdeMaximaOP;
+    public int qtdeMinimaOP;
+    public int periodoOP;
+    public String observacaoOP;
+	
 	public FiltroProduto getFiltroProduto () {
 		
 		FiltroProduto filtro = new FiltroProduto();

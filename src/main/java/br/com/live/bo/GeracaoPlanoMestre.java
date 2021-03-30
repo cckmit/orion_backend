@@ -271,6 +271,14 @@ public class GeracaoPlanoMestre {
 		planoMestreParam.numero_interno = parametros.nrInternoPedido;
 		planoMestreParam.pedidos = concatChaveNumerica(parametros.pedidos);
 
+		// Pré-Ordens
+		planoMestreParam.agrupaOpPorRefer = 1;
+		planoMestreParam.qtdeMaximaOP = 0;
+		planoMestreParam.qtdeMinimaOP = 0;
+		planoMestreParam.qtdeMaximaCor = 0;
+		planoMestreParam.periodoOP = 0;
+		planoMestreParam.observacaoOP = "";
+		
 		return planoMestreParam;
 	}
 
