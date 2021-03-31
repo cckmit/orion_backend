@@ -98,7 +98,9 @@ public class PlanoMestreParametros {
 	@Column(name="qtde_maxima_cor")
 	public int qtdeMaximaCor;
 	@Column(name="periodo_op")
-	public int periodoOP;	
+	public int periodoOP;		
+	@Column(name="deposito_op")
+	public int depositoOP;		
 	@Column(name="observacao_op")
 	public String observacaoOP; 
 	 

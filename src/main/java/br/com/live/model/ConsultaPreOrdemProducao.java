@@ -8,6 +8,14 @@ public class ConsultaPreOrdemProducao {
 	public String alternativa;
 	public int roteiro;
 	public int quantidade;
+	public String deposito;
+	
+	public String getDeposito() {
+		return deposito;
+	}
+	public void setDeposito(String deposito) {
+		this.deposito = deposito;
+	}
 	public String observacao;
 	
 	public String getObservacao() {

@@ -382,6 +382,7 @@ public class PlanoMestreService {
 		planoMestreParametros.qtdeMaximaOP = parametros.qtdeMaximaOP;
 		planoMestreParametros.qtdeMinimaOP = parametros.qtdeMinimaOP;
 		planoMestreParametros.periodoOP =  parametros.periodoOP;
+		planoMestreParametros.depositoOP = parametros.depositoOP;
 		planoMestreParametros.observacaoOP = parametros.observacaoOP;		
 		planoMestreParametrosRepository.save(planoMestreParametros);		
 		
@@ -394,7 +395,7 @@ public class PlanoMestreService {
 				.findProgramacaoIdByPlanoMestre(parametros.idPlanoMestre);
 
 		GeracaoPreOrdens geracaoPreOrdens = new GeracaoPreOrdens(parametros.idPlanoMestre, parametros.agrupaOpPorRefer,
-				parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP, parametros.observacaoOP, programacao);
+				parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP, parametros.depositoOP, parametros.observacaoOP, programacao);
 		
 		Map<Integer, PlanoMestrePreOrdem> mapPreOrdens = geracaoPreOrdens.getMapPreOrdens(); 
 		List<PlanoMestrePreOrdemItem> listPreOrdemItens ; 

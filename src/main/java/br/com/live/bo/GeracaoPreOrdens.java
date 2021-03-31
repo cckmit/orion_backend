@@ -19,6 +19,7 @@ public class GeracaoPreOrdens {
 	private int qtdeMaximaOrdem;
 	private int qtdeMinimaOrdem;
 	private int periodoOrdem;
+	private int depositoOrdem;
 	private String observacaoOrdem;
 	private List<ProgramacaoPlanoMestre> programacaoItens;
 	Map<String, Integer> mapOrdensAgrupadas;
@@ -31,13 +32,14 @@ public class GeracaoPreOrdens {
 	List<PlanoMestrePreOrdemItem> listPlanoMestrePreOrdemItem;
 
 	public GeracaoPreOrdens(long idPlanoMestre, int agrupaPorReferencia, int qtdeMaximaOrdem, int qtdeMinimaOrdem,
-			int periodoOrdem, String observacaoOrdem, List<ProgramacaoPlanoMestre> programacaoItens) {
+			int periodoOrdem, int depositoOrdem, String observacaoOrdem, List<ProgramacaoPlanoMestre> programacaoItens) {
 
 		this.idPlanoMestre = idPlanoMestre;
 		this.agrupaPorReferencia = agrupaPorReferencia;
 		this.qtdeMaximaOrdem = qtdeMaximaOrdem;
 		this.qtdeMinimaOrdem = qtdeMinimaOrdem;
 		this.periodoOrdem = periodoOrdem;
+		this.depositoOrdem = depositoOrdem;
 		this.observacaoOrdem = observacaoOrdem;
 		this.programacaoItens = programacaoItens;
 
@@ -85,10 +87,10 @@ public class GeracaoPreOrdens {
 			planoMestrePreOrdem.roteiro = ordemCapa.roteiro;
 			planoMestrePreOrdem.quantidade = ordemCapa.qtdeProgramada;
 			planoMestrePreOrdem.data = new Date();
-			planoMestrePreOrdem.observacao = observacaoOrdem;
-			planoMestrePreOrdem.deposito = 0;
+			planoMestrePreOrdem.deposito = depositoOrdem;
+			planoMestrePreOrdem.observacao = observacaoOrdem;			
 			planoMestrePreOrdem.situacao = 0;
-			
+
 			mapPlanoMestrePreOrdens.put(ordemCapa.id, planoMestrePreOrdem);
 		}
 	}

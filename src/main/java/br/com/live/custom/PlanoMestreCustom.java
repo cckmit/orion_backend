@@ -30,14 +30,19 @@ public class PlanoMestreCustom {
 
 	public List<ConsultaPreOrdemProducao> findPreOrdensByIdPlanoMestre(long idPlanoMestre) {
 
-		String query = "select a.id, a.referencia || ' - ' || b.descr_referencia referencia, " + " a.periodo, "
-				+ " a.alternativa || ' - ' || max(c.descricao) alternativa," + " a.roteiro," + " a.quantidade, "
-				+ " a.observacao " + " from orion_020 a, basi_030 b, basi_070 c " + " where a.num_plano_mestre = "
-				+ idPlanoMestre + " and b.nivel_estrutura = '1' " + " and b.referencia = a.referencia "
-				+ " and c.nivel (+) = b.nivel_estrutura " + " and c.grupo (+) = b.referencia "
-				+ " group by a.id, a.referencia, b.descr_referencia, a.periodo, a.alternativa, a.roteiro, a.observacao, a.quantidade "
-				+ " ";
-
+		String query = "select a.id, a.referencia || ' - ' || b.descr_referencia referencia, a.periodo, "
+				+ " a.alternativa || ' - ' || max(c.descricao) alternativa, a.roteiro, a.quantidade, "
+				+ " a.deposito || ' - ' || max(d.descricao) deposito, a.observacao "
+				+ " from orion_020 a, basi_030 b, basi_070 c, basi_205 d "
+				+ " where a.num_plano_mestre = " + idPlanoMestre
+				+ " and b.nivel_estrutura = '1' "
+				+ " and b.referencia = a.referencia "
+				+ " and c.nivel (+) = '1' "
+				+ " and c.grupo (+) = a.referencia "
+				+ " and c.alternativa (+) = a.alternativa "
+				+ " and d.codigo_deposito = a.deposito "
+				+ " group by a.id, a.referencia, b.descr_referencia, a.periodo, a.alternativa, a.roteiro, a.deposito, a.observacao, a.quantidade "; 
+				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducao.class));
 	}
 

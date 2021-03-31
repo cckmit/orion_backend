@@ -79,6 +79,7 @@ public class ParametrosPlanoMestre {
     public int qtdeMaximaOP;
     public int qtdeMinimaOP;
     public int periodoOP;
+    public int depositoOP;
     public String observacaoOP;
 	
 	public FiltroProduto getFiltroProduto () {
