@@ -28,14 +28,14 @@ public class ItemSugCancelProducaoController {
 	@RequestMapping(value = "/sugerir", method = RequestMethod.POST)	
 	public List<ItemSugCancelProducao> sugerir(@RequestBody ParametrosItemSugCancelProd parametro) {		
 		List<ItemSugCancelProducao> itens = parametro.getItensSelecionados();
-        itemSugCancelProducaoRepository.saveAll(itens);				
+		itemSugCancelProducaoRepository.saveAll(itens);				
 		return itemSugCancelProducaoRepository.findAll();
 	}
 
 	@RequestMapping(value = "/remover", method = RequestMethod.POST)	
 	public List<ItemSugCancelProducao> remover(@RequestBody ParametrosItemSugCancelProd parametro) {		
 		List<ItemSugCancelProducao> itens = parametro.getItensSelecionados();			
-        itemSugCancelProducaoRepository.deleteAll(itens);				
+		itemSugCancelProducaoRepository.deleteAll(itens);				
 		return itemSugCancelProducaoRepository.findAll();
 	}
 }
