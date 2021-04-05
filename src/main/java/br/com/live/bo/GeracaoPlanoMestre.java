@@ -175,7 +175,13 @@ public class GeracaoPlanoMestre {
 
 	public List<ProdutoPlanoMestrePorCor> getProdutosPorCorPlanoMestre() {
 		List<ProdutoPlanoMestre> itens = new ArrayList<ProdutoPlanoMestre>(mapProdutos.values());
-		return new AgrupadorReferCorPlanoMestre(itens).getProdutos();
+		return new AgrupadorReferCorPlanoMestre(false, itens).getProdutos();
+	}
+	
+	public List<ProdutoPlanoMestrePorCor> getProdutosPorCorPlanoMestre(List<ProdutoPlanoMestre> itens) {				
+		boolean consideraPrevisaoVendas = false;		
+		if (parametros.tipoDistribuicao == 4) consideraPrevisaoVendas = true; 		
+		return new AgrupadorReferCorPlanoMestre(consideraPrevisaoVendas, itens).getProdutos();
 	}
 	
 	public PlanoMestreParamProgItem getParametrosProgramacaoItem(long idPlanoMestre, long idItemPlanoMestre, AlternativaRoteiroPadrao alternativaRoteiroPadrao) {		
@@ -329,5 +335,5 @@ public class GeracaoPlanoMestre {
 
 		return texto;
 	}
-	
+		
 }

@@ -12,9 +12,11 @@ import br.com.live.entity.ProdutoPlanoMestrePorCor;
 
 public class AgrupadorReferCorPlanoMestre {
 
+	private boolean consideraPrevisaoVendas;
 	private List<ProdutoPlanoMestrePorCor> produtos;
 
-	public AgrupadorReferCorPlanoMestre(List<ProdutoPlanoMestre> produtos) {
+	public AgrupadorReferCorPlanoMestre(boolean consideraPrevisaoVendas, List<ProdutoPlanoMestre> produtos) {
+		this.consideraPrevisaoVendas = consideraPrevisaoVendas;
 		this.produtos = agruparProdutos(produtos);
 	}
 
@@ -79,12 +81,16 @@ public class AgrupadorReferCorPlanoMestre {
 
 			produto = mapProdutos.get(chave);
 
+			if (consideraPrevisaoVendas) {
+				produto.qtdeSaldoAcumulado = produto.qtdeSaldoAcumulado - produto.qtdePrevisao;
+			}			
+			
 			if (produto.qtdeSaldoAcumulado < 0)
 				produto.qtdeSugestao = (produto.qtdeSaldoAcumulado * -1);
 
 			produto.qtdeEqualizadoSugestao = produto.qtdeSugestao; 
 			produto.qtdeDiferencaSugestao = produto.qtdeEqualizadoSugestao - produto.qtdeSugestao;
-			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;
+			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;			
 		}
 
 		return mapProdutos;
@@ -113,7 +119,7 @@ public class AgrupadorReferCorPlanoMestre {
 			produtoCor.grupo = produto.grupo;
 			produtoCor.item = produto.item;
 
-			produtoCor.qtdePrevisao += produto.qtdePrevisao;
+			produtoCor.qtdePrevisao = produto.qtdePrevisao;
 			produtoCor.qtdeEstoque += produto.qtdeEstoque;
 
 			produtoCor.qtdeDemPlano1 += produto.qtdeDemPlano1;

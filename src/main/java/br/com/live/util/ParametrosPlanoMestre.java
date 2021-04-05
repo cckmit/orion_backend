@@ -74,6 +74,13 @@ public class ParametrosPlanoMestre {
 	public List<PlanoMestreConsultaItens> itensPlanoMestre;
 	public List<PlanoMestreConsultaTamanhos> gradeTamanhosItem;
 		
+	// Parâmetros Programação
+	public String codGrupoItemProg;
+	public int alternativaProg;
+	public int roteiroProg;
+	public int periodoProg;
+	public int multiplicadorProg;	
+	
 	// Pré-Ordens
     public int agrupaOpPorRefer;
     public int qtdeMaximaOP;

@@ -5,7 +5,7 @@ create table orion_011
  -- Global
  periodo_padrao number(4), 
  tipo_distribuicao number(1),
- desc_tipo_distribuicao varchar2(20),
+ desc_tipo_distribuicao varchar2(30),
  multiplicador number(2),
 
  -- Análise Produto

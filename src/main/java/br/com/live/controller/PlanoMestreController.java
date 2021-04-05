@@ -32,7 +32,7 @@ public class PlanoMestreController {
 
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)
 	public List<PlanoMestre> gerar(@RequestBody ParametrosPlanoMestre parametros) {
-		return planoMestreService.gerar(parametros); 
+		return planoMestreService.gerar(parametros);
 	}
 
 	@RequestMapping(value = "/salvar-itens", method = RequestMethod.POST)
@@ -47,20 +47,20 @@ public class PlanoMestreController {
 				CodigoGrupoItem.getItem(parametros.codigoGrupoCor), parametros.gradeTamanhosItem);
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre,
 				CodigoGrupoItem.getGrupo(parametros.codigoGrupoCor),
-				CodigoGrupoItem.getItem(parametros.codigoGrupoCor)); 
+				CodigoGrupoItem.getItem(parametros.codigoGrupoCor));
 	}
 
 	@RequestMapping(value = "pre-ordens/gerar", method = RequestMethod.POST)
-	public List<ConsultaPreOrdemProducao> gerarPreOrdens (@RequestBody ParametrosPlanoMestre parametros) {				
+	public List<ConsultaPreOrdemProducao> gerarPreOrdens(@RequestBody ParametrosPlanoMestre parametros) {
 		planoMestreService.gerarPreOrdens(parametros);
 		return planoMestreService.findPreOrdensByIdPlanoMestre(parametros.idPlanoMestre);
 	}
 
 	@RequestMapping(value = "pre-ordens/{id}", method = RequestMethod.GET)
-	public List<ConsultaPreOrdemProducao> findPreOrdens (@PathVariable("id") long idPlanoMestre) {						
+	public List<ConsultaPreOrdemProducao> findPreOrdens(@PathVariable("id") long idPlanoMestre) {
 		return planoMestreService.findPreOrdensByIdPlanoMestre(idPlanoMestre);
 	}
-	
+
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<PlanoMestre> findAll() {
 		return planoMestreService.findAll();
@@ -90,25 +90,24 @@ public class PlanoMestreController {
 				CodigoGrupoItem.getItem(codigo));
 	}
 
-	@RequestMapping(value = "/multiplicador/{id}/{codigo}/{multiplicador}", method = RequestMethod.GET)
-	public List<PlanoMestreConsultaTamanhos> aplicarMultiplicador(@PathVariable("id") long idPlanoMestre,
-			@PathVariable("codigo") String codigo, @PathVariable("multiplicador") int multiplicador) {
-		planoMestreService.aplicarMultiplicador(idPlanoMestre, CodigoGrupoItem.getGrupo(codigo),
-				CodigoGrupoItem.getItem(codigo), multiplicador);
-		return planoMestreService.findTamanhos(idPlanoMestre, CodigoGrupoItem.getGrupo(codigo),
-				CodigoGrupoItem.getItem(codigo));
+	@RequestMapping(value = "/salvar-param-programacao", method = RequestMethod.POST)
+	public List<PlanoMestreConsultaTamanhos> salvarParamProgramacao(@RequestBody ParametrosPlanoMestre parametros) {
+		planoMestreService.salvarParametrosProgramacaoItem(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg), parametros.alternativaProg, parametros.roteiroProg, parametros.periodoProg, parametros.multiplicadorProg);		
+		return planoMestreService.findTamanhos(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg));
 	}
 
 	@RequestMapping(value = "/ocupacao-estagio/{id}/{estagio}", method = RequestMethod.GET)
-	public OcupacaoPlanoPorEstagio findOcupacaoEstagio(@PathVariable("id") long idPlanoMestre, @PathVariable("estagio") int estagio) {
+	public OcupacaoPlanoPorEstagio findOcupacaoEstagio(@PathVariable("id") long idPlanoMestre,
+			@PathVariable("estagio") int estagio) {
 		return planoMestreService.findOcupacaoEstagio(idPlanoMestre, estagio);
 	}
 
 	@RequestMapping(value = "/ocupacao-artigos/{id}/{estagio}", method = RequestMethod.GET)
-	public List<OcupacaoPlanoPorArtigo> findOcupacaoArtigosEstagio(@PathVariable("id") long idPlanoMestre, @PathVariable("estagio") int estagio) {
+	public List<OcupacaoPlanoPorArtigo> findOcupacaoArtigosEstagio(@PathVariable("id") long idPlanoMestre,
+			@PathVariable("estagio") int estagio) {
 		return planoMestreService.findOcupacaoArtigo(idPlanoMestre, estagio);
 	}
-	
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public List<PlanoMestre> deletePlanoMestre(@PathVariable("id") long idPlanoMestre) {
 		return planoMestreService.delete(idPlanoMestre);

@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.ConsultaPrevisaoVendas;
 
 @Repository
@@ -49,11 +48,64 @@ public class PrevisaoVendasCustom {
 			                       + " and c.item_ref = b.item_estrutura) "                
 			      + " group by a.referencia, b.item_estrutura) produtos, orion_040 previsao "
 			+ " where previsao.colecao (+) = " + colecao
-			  + " and previsao.grupo  (+) = produtos.grupo "
+			  + " and previsao.grupo (+) = produtos.grupo "
 			  + " and previsao.item (+) = produtos.item ";
 
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPrevisaoVendas.class));				
 	}	
+	
+	public String findIdTabelaSellIn(int colecao) {
+		
+		String id = "";
+		
+		String query = " select o.col_tab_preco_sell_in || '.' || o.mes_tab_preco_sell_in || '.' || o.seq_tab_preco_sell_in id from orion_040 o " 
+					 + " where o.colecao = " + colecao
+					 + " and rownum = 1 ";
+		
+		try {
+			id = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			id = "";
+		}
+		
+		return id;
+	}
+	
+	public String findIdTabelaSellOut(int colecao) {
+		
+		String id = "";
+		
+		String query = " select o.col_tab_preco_sell_out || '.' || o.mes_tab_preco_sell_out || '.' || o.seq_tab_preco_sell_out id from orion_040 o " 
+					 + " where o.colecao = " + colecao
+					 + " and rownum = 1 ";
+		
+		try {
+			id = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			id = "";
+		}
+		
+		return id;
+	}
+	
+	public int findPrevisaoVendaByProduto(String colecoes, String grupo, String item) {
+		
+		int qtdePrevisao = 0;
+		
+		String query = " select o.qtde_previsao from orion_040 o " 
+				+ " where o.colecao in (" + colecoes + ")"
+		  + " and o.grupo = '" + grupo + "' "
+		  + " and o.item = '" + item + "' "
+		  + " and rownum = 1 ";
+
+		try {
+			qtdePrevisao = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			qtdePrevisao = 0;
+		}
+		
+		return qtdePrevisao;		
+	}
 	
 }
