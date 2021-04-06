@@ -69,7 +69,8 @@ public class ParametrosPlanoMestre {
 	public int mostraProdSemPedidos;
 	public int nrInternoPedido;
 		
-	public long idPlanoMestre; 
+	public long idPlanoMestre;
+	public int situacaoPlanoMestre;
 	public String codigoGrupoCor;
 	public List<PlanoMestreConsultaItens> itensPlanoMestre;
 	public List<PlanoMestreConsultaTamanhos> gradeTamanhosItem;

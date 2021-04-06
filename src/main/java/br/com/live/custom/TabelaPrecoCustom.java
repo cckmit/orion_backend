@@ -21,7 +21,7 @@ public class TabelaPrecoCustom {
 
 		String query = "select p.col_tabela_preco || '.' || p.mes_tabela_preco  || '.' ||  p.seq_tabela_preco id, " 
 		            + " p.col_tabela_preco colecao, p.mes_tabela_preco mes, p.seq_tabela_preco sequencia, p.descricao " 
-		            + " from pedi_090 p " ;
+		            + " from pedi_090 p order by p.col_tabela_preco, p.mes_tabela_preco, p.seq_tabela_preco " ;
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(TabelaPreco.class));
 	}
@@ -31,8 +31,7 @@ public class TabelaPrecoCustom {
 		String query = ""; 
 		Double valor = 0.000;
 		
-		query = "select pedi_095.val_tabela_preco "
-	        + " into   valor_unitario "
+		query = "select pedi_095.val_tabela_preco "	        
 	        + " from pedi_095 " 
 	        + " where pedi_095.tab_col_tab        = " + colecao
 	          + " and pedi_095.tab_mes_tab        = " + mes
@@ -48,10 +47,9 @@ public class TabelaPrecoCustom {
 		} catch (Exception e) {
 			valor = 0.000;
 		}
-			
+		
 		if (valor <= 0.000) {
-			query = "select pedi_095.val_tabela_preco "
-			        + " into   valor_unitario "
+			query = "select pedi_095.val_tabela_preco "			        
 			        + " from pedi_095 " 
 			        + " where pedi_095.tab_col_tab        = " + colecao
 			          + " and pedi_095.tab_mes_tab        = " + mes
@@ -60,6 +58,12 @@ public class TabelaPrecoCustom {
 			          + " and pedi_095.grupo_estrutura    = '" + grupo + "'"          			          
 			          + " and pedi_095.nivel_preco        = 1 "
 			          + " and rownum = 1 ";
+
+			try {
+				valor = jdbcTemplate.queryForObject(query, Double.class);
+			} catch (Exception e) {								
+				valor = 0.000;
+			}
 		}
 		
 		return valor;

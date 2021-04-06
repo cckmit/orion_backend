@@ -44,7 +44,6 @@ import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
 import br.com.live.repository.ProdutoPlanoMestrePorCorRepository;
 import br.com.live.repository.ProdutoPlanoMestreRepository;
-import br.com.live.util.CodigoGrupoItem;
 import br.com.live.util.ParametrosPlanoMestre;
 
 @Service
@@ -130,6 +129,12 @@ public class PlanoMestreService {
 
 	public List<ConsultaPreOrdemProducao> findPreOrdensByIdPlanoMestre(long idPlanoMestre) {
 		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
+	}
+	
+	public void salvarSituacao(long idPlanoMestre, int newSituacao) {		
+		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);		
+		planoMestre.situacao = newSituacao;		
+		planoMestreRepository.save(planoMestre);		
 	}
 	
 	public void salvarItens(List<PlanoMestreConsultaItens> itensAlterados) {

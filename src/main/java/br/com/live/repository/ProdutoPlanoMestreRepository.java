@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.ProdutoPlanoMestre;
-import br.com.live.entity.ProdutoPlanoMestrePorCor;
 
 @Repository
 public interface ProdutoPlanoMestreRepository extends JpaRepository<ProdutoPlanoMestre, Long> {

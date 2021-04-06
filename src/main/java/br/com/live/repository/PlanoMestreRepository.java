@@ -12,5 +12,7 @@ public interface PlanoMestreRepository extends JpaRepository<PlanoMestre, Long> 
 
 	@Query("SELECT p FROM PlanoMestre p order by p.id desc")
 	List<PlanoMestre> findAll();
-			
+		
+	@Query("SELECT p FROM PlanoMestre p where p.id = :id")
+	PlanoMestre findById(long id);	
 }

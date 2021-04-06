@@ -6,7 +6,10 @@ public class ConsultaPrevisaoVendas {
 	public int colecao;
 	public String grupo;
 	public String item;
-	public String descricao;			
+	public String descricao;		
+	public String artigo; 
+    public String linha;  
+    public String embarque;
 	public int colTabPrecoSellIn;		
 	public int mesTabPrecoSellIn;		
 	public int seqTabPrecoSellIn;		
@@ -17,6 +20,25 @@ public class ConsultaPrevisaoVendas {
 	public double valorSellOut;								
 	public int qtdePrevisaoVendas;	
 
+	public String getArtigo() {
+		return artigo;
+	}
+	public void setArtigo(String artigo) {
+		this.artigo = artigo;
+	}
+	public String getLinha() {
+		return linha;
+	}
+	public void setLinha(String linha) {
+		this.linha = linha;
+	}
+	public String getEmbarque() {
+		return embarque;
+	}
+	public void setEmbarque(String embarque) {
+		this.embarque = embarque;
+	}
+	
 	public long getId() {
 		return id;
 	}

@@ -43,8 +43,6 @@ public class PrevisaoVendasService {
 			int colTabPrecoSellOut, int mesTabPrecoSellOut, int seqTabPrecoSellOut,
 			List<ConsultaPrevisaoVendas> previsoesVenda) {
 
-		System.out.println("savePrevisoes");
-		
 		PrevisaoVendas previsaoVenda;
 
 		double valorSellIn = 0.000;
@@ -55,8 +53,6 @@ public class PrevisaoVendasService {
 			valorSellIn = tabelaPrecoCustom.findPrecoProduto(colTabPrecoSellIn, mesTabPrecoSellIn, seqTabPrecoSellIn, previsao.grupo, previsao.item);
 			valorSellOut = tabelaPrecoCustom.findPrecoProduto(colTabPrecoSellOut, mesTabPrecoSellOut, seqTabPrecoSellOut, previsao.grupo, previsao.item);
 
-			System.out.println(previsao.grupo + " sell in: " + valorSellIn + " sell out: " + valorSellOut);			
-			
 			previsaoVenda = new PrevisaoVendas(colecao, previsao.grupo, previsao.item, colTabPrecoSellIn,
 					mesTabPrecoSellIn, seqTabPrecoSellIn, valorSellIn, colTabPrecoSellOut, mesTabPrecoSellOut,
 					seqTabPrecoSellOut, valorSellOut, previsao.qtdePrevisaoVendas);
