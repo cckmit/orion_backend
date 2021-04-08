@@ -15,6 +15,7 @@ import br.com.live.entity.PlanoMestreParametros;
 import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.OcupacaoPlanoPorArtigo;
 import br.com.live.model.OcupacaoPlanoPorEstagio;
+import br.com.live.model.PreOrdemProducaoIndicadores;
 import br.com.live.entity.PlanoMestreConsultaItens;
 import br.com.live.entity.PlanoMestreConsultaTamanhos;
 import br.com.live.entity.PlanoMestreParamProgItem;
@@ -66,6 +67,11 @@ public class PlanoMestreController {
 		return planoMestreService.findPreOrdensByIdPlanoMestre(idPlanoMestre);
 	}
 
+	@RequestMapping(value = "pre-ordens/indicadores/selecionados", method = RequestMethod.POST)
+	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens(@RequestBody ParametrosPlanoMestre parametros) {
+		return planoMestreService.findIndicadoresByPreOrdens(parametros.idPlanoMestre, parametros.preOrdensSelected);
+	}
+		
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<PlanoMestre> findAll() {
 		return planoMestreService.findAll();

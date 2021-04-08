@@ -248,8 +248,8 @@ public class GeracaoPreOrdens {
 
 	private int getNrOPsGerar(int quantidade) {
 
-		if (quantidade <= 0)
-			return 1;
+		if (qtdeMaximaOrdem <= 0)
+			return 0;
 
 		double qtdeOrdem = quantidade;
 		double resultado = qtdeOrdem / qtdeMaximaOrdem;
@@ -259,7 +259,7 @@ public class GeracaoPreOrdens {
 		if (sobra > 0.000)
 			qtdeOPs++;
 
-		return qtdeOPs;
+		return qtdeOPs; 
 	}
 		
 }

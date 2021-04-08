@@ -33,6 +33,7 @@ import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.OcupacaoPlanoPorArtigo;
 import br.com.live.model.OcupacaoPlanoPorEstagio;
+import br.com.live.model.PreOrdemProducaoIndicadores;
 import br.com.live.model.ProgramacaoPlanoMestre;
 import br.com.live.entity.ProdutoPlanoMestre;
 import br.com.live.repository.PlanoMestreConsultaItensRepository;
@@ -130,6 +131,27 @@ public class PlanoMestreService {
 	public List<ConsultaPreOrdemProducao> findPreOrdensByIdPlanoMestre(long idPlanoMestre) {
 		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
 	}
+		
+	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens (long idPlanoMestre, List<Integer> preOrdens) {
+
+		long idMaiorOP = planoMestreCustom.findIDMaiorOrdemByPreOrdens(preOrdens);
+		long idMenorOP = planoMestreCustom.findIDMenorOrdemByPreOrdens(preOrdens);
+		
+		PlanoMestrePreOrdem preOrdemMaior = planoMestrePreOrdemRepository.findById(idMaiorOP);
+		PlanoMestrePreOrdem preOrdemMenor = planoMestrePreOrdemRepository.findById(idMenorOP);
+		
+		PreOrdemProducaoIndicadores indicadores = new PreOrdemProducaoIndicadores(); 
+		
+		indicadores.qtdePecasProgramadas = planoMestreCustom.findQtdePecasProgByPreOrdens(preOrdens);
+		indicadores.qtdeMinutosProgramados = planoMestreCustom.findQtdeMinutosProgByPreOrdens(preOrdens);
+		indicadores.qtdeReferencias = planoMestreCustom.findQtdeReferenciasProgByPreOrdens(preOrdens);
+		indicadores.qtdeSKUs = planoMestreCustom.findQtdeSKUsProgByPreOrdens(preOrdens);
+		indicadores.qtdeLoteMedio = planoMestreCustom.findQtdeLoteMedioProgByPreOrdens(preOrdens);
+		if (idMaiorOP > 0) indicadores.detMaiorOrdem = "Id: " + preOrdemMaior.id + " - Ref: " + preOrdemMaior.grupo  + " - Qtde Peças: " + preOrdemMaior.quantidade;
+		if (idMenorOP > 0) indicadores.detMenorOrdem = "Id: " + preOrdemMenor.id + " - Ref: " + preOrdemMenor.grupo  + " - Qtde Peças: " + preOrdemMenor.quantidade;
+				
+		return indicadores;
+	}	
 	
 	public void salvarSituacao(long idPlanoMestre, int newSituacao) {		
 		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);		

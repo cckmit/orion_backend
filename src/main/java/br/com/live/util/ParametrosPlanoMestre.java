@@ -88,8 +88,9 @@ public class ParametrosPlanoMestre {
     public int qtdeMinimaOP;
     public int periodoOP;
     public int depositoOP;
-    public String observacaoOP;
-	
+    public String observacaoOP;	
+    public List<Integer> preOrdensSelected;
+    
 	public FiltroProduto getFiltroProduto () {
 		
 		FiltroProduto filtro = new FiltroProduto();

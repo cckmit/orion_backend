@@ -9,7 +9,14 @@ public class ConsultaPreOrdemProducao {
 	public int roteiro;
 	public int quantidade;
 	public String deposito;
+	public int ordemGerada;
 	
+	public int getOrdemGerada() {
+		return ordemGerada;
+	}
+	public void setOrdemGerada(int ordemGerada) {
+		this.ordemGerada = ordemGerada;
+	}
 	public String getDeposito() {
 		return deposito;
 	}

@@ -16,6 +16,9 @@ public interface PlanoMestrePreOrdemRepository extends JpaRepository<PlanoMestre
 	@Query("SELECT p FROM PlanoMestrePreOrdem p where p.idPlanoMestre = :idPlanoMestre order by p.id")
 	List<PlanoMestrePreOrdem> findByIdPlanoMestre(long idPlanoMestre);
 
+	@Query("SELECT p FROM PlanoMestrePreOrdem p where p.id = :id")
+	PlanoMestrePreOrdem findById(long id);	
+	
 	void deleteByIdPlanoMestre(long idPlanoMestre);
 	
 }
