@@ -15,7 +15,7 @@ public class ProcessoProduto {
 	public String grupo;
 	public String sub;
 	public String item;
-	public Double quantidade;
+	public int quantidade;
 	public int periodo;
 	public int colecao;
 
@@ -31,7 +31,7 @@ public class ProcessoProduto {
 	public int permanente;
 	public String embarque;
 
-	public ProcessoProduto(int id, String nivel, String grupo, String sub, String item, Double quantidade, int periodo,
+	public ProcessoProduto(int id, String nivel, String grupo, String sub, String item, int quantidade, int periodo,
 			int colecao, int linha, int artigo, int artigoCotas, int origem, int permanente, String embarque) {
 		this.id = id;
 		this.nivel = nivel;

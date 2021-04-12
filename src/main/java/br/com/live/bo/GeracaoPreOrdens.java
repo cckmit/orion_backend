@@ -32,7 +32,8 @@ public class GeracaoPreOrdens {
 	List<PlanoMestrePreOrdemItem> listPlanoMestrePreOrdemItem;
 
 	public GeracaoPreOrdens(long idPlanoMestre, int agrupaPorReferencia, int qtdeMaximaOrdem, int qtdeMinimaOrdem,
-			int periodoOrdem, int depositoOrdem, String observacaoOrdem, List<ProgramacaoPlanoMestre> programacaoItens) {
+			int periodoOrdem, int depositoOrdem, String observacaoOrdem,
+			List<ProgramacaoPlanoMestre> programacaoItens) {
 
 		this.idPlanoMestre = idPlanoMestre;
 		this.agrupaPorReferencia = agrupaPorReferencia;
@@ -88,7 +89,7 @@ public class GeracaoPreOrdens {
 			planoMestrePreOrdem.quantidade = ordemCapa.qtdeProgramada;
 			planoMestrePreOrdem.data = new Date();
 			planoMestrePreOrdem.deposito = depositoOrdem;
-			planoMestrePreOrdem.observacao = observacaoOrdem;			
+			planoMestrePreOrdem.observacao = observacaoOrdem;
 			planoMestrePreOrdem.situacao = 0;
 
 			mapPlanoMestrePreOrdens.put(ordemCapa.id, planoMestrePreOrdem);
@@ -160,19 +161,19 @@ public class GeracaoPreOrdens {
 		String grupo = "";
 		String cor = "";
 		int alternativa = 0;
-		int roteiro = 0;		
+		int roteiro = 0;
 		int periodo = 0;
-		
+
 		String[] inicio = chave.split("[.]");
 		String identificador = inicio[0];
-		
-		if (identificador.equalsIgnoreCase("1")) {			
+
+		if (identificador.equalsIgnoreCase("1")) {
 			grupo = inicio[1];
 			alternativa = Integer.parseInt(inicio[2]);
-			roteiro = Integer.parseInt(inicio[3]);		
+			roteiro = Integer.parseInt(inicio[3]);
 			periodo = Integer.parseInt(inicio[4]);
-			setOrdem(1, grupo, cor, periodo, alternativa, roteiro, qtdeOrdens);			
-		} else if (identificador.equalsIgnoreCase("2")) {			
+			setOrdem(1, grupo, cor, periodo, alternativa, roteiro, qtdeOrdens);
+		} else if (identificador.equalsIgnoreCase("2")) {
 			grupo = inicio[1];
 			cor = inicio[2];
 			alternativa = Integer.parseInt(inicio[3]);
@@ -182,18 +183,22 @@ public class GeracaoPreOrdens {
 		}
 	}
 
-	private void setOrdem(int tipoAgrupamento, String grupo, String cor, int periodo, int alternativa, int roteiro, int qtdeOPs) {
+	private void setOrdem(int tipoAgrupamento, String grupo, String cor, int periodo, int alternativa, int roteiro,
+			int qtdeOPs) {
 
 		int qtdeTotalProg = 0;
+		int qtdeSaldoItem = 0;
 
 		PreOrdemProducao preOrdem;
 		PreOrdemProducaoItem preOrdemItem;
+		PreOrdemProducaoItem preOrdemItemSaldo;
+		List<PreOrdemProducaoItem> itensSaldo = new ArrayList<PreOrdemProducaoItem>();
 
-		for (int i = 0; i < qtdeOPs; i++) {
+		for (int i = 1; i <= qtdeOPs; i++) {
 
 			qtdeTotalProg = 0;
-			
-			preOrdem = new PreOrdemProducao();			
+
+			preOrdem = new PreOrdemProducao();
 			preOrdem.id = getIdPreOrdem();
 			preOrdem.grupo = grupo;
 			preOrdem.periodo = periodo;
@@ -219,10 +224,64 @@ public class GeracaoPreOrdens {
 				qtdeTotalProg += preOrdemItem.qtdeProgramada;
 
 				ordensItens.add(preOrdemItem);
+
+				if (i == qtdeOPs) {
+
+					qtdeSaldoItem = item.qtdeProgramada - (preOrdemItem.qtdeProgramada * qtdeOPs);
+
+					if (qtdeSaldoItem > 0) {
+
+						preOrdemItemSaldo = new PreOrdemProducaoItem();
+						preOrdemItemSaldo.grupo = item.grupo;
+						preOrdemItemSaldo.sub = item.sub;
+						preOrdemItemSaldo.item = item.item;
+						preOrdemItemSaldo.alternativa = item.alternativa;
+						preOrdemItemSaldo.roteiro = item.roteiro;
+						preOrdemItemSaldo.periodo = item.periodo;
+						preOrdemItemSaldo.qtdeProgramada = qtdeSaldoItem;
+
+						itensSaldo.add(preOrdemItemSaldo);
+					}
+				}
 			}
 
 			preOrdem.qtdeProgramada = qtdeTotalProg;
 			ordensCapa.add(preOrdem);
+				
+			if (itensSaldo.size() > 0) {
+
+				preOrdem = new PreOrdemProducao();
+				preOrdem.id = getIdPreOrdem();
+				preOrdem.grupo = grupo;
+				preOrdem.periodo = periodo;
+				preOrdem.alternativa = alternativa;
+				preOrdem.roteiro = roteiro;
+
+				qtdeTotalProg = 0;
+
+				for (PreOrdemProducaoItem itemSaldo : itensSaldo) {
+
+					preOrdemItem = new PreOrdemProducaoItem();
+					preOrdemItem.id = preOrdem.id;
+					preOrdemItem.grupo = itemSaldo.grupo;
+					preOrdemItem.sub = itemSaldo.sub;
+					preOrdemItem.item = itemSaldo.item;
+					preOrdemItem.alternativa = itemSaldo.alternativa;
+					preOrdemItem.roteiro = itemSaldo.roteiro;
+					preOrdemItem.periodo = itemSaldo.periodo;
+					preOrdemItem.qtdeProgramada = itemSaldo.qtdeProgramada;
+
+					qtdeTotalProg += preOrdemItem.qtdeProgramada;
+
+					ordensItens.add(preOrdemItem);
+				}
+
+				preOrdem.qtdeProgramada = qtdeTotalProg;
+				
+				if (qtdeTotalProg >= qtdeMinimaOrdem)
+					ordensCapa.add(preOrdem);
+
+			}
 		}
 	}
 
@@ -259,7 +318,7 @@ public class GeracaoPreOrdens {
 		if (sobra > 0.000)
 			qtdeOPs++;
 
-		return qtdeOPs; 
+		return qtdeOPs;
 	}
-		
+
 }

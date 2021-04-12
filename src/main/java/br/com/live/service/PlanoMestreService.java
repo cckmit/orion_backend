@@ -34,6 +34,7 @@ import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.OcupacaoPlanoPorArtigo;
 import br.com.live.model.OcupacaoPlanoPorEstagio;
 import br.com.live.model.PreOrdemProducaoIndicadores;
+import br.com.live.model.ProdutoCompleto;
 import br.com.live.model.ProgramacaoPlanoMestre;
 import br.com.live.entity.ProdutoPlanoMestre;
 import br.com.live.repository.PlanoMestreConsultaItensRepository;
@@ -53,9 +54,9 @@ public class PlanoMestreService {
 
 	private final PlanoMestreRepository planoMestreRepository;
 	private final ProdutoPlanoMestreRepository produtoPlanoMestreRepository;
-	private final EstoqueProdutoCustom estoqueProdutoRepository;
-	private final DemandaProdutoCustom demandaProdutoRepository;
-	private final ProcessoProdutoCustom processoProdutoRepository;
+	private final EstoqueProdutoCustom estoqueProdutoCustom;
+	private final DemandaProdutoCustom demandaProdutoCustom;
+	private final ProcessoProdutoCustom processoProdutoCustom;
 	private final PlanoMestreParametrosRepository planoMestreParametrosRepository;
 	private final ProdutoPlanoMestrePorCorRepository produtoPlanoMestrePorCorRepository;
 	private final PlanoMestreConsultaItensRepository planoMestreConsultaItensRepository;
@@ -69,8 +70,8 @@ public class PlanoMestreService {
 	private final PrevisaoVendasCustom previsaoVendasCustom;
 
 	public PlanoMestreService(PlanoMestreRepository planoMestreRepository,
-			ProdutoPlanoMestreRepository produtoPlanoMestreRepository, EstoqueProdutoCustom estoqueProdutoRepository,
-			DemandaProdutoCustom demandaProdutoRepository, ProcessoProdutoCustom processoProdutoRepository,
+			ProdutoPlanoMestreRepository produtoPlanoMestreRepository, EstoqueProdutoCustom estoqueProdutoCustom,
+			DemandaProdutoCustom demandaProdutoCustom, ProcessoProdutoCustom processoProdutoCustom,
 			PlanoMestreParametrosRepository planoMestreParametrosRepository,
 			ProdutoPlanoMestrePorCorRepository produtoPlanoMestrePorCorRepository,
 			PlanoMestreConsultaItensRepository planoMestreConsultaItensRepository,
@@ -82,9 +83,9 @@ public class PlanoMestreService {
 			PrevisaoVendasCustom previsaoVendasCustom) {
 		this.planoMestreRepository = planoMestreRepository;
 		this.produtoPlanoMestreRepository = produtoPlanoMestreRepository;
-		this.estoqueProdutoRepository = estoqueProdutoRepository;
-		this.demandaProdutoRepository = demandaProdutoRepository;
-		this.processoProdutoRepository = processoProdutoRepository;
+		this.estoqueProdutoCustom = estoqueProdutoCustom;
+		this.demandaProdutoCustom= demandaProdutoCustom;
+		this.processoProdutoCustom = processoProdutoCustom;
 		this.planoMestreParametrosRepository = planoMestreParametrosRepository;
 		this.produtoPlanoMestrePorCorRepository = produtoPlanoMestrePorCorRepository;
 		this.planoMestreConsultaItensRepository = planoMestreConsultaItensRepository;
@@ -210,7 +211,8 @@ public class PlanoMestreService {
 	public void salvarGrade(long idPlanoMestre, String grupo, String item,
 			List<PlanoMestreConsultaTamanhos> gradeAlterada) {
 
-		for (PlanoMestreConsultaTamanhos itemAlterado : gradeAlterada) {
+		for (PlanoMestreConsultaTamanhos itemAlterado : gradeAlterada) {			
+			// TODO - Se o tamanho não existir na tabela de produtos do plano mestre, deverá ser inserido! 			
 			ProdutoPlanoMestre produto = produtoPlanoMestreRepository.findByIdPlanoCodGrupoSubCor(
 					itemAlterado.idPlanoMestre, itemAlterado.grupo, itemAlterado.sub, itemAlterado.item);
 			produto.qtdeProgramada = itemAlterado.qtdeProgramada;
@@ -224,17 +226,25 @@ public class PlanoMestreService {
 
 		long idPlanoMestre = 0;
 
-		List<EstoqueProduto> estoques = estoqueProdutoRepository.findByParameters(parametros);
-		List<DemandaProdutoPlano> demandas = demandaProdutoRepository.findByParameters(parametros);
-		List<ProcessoProdutoPlano> processos = processoProdutoRepository.findByParameters(parametros);
+		System.out.println("Inicio geração do plano mestre");
 		
-		GeracaoPlanoMestre geracao = new GeracaoPlanoMestre(parametros, estoques, demandas, processos);
+		List<EstoqueProduto> estoques = estoqueProdutoCustom.findByParameters(parametros);
+		List<DemandaProdutoPlano> demandas = demandaProdutoCustom.findByParameters(parametros);
+		List<ProcessoProdutoPlano> processos = processoProdutoCustom.findByParameters(parametros);
+		List<ProdutoCompleto> produtos = planoMestreCustom.findProdutosByParameters(parametros);
+		
+		System.out.println("Criando o plano mestre");
+		GeracaoPlanoMestre geracao = new GeracaoPlanoMestre(parametros, estoques, demandas, processos, produtos);
 
+		System.out.println("Gravando o plano mestre");
 		idPlanoMestre = gravar(geracao);
+		
+		System.out.println("Equalizando as quantidades");
 		equalizarDistribuicao(idPlanoMestre, geracao.getParametrosPlanoMestre().tipoDistribuicao);
 
+		System.out.println("Fim da geração do plano mestre");
 		return findAll();
-	}
+	}  
 
 	private long gravar(GeracaoPlanoMestre geracao) {
 
@@ -292,7 +302,6 @@ public class PlanoMestreService {
 		for (ProdutoPlanoMestrePorCor produtoCor : produtosCor) {
 			List<ProdutoPlanoMestre> produtos = calcularGradePadrao(produtoCor);
 			produtoPlanoMestreRepository.saveAll(produtos);
-
 			aplicarMultiplicadorItem(idPlanoMestre, parametros.multiplicador, produtoCor);
 		}
 	}

@@ -209,5 +209,5 @@ public class ProdutoCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MarcacaoRisco.class));
 	}
-
+	
 }

@@ -26,11 +26,11 @@ public class PrevisaoVendasCustom {
 			        + " nvl(previsao.col_tab_preco_sell_in,0) colTabPrecoSellIn, " 
 			        + " nvl(previsao.mes_tab_preco_sell_in,0) mesTabPrecoSellIn, "
 			        + " nvl(previsao.seq_tab_preco_sell_in,0) seqTabPrecoSellIn, "
-			        + " nvl(previsao.valor_sell_in,0) valorSellIn, "
+					+ " to_char(nvl(previsao.valor_sell_in,0), 'FM9999D90', 'nls_numeric_characters=''.,''' ) valorSellIn, "
 			        + " nvl(previsao.col_tab_preco_sell_out,0) colTabPrecoSellOut, "  
 			        + " nvl(previsao.mes_tab_preco_sell_out,0) mesTabPrecoSellOut, "
 			        + " nvl(previsao.seq_tab_preco_sell_out,0) seqTabPrecoSellOut, "
-			        + " nvl(previsao.valor_sell_out,0) valorSellOut, "
+					+ " to_char(nvl(previsao.valor_sell_out,0), 'FM9999D90', 'nls_numeric_characters=''.,''' ) valorSellOut, "			        
 			        + " nvl(previsao.qtde_previsao,0) qtdePrevisaoVendas "  
 			        + " from (select a.referencia grupo, b.item_estrutura item, max(a.descr_referencia) || ' - ' || max(b.descricao_15) descricao, " 
 			        			 + " a.linha_produto linha, a.artigo, max(b.codigo_cliente) embarque, 1 "
@@ -115,5 +115,5 @@ public class PrevisaoVendasCustom {
 		
 		return qtdePrevisao;		
 	}
-	
+		
 }

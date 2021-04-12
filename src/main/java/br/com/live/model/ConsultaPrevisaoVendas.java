@@ -13,11 +13,11 @@ public class ConsultaPrevisaoVendas {
 	public int colTabPrecoSellIn;		
 	public int mesTabPrecoSellIn;		
 	public int seqTabPrecoSellIn;		
-	public double valorSellIn;		
+	public String valorSellIn;		
 	public int colTabPrecoSellOut;		
 	public int mesTabPrecoSellOut;		
 	public int seqTabPrecoSellOut;	
-	public double valorSellOut;								
+	public String valorSellOut;								
 	public int qtdePrevisaoVendas;	
 
 	public String getArtigo() {
@@ -87,11 +87,11 @@ public class ConsultaPrevisaoVendas {
 	public void setSeqTabPrecoSellIn(int seqTabPrecoSellIn) {
 		this.seqTabPrecoSellIn = seqTabPrecoSellIn;
 	}
-	public double getValorSellIn() {
+	public String getValorSellIn() {
 		return valorSellIn;
 	}
-	public void setValorSellIn(double valorSellIn) {
-		this.valorSellIn = valorSellIn;
+	public void setValorSellIn(String valorSellIn) {
+		this.valorSellIn = formatStringValores(valorSellIn);
 	}
 	public int getColTabPrecoSellOut() {
 		return colTabPrecoSellOut;
@@ -111,16 +111,23 @@ public class ConsultaPrevisaoVendas {
 	public void setSeqTabPrecoSellOut(int seqTabPrecoSellOut) {
 		this.seqTabPrecoSellOut = seqTabPrecoSellOut;
 	}
-	public double getValorSellOut() {
+	public String getValorSellOut() {		
 		return valorSellOut;
 	}
-	public void setValorSellOut(double valorSellOut) {
-		this.valorSellOut = valorSellOut;
+	public void setValorSellOut(String valorSellOut) {
+		this.valorSellOut = formatStringValores(valorSellOut);
 	}
 	public int getQtdePrevisaoVendas() {
 		return qtdePrevisaoVendas;
 	}
 	public void setQtdePrevisaoVendas(int qtdePrevisaoVendas) {
 		this.qtdePrevisaoVendas = qtdePrevisaoVendas;
+	}
+	
+	private String formatStringValores(String valor) {	
+		String[] separadorDecimal = valor.split("[.]");		
+		String valorInteiro = separadorDecimal[0];
+		if (valorInteiro.equalsIgnoreCase("") || valorInteiro == null) valor = "0" + valor;
+		return valor;
 	}
 }

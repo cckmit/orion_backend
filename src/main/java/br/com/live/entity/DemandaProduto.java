@@ -15,7 +15,7 @@ public class DemandaProduto {
 	public String grupo;
 	public String sub;
 	public String item;
-	public Double quantidade;
+	public int quantidade;
 	public int periodo;
 	public int colecao;
 
@@ -40,7 +40,7 @@ public class DemandaProduto {
 	@Column(name = "situacao_venda")
 	public int situacaoVenda;
 	
-	public DemandaProduto(int id, String nivel, String grupo, String sub, String item, Double quantidade, int periodo,
+	public DemandaProduto(int id, String nivel, String grupo, String sub, String item, int quantidade, int periodo,
 			int colecao, int linha, int artigo, int artigoCotas, int origem, int permanente, int natureza,
 			int nrInterno, int pedido, String embarque, int situacaoVenda) {
 		this.id = id;

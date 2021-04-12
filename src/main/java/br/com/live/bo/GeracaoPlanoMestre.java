@@ -15,6 +15,7 @@ import br.com.live.entity.ProcessoProdutoPlano;
 import br.com.live.entity.ProdutoPlanoMestre;
 import br.com.live.entity.ProdutoPlanoMestrePorCor;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.ProdutoCompleto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.FormataParametrosPlanoMestre;
@@ -27,22 +28,26 @@ public class GeracaoPlanoMestre {
 	private List<EstoqueProduto> estoques;
 	private List<DemandaProdutoPlano> demandas;
 	private List<ProcessoProdutoPlano> processos;
-
+	private List<ProdutoCompleto> produtos;
+	
 	private Map<String, ProdutoPlanoMestre> mapProdutos;
 
+	private final static int PRODUTO = 0;
 	private final static int ESTOQUE = 1;
 	private final static int DEMANDA = 2;
 	private final static int PROCESSO = 3;
 
 	public GeracaoPlanoMestre(ParametrosPlanoMestre parametros, List<EstoqueProduto> estoques,
-			List<DemandaProdutoPlano> demandas, List<ProcessoProdutoPlano> processos) {
+			List<DemandaProdutoPlano> demandas, List<ProcessoProdutoPlano> processos, List<ProdutoCompleto> produtos) {
 
 		this.parametros = parametros;
 		this.estoques = estoques;
 		this.demandas = demandas;
 		this.processos = processos;
+		this.produtos = produtos;
 		this.mapProdutos = new HashMap<String, ProdutoPlanoMestre>();
 
+		if ((parametros.tipoDistribuicao == 1) || (parametros.tipoDistribuicao == 4)) atualizarProduto(parametros.tipoDistribuicao); 		
 		atualizarEstoque();
 		atualizarDemanda();
 		atualizarProcesso();
@@ -50,7 +55,7 @@ public class GeracaoPlanoMestre {
 	}
 
 	private void atualizarProduto(int tipo, int plano, String nivel, String grupo, String sub, String item,
-			Double quantidade) {
+			int quantidade) {
 
 		ProdutoPlanoMestre produto = new ProdutoPlanoMestre(nivel, grupo, sub, item);
 
@@ -58,6 +63,10 @@ public class GeracaoPlanoMestre {
 			produto = mapProdutos.get(produto.getCodProduto());
 		}
 
+		if (tipo == GeracaoPlanoMestre.PRODUTO) {
+			produto.qtdePrevisao += quantidade;
+		}
+		
 		if (tipo == GeracaoPlanoMestre.ESTOQUE) {
 			produto.qtdeEstoque += quantidade;
 		}
@@ -109,6 +118,15 @@ public class GeracaoPlanoMestre {
 		mapProdutos.put(produto.getCodProduto(), produto);
 	}
 
+	private void atualizarProduto(int tipoDistribuicao) {
+		if (produtos != null) {			
+			for (ProdutoCompleto produto : produtos) {					
+				if (tipoDistribuicao == 4 && produto.qtdePrevisaoVendas == 0) continue;
+				atualizarProduto(GeracaoPlanoMestre.PRODUTO, 0, produto.nivel, produto.grupo, produto.sub, produto.item, produto.qtdePrevisaoVendas);				
+			}
+		}
+	}
+	
 	private void atualizarEstoque() {
 		if (estoques != null) {
 			for (EstoqueProduto estoque : estoques) {
@@ -279,7 +297,7 @@ public class GeracaoPlanoMestre {
 
 		// Pré-Ordens
 		planoMestreParam.agrupaOpPorRefer = 1;
-		planoMestreParam.qtdeMaximaOP = 0;
+		planoMestreParam.qtdeMaximaOP = 999999;
 		planoMestreParam.qtdeMinimaOP = 0;
 		planoMestreParam.qtdeMaximaCor = 0;
 		planoMestreParam.periodoOP = 0;

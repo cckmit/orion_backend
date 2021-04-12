@@ -16,7 +16,7 @@ public class EstoqueProduto {
 	public String sub;
 	public String item;
 	public int deposito;
-	public Double quantidade;
+	public int quantidade;
 	public int colecao;
 
 	@Column(name = "linha_produto")
@@ -31,7 +31,7 @@ public class EstoqueProduto {
 	public int permanente;
 	public String embarque;
 
-	public EstoqueProduto(int id, String nivel, String grupo, String sub, String item, int deposito, Double quantidade,
+	public EstoqueProduto(int id, String nivel, String grupo, String sub, String item, int deposito, int quantidade,
 			int colecao, int linha, int artigo, int artigoCotas, int origem, int permanente, String embarque) {
 		this.id = id;
 		this.nivel = nivel;

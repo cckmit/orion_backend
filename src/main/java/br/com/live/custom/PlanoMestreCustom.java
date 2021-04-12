@@ -7,7 +7,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.ProdutoCompleto;
 import br.com.live.model.ProgramacaoPlanoMestre;
+import br.com.live.util.FormataParametrosPlanoMestre;
+import br.com.live.util.ParametrosPlanoMestre;
 
 @Repository
 public class PlanoMestreCustom {
@@ -18,6 +21,84 @@ public class PlanoMestreCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
+	public List<ProdutoCompleto> findProdutosByParameters(ParametrosPlanoMestre parametros) {
+		
+		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
+		
+		if (parametrosFormatados.getColecoes().equalsIgnoreCase("")) return null;
+				
+		String query = " select b.nivel_estrutura nivel, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, b.narrativa, ";
+		query += " (select p.qtde_previsao from orion_040 p "
+	           + "   where p.colecao in " + parametrosFormatados.getColecoes() 
+	           + "     and p.grupo = b.grupo_estrutura "
+	           + "     and p.item  = b.item_estrutura) qtdePrevisaoVendas "
+	           + " from basi_030 a, basi_010 b, "
+	           + " (select d.referencia grupo, nvl((select 1 from basi_140 c "
+	           + " where c.colecao = d.colecao "
+	           + " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente "
+	           + " from basi_030 d "
+	           + " where d.nivel_estrutura = '1') ver_permanente "
+	           + " where a.nivel_estrutura = '1' "
+	           + " and b.nivel_estrutura = a.nivel_estrutura "
+	           + " and b.grupo_estrutura = a.referencia "
+	           + " and b.item_ativo = 1 "
+	           + " and ver_permanente.grupo = a.referencia ";  
+	           
+		if (!parametrosFormatados.getSubColecoes().equalsIgnoreCase("")) {
+			query += " and a.colecao in " + parametrosFormatados.getSubColecoes();  
+		}
+		
+		if (!parametrosFormatados.getLinhasProduto().equalsIgnoreCase("")) {
+			query += " and a.linha_produto in " + parametrosFormatados.getLinhasProduto();
+		}
+	
+		if (!parametrosFormatados.getArtigosProduto().equalsIgnoreCase("")) {
+			query += " and a.artigo in " + parametrosFormatados.getArtigosProduto();
+		}
+	  
+		if (!parametrosFormatados.getArtigosCotas().equalsIgnoreCase("")) {
+			query += " and a.artigo_cotas in " + parametrosFormatados.getArtigosCotas();
+		}
+		
+		if (!parametrosFormatados.getEmbarques().equalsIgnoreCase("")) {
+			query += " and a.codigo_cliente in " + parametrosFormatados.getEmbarques();
+		}
+	  		
+		if (!parametrosFormatados.getProdutos().equalsIgnoreCase("")) {
+			query += " and a.referencia in " + parametrosFormatados.getProdutos();
+		}
+	
+		if (!parametrosFormatados.getCores().equalsIgnoreCase("")) {
+			query += " and a.item_estrutura in " + parametrosFormatados.getCores();
+		}
+	  
+		if (!parametrosFormatados.getOrigemProdutos().equalsIgnoreCase("")) {
+			query += " and a.origem_prod in " + parametrosFormatados.getOrigemProdutos();
+		}
+
+		if (!parametrosFormatados.getPublicosAlvo().equalsIgnoreCase("")) {			
+			query += " and exists (select 1 from basi_400 g "
+		           + " where g.grupo = a.referencia "
+		           + " and g.codigo_informacao in " + parametrosFormatados.getPublicosAlvo()
+		           + " and g.tipo_informacao = 9) " ;			
+		}
+
+		if (!parametrosFormatados.getSubColecoes().equalsIgnoreCase("")) {
+			query += " and (ver_permanente.permanente = 1 and exists (select 1 from basi_631 m, basi_632 n "
+				   + " where n.cd_agrupador (+) = m.cd_agrupador "
+				   + " and n.grupo_ref (+) = m.grupo_ref " 
+				   + " and m.cd_agrupador in " + parametrosFormatados.getSubColecoes()
+				   + " and m.grupo_ref = b.grupo_estrutura "
+				   + " and n.subgrupo_ref = b.subgru_estrutura "
+				   + " and n.item_ref = b.item_estrutura) or ver_permanente.permanente = 0) " ;	  
+		}
+	  
+		System.out.println("Query ProdutoCompleto: " + query);
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutoCompleto.class));		
+	}
+	
+	
 	public List<ProgramacaoPlanoMestre> findProgramacaoIdByPlanoMestre(long idPlanoMestre) {
 
 		String query = "select a.grupo, a.sub, a.item, a.qtde_programada, c.alternativa, c.roteiro, c.periodo from orion_015 a, orion_016 b, orion_017 c "
@@ -81,6 +162,7 @@ public class PlanoMestreCustom {
 		         + " and (f.item_estrutura = b.item or f.item_estrutura = '000000') " 
 		         + " and f.numero_alternati = d.alternativa " 
 		         + " and f.numero_roteiro = d.roteiro " 
+		         + " and f.codigo_estagio = 20 " // TODO - De inicio vai considerar apenas o estágio 20 - Costura
 		       + " group by a.referencia, b.sub, b.item, b.quantidade) minutos " ;
 
 		try {

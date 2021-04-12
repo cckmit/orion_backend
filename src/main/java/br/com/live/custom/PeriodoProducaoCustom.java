@@ -1,7 +1,14 @@
 package br.com.live.custom;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import br.com.live.model.MarcacaoRisco;
+import br.com.live.model.PeriodoProducao;
 
 @Repository
 public class PeriodoProducaoCustom {
@@ -11,7 +18,31 @@ public class PeriodoProducaoCustom {
 	public PeriodoProducaoCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
-
+	
+	public List<PeriodoProducao> findPeriodosProducao() {
+		
+		String query = " select p.periodo_producao periodo, to_char(p.data_ini_periodo, 'dd/mm/yyyy') dataIniPeriodo, "
+		 + " to_char(p.data_fim_periodo, 'dd/mm/yyyy') dataFimPeriodo, to_char(p.data_ini_fatu, 'dd/mm/yyyy') dataIniFaturamento, to_char(p.data_fim_fatu, 'dd/mm/yyyy') dataFimFaturamento "
+		 + " from pcpc_010 p "  
+		 + " where p.area_periodo = 1 " 
+		 + " and p.codigo_empresa = 500 "
+		 + " and p.data_ini_periodo > '01-JAN-2019' ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class));
+	}
+	
+	public List<PeriodoProducao> findPeriodosDemanda() {
+		
+		String query = " select p.periodo_producao periodo, to_char(p.data_ini_periodo, 'dd/mm/yyyy') dataIniPeriodo, "
+				 + " to_char(p.data_fim_periodo, 'dd/mm/yyyy') dataFimPeriodo, to_char(p.data_ini_fatu, 'dd/mm/yyyy') dataIniFaturamento, to_char(p.data_fim_fatu, 'dd/mm/yyyy') dataFimFaturamento "
+				 + " from pcpc_010 p "  
+				 + " where p.area_periodo = 1 " 
+				 + " and p.codigo_empresa = 1 "
+				 + " and p.data_ini_periodo > '01-JAN-2019' ";
+					
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class));
+	}
+	
 	public boolean periodoExiste(int periodo) {
 		
 		Integer verifica = 0;
@@ -26,10 +57,6 @@ public class PeriodoProducaoCustom {
 			verifica = 0;
 		}
 
-		System.out.println("periodo existe: " + periodo);
-		System.out.println(verifica);
-		
 		return (verifica == 1);
 	}
-	
 }
