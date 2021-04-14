@@ -21,4 +21,41 @@ public class PlanoMestreParamProgItem {
 	public int periodo;
 	public int multiplicador;
 	
+	public long getIdItemPlanoMestre() {
+		return idItemPlanoMestre;
+	}
+	public void setIdItemPlanoMestre(long idItemPlanoMestre) {
+		this.idItemPlanoMestre = idItemPlanoMestre;
+	}
+	public long getIdPlanoMestre() {
+		return idPlanoMestre;
+	}
+	public void setIdPlanoMestre(long idPlanoMestre) {
+		this.idPlanoMestre = idPlanoMestre;
+	}
+	public int getAlternativa() {
+		return alternativa;
+	}
+	public void setAlternativa(int alternativa) {
+		this.alternativa = alternativa;
+	}
+	public int getRoteiro() {
+		return roteiro;
+	}
+	public void setRoteiro(int roteiro) {
+		this.roteiro = roteiro;
+	}
+	public int getPeriodo() {
+		return periodo;
+	}
+	public void setPeriodo(int periodo) {
+		this.periodo = periodo;
+	}
+	public int getMultiplicador() {
+		return multiplicador;
+	}
+	public void setMultiplicador(int multiplicador) {
+		this.multiplicador = multiplicador;
+	}
+	
 }

@@ -216,7 +216,7 @@ public class GeracaoPlanoMestre {
 	}	
 
 	public PlanoMestre getCapaPlanoMestre() {
-		return new PlanoMestre(parametros.descricao);
+		return new PlanoMestre(parametros.descricao.toUpperCase());
 	}
 
 	public PlanoMestreParametros getParametrosPlanoMestre() {
@@ -302,6 +302,7 @@ public class GeracaoPlanoMestre {
 		planoMestreParam.qtdeMaximaCor = 0;
 		planoMestreParam.periodoOP = 0;
 		planoMestreParam.observacaoOP = "";
+		planoMestreParam.depositoOP = 504;
 		
 		return planoMestreParam;
 	}

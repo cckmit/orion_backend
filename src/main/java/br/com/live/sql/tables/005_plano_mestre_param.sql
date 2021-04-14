@@ -80,6 +80,10 @@ create table orion_011
  deposito_op number(3) default 0,
  observacao_op varchar2(60),
  
+ -- Ocupação
+ periodo_inicio_ocupacao number(4) default 0,
+ periodo_fim_ocupacao number(4) default 0,
+ 
  constraint orion_011_pk primary key (num_plano_mestre),
  constraint fk_orion_011_orion_010	foreign key (num_plano_mestre) references orion_010 (num_plano_mestre) 
 );

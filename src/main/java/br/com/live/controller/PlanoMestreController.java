@@ -36,6 +36,11 @@ public class PlanoMestreController {
 		return planoMestreService.gerar(parametros);
 	}
 
+	@RequestMapping(value = "/copiar", method = RequestMethod.POST)
+	public List<PlanoMestre> copiar(@RequestBody ParametrosPlanoMestre parametros) {
+		return planoMestreService.copiar(parametros.idPlanoMestre);
+	}
+	
 	@RequestMapping(value = "/salvar-situacao", method = RequestMethod.POST)
 	public void salvarSituacao(@RequestBody ParametrosPlanoMestre parametros) {			
 		planoMestreService.salvarSituacao(parametros.idPlanoMestre, parametros.situacaoPlanoMestre);

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.bo.CalculoDistribuicaoPecas;
+import br.com.live.bo.CopiarPlanoMestre;
 import br.com.live.bo.GeracaoPlanoMestre;
 import br.com.live.bo.GeracaoPreOrdens;
 import br.com.live.bo.Multiplicador;
@@ -222,6 +223,42 @@ public class PlanoMestreService {
 		aplicarMultiplicador(idPlanoMestre, grupo, item);
 	}
 
+	public List<PlanoMestre> copiar(long idPlanoMestre) {
+	
+		System.out.println("COPIA - 1");
+		
+		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
+		PlanoMestreParametros planoMestreParametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
+		List<ProdutoPlanoMestre> produtos = produtoPlanoMestreRepository.findByIdPlanoMestre(idPlanoMestre); 
+		List<ProdutoPlanoMestrePorCor> produtosPorCor = produtoPlanoMestrePorCorRepository.findByIdPlanoMestre(idPlanoMestre);
+		
+		PlanoMestre planoMestreCopia = CopiarPlanoMestre.getCopiaPlanoMestre(planoMestre);
+		planoMestreRepository.save(planoMestreCopia);
+		
+		PlanoMestreParametros planoMestreParametrosCopia = CopiarPlanoMestre.getCopiaPlanoMestreParametros(planoMestreParametros, planoMestreCopia.id);
+		planoMestreParametrosRepository.save(planoMestreParametrosCopia);
+		
+		for (ProdutoPlanoMestre produto : produtos) {
+			ProdutoPlanoMestre produtoCopia = CopiarPlanoMestre.getCopiaProdutoPlanoMestre(produto, planoMestreCopia.id);
+			produtoPlanoMestreRepository.save(produtoCopia);
+		}
+		
+		System.out.println("COPIA - 2");
+		
+		for (ProdutoPlanoMestrePorCor produtoCor : produtosPorCor) {
+			ProdutoPlanoMestrePorCor produtoCorCopia = CopiarPlanoMestre.getCopiaProdutoPlanoMestrePorCor(produtoCor, planoMestreCopia.id);
+			produtoPlanoMestrePorCorRepository.save(produtoCorCopia);
+			
+			PlanoMestreParamProgItem parametroProgramacaoItem = planoMestreParamProgItemRepository.findByIdItemPlanoMestre(produtoCor.id);
+			PlanoMestreParamProgItem parametroProgramacaoItemCopia = CopiarPlanoMestre.getCopiaPlanoMestreParamProgItem(parametroProgramacaoItem, produtoCorCopia.idPlanoMestre, produtoCorCopia.id);
+			planoMestreParamProgItemRepository.save(parametroProgramacaoItemCopia);
+		}
+		
+		System.out.println("COPIA - 3");
+		
+		return findAll();
+	}
+	
 	public List<PlanoMestre> gerar(ParametrosPlanoMestre parametros) {
 
 		long idPlanoMestre = 0;

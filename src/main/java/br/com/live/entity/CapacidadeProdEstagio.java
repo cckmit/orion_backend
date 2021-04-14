@@ -10,6 +10,9 @@ import javax.persistence.Table;
 public class CapacidadeProdEstagio {
 
 	@Id	
+	public String id;
+	
+	public int periodo;	
 	public int estagio;
 	
 	@Column(name = "qtde_pecas")	
@@ -22,7 +25,9 @@ public class CapacidadeProdEstagio {
 		
 	}
 	
-	public CapacidadeProdEstagio(int estagio, int qtdePecas, int qtdeMinutos) {
+	public CapacidadeProdEstagio(int periodo, int estagio, int qtdePecas, int qtdeMinutos) {
+		this.id = periodo + "-" + estagio;
+		this.periodo = periodo;
 		this.estagio = estagio;
 		this.qtdePecas = qtdePecas;
 		this.qtdeMinutos = qtdeMinutos;		

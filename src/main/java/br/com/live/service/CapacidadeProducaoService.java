@@ -29,12 +29,16 @@ public class CapacidadeProducaoService {
 		this.capacidadeProdArtigoRepository = capacidadeProdArtigoRepository;
 	}
 
-	public List<EstagioCapacidadeProducao> findEstagios() {
-		return capacidadeProducaoCustomRepository.findEstagios();
+	public List<EstagioCapacidadeProducao> findEstagios(int periodo) {
+		return capacidadeProducaoCustomRepository.findEstagios(periodo);
 	}
 
-	public List<ArtigoCapacidadeProducao> findArtigosByEstagio(int estagio) {
-		return capacidadeProducaoCustomRepository.findArtigosByEstagio(estagio);
+	public EstagioCapacidadeProducao findCapacidadeByEstagio(int periodo, int estagio) {
+		return capacidadeProducaoCustomRepository.findCapacidadeByEstagio(periodo, estagio);
+	}
+	
+	public List<ArtigoCapacidadeProducao> findArtigosByEstagio(int periodo, int estagio) {
+		return capacidadeProducaoCustomRepository.findArtigosByEstagio(periodo, estagio);
 	}
 
 	public List<EstagioCapacidadeProducao> findEstagiosCapacidadeConfigurada() {
@@ -45,25 +49,20 @@ public class CapacidadeProducaoService {
 		return capacidadeProducaoCustomRepository.findArtigosCapacidadeConfigurada();
 	}
 
-	public void saveEstagios(List<EstagioCapacidadeProducao> estagiosCapacidadeProducao) {
-
+	public void saveEstagios(int periodo, List<EstagioCapacidadeProducao> estagiosCapacidadeProducao) {
 		for (EstagioCapacidadeProducao estagio : estagiosCapacidadeProducao) {
-			CapacidadeProdEstagio capacidade = new CapacidadeProdEstagio(estagio.estagio, estagio.qtdePecas,
+			CapacidadeProdEstagio capacidade = new CapacidadeProdEstagio(periodo, estagio.estagio, estagio.qtdePecas,
 					estagio.qtdeMinutos);
 			capacidadeProdEstagioRepository.save(capacidade);
 		}
 
 	}
 
-	public void saveArtigos(int estagio, List<ArtigoCapacidadeProducao> artigosCapacidadeProducao) {
-
-		System.out.println("saveArtigos");
-		System.out.println("estagio: " + estagio);
-		
+	public void saveArtigos(int periodo, int estagio, List<ArtigoCapacidadeProducao> artigosCapacidadeProducao) {
 		for (ArtigoCapacidadeProducao artigo : artigosCapacidadeProducao) {
 			System.out.println("artigo: " + artigo.artigo);
 			
-			CapacidadeProdArtigo capacidade = new CapacidadeProdArtigo(estagio, artigo.artigo, artigo.qtdePecas,
+			CapacidadeProdArtigo capacidade = new CapacidadeProdArtigo(periodo, estagio, artigo.artigo, artigo.qtdePecas,
 					artigo.qtdeMinutos);
 			capacidadeProdArtigoRepository.save(capacidade);
 		}

@@ -22,7 +22,7 @@ public class PlanoMestre {
 	@Column(name="num_plano_mestre")
 	public long id;
 
-    @Column(name="descricao")
+	@Column(name="descricao")
     public String descricao;
 	
 	@Column(name="data")
@@ -41,5 +41,37 @@ public class PlanoMestre {
     public PlanoMestre(String descricao) {
     	this();
     	this.descricao = descricao;
-    }    
+    }
+    
+    public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public Date getData() {
+		return data;
+	}
+
+	public void setData(Date data) {
+		this.data = data;
+	}
+
+	public int getSituacao() {
+		return situacao;
+	}
+
+	public void setSituacao(int situacao) {
+		this.situacao = situacao;
+	}
 }

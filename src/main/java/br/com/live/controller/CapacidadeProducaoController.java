@@ -23,14 +23,19 @@ public class CapacidadeProducaoController {
 	@Autowired
 	private CapacidadeProducaoService CapacidadeProducaoService;
 
-	@RequestMapping(value = "", method = RequestMethod.GET)
-	public List<EstagioCapacidadeProducao> findEstagios() {
-		return CapacidadeProducaoService.findEstagios();
+	@RequestMapping(value = "/{periodo}", method = RequestMethod.GET)
+	public List<EstagioCapacidadeProducao> findEstagios(@PathVariable("periodo") int periodo) {
+		return CapacidadeProducaoService.findEstagios(periodo);
 	}
 
-	@RequestMapping(value = "/artigos/{estagio}", method = RequestMethod.GET)
-	public List<ArtigoCapacidadeProducao> findArtigosByEstagio(@PathVariable("estagio") int estagio) {
-		return CapacidadeProducaoService.findArtigosByEstagio(estagio);
+	@RequestMapping(value = "/{periodo}/{estagio}", method = RequestMethod.GET)
+	public EstagioCapacidadeProducao findCapacidadeByEstagio(@PathVariable("periodo") int periodo, @PathVariable("estagio") int estagio) {
+		return CapacidadeProducaoService.findCapacidadeByEstagio(periodo, estagio);
+	}
+	
+	@RequestMapping(value = "/artigos/{periodo}/{estagio}", method = RequestMethod.GET)
+	public List<ArtigoCapacidadeProducao> findArtigosByEstagio(@PathVariable("periodo") int periodo, @PathVariable("estagio") int estagio) {
+		return CapacidadeProducaoService.findArtigosByEstagio(periodo, estagio);
 	}
 	
 	@RequestMapping(value = "/estagios-configurados", method = RequestMethod.GET)
@@ -40,13 +45,13 @@ public class CapacidadeProducaoController {
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public List<EstagioCapacidadeProducao> saveEstagios(@RequestBody BodyCapacidadeProducao bodyCapacidadeProducao) {
-		CapacidadeProducaoService.saveEstagios(bodyCapacidadeProducao.estagiosCapacidadeProducao);
-		return CapacidadeProducaoService.findEstagios();
+		CapacidadeProducaoService.saveEstagios(bodyCapacidadeProducao.periodo, bodyCapacidadeProducao.estagiosCapacidadeProducao);
+		return CapacidadeProducaoService.findEstagios(bodyCapacidadeProducao.periodo);
 	}
 
 	@RequestMapping(value = "/artigos", method = RequestMethod.POST) 
 	public List<ArtigoCapacidadeProducao> saveArtigos(@RequestBody BodyCapacidadeProducao bodyCapacidadeProducao) {
-		CapacidadeProducaoService.saveArtigos(bodyCapacidadeProducao.estagio, bodyCapacidadeProducao.artigosCapacidadeProducao);
-		return CapacidadeProducaoService.findArtigosByEstagio(bodyCapacidadeProducao.estagio);
+		CapacidadeProducaoService.saveArtigos(bodyCapacidadeProducao.periodo, bodyCapacidadeProducao.estagio, bodyCapacidadeProducao.artigosCapacidadeProducao);
+		return CapacidadeProducaoService.findArtigosByEstagio(bodyCapacidadeProducao.periodo, bodyCapacidadeProducao.estagio);
 	}
 }

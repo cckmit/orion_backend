@@ -10,8 +10,9 @@ import javax.persistence.Table;
 public class CapacidadeProdArtigo {
 
 	@Id	
-	public String estagioArtigo;
+	public String id;
 	
+	public int periodo;
 	public int estagio;
 	public int artigo;
 	
@@ -25,8 +26,9 @@ public class CapacidadeProdArtigo {
 		
 	}
 	
-	public CapacidadeProdArtigo(int estagio, int artigo, int qtdePecas, int qtdeMinutos) {
-		this.estagioArtigo = estagio + "-" + artigo;
+	public CapacidadeProdArtigo(int periodo, int estagio, int artigo, int qtdePecas, int qtdeMinutos) {
+		this.id = periodo + "-" + estagio + "-" + artigo;
+		this.periodo = periodo;
 		this.estagio = estagio;
 		this.artigo = artigo;
 		this.qtdePecas = qtdePecas;
