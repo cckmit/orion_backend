@@ -11,6 +11,7 @@ import br.com.live.bo.CopiarPlanoMestre;
 import br.com.live.bo.GeracaoPlanoMestre;
 import br.com.live.bo.GeracaoPreOrdens;
 import br.com.live.bo.Multiplicador;
+import br.com.live.custom.CapacidadeProducaoCustom;
 import br.com.live.custom.DemandaProdutoCustom;
 import br.com.live.custom.EstoqueProdutoCustom;
 import br.com.live.custom.OcupacaoPlanoMestreCustom;
@@ -23,6 +24,8 @@ import br.com.live.entity.EstoqueProduto;
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestreConsultaItens;
 import br.com.live.entity.PlanoMestreConsultaTamanhos;
+import br.com.live.entity.PlanoMestreOcupacaoArtigo;
+import br.com.live.entity.PlanoMestreOcupacaoEstagio;
 import br.com.live.entity.PlanoMestreParamProgItem;
 import br.com.live.entity.PlanoMestreParametros;
 import br.com.live.entity.PlanoMestrePreOrdem;
@@ -30,16 +33,20 @@ import br.com.live.entity.PlanoMestrePreOrdemItem;
 import br.com.live.entity.ProcessoProdutoPlano;
 import br.com.live.entity.ProdutoPlanoMestrePorCor;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.ArtigoCapacidadeProducao;
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.EstagioCapacidadeProducao;
 import br.com.live.model.MarcacaoRisco;
-import br.com.live.model.OcupacaoPlanoPorArtigo;
-import br.com.live.model.OcupacaoPlanoPorEstagio;
+import br.com.live.model.OcupacaoEstagioArtigo;
+import br.com.live.model.OcupacaoPlanoMestre;
 import br.com.live.model.PreOrdemProducaoIndicadores;
 import br.com.live.model.ProdutoCompleto;
 import br.com.live.model.ProgramacaoPlanoMestre;
 import br.com.live.entity.ProdutoPlanoMestre;
 import br.com.live.repository.PlanoMestreConsultaItensRepository;
 import br.com.live.repository.PlanoMestreConsultaTamanhosRepository;
+import br.com.live.repository.PlanoMestreOcupacaoArtigoRepository;
+import br.com.live.repository.PlanoMestreOcupacaoEstagioRepository;
 import br.com.live.repository.PlanoMestreParamProgItemRepository;
 import br.com.live.repository.PlanoMestreParametrosRepository;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
@@ -69,6 +76,10 @@ public class PlanoMestreService {
 	private final PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository; 
 	private final PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository;
 	private final PrevisaoVendasCustom previsaoVendasCustom;
+	private final CapacidadeProducaoCustom capacidadeProducaoCustom; 
+	private final OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom; 
+	private final PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository;
+	private final PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository;
 
 	public PlanoMestreService(PlanoMestreRepository planoMestreRepository,
 			ProdutoPlanoMestreRepository produtoPlanoMestreRepository, EstoqueProdutoCustom estoqueProdutoCustom,
@@ -81,7 +92,11 @@ public class PlanoMestreService {
 			OcupacaoPlanoMestreCustom ocupacaoPlanoMestreRepository, PlanoMestreCustom planoMestreCustom,
 			PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository,
 			PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository,
-			PrevisaoVendasCustom previsaoVendasCustom) {
+			PrevisaoVendasCustom previsaoVendasCustom,
+			CapacidadeProducaoCustom capacidadeProducaoCustom,
+			OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom,
+			PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository,
+			PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository) {
 		this.planoMestreRepository = planoMestreRepository;
 		this.produtoPlanoMestreRepository = produtoPlanoMestreRepository;
 		this.estoqueProdutoCustom = estoqueProdutoCustom;
@@ -98,6 +113,10 @@ public class PlanoMestreService {
 		this.planoMestrePreOrdemRepository = planoMestrePreOrdemRepository;
 		this.planoMestrePreOrdemItemRepository = planoMestrePreOrdemItemRepository;
 		this.previsaoVendasCustom = previsaoVendasCustom;
+		this.capacidadeProducaoCustom = capacidadeProducaoCustom;
+		this.ocupacaoPlanoMestreCustom = ocupacaoPlanoMestreCustom;
+		this.planoMestreOcupacaoEstagioRepository = planoMestreOcupacaoEstagioRepository;
+		this.planoMestreOcupacaoArtigoRepository = planoMestreOcupacaoArtigoRepository;
 	}
 
 	public List<PlanoMestre> findAll() {
@@ -122,18 +141,106 @@ public class PlanoMestreService {
 		return planoMestreParamProgItemRepository.findByIdItemPlanoMestre(produtoPlanoMestrePorCor.id);
 	}
 
-	public OcupacaoPlanoPorEstagio findOcupacaoEstagio(long idPlanoMestre, int estagio) {
-		return ocupacaoPlanoMestreRepository.findOcupacaoByEstagio(idPlanoMestre, estagio);
+	public OcupacaoPlanoMestre findOcupacaoCalculadaByPlanoEstagio(long idPlanoMestre, int estagio) {
+		return ocupacaoPlanoMestreRepository.findOcupacaoCalculadaByPlanoEstagio(idPlanoMestre, estagio);
 	}
 
-	public List<OcupacaoPlanoPorArtigo> findOcupacaoArtigo(long idPlanoMestre, int estagio) {
-		return ocupacaoPlanoMestreRepository.findOcupacaoArtigosByEstagio(idPlanoMestre, estagio);
+	public List<OcupacaoPlanoMestre> findOcupacaoCalculadaArtigoByPlanoEstagio(long idPlanoMestre, int estagio) {
+		return ocupacaoPlanoMestreRepository.findOcupacaoCalculadaArtigoByPlanoEstagio(idPlanoMestre, estagio);
 	}
 
 	public List<ConsultaPreOrdemProducao> findPreOrdensByIdPlanoMestre(long idPlanoMestre) {
 		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
 	}
 		
+	public PlanoMestreParametros calcularOcupacaoPlano(long idPlanoMestre, int periodoInicio, int periodoFim) {
+		
+		System.out.println("calcularOcupacaoPlano: " + periodoInicio + " - " + periodoFim);
+		
+		double percentualPecas;
+		double percentualMinutos;
+		int qtdeFaltaSobraPecas;
+		double qtdeFaltaSobraMinutos;
+		
+		int percentualPecasFormat;
+		int percentualMinutosFormat;
+		
+		planoMestreOcupacaoEstagioRepository.deleteByIdPlanoMestre(idPlanoMestre);
+		planoMestreOcupacaoArtigoRepository.deleteByIdPlanoMestre(idPlanoMestre);
+		
+		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
+		parametros.periodoInicioOcupacao = periodoInicio;
+		parametros.periodoFimOcupacao = periodoFim;
+		planoMestreParametrosRepository.save(parametros);
+		
+		List <EstagioCapacidadeProducao> capacidades = capacidadeProducaoCustom.findEstagiosCapacidadeConfiguradaByPeriodo(periodoInicio, periodoFim);
+		
+		for (EstagioCapacidadeProducao capacidade : capacidades) {
+		
+			percentualPecas = 0.000;
+			percentualMinutos = 0.000;			
+			qtdeFaltaSobraPecas = 0;
+			qtdeFaltaSobraMinutos = 0.000;
+			
+			OcupacaoEstagioArtigo ocupacaoEstagioPlanoMestre = ocupacaoPlanoMestreCustom.findOcupacaoPlanoMestreByEstagio(idPlanoMestre, capacidade.estagio);
+			OcupacaoEstagioArtigo ocupacaoEstagioProgramada = ocupacaoPlanoMestreCustom.findOcupacaoProgramadaByPeriodoEstagio(periodoInicio, periodoFim, capacidade.estagio);
+			List<ArtigoCapacidadeProducao> artigosCapacidades = capacidadeProducaoCustom.findArtigosCapacidadeConfiguradaByPeriodoEstagio(periodoInicio, periodoFim, capacidade.estagio);
+			
+			if (capacidade.qtdePecas > 0)
+				percentualPecas = (((double) ocupacaoEstagioPlanoMestre.qtdePecas + (double) ocupacaoEstagioProgramada.qtdePecas) / (double) capacidade.qtdePecas * 100);
+			 
+			if (capacidade.qtdeMinutos > 0)
+				percentualMinutos = ((ocupacaoEstagioPlanoMestre.qtdeMinutos + ocupacaoEstagioProgramada.qtdeMinutos) / capacidade.qtdeMinutos * 100);
+			
+			percentualPecasFormat = (int) percentualPecas;
+			percentualMinutosFormat = (int) percentualMinutos;			
+			
+			qtdeFaltaSobraPecas = capacidade.qtdePecas - (ocupacaoEstagioPlanoMestre.qtdePecas + ocupacaoEstagioProgramada.qtdePecas);
+			qtdeFaltaSobraMinutos = capacidade.qtdeMinutos - (ocupacaoEstagioPlanoMestre.qtdeMinutos + ocupacaoEstagioProgramada.qtdeMinutos);
+			
+			PlanoMestreOcupacaoEstagio planoMestreOcupacaoEstagio = new PlanoMestreOcupacaoEstagio(idPlanoMestre, capacidade.estagio, capacidade.qtdePecas, 
+					ocupacaoEstagioPlanoMestre.qtdePecas, ocupacaoEstagioProgramada.qtdePecas, percentualPecasFormat, qtdeFaltaSobraPecas, capacidade.qtdeMinutos,
+					ocupacaoEstagioPlanoMestre.qtdeMinutos, ocupacaoEstagioProgramada.qtdeMinutos, percentualMinutosFormat, qtdeFaltaSobraMinutos);
+							
+			planoMestreOcupacaoEstagioRepository.save(planoMestreOcupacaoEstagio);
+			
+			System.out.println("ARTIGOS");
+			
+			for (ArtigoCapacidadeProducao artigoCapacidade : artigosCapacidades) {
+
+				System.out.println(artigoCapacidade.artigo);
+				
+				percentualPecas = 0.000;
+				percentualMinutos = 0.000;			
+				qtdeFaltaSobraPecas = 0;
+				qtdeFaltaSobraMinutos = 0.000;
+				
+				OcupacaoEstagioArtigo ocupacaoArtigoPlanoMestre = ocupacaoPlanoMestreCustom.findOcupacaoPlanoMestreArtigoByEstagioArtigo(idPlanoMestre, capacidade.estagio, artigoCapacidade.artigo);
+				OcupacaoEstagioArtigo ocupacaoArtigoProgramado = ocupacaoPlanoMestreCustom.findOcupacaoProgramadaArtigoByPeriodoEstagioArtigo(periodoInicio, periodoFim, capacidade.estagio, artigoCapacidade.artigo);
+			
+				if (artigoCapacidade.qtdePecas > 0)
+					percentualPecas = (((double) ocupacaoArtigoPlanoMestre.qtdePecas + (double) ocupacaoArtigoProgramado.qtdePecas) / (double) artigoCapacidade.qtdePecas * 100);
+				 
+				if (artigoCapacidade.qtdeMinutos > 0)
+					percentualMinutos = ((ocupacaoArtigoPlanoMestre.qtdeMinutos + ocupacaoArtigoProgramado.qtdeMinutos) / artigoCapacidade.qtdeMinutos * 100);
+				
+				percentualPecasFormat = (int) percentualPecas;
+				percentualMinutosFormat = (int) percentualMinutos;			
+				
+				qtdeFaltaSobraPecas = artigoCapacidade.qtdePecas - (ocupacaoArtigoPlanoMestre.qtdePecas + ocupacaoArtigoProgramado.qtdePecas);
+				qtdeFaltaSobraMinutos = artigoCapacidade.qtdeMinutos - (ocupacaoArtigoPlanoMestre.qtdeMinutos + ocupacaoArtigoProgramado.qtdeMinutos);
+
+				PlanoMestreOcupacaoArtigo planoMestreOcupacaoArtigo = new PlanoMestreOcupacaoArtigo(idPlanoMestre, capacidade.estagio, artigoCapacidade.artigo, artigoCapacidade.qtdePecas, 
+						ocupacaoArtigoPlanoMestre.qtdePecas, ocupacaoArtigoProgramado.qtdePecas, percentualPecasFormat, qtdeFaltaSobraPecas, artigoCapacidade.qtdeMinutos,
+						ocupacaoArtigoPlanoMestre.qtdeMinutos, ocupacaoArtigoProgramado.qtdeMinutos, percentualMinutosFormat, qtdeFaltaSobraMinutos);
+				
+				planoMestreOcupacaoArtigoRepository.save(planoMestreOcupacaoArtigo);
+			}
+		}				
+				
+		return parametros;
+	}
+	
 	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens (long idPlanoMestre, List<Integer> preOrdens) {
 
 		long idMaiorOP = planoMestreCustom.findIDMaiorOrdemByPreOrdens(preOrdens);
@@ -510,4 +617,19 @@ public class PlanoMestreService {
 
 		return findAll();
 	}
+	
+	/*
+	public static void main(String[] args) {
+
+		double valor1 = 151561.121; 
+		double valor2 = 11151.121;
+		
+		int percentual = (int) valor1 / (int) valor2;   
+		double percentual2 = valor1 / valor2;
+		
+		System.out.println(percentual);
+		System.out.println(percentual2);
+		
+	}*/
+	
 };

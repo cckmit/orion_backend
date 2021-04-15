@@ -304,6 +304,10 @@ public class GeracaoPlanoMestre {
 		planoMestreParam.observacaoOP = "";
 		planoMestreParam.depositoOP = 504;
 		
+		// Ocupação
+		planoMestreParam.periodoInicioOcupacao = 0;
+		planoMestreParam.periodoFimOcupacao = 0;
+		
 		return planoMestreParam;
 	}
 

@@ -6,8 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "orion_025")
-public class PlanoMestreOcupacaoEstagio {
+@Table(name = "orion_026")
+public class PlanoMestreOcupacaoArtigo {
 
 	@Id
 	public String id;
@@ -15,6 +15,7 @@ public class PlanoMestreOcupacaoEstagio {
 	@Column(name = "num_plano_mestre")
 	public long idPlanoMestre;
 	public int estagio;
+	public int artigo;
 
 	@Column(name = "qtde_capacidade_pecas")
 	public int qtdeCapacidadePecas;
@@ -46,17 +47,18 @@ public class PlanoMestreOcupacaoEstagio {
 	@Column(name = "qtde_falta_sobra_minutos")
 	public double qtdeFaltaSobraMinutos;
 
-	public PlanoMestreOcupacaoEstagio() {
+	public PlanoMestreOcupacaoArtigo() {
 
 	}
 
-	public PlanoMestreOcupacaoEstagio(long idPlanoMestre, int estagio, int qtdeCapacidadePecas, int qtdePlanoPecas,
+	public PlanoMestreOcupacaoArtigo(long idPlanoMestre, int estagio, int artigo, int qtdeCapacidadePecas, int qtdePlanoPecas,
 			int qtdeProgramadoPecas, double percOcupacaoPecas, int qtdeFaltaSobraPecas, int qtdeCapacidadeMinutos,
 			double qtdePlanoMinutos, double qtdeProgramadoMinutos, double percOcupacaoMinutos, double qtdeFaltaSobraMinutos) {
 
-		this.id = idPlanoMestre + "-" + estagio;
+		this.id = idPlanoMestre + "-" + estagio + "-" + artigo;
 		this.idPlanoMestre = idPlanoMestre;
 		this.estagio = estagio;
+		this.artigo = artigo;
 		this.qtdeCapacidadePecas = qtdeCapacidadePecas;
 		this.qtdePlanoPecas = qtdePlanoPecas;
 		this.qtdeProgramadoPecas = qtdeProgramadoPecas;

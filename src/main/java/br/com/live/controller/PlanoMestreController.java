@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestreParametros;
 import br.com.live.model.ConsultaPreOrdemProducao;
-import br.com.live.model.OcupacaoPlanoPorArtigo;
-import br.com.live.model.OcupacaoPlanoPorEstagio;
+import br.com.live.model.OcupacaoPlanoMestre;
 import br.com.live.model.PreOrdemProducaoIndicadores;
 import br.com.live.entity.PlanoMestreConsultaItens;
 import br.com.live.entity.PlanoMestreConsultaTamanhos;
@@ -111,17 +110,22 @@ public class PlanoMestreController {
 		planoMestreService.salvarParametrosProgramacaoItem(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg), parametros.alternativaProg, parametros.roteiroProg, parametros.periodoProg, parametros.multiplicadorProg);		
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg));
 	}
-
+	
+	@RequestMapping(value = "ocupacao/calcular", method = RequestMethod.POST)
+	public PlanoMestreParametros calcularOcupacao(@RequestBody ParametrosPlanoMestre parametros) {		
+		return planoMestreService.calcularOcupacaoPlano(parametros.idPlanoMestre, parametros.periodoOcupacaoInicio, parametros.periodoOcupacaoFim);		
+	}	
+	
 	@RequestMapping(value = "/ocupacao-estagio/{id}/{estagio}", method = RequestMethod.GET)
-	public OcupacaoPlanoPorEstagio findOcupacaoEstagio(@PathVariable("id") long idPlanoMestre,
+	public OcupacaoPlanoMestre findOcupacaoEstagio(@PathVariable("id") long idPlanoMestre,
 			@PathVariable("estagio") int estagio) {
-		return planoMestreService.findOcupacaoEstagio(idPlanoMestre, estagio);
+		return planoMestreService.findOcupacaoCalculadaByPlanoEstagio(idPlanoMestre, estagio);
 	}
 
 	@RequestMapping(value = "/ocupacao-artigos/{id}/{estagio}", method = RequestMethod.GET)
-	public List<OcupacaoPlanoPorArtigo> findOcupacaoArtigosEstagio(@PathVariable("id") long idPlanoMestre,
+	public List<OcupacaoPlanoMestre> findOcupacaoArtigosEstagio(@PathVariable("id") long idPlanoMestre,
 			@PathVariable("estagio") int estagio) {
-		return planoMestreService.findOcupacaoArtigo(idPlanoMestre, estagio);
+		return planoMestreService.findOcupacaoCalculadaArtigoByPlanoEstagio(idPlanoMestre, estagio);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

@@ -91,6 +91,10 @@ public class ParametrosPlanoMestre {
     public String observacaoOP;	
     public List<Integer> preOrdensSelected;
     
+    // Ocupação 
+    public int periodoOcupacaoInicio;
+    public int periodoOcupacaoFim;
+    
 	public FiltroProduto getFiltroProduto () {
 		
 		FiltroProduto filtro = new FiltroProduto();

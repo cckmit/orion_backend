@@ -1,8 +1,9 @@
 -- Criar no Owner LIVE
-create table orion_025
+create table orion_026
 (id varchar2(20), -- num_plano_mestre - estagio   
  num_plano_mestre number(9), 
  estagio number(2),
+ artigo number(4),
 
  qtde_capacidade_pecas number(9),
  qtde_plano_pecas number(9),
@@ -16,11 +17,11 @@ create table orion_025
  perc_ocupacao_minutos number(12,3),
  qtde_falta_sobra_minutos number(12,3),
   
- constraint orion_025_pk primary key (id), 
- constraint fk_orion_025_orion_010	foreign key (num_plano_mestre) references orion_010 (num_plano_mestre)
+ constraint orion_026_pk primary key (id), 
+ constraint fk_orion_026_orion_010	foreign key (num_plano_mestre) references orion_010 (num_plano_mestre)
 );
 
-comment on table orion_025 is 'Tabela de Ocupação dos Estágios do Plano Mestre';
+comment on table orion_026 is 'Tabela de Ocupação dos Artigos do Plano Mestre';
 
-create INDEX INDX_ORION_25_PLANO_MESTRE on orion_025 (num_plano_mestre);
-create INDEX INDX_ORION_25_PLANO_ESTAGIO on orion_025 (num_plano_mestre, estagio);
+create INDEX INDX_ORION_26_PLANO_MESTRE on orion_026 (num_plano_mestre);
+create INDEX INDX_ORION_26_PLANO_ESTAGIO on orion_026 (num_plano_mestre, estagio);

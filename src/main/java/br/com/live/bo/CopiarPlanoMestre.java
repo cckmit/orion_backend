@@ -1,9 +1,6 @@
 package br.com.live.bo;
 
-import javax.persistence.Column;
-
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
 
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestreParamProgItem;

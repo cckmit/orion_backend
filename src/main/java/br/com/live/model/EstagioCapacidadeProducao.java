@@ -2,8 +2,8 @@ package br.com.live.model;
 
 public class EstagioCapacidadeProducao {
 	
-	public int estagio;
-	public String descricao;
+	public int estagio;	
+	public String descricao;	
 	public int qtdePecas;
 	public int qtdeMinutos;
 

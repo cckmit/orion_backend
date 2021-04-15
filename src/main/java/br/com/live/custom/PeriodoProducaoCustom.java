@@ -1,13 +1,11 @@
 package br.com.live.custom;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.PeriodoProducao;
 
 @Repository

@@ -29,7 +29,7 @@ public class CapacidadeProducaoService {
 		this.capacidadeProdArtigoRepository = capacidadeProdArtigoRepository;
 	}
 
-	public List<EstagioCapacidadeProducao> findEstagios(int periodo) {
+	public List<EstagioCapacidadeProducao> findEstagios(int periodo) { 
 		return capacidadeProducaoCustomRepository.findEstagios(periodo);
 	}
 

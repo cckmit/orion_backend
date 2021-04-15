@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ArtigoCapacidadeProducao;
 import br.com.live.model.EstagioCapacidadeProducao;
-import br.com.live.model.OcupacaoPlanoPorEstagio;
 
 @Repository
 public class CapacidadeProducaoCustom {
@@ -45,6 +44,45 @@ public class CapacidadeProducaoCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(EstagioCapacidadeProducao.class));
 	}	
 	
+	public List<EstagioCapacidadeProducao> findEstagiosCapacidadeConfigurada() {
+
+		String query = "select a.estagio, b.descricao, sum(a.qtde_pecas) qtdePecas, sum(a.qtde_minutos) qtdeMinutos "
+		 + " from orion_035 a, mqop_005 b "
+		 + " where (a.qtde_pecas > 0 and a.qtde_minutos > 0) "
+		 + " and b.codigo_estagio = a.estagio "
+	 	 + " group by a.estagio, b.descricao "
+		 + " order by a.estagio, b.descricao " ;
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioCapacidadeProducao.class));
+	}
+
+	public List<EstagioCapacidadeProducao> findEstagiosCapacidadeConfiguradaByPeriodo(int periodoInicio, int periodoFim) {
+		 
+		String query = "select a.estagio, sum(a.qtde_pecas) qtdePecas, sum(a.qtde_minutos) qtdeMinutos "
+		 + " from orion_035 a "
+		 + " where a.periodo between " + periodoInicio + " and " + periodoFim
+		 + " and a.qtde_pecas > 0 " 
+		 + " and a.qtde_minutos > 0 "
+		 + " group by a.estagio ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioCapacidadeProducao.class));
+	}
+	
+	public List<ArtigoCapacidadeProducao> findArtigosCapacidadeConfiguradaByPeriodoEstagio(int periodoInicio, int periodoFim, int estagio) {
+		 
+		String query = "select a.artigo, sum(a.qtde_pecas) qtdePecas, sum(a.qtde_minutos) qtdeMinutos "
+		 + " from orion_036 a "
+		 + " where a.periodo between " + periodoInicio + " and " + periodoFim
+		 + " and a.estagio = " + estagio
+		 + " and a.qtde_pecas > 0 " 
+		 + " and a.qtde_minutos > 0 "
+		 + " group by a.artigo ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoCapacidadeProducao.class));
+	}
+		
+	// TODO - OS MÉTODOS ABAIXA DEVERÃO SER REVISADOS 
+	
 	public List<ArtigoCapacidadeProducao> findArtigosByEstagio(int periodo, int estagio) {
 
 		String query = "select b.artigo, b.descr_artigo descricao, nvl(o.qtde_pecas,0) qtdePecas, nvl(o.qtde_minutos,0) qtdeMinutos " 
@@ -57,18 +95,6 @@ public class CapacidadeProducaoCustom {
 		  + " order by b.artigo " ;
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoCapacidadeProducao.class));
-	}
-
-	public List<EstagioCapacidadeProducao> findEstagiosCapacidadeConfigurada() {
-
-		String query = "select a.estagio, b.descricao, sum(a.qtde_pecas) qtdePecas, sum(a.qtde_minutos) qtdeMinutos "
-		 + " from orion_035 a, mqop_005 b "
-		 + " where (a.qtde_pecas > 0 and a.qtde_minutos > 0) "
-		 + " and b.codigo_estagio = a.estagio "
-	 	 + " group by a.estagio, b.descricao "
-		 + " order by a.estagio, b.descricao " ;
-
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioCapacidadeProducao.class));
 	}
 	
 	public List<ArtigoCapacidadeProducao> findArtigosCapacidadeConfigurada() {
