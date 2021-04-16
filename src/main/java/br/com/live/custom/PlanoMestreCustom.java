@@ -98,7 +98,6 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutoCompleto.class));		
 	}
 	
-	
 	public List<ProgramacaoPlanoMestre> findProgramacaoIdByPlanoMestre(long idPlanoMestre) {
 
 		String query = "select a.grupo, a.sub, a.item, a.qtde_programada, c.alternativa, c.roteiro, c.periodo from orion_015 a, orion_016 b, orion_017 c "

@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.entity.PublicoAlvo;
-import br.com.live.repository.PublicoAlvoRepository;
+import br.com.live.custom.ProdutoCustom;
+import br.com.live.model.PublicoAlvo;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/publicos")
 public class PublicoAlvoController {
 
-    private PublicoAlvoRepository publicoAlvoRepository;
+	private ProdutoCustom produtoRepository;	  
 
     @Autowired
-    public PublicoAlvoController(PublicoAlvoRepository publicoAlvoRepository) {
-          this.publicoAlvoRepository = publicoAlvoRepository;
+    public PublicoAlvoController(ProdutoCustom produtoRepository) {
+          this.produtoRepository = produtoRepository;
     }
 	
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<PublicoAlvo> findByTipo() {
-          return publicoAlvoRepository.findAll(); 
+    public List<PublicoAlvo> findAllo() {
+          return produtoRepository.findAllPublicosAlvos(); 
     }
 	
 }

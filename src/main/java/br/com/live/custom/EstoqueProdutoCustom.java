@@ -3,9 +3,13 @@ package br.com.live.custom;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.EstoqueProduto;
+import br.com.live.model.Deposito;
 import br.com.live.util.FormataParametrosPlanoMestre;
 import br.com.live.util.ParametrosPlanoMestre;
 
@@ -13,9 +17,11 @@ import br.com.live.util.ParametrosPlanoMestre;
 public class EstoqueProdutoCustom {
 
 	private final EntityManager manager;
+	private final JdbcTemplate jdbcTemplate;
 
-	public EstoqueProdutoCustom(EntityManager manager) {
+	public EstoqueProdutoCustom(EntityManager manager, JdbcTemplate jdbcTemplate) {
 		this.manager = manager;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	public List<EstoqueProduto> findByParameters(ParametrosPlanoMestre parametros) {
@@ -99,4 +105,15 @@ public class EstoqueProdutoCustom {
 		return q.getResultList();
 	}
 
+	public List<Deposito> findAllDepositos() {
+		
+		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
+		+ " where b.descricao like 'DEP N1%' "
+		  + " and b.tipo_volume in (0,1) "
+		  + " and b.considera_tmrp = 1 "
+		+ " order by b.codigo_deposito " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		
+	}
+	
 }

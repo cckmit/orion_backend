@@ -8,25 +8,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.entity.Colecao;
-import br.com.live.repository.ColecaoRepository;
+import br.com.live.custom.ProdutoCustom;
+import br.com.live.model.Colecao;
+
 
 @RestController
 @CrossOrigin
 @RequestMapping("/colecoes")
 public class ColecaoController {
 
-    private ColecaoRepository colecaoRepository;
+	private ProdutoCustom produtoRepository;
 
     @Autowired
-    public ColecaoController(ColecaoRepository colecaoRepository) {
-          this.colecaoRepository = colecaoRepository;
+    public ColecaoController(ProdutoCustom produtoRepository) {
+          this.produtoRepository = produtoRepository;
     }
 	
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<Colecao> findAll() {
-          return colecaoRepository.findAll();
+    public List<Colecao> findAllColecoes() {
+          return produtoRepository.findAllColecoes();
     }
-	
+    
+    @RequestMapping(value = "/permanentes", method = RequestMethod.GET)
+    public List<Colecao> findAllColecoesPermanentes() {
+          return produtoRepository.findAllColecoesPermanentes();
+    }
 }
 

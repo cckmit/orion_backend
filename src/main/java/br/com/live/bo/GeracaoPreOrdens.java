@@ -139,7 +139,6 @@ public class GeracaoPreOrdens {
 	private void gerarPreOrdens() {
 
 		Integer quantidade;
-		int qtdeOrdens = 0;
 
 		ordensCapa = new ArrayList<PreOrdemProducao>();
 		ordensItens = new ArrayList<PreOrdemProducaoItem>();
@@ -150,13 +149,12 @@ public class GeracaoPreOrdens {
 
 			if (quantidade < qtdeMinimaOrdem)
 				continue;
-
-			qtdeOrdens = getNrOPsGerar(quantidade);
-			setOrdem(chave, qtdeOrdens);
+			
+			setOrdem(chave);
 		}
 	}
 
-	private void setOrdem(String chave, int qtdeOrdens) {
+	private void setOrdem(String chave) {
 
 		String grupo = "";
 		String cor = "";
@@ -172,117 +170,112 @@ public class GeracaoPreOrdens {
 			alternativa = Integer.parseInt(inicio[2]);
 			roteiro = Integer.parseInt(inicio[3]);
 			periodo = Integer.parseInt(inicio[4]);
-			setOrdem(1, grupo, cor, periodo, alternativa, roteiro, qtdeOrdens);
+			setOrdem(1, grupo, cor, periodo, alternativa, roteiro);
 		} else if (identificador.equalsIgnoreCase("2")) {
 			grupo = inicio[1];
 			cor = inicio[2];
 			alternativa = Integer.parseInt(inicio[3]);
 			roteiro = Integer.parseInt(inicio[4]);
 			periodo = Integer.parseInt(inicio[5]);
-			setOrdem(2, grupo, cor, periodo, alternativa, roteiro, qtdeOrdens);
+			setOrdem(2, grupo, cor, periodo, alternativa, roteiro);
 		}
 	}
 
-	private void setOrdem(int tipoAgrupamento, String grupo, String cor, int periodo, int alternativa, int roteiro,
-			int qtdeOPs) {
+	private void setOrdem(int tipoAgrupamento, String grupo, String cor, int periodo, int alternativa, int roteiro) {
 
 		int qtdeTotalProg = 0;
-		int qtdeSaldoItem = 0;
-
-		PreOrdemProducao preOrdem;
+		int qtdeProgramada = 0;
+		int qtdeProgramar = 0;		
 		PreOrdemProducaoItem preOrdemItem;
-		PreOrdemProducaoItem preOrdemItemSaldo;
-		List<PreOrdemProducaoItem> itensSaldo = new ArrayList<PreOrdemProducaoItem>();
+		List<PreOrdemProducaoItem> listaItens = new ArrayList<PreOrdemProducaoItem>();
 
-		for (int i = 1; i <= qtdeOPs; i++) {
+		for (ProgramacaoPlanoMestre item : programacaoItens) {
 
-			qtdeTotalProg = 0;
+			if ((!chaveValida(tipoAgrupamento, grupo, cor, alternativa, roteiro, periodo, item))
+					|| (item.qtdeProgramada == 0))
+				continue;
 
-			preOrdem = new PreOrdemProducao();
-			preOrdem.id = getIdPreOrdem();
-			preOrdem.grupo = grupo;
-			preOrdem.periodo = periodo;
-			preOrdem.alternativa = alternativa;
-			preOrdem.roteiro = roteiro;
+			qtdeProgramada = item.qtdeProgramada;
+			qtdeProgramar = 0;			
 
-			for (ProgramacaoPlanoMestre item : programacaoItens) {
+			while (qtdeProgramada > 0) {
 
-				if (!chaveValida(tipoAgrupamento, preOrdem.grupo, cor, preOrdem.alternativa, preOrdem.roteiro,
-						preOrdem.periodo, item))
+				if ((qtdeTotalProg + qtdeProgramada) <= qtdeMaximaOrdem)
+					qtdeProgramar = qtdeProgramada;
+				else {
+					qtdeProgramar = qtdeProgramada - ((qtdeTotalProg + qtdeProgramada) - qtdeMaximaOrdem);					
+
+					if (qtdeProgramar <= 0) {
+
+						if (listaItens.size() > 0) {
+							populaListOrdens(grupo, cor, periodo, alternativa, roteiro, listaItens);
+						}
+
+						listaItens.clear();
+						qtdeTotalProg = 0;
+					}
+				}
+
+				if (qtdeProgramar <= 0)
 					continue;
 
 				preOrdemItem = new PreOrdemProducaoItem();
-				preOrdemItem.id = preOrdem.id;
 				preOrdemItem.grupo = item.grupo;
 				preOrdemItem.sub = item.sub;
 				preOrdemItem.item = item.item;
 				preOrdemItem.alternativa = item.alternativa;
 				preOrdemItem.roteiro = item.roteiro;
 				preOrdemItem.periodo = item.periodo;
-				preOrdemItem.qtdeProgramada = (item.qtdeProgramada / qtdeOPs);
+				preOrdemItem.qtdeProgramada = qtdeProgramar;
 
-				qtdeTotalProg += preOrdemItem.qtdeProgramada;
-
-				ordensItens.add(preOrdemItem);
-
-				if (i == qtdeOPs) {
-
-					qtdeSaldoItem = item.qtdeProgramada - (preOrdemItem.qtdeProgramada * qtdeOPs);
-
-					if (qtdeSaldoItem > 0) {
-
-						preOrdemItemSaldo = new PreOrdemProducaoItem();
-						preOrdemItemSaldo.grupo = item.grupo;
-						preOrdemItemSaldo.sub = item.sub;
-						preOrdemItemSaldo.item = item.item;
-						preOrdemItemSaldo.alternativa = item.alternativa;
-						preOrdemItemSaldo.roteiro = item.roteiro;
-						preOrdemItemSaldo.periodo = item.periodo;
-						preOrdemItemSaldo.qtdeProgramada = qtdeSaldoItem;
-
-						itensSaldo.add(preOrdemItemSaldo);
-					}
-				}
-			}
-
-			preOrdem.qtdeProgramada = qtdeTotalProg;
-			ordensCapa.add(preOrdem);
+				qtdeTotalProg += qtdeProgramar;
+				qtdeProgramada -= qtdeProgramar;
 				
-			if (itensSaldo.size() > 0) {
-
-				preOrdem = new PreOrdemProducao();
-				preOrdem.id = getIdPreOrdem();
-				preOrdem.grupo = grupo;
-				preOrdem.periodo = periodo;
-				preOrdem.alternativa = alternativa;
-				preOrdem.roteiro = roteiro;
-
-				qtdeTotalProg = 0;
-
-				for (PreOrdemProducaoItem itemSaldo : itensSaldo) {
-
-					preOrdemItem = new PreOrdemProducaoItem();
-					preOrdemItem.id = preOrdem.id;
-					preOrdemItem.grupo = itemSaldo.grupo;
-					preOrdemItem.sub = itemSaldo.sub;
-					preOrdemItem.item = itemSaldo.item;
-					preOrdemItem.alternativa = itemSaldo.alternativa;
-					preOrdemItem.roteiro = itemSaldo.roteiro;
-					preOrdemItem.periodo = itemSaldo.periodo;
-					preOrdemItem.qtdeProgramada = itemSaldo.qtdeProgramada;
-
-					qtdeTotalProg += preOrdemItem.qtdeProgramada;
-
-					ordensItens.add(preOrdemItem);
-				}
-
-				preOrdem.qtdeProgramada = qtdeTotalProg;
-				
-				if (qtdeTotalProg >= qtdeMinimaOrdem)
-					ordensCapa.add(preOrdem);
-
+				listaItens.add(preOrdemItem);
 			}
 		}
+
+		if (listaItens.size() > 0) {
+			populaListOrdens(grupo, cor, periodo, alternativa, roteiro, listaItens);
+		}
+	}
+
+	private void populaListOrdens(String grupo, String cor, int periodo, int alternativa, int roteiro,
+			List<PreOrdemProducaoItem> listaItens) {
+
+		int qtdeTotalProg = 0;
+		int idOrdem = 0;
+
+		idOrdem = getIdPreOrdem();
+
+		PreOrdemProducao preOrdem = new PreOrdemProducao();
+		preOrdem.id = idOrdem;
+		preOrdem.grupo = grupo;
+		preOrdem.periodo = periodo;
+		preOrdem.alternativa = alternativa;
+		preOrdem.roteiro = roteiro;
+
+		for (PreOrdemProducaoItem item : listaItens) {
+
+			PreOrdemProducaoItem preOrdemItem;
+
+			preOrdemItem = new PreOrdemProducaoItem();
+			preOrdemItem.id = idOrdem;
+			preOrdemItem.grupo = item.grupo;
+			preOrdemItem.sub = item.sub;
+			preOrdemItem.item = item.item;
+			preOrdemItem.alternativa = item.alternativa;
+			preOrdemItem.roteiro = item.roteiro;
+			preOrdemItem.periodo = item.periodo;
+			preOrdemItem.qtdeProgramada = item.qtdeProgramada;
+
+			qtdeTotalProg += preOrdemItem.qtdeProgramada;
+
+			ordensItens.add(preOrdemItem);
+		}
+
+		preOrdem.qtdeProgramada = qtdeTotalProg;
+		ordensCapa.add(preOrdem);
 	}
 
 	private int getIdPreOrdem() {
@@ -304,21 +297,4 @@ public class GeracaoPreOrdens {
 
 		return isValida;
 	}
-
-	private int getNrOPsGerar(int quantidade) {
-
-		if (qtdeMaximaOrdem <= 0)
-			return 0;
-
-		double qtdeOrdem = quantidade;
-		double resultado = qtdeOrdem / qtdeMaximaOrdem;
-		int qtdeOPs = (int) resultado;
-		double sobra = resultado - qtdeOPs;
-
-		if (sobra > 0.000)
-			qtdeOPs++;
-
-		return qtdeOPs;
-	}
-
 }

@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.entity.LinhaProduto;
-import br.com.live.repository.LinhaProdutoRepository;
+import br.com.live.custom.ProdutoCustom;
+import br.com.live.model.LinhaProduto;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/linhasproduto")
 public class LinhaProdutoController {
 
-    private LinhaProdutoRepository linhaProdutoRepository;
+	private ProdutoCustom produtoRepository;
 
     @Autowired
-    public LinhaProdutoController(LinhaProdutoRepository linhaProdutoRepository) {
-          this.linhaProdutoRepository = linhaProdutoRepository;
+    public LinhaProdutoController(ProdutoCustom produtoRepository) {
+          this.produtoRepository = produtoRepository;
     }
 	
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<LinhaProduto> findAll() {
-          return linhaProdutoRepository.findAll();
+          return produtoRepository.findAllLinhasProdutos();
     }
 	
 }

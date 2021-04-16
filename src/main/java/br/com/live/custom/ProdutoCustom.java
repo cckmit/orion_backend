@@ -6,14 +6,19 @@ import javax.persistence.EntityManager;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import br.com.live.entity.CorProduto;
-import br.com.live.entity.Embarque;
 import br.com.live.entity.Produto;
 import br.com.live.entity.ProdutoReferCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.ArtigoCotas;
 import br.com.live.model.ArtigoProduto;
+import br.com.live.model.Colecao;
+import br.com.live.model.Embarque;
+import br.com.live.model.LinhaProduto;
 import br.com.live.model.MarcacaoRisco;
+import br.com.live.model.PublicoAlvo;
 import br.com.live.model.Roteiro;
 import br.com.live.util.FiltroProduto;
 
@@ -80,13 +85,12 @@ public class ProdutoCustom {
 	}
 
 	public List<Embarque> findAllEmbarques() {
-
-		String query = "select new br.com.live.entity.Embarque (e.id, e.descricao) from Embarque e order by e.descricao";
-		System.out.println("Embarque - query: " + query);
-
-		var q = manager.createQuery(query, Embarque.class);
-
-		return q.getResultList();
+		
+		String query = "select min(rownum) id, b.codigo_cliente descricao from basi_010 b where b.codigo_cliente like '% EMBARQUE' " 
+		+ " group by b.codigo_cliente "
+		+ " order by b.codigo_cliente ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Embarque.class));
 	}
 
 	public List<ProdutoReferCor> findItensByParameters(FiltroProduto filtro) {
@@ -173,6 +177,16 @@ public class ProdutoCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(AlternativaRoteiroPadrao.class));
 	}
 
+	public List<ArtigoCotas> findAllArtigosCotas() {
+
+		String query = "select b.artigo_cotas id, b.descr_artigo descricao from basi_295 b "
+ 		 + " where b.nivel_estrutura = '1' "
+		 + " and b.descr_artigo <> '.' "
+		 + " order by b.artigo_cotas " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoCotas.class));
+	}
+	
 	public List<ArtigoProduto> findAllArtigosProduto() {
 
 		String query = "select b.artigo id, b.descr_artigo descricao from basi_290 b"
@@ -180,7 +194,46 @@ public class ProdutoCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoProduto.class));
 	}
+	
+	public List<Colecao> findAllColecoes() {
+		
+		String query = " select b.colecao id, b.descr_colecao descricao from basi_140 b "
+		+ " where b.descricao_espanhol not like '%COLECAO PERMANENTE%' "
+		  + " and b.descricao_espanhol not like '%COLECAO ANTIGA%' "
+		  + " and b.colecao > 0 "
+		+ " order by colecao "; 
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
+	}
 
+	public List<Colecao> findAllColecoesPermanentes() {
+		
+		String query = " select b.colecao id, b.descr_colecao descricao from basi_140 b "
+ 		+ " where b.descricao_espanhol like '%COLECAO PERMANENTE%' "
+		  + " and b.colecao > 0 "
+	  	  + " order by colecao " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
+	}
+
+	public List<LinhaProduto> findAllLinhasProdutos() {
+				
+		String query = " select b.linha_produto id, b.descricao_linha descricao from basi_120 b "
+		+ " where b.nivel_estrutura = '1' "
+		+ " order by b.linha_produto ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LinhaProduto.class));
+	}
+	
+	public List<PublicoAlvo> findAllPublicosAlvos() {
+	
+		String query = " select h.codigo id, h.descricao from hdoc_001 h "
+	    + " where h.tipo = 9 "
+	    + " order by h.codigo ";
+	
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PublicoAlvo.class));
+	}
+	
 	public int findSequenciaPrincipalRisco(String grupo, String item, int alternativa) {
 
 		String query = "select nvl(basi_050.sequencia,0) " + " from basi_050 "

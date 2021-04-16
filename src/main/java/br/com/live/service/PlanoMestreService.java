@@ -155,8 +155,6 @@ public class PlanoMestreService {
 		
 	public PlanoMestreParametros calcularOcupacaoPlano(long idPlanoMestre, int periodoInicio, int periodoFim) {
 		
-		System.out.println("calcularOcupacaoPlano: " + periodoInicio + " - " + periodoFim);
-		
 		double percentualPecas;
 		double percentualMinutos;
 		int qtdeFaltaSobraPecas;
@@ -203,8 +201,6 @@ public class PlanoMestreService {
 					ocupacaoEstagioPlanoMestre.qtdeMinutos, ocupacaoEstagioProgramada.qtdeMinutos, percentualMinutosFormat, qtdeFaltaSobraMinutos);
 							
 			planoMestreOcupacaoEstagioRepository.save(planoMestreOcupacaoEstagio);
-			
-			System.out.println("ARTIGOS");
 			
 			for (ArtigoCapacidadeProducao artigoCapacidade : artigosCapacidades) {
 
@@ -320,9 +316,18 @@ public class PlanoMestreService {
 			List<PlanoMestreConsultaTamanhos> gradeAlterada) {
 
 		for (PlanoMestreConsultaTamanhos itemAlterado : gradeAlterada) {			
-			// TODO - Se o tamanho não existir na tabela de produtos do plano mestre, deverá ser inserido! 			
 			ProdutoPlanoMestre produto = produtoPlanoMestreRepository.findByIdPlanoCodGrupoSubCor(
 					itemAlterado.idPlanoMestre, itemAlterado.grupo, itemAlterado.sub, itemAlterado.item);
+			
+			if (produto == null) {
+				produto = new ProdutoPlanoMestre();
+				produto.idPlanoMestre = idPlanoMestre;
+				produto.nivel = "1";
+				produto.grupo = itemAlterado.grupo;
+				produto.sub = itemAlterado.sub;
+				produto.item = itemAlterado.item;
+			}			
+			
 			produto.qtdeProgramada = itemAlterado.qtdeProgramada;
 			produtoPlanoMestreRepository.save(produto);
 		}
