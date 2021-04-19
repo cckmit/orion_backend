@@ -612,6 +612,8 @@ public class PlanoMestreService {
 
 	public List<PlanoMestre> delete(long idPlanoMestre) {
 
+		planoMestreOcupacaoEstagioRepository.deleteByIdPlanoMestre(idPlanoMestre);
+		planoMestreOcupacaoArtigoRepository.deleteByIdPlanoMestre(idPlanoMestre);
 		planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(idPlanoMestre);
 		planoMestrePreOrdemRepository.deleteByIdPlanoMestre(idPlanoMestre);
 		planoMestreParamProgItemRepository.deleteByIdPlanoMestre(idPlanoMestre);
@@ -622,19 +624,5 @@ public class PlanoMestreService {
 
 		return findAll();
 	}
-	
-	/*
-	public static void main(String[] args) {
-
-		double valor1 = 151561.121; 
-		double valor2 = 11151.121;
-		
-		int percentual = (int) valor1 / (int) valor2;   
-		double percentual2 = valor1 / valor2;
-		
-		System.out.println(percentual);
-		System.out.println(percentual2);
-		
-	}*/
-	
+			
 };

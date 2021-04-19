@@ -46,19 +46,21 @@ public class CalculoDistribuicaoPecas {
 		List<ProdutoPlanoMestre> produtosAtualizados = new ArrayList<ProdutoPlanoMestre> ();		
 		
 		for (MarcacaoRisco marcacao : marcacoes) {
-			qtdeMarcacoes += marcacao.quantidade;
+			qtdeMarcacoes += marcacao.quantidade;			
+			if (mapMarcacoes.containsKey(marcacao.sub)) marcacao.quantidade += mapMarcacoes.get(marcacao.sub);   			
 			mapMarcacoes.put(marcacao.sub, (double) marcacao.quantidade);
 		}
 		
 		for (ProdutoPlanoMestre produto : produtos) {			
-			
      		qtdeTamanho = mapMarcacoes.get(produto.sub); 
      		if (qtdeTamanho == null) qtdeTamanho = 0.000;     		
 			
 			if (qtdeMarcacoes > 0.000) proporcao = qtdeTamanho / qtdeMarcacoes;
-			else proporcao = 0.000;
-			
-			produto.qtdeProgramada = (int) (qtdeDistribuir * proporcao);			
+			else proporcao = 0.000;			
+			//System.out.println("Tamanho: " + produto.sub + "qtdeTamanho: " + qtdeTamanho + " qtdeMarcacoes: " + qtdeMarcacoes);			
+			//System.out.println("qtdeDistribuir: " + qtdeDistribuir + " - proporcao: " + proporcao);			
+			produto.qtdeProgramada = (int) (qtdeDistribuir * proporcao);						
+			//System.out.println("qtdeProgramada: " + produto.qtdeProgramada);			
 			produtosAtualizados.add(produto);
 		}
 		
@@ -81,14 +83,13 @@ public class CalculoDistribuicaoPecas {
 		
 		qtdeProgramar += qtdeTotalSaldo;
 		
-		for (ProdutoPlanoMestre produto : produtos) {
-			proporcao = produto.qtdeDemAcumulado / qtdeTotalDemanda;
-						
+		for (ProdutoPlanoMestre produto : produtos) {			
+			//System.out.println("Tamanho: " + produto.sub + " dem acum: " + produto.qtdeDemAcumulado + " total: " + qtdeTotalDemanda);			
+			proporcao = produto.qtdeDemAcumulado / qtdeTotalDemanda;			
+			//System.out.println("qtdeProgramar: " + qtdeProgramar + " - proporcao: " + proporcao);			
 			produto.qtdeProgramada = (int) (qtdeProgramar * proporcao);
-			produto.qtdeProgramada = (produto.qtdeProgramada - produto.qtdeSaldoAcumulado); 
-			
-			if (produto.qtdeProgramada < 0) produto.qtdeProgramada = 0;
-			
+			produto.qtdeProgramada = (produto.qtdeProgramada - produto.qtdeSaldoAcumulado); 			
+			if (produto.qtdeProgramada < 0) produto.qtdeProgramada = 0;			
 			produtosAtualizados.add(produto);			
 		}
 		

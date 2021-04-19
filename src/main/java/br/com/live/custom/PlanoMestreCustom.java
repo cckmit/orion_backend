@@ -28,10 +28,10 @@ public class PlanoMestreCustom {
 		if (parametrosFormatados.getColecoes().equalsIgnoreCase("")) return null;
 				
 		String query = " select b.nivel_estrutura nivel, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, b.narrativa, ";
-		query += " (select p.qtde_previsao from orion_040 p "
+		query += " nvl((select p.qtde_previsao from orion_040 p "
 	           + "   where p.colecao in " + parametrosFormatados.getColecoes() 
 	           + "     and p.grupo = b.grupo_estrutura "
-	           + "     and p.item  = b.item_estrutura) qtdePrevisaoVendas "
+	           + "     and p.item  = b.item_estrutura),0) qtdePrevisaoVendas "
 	           + " from basi_030 a, basi_010 b, "
 	           + " (select d.referencia grupo, nvl((select 1 from basi_140 c "
 	           + " where c.colecao = d.colecao "
@@ -61,7 +61,7 @@ public class PlanoMestreCustom {
 		}
 		
 		if (!parametrosFormatados.getEmbarques().equalsIgnoreCase("")) {
-			query += " and a.codigo_cliente in " + parametrosFormatados.getEmbarques();
+			query += " and b.codigo_cliente in " + parametrosFormatados.getEmbarques();
 		}
 	  		
 		if (!parametrosFormatados.getProdutos().equalsIgnoreCase("")) {
@@ -69,11 +69,11 @@ public class PlanoMestreCustom {
 		}
 	
 		if (!parametrosFormatados.getCores().equalsIgnoreCase("")) {
-			query += " and a.item_estrutura in " + parametrosFormatados.getCores();
+			query += " and b.item_estrutura in " + parametrosFormatados.getCores();
 		}
 	  
 		if (!parametrosFormatados.getOrigemProdutos().equalsIgnoreCase("")) {
-			query += " and a.origem_prod in " + parametrosFormatados.getOrigemProdutos();
+			query += " and b.origem_prod in " + parametrosFormatados.getOrigemProdutos();
 		}
 
 		if (!parametrosFormatados.getPublicosAlvo().equalsIgnoreCase("")) {			

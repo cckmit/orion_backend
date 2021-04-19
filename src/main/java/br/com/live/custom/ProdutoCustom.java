@@ -154,7 +154,8 @@ public class ProdutoCustom {
 				+ " and c.grupo (+) = b.grupo_item " + " and c.alternativa (+) = b.alternativa_item "
 				+ " and b.grupo_item = '" + grupo + "'" + " and (b.item_item = '" + item
 				+ "' or b.item_item = '000000') "
-				+ " group by b.nivel_item, b.grupo_item, b.item_item, b.alternativa_item, c.descricao ";
+				+ " group by b.nivel_item, b.grupo_item, b.item_item, b.alternativa_item, c.descricao "
+				+ " order by b.alternativa_item, c.descricao ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Alternativa.class));
 	}
@@ -163,7 +164,8 @@ public class ProdutoCustom {
 
 		String query = "select m.numero_roteiro codigo from mqop_050 m" + " where m.nivel_estrutura  = '1' "
 				+ " and m.grupo_estrutura  = '" + grupo + "'" + " and m.numero_alternati = " + alternativa
-				+ " group by m.numero_roteiro";
+				+ " group by m.numero_roteiro"
+				+ " order by m.numero_roteiro";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Roteiro.class));
 	}
