@@ -9,24 +9,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.entity.PedidoVenda;
-import br.com.live.repository.PedidoVendaRepository;
+import br.com.live.custom.DemandaProdutoCustom;
+import br.com.live.model.PedidoVenda;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/pedidos")
 public class PedidoVendaController {
 
-    private PedidoVendaRepository pedidoVendaRepository;
+    private DemandaProdutoCustom demandaProdutoCustom;
 
     @Autowired
-    public PedidoVendaController(PedidoVendaRepository pedidoVendaRepository) {
-          this.pedidoVendaRepository = pedidoVendaRepository;
+    public PedidoVendaController(DemandaProdutoCustom demandaProdutoCustom) {
+          this.demandaProdutoCustom = demandaProdutoCustom;
     }
 	
     @RequestMapping(value = "/{perInicio}/{perFim}", method = RequestMethod.GET)
     public List<PedidoVenda> findByPeriodo(@PathVariable("perInicio") int periodoInicio, @PathVariable("perFim") int periodoFim) {                  
-        return pedidoVendaRepository.findByPeriodo(periodoInicio, periodoFim);
+        return demandaProdutoCustom.findPedidosByPeriodo(periodoInicio, periodoFim);
     }
 	
 }

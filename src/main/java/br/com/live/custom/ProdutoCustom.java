@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -7,7 +8,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.entity.CorProduto;
 import br.com.live.entity.Produto;
 import br.com.live.entity.ProdutoReferCor;
 import br.com.live.model.Alternativa;
@@ -15,6 +15,7 @@ import br.com.live.model.AlternativaRoteiroPadrao;
 import br.com.live.model.ArtigoCotas;
 import br.com.live.model.ArtigoProduto;
 import br.com.live.model.Colecao;
+import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.LinhaProduto;
 import br.com.live.model.MarcacaoRisco;
@@ -60,36 +61,46 @@ public class ProdutoCustom {
 	}
 
 	public List<CorProduto> findCoresByParameters(FiltroProduto filtro) {
-
-		String query = "select new br.com.live.entity.CorProduto (c.id, c.item, c.descricao) from CorProduto c ";
-		String condicao = "where ";
-
+		
+		List<CorProduto> cores;
+		
+		String query = "select max(rownum) id, c.item_estrutura item, c.descricao_15 descricao "
+		+ " from basi_030 a, basi_010 c "
+		+ " where a.nivel_estrutura = c.nivel_estrutura "
+		  + " and a.referencia = c.grupo_estrutura "
+		  + " and c.nivel_estrutura = '1' "
+		  + " and c.item_ativo = 1 "
+		  + " and c.descricao_15 <> '.' " ;
+		  
 		if (!filtro.getColecoes().equalsIgnoreCase("")) {
-			query += condicao + " exists ( select 1 from ProdutoReferCor p where p.colecao in " + filtro.getColecoes();
-			query += " and p.item = c.item ) ";
-			condicao = " and ";
+			query += " and a.colecao in " + filtro.getColecoes();
+		} 
+		 
+		if (!filtro.getSubColecoes().equalsIgnoreCase("")) {			
+			query += " and exists (select * from basi_632 f " 
+				  + " where f.cd_agrupador in " + filtro.getSubColecoes()
+		          + "   and f.item_ref = c.item_estrutura) " ;
 		}
-
-		if (!filtro.getSubColecoes().equalsIgnoreCase("")) {
-			query += condicao + " exists (select 1 from SubColecao s where s.colecao in " + filtro.getSubColecoes();
-			query += " and s.item = c.item ) ";
-		}
-
-		query += " order by c.item ";
-
+		
+		query += " group by c.item_estrutura, c.descricao_15 "
+		      + " order by c.item_estrutura, c.descricao_15 " ;
+		
 		System.out.println("CorProdutos - query: " + query);
-
-		var q = manager.createQuery(query, CorProduto.class);
-
-		return q.getResultList();
+		
+		try {
+			cores = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CorProduto.class));
+		} catch (Exception e) {
+			cores = new ArrayList<CorProduto> ();
+		}
+		
+		return cores;
 	}
 
 	public List<Embarque> findAllEmbarques() {
-		
-		String query = "select min(rownum) id, b.codigo_cliente descricao from basi_010 b where b.codigo_cliente like '% EMBARQUE' " 
-		+ " group by b.codigo_cliente "
-		+ " order by b.codigo_cliente ";
-		
+
+		String query = "select min(rownum) id, b.codigo_cliente descricao from basi_010 b where b.codigo_cliente like '% EMBARQUE' "
+				+ " group by b.codigo_cliente " + " order by b.codigo_cliente ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Embarque.class));
 	}
 
@@ -141,8 +152,8 @@ public class ProdutoCustom {
 
 	public int findRiscoPadraoByCodigo(String grupo) {
 
-		String query = "select b.risco_padrao from basi_030 b where b.nivel_estrutura = '1' "
-				+ " and b.referencia = '" + grupo + "'";
+		String query = "select b.risco_padrao from basi_030 b where b.nivel_estrutura = '1' " + " and b.referencia = '"
+				+ grupo + "'";
 
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
@@ -164,8 +175,7 @@ public class ProdutoCustom {
 
 		String query = "select m.numero_roteiro codigo from mqop_050 m" + " where m.nivel_estrutura  = '1' "
 				+ " and m.grupo_estrutura  = '" + grupo + "'" + " and m.numero_alternati = " + alternativa
-				+ " group by m.numero_roteiro"
-				+ " order by m.numero_roteiro";
+				+ " group by m.numero_roteiro" + " order by m.numero_roteiro";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Roteiro.class));
 	}
@@ -182,13 +192,11 @@ public class ProdutoCustom {
 	public List<ArtigoCotas> findAllArtigosCotas() {
 
 		String query = "select b.artigo_cotas id, b.descr_artigo descricao from basi_295 b "
- 		 + " where b.nivel_estrutura = '1' "
-		 + " and b.descr_artigo <> '.' "
-		 + " order by b.artigo_cotas " ;
-		
+				+ " where b.nivel_estrutura = '1' " + " and b.descr_artigo <> '.' " + " order by b.artigo_cotas ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoCotas.class));
 	}
-	
+
 	public List<ArtigoProduto> findAllArtigosProduto() {
 
 		String query = "select b.artigo id, b.descr_artigo descricao from basi_290 b"
@@ -196,46 +204,42 @@ public class ProdutoCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoProduto.class));
 	}
-	
+
 	public List<Colecao> findAllColecoes() {
-		
+
 		String query = " select b.colecao id, b.descr_colecao descricao from basi_140 b "
-		+ " where b.descricao_espanhol not like '%COLECAO PERMANENTE%' "
-		  + " and b.descricao_espanhol not like '%COLECAO ANTIGA%' "
-		  + " and b.colecao > 0 "
-		+ " order by colecao "; 
-		
+				+ " where b.descricao_espanhol not like '%COLECAO PERMANENTE%' "
+				+ " and b.descricao_espanhol not like '%COLECAO ANTIGA%' " + " and b.colecao > 0 "
+				+ " order by colecao ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
 	}
 
 	public List<Colecao> findAllColecoesPermanentes() {
-		
+
 		String query = " select b.colecao id, b.descr_colecao descricao from basi_140 b "
- 		+ " where b.descricao_espanhol like '%COLECAO PERMANENTE%' "
-		  + " and b.colecao > 0 "
-	  	  + " order by colecao " ;
-		
+				+ " where b.descricao_espanhol like '%COLECAO PERMANENTE%' " + " and b.colecao > 0 "
+				+ " order by colecao ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
 	}
 
 	public List<LinhaProduto> findAllLinhasProdutos() {
-				
+
 		String query = " select b.linha_produto id, b.descricao_linha descricao from basi_120 b "
-		+ " where b.nivel_estrutura = '1' "
-		+ " order by b.linha_produto ";
-		
+				+ " where b.nivel_estrutura = '1' " + " order by b.linha_produto ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LinhaProduto.class));
 	}
-	
+
 	public List<PublicoAlvo> findAllPublicosAlvos() {
-	
-		String query = " select h.codigo id, h.descricao from hdoc_001 h "
-	    + " where h.tipo = 9 "
-	    + " order by h.codigo ";
-	
+
+		String query = " select h.codigo id, h.descricao from hdoc_001 h " + " where h.tipo = 9 "
+				+ " order by h.codigo ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PublicoAlvo.class));
 	}
-	
+
 	public int findSequenciaPrincipalRisco(String grupo, String item, int alternativa) {
 
 		String query = "select nvl(basi_050.sequencia,0) " + " from basi_050 "
@@ -264,5 +268,5 @@ public class ProdutoCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MarcacaoRisco.class));
 	}
-	
+
 }

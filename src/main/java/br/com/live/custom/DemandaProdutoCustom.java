@@ -5,10 +5,13 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.DemandaProduto;
 import br.com.live.entity.DemandaProdutoPlano;
+import br.com.live.model.PedidoVenda;
 import br.com.live.util.FormataParametrosPlanoMestre;
 import br.com.live.util.ParametrosPlanoMestre;
 
@@ -16,9 +19,11 @@ import br.com.live.util.ParametrosPlanoMestre;
 public class DemandaProdutoCustom {
 
 	private final EntityManager manager;
-
-	public DemandaProdutoCustom(EntityManager manager) {
+	private JdbcTemplate jdbcTemplate;
+	
+	public DemandaProdutoCustom(EntityManager manager, JdbcTemplate jdbcTemplate) {
 		this.manager = manager;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	private List<DemandaProdutoPlano> parseDemandaProdutoPlano(List<DemandaProduto> listDemandaProduto,
@@ -139,4 +144,16 @@ public class DemandaProdutoCustom {
 		return parseDemandaProdutoPlano(q.getResultList(), parametrosFormatados);
 	}
 
+	public List<PedidoVenda> findPedidosByPeriodo(int periodoInicio, int periodoFim) {
+			
+		String query = " select p.pedido_venda pedidoVenda, p.num_periodo_prod periodo from pedi_100 p "
+		+ " where p.tecido_peca      = '1' "
+		  + " and p.cod_cancelamento = 0 "
+		  + " and p.situacao_venda  <> 10 "
+		  + " and p.num_periodo_prod between " + periodoInicio + " and " + periodoFim
+		+ " order by p.pedido_venda " ;  
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PedidoVenda.class));		
+	}
+	
 }

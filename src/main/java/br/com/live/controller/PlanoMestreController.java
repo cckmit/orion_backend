@@ -111,7 +111,7 @@ public class PlanoMestreController {
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg));
 	}
 	
-	@RequestMapping(value = "ocupacao/calcular", method = RequestMethod.POST)
+	@RequestMapping(value = "/ocupacao/calcular", method = RequestMethod.POST)
 	public PlanoMestreParametros calcularOcupacao(@RequestBody ParametrosPlanoMestre parametros) {		
 		return planoMestreService.calcularOcupacaoPlano(parametros.idPlanoMestre, parametros.periodoOcupacaoInicio, parametros.periodoOcupacaoFim);		
 	}	

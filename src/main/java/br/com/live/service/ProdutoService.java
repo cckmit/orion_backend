@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import br.com.live.custom.ProdutoCustom;
-import br.com.live.entity.CorProduto;
 import br.com.live.entity.Produto;
 import br.com.live.entity.ProdutoReferCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.Roteiro;

@@ -9,6 +9,7 @@ import br.com.live.custom.PrevisaoVendasCustom;
 import br.com.live.custom.TabelaPrecoCustom;
 import br.com.live.entity.PrevisaoVendas;
 import br.com.live.model.ConsultaPrevisaoVendas;
+import br.com.live.model.ConsultaPrevisaoVendasItens;
 import br.com.live.repository.PrevisaoVendasRepository;
 
 @Service
@@ -27,10 +28,14 @@ public class PrevisaoVendasService {
 		this.tabelaPrecoCustom = tabelaPrecoCustom;
 	}
 
-	public List<ConsultaPrevisaoVendas> findPrevisaoByColecao(int colecao) {
-		return previsaoVendasCustom.findPrevisaoByColecao(colecao);
+	public List<ConsultaPrevisaoVendas> findPrevisoesVendas() {
+		return previsaoVendasCustom.findPrevisoesVendas();
 	}
 
+	public List<ConsultaPrevisaoVendasItens> findPrevisoesVendasItensByIdPrevisaoVenda(long idPrevisaoVendas) {
+		return previsaoVendasCustom.findPrevisoesVendasItensByIdPrevisaoVenda(idPrevisaoVendas);
+	}
+	
 	public String findIdTabelaSellIn (int colecao) {
 		return previsaoVendasCustom.findIdTabelaSellIn(colecao);
 	}
@@ -41,23 +46,26 @@ public class PrevisaoVendasService {
 
 	public void savePrevisoes(int colecao, int colTabPrecoSellIn, int mesTabPrecoSellIn, int seqTabPrecoSellIn,
 			int colTabPrecoSellOut, int mesTabPrecoSellOut, int seqTabPrecoSellOut,
-			List<ConsultaPrevisaoVendas> previsoesVenda) {
+			List<ConsultaPrevisaoVendasItens> previsoesVenda) {
 
 		PrevisaoVendas previsaoVenda;
 
 		double valorSellIn = 0.000;
 		double valorSellOut = 0.000;
 
-		for (ConsultaPrevisaoVendas previsao : previsoesVenda) {
+		for (ConsultaPrevisaoVendasItens previsao : previsoesVenda) {
 
 			valorSellIn = tabelaPrecoCustom.findPrecoProduto(colTabPrecoSellIn, mesTabPrecoSellIn, seqTabPrecoSellIn, previsao.grupo, previsao.item);
 			valorSellOut = tabelaPrecoCustom.findPrecoProduto(colTabPrecoSellOut, mesTabPrecoSellOut, seqTabPrecoSellOut, previsao.grupo, previsao.item);
 
+			/*
 			previsaoVenda = new PrevisaoVendas(colecao, previsao.grupo, previsao.item, colTabPrecoSellIn,
 					mesTabPrecoSellIn, seqTabPrecoSellIn, valorSellIn, colTabPrecoSellOut, mesTabPrecoSellOut,
 					seqTabPrecoSellOut, valorSellOut, previsao.qtdePrevisaoVendas);
 			
+			
 			previsaoVendasRepository.save(previsaoVenda);
+			*/
 		}
 	}
 }

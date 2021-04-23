@@ -10,11 +10,10 @@ import javax.persistence.Table;
 public class PrevisaoVendas {
 
 	@Id
-	public String id;
+	public long id;
 
+	public String descricao;
 	public int colecao;
-	public String grupo;
-	public String item;
 
 	@Column(name = "col_tab_preco_sell_in")
 	public int colTabPrecoSellIn;
@@ -25,9 +24,6 @@ public class PrevisaoVendas {
 	@Column(name = "seq_tab_preco_sell_in")
 	public int seqTabPrecoSellIn;
 
-	@Column(name = "valor_sell_in")
-	public double valorSellIn;
-
 	@Column(name = "col_tab_preco_sell_out")
 	public int colTabPrecoSellOut;
 
@@ -37,33 +33,23 @@ public class PrevisaoVendas {
 	@Column(name = "seq_tab_preco_sell_out")
 	public int seqTabPrecoSellOut;
 
-	@Column(name = "valor_sell_out")
-	public double valorSellOut;
-
-	@Column(name = "qtde_previsao")
-	public int qtdePrevisaoVendas;
-
 	public PrevisaoVendas() {
+		
 	}
 
-	public PrevisaoVendas(int colecao, String grupo, String item, int colTabPrecoSellIn, int mesTabPrecoSellIn,
-			int seqTabPrecoSellIn, double valorSellIn, int colTabPrecoSellOut, int mesTabPrecoSellOut,
-			int seqTabPrecoSellOut, double valorSellOut, int qtdePrevisaoVendas) {
+	public PrevisaoVendas(long id, String descricao, int colecao, int colTabPrecoSellIn, int mesTabPrecoSellIn,
+			int seqTabPrecoSellIn, int colTabPrecoSellOut, int mesTabPrecoSellOut,
+			int seqTabPrecoSellOut) {
 		
-		this.id = colecao + "." + grupo + "." + item;
+		this.id = id;
+		this.descricao = descricao;
 		this.colecao = colecao; 
-		this.grupo = grupo; 
-		this.item = item; 
 		this.colTabPrecoSellIn = colTabPrecoSellIn; 
 		this.mesTabPrecoSellIn = mesTabPrecoSellIn;
 		this.seqTabPrecoSellIn = seqTabPrecoSellIn;
-		this.valorSellIn = valorSellIn; 
 		this.colTabPrecoSellOut = colTabPrecoSellOut; 
 		this.mesTabPrecoSellOut = mesTabPrecoSellOut;
-		this.seqTabPrecoSellOut = seqTabPrecoSellOut;
-		this.valorSellOut = valorSellOut; 
-		this.qtdePrevisaoVendas = qtdePrevisaoVendas;
-				
+		this.seqTabPrecoSellOut = seqTabPrecoSellOut;				
 	}
 
 }

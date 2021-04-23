@@ -2,14 +2,14 @@ package br.com.live.util;
 
 import java.util.List;
 
-import br.com.live.model.ConsultaPrevisaoVendas;
+import br.com.live.model.ConsultaPrevisaoVendasItens;
 
 public class BodyPrevisaoVendas {
 
 	public int colecao;
 	public String idTabelaPrecoSellIn; 
 	public String idTabelaPrecoSellOut;	
-	public List<ConsultaPrevisaoVendas> previsoesVendas;
+	public List<ConsultaPrevisaoVendasItens> previsoesVendas;
 
 	public int getColTabPrecoSellIn() {
 		String[] codigoSeparado = idTabelaPrecoSellIn.split("[.]");
