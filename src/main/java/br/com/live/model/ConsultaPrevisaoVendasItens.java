@@ -14,8 +14,8 @@ public class ConsultaPrevisaoVendasItens {
 	public String grupoBase;
 	public String itemBase;
 	public String descricaoBase;
-	public double qtdeVendidaBase;
-	public int percentalAplicar;	
+	public int qtdeVendidaBase;
+	public int percentualAplicar;	
 	public int qtdePrevisao;
 	
 	public String getDescricaoBase() {
@@ -87,7 +87,7 @@ public class ConsultaPrevisaoVendasItens {
 	}
 
 	public void setValorSellIn(String valorSellIn) {
-		this.valorSellIn = valorSellIn;
+		this.valorSellIn = formatStringValores(valorSellIn);
 	}
 
 	public String getValorSellOut() {
@@ -95,7 +95,7 @@ public class ConsultaPrevisaoVendasItens {
 	}
 
 	public void setValorSellOut(String valorSellOut) {
-		this.valorSellOut = valorSellOut;
+		this.valorSellOut = formatStringValores(valorSellOut);
 	}
 
 	public String getGrupoBase() {
@@ -118,16 +118,16 @@ public class ConsultaPrevisaoVendasItens {
 		return qtdeVendidaBase;
 	}
 
-	public void setQtdeVendidaBase(double qtdeVendidaBase) {
+	public void setQtdeVendidaBase(int qtdeVendidaBase) {
 		this.qtdeVendidaBase = qtdeVendidaBase;
 	}
 
 	public int getPercentalAplicar() {
-		return percentalAplicar;
+		return percentualAplicar;
 	}
 
-	public void setPercentalAplicar(int percentalAplicar) {
-		this.percentalAplicar = percentalAplicar;
+	public void setPercentalAplicar(int percentualAplicar) {
+		this.percentualAplicar = percentualAplicar;
 	}
 
 	public int getQtdePrevisao() {

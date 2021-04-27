@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.entity.PrevisaoVendas;
 import br.com.live.model.ConsultaPrevisaoVendas;
 import br.com.live.model.ConsultaPrevisaoVendasItens;
 import br.com.live.service.PrevisaoVendasService;
@@ -28,18 +29,16 @@ public class PrevisaoVendasController {
 		return previsaoVendasService.findPrevisoesVendas();
 	}
 
-	@RequestMapping(value = "/{idPrevisaoVendas}", method = RequestMethod.GET)
-	public List<ConsultaPrevisaoVendasItens> findPrevisoesVendasItensByIdPrevisaoVenda (@PathVariable("idPrevisaoVendas") long idPrevisaoVendas) {						
-		return previsaoVendasService.findPrevisoesVendasItensByIdPrevisaoVenda(idPrevisaoVendas);
+	@RequestMapping(value = "/{idPrevisaoVendas}/{colecao}", method = RequestMethod.GET)
+	public List<ConsultaPrevisaoVendasItens> findPrevisoesVendasItensByIdPrevisaoVendaColecao (@PathVariable("idPrevisaoVendas") long idPrevisaoVendas, @PathVariable("colecao") int colecao) {						
+		return previsaoVendasService.findPrevisoesVendasItensByIdPrevisaoVendaColecao(idPrevisaoVendas, colecao);
 	}
 		
-	// TODO - REVISAR OS METODOS QUE CONTINUARAO EXISTINDO
-	// TODO - PASSAR O ID E A COLECAO PARA LOCALIZAR OS DADOS	
-	@RequestMapping(value = "/{colecao}", method = RequestMethod.GET)
-	public List<ConsultaPrevisaoVendasItens> findPrevisaoByColecao (@PathVariable("colecao") int colecao) {						
-		return null; //previsaoVendasService.findPrevisaoByColecao(colecao);
-	}
-
+	@RequestMapping(value = "", method = RequestMethod.POST)
+	public PrevisaoVendas savePrevisaoVendas(@RequestBody BodyPrevisaoVendas body) {		
+		return previsaoVendasService.savePrevisaoVendas(body.id, body.descricao, body.colecao, body.getColTabPrecoSellIn(), body.getMesTabPrecoSellIn(), body.getSeqTabPrecoSellIn(), body.getColTabPrecoSellOut(), body.getMesTabPrecoSellOut(), body.getSeqTabPrecoSellOut(), body.previsoesVendasItens); 
+	}	
+	
 	@RequestMapping(value = "/id-tabela-sell-in/{colecao}", method = RequestMethod.GET)
 	public String findIdTabelaSellIn (@PathVariable("colecao") int colecao) {						
 		return previsaoVendasService.findIdTabelaSellIn(colecao);
@@ -49,11 +48,5 @@ public class PrevisaoVendasController {
 	public String findIdTabelaSellOut (@PathVariable("colecao") int colecao) {						
 		return previsaoVendasService.findIdTabelaSellOut(colecao);
 	}
-	
-	@RequestMapping(value = "", method = RequestMethod.POST)
-	public List<ConsultaPrevisaoVendasItens> savePrevisoes(@RequestBody BodyPrevisaoVendas body) {
-		previsaoVendasService.savePrevisoes(body.colecao, body.getColTabPrecoSellIn(), body.getMesTabPrecoSellIn(), body.getSeqTabPrecoSellIn(), body.getColTabPrecoSellOut(), body.getMesTabPrecoSellOut(), body.getSeqTabPrecoSellOut(), body.previsoesVendas);
-		return null; //previsaoVendasService.findPrevisaoByColecao(body.colecao); 
-	}
-	
+		
 }

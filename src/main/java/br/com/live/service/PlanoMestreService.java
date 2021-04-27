@@ -408,7 +408,7 @@ public class PlanoMestreService {
 
 		for (ProdutoPlanoMestre produtoPlanoMestre : produtos) {
 			produtoPlanoMestre.idPlanoMestre = planoMestre.id;
-			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findPrevisaoVendaByProduto(planoMestreParametros.colecoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);
+			produtoPlanoMestre.qtdePrevisao = 0; // TODO - IMPLEMENTAR A REGRA NOVAMENTE: previsaoVendasCustom.findPrevisaoVendaByProduto(planoMestreParametros.colecoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);
 			produtoPlanoMestreRepository.save(produtoPlanoMestre);
 		}
 

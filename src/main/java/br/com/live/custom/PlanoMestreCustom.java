@@ -27,7 +27,24 @@ public class PlanoMestreCustom {
 		
 		if (parametrosFormatados.getColecoes().equalsIgnoreCase("")) return null;
 				
+		// TODO - Modificar a leitura na orion_040.
+		
 		String query = " select b.nivel_estrutura nivel, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, b.narrativa, ";
+
+		query += " 0 qtdePrevisaoVendas "
+		           + " from basi_030 a, basi_010 b, "
+		           + " (select d.referencia grupo, nvl((select 1 from basi_140 c "
+		           + " where c.colecao = d.colecao "
+		           + " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente "
+		           + " from basi_030 d "
+		           + " where d.nivel_estrutura = '1') ver_permanente "
+		           + " where a.nivel_estrutura = '1' "
+		           + " and b.nivel_estrutura = a.nivel_estrutura "
+		           + " and b.grupo_estrutura = a.referencia "
+		           + " and b.item_ativo = 1 "
+		           + " and ver_permanente.grupo = a.referencia ";  
+
+		/* BKP
 		query += " nvl((select p.qtde_previsao from orion_040 p "
 	           + "   where p.colecao in " + parametrosFormatados.getColecoes() 
 	           + "     and p.grupo = b.grupo_estrutura "
@@ -43,6 +60,7 @@ public class PlanoMestreCustom {
 	           + " and b.grupo_estrutura = a.referencia "
 	           + " and b.item_ativo = 1 "
 	           + " and ver_permanente.grupo = a.referencia ";  
+	    */
 	           
 		if (!parametrosFormatados.getSubColecoes().equalsIgnoreCase("")) {
 			query += " and a.colecao in " + parametrosFormatados.getSubColecoes();  

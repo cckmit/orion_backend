@@ -6,10 +6,12 @@ import br.com.live.model.ConsultaPrevisaoVendasItens;
 
 public class BodyPrevisaoVendas {
 
+	public long id;
+	public String descricao;	
 	public int colecao;
 	public String idTabelaPrecoSellIn; 
 	public String idTabelaPrecoSellOut;	
-	public List<ConsultaPrevisaoVendasItens> previsoesVendas;
+	public List<ConsultaPrevisaoVendasItens> previsoesVendasItens;
 
 	public int getColTabPrecoSellIn() {
 		String[] codigoSeparado = idTabelaPrecoSellIn.split("[.]");
