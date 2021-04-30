@@ -29,7 +29,7 @@ public class GeracaoPlanoMestre {
 	private List<DemandaProdutoPlano> demandas;
 	private List<ProcessoProdutoPlano> processos;
 	private List<ProdutoCompleto> produtos;
-	
+
 	private Map<String, ProdutoPlanoMestre> mapProdutos;
 
 	private final static int PRODUTO = 0;
@@ -47,7 +47,8 @@ public class GeracaoPlanoMestre {
 		this.produtos = produtos;
 		this.mapProdutos = new HashMap<String, ProdutoPlanoMestre>();
 
-		if ((parametros.tipoDistribuicao == 1) || (parametros.tipoDistribuicao == 4)) atualizarProduto(parametros.tipoDistribuicao); 		
+		if ((parametros.tipoDistribuicao == 1) || (parametros.tipoDistribuicao == 4))
+			atualizarProduto(parametros.tipoDistribuicao);
 		atualizarEstoque();
 		atualizarDemanda();
 		atualizarProcesso();
@@ -66,7 +67,7 @@ public class GeracaoPlanoMestre {
 		if (tipo == GeracaoPlanoMestre.PRODUTO) {
 			produto.qtdePrevisao += quantidade;
 		}
-		
+
 		if (tipo == GeracaoPlanoMestre.ESTOQUE) {
 			produto.qtdeEstoque += quantidade;
 		}
@@ -74,6 +75,9 @@ public class GeracaoPlanoMestre {
 		if (tipo == GeracaoPlanoMestre.DEMANDA) {
 
 			produto.qtdeDemAcumulado += quantidade;
+
+			if ((plano >= parametros.planoAcumProgInicio) && (plano <= parametros.planoAcumProgFim))
+				produto.qtdeDemAcumProg += quantidade;
 
 			if (plano == 1)
 				produto.qtdeDemPlano1 += quantidade;
@@ -97,6 +101,9 @@ public class GeracaoPlanoMestre {
 
 			produto.qtdeProcAcumulado += quantidade;
 
+			if ((plano >= parametros.planoAcumProgInicio) && (plano <= parametros.planoAcumProgFim))
+				produto.qtdeProcAcumProg += quantidade;
+			
 			if (plano == 1)
 				produto.qtdeProcPlano1 += quantidade;
 			if (plano == 2)
@@ -119,14 +126,16 @@ public class GeracaoPlanoMestre {
 	}
 
 	private void atualizarProduto(int tipoDistribuicao) {
-		if (produtos != null) {			
-			for (ProdutoCompleto produto : produtos) {					
-				if (tipoDistribuicao == 4 && produto.qtdePrevisaoVendas == 0) continue;
-				atualizarProduto(GeracaoPlanoMestre.PRODUTO, 0, produto.nivel, produto.grupo, produto.sub, produto.item, produto.qtdePrevisaoVendas);				
+		if (produtos != null) {
+			for (ProdutoCompleto produto : produtos) {
+				if (tipoDistribuicao == 4 && produto.qtdePrevisaoVendas == 0)
+					continue;
+				atualizarProduto(GeracaoPlanoMestre.PRODUTO, 0, produto.nivel, produto.grupo, produto.sub, produto.item,
+						produto.qtdePrevisaoVendas);
 			}
 		}
 	}
-	
+
 	private void atualizarEstoque() {
 		if (estoques != null) {
 			for (EstoqueProduto estoque : estoques) {
@@ -178,12 +187,16 @@ public class GeracaoPlanoMestre {
 					+ mapProdutos.get(chave).qtdeProcPlano8 - mapProdutos.get(chave).qtdeDemPlano8;
 			mapProdutos.get(chave).qtdeSaldoAcumulado = mapProdutos.get(chave).qtdeEstoque
 					+ mapProdutos.get(chave).qtdeProcAcumulado - mapProdutos.get(chave).qtdeDemAcumulado;
-		
-			if (mapProdutos.get(chave).qtdeSaldoAcumulado < 0) mapProdutos.get(chave).qtdeSugestao = (mapProdutos.get(chave).qtdeSaldoAcumulado * -1);
+			mapProdutos.get(chave).qtdeSaldoAcumProg = mapProdutos.get(chave).qtdeEstoque
+					+ mapProdutos.get(chave).qtdeProcAcumProg - mapProdutos.get(chave).qtdeDemAcumProg;
+
+			if (mapProdutos.get(chave).qtdeSaldoAcumProg < 0)
+				mapProdutos.get(chave).qtdeSugestao = (mapProdutos.get(chave).qtdeSaldoAcumProg * -1);
 			
 			mapProdutos.get(chave).qtdeEqualizadoSugestao = mapProdutos.get(chave).qtdeSugestao;
-			mapProdutos.get(chave).qtdeDiferencaSugestao = mapProdutos.get(chave).qtdeEqualizadoSugestao - mapProdutos.get(chave).qtdeSugestao;
-			mapProdutos.get(chave).qtdeProgramada = mapProdutos.get(chave).qtdeEqualizadoSugestao;		
+			mapProdutos.get(chave).qtdeDiferencaSugestao = mapProdutos.get(chave).qtdeEqualizadoSugestao
+					- mapProdutos.get(chave).qtdeSugestao;
+			mapProdutos.get(chave).qtdeProgramada = mapProdutos.get(chave).qtdeEqualizadoSugestao;
 		}
 	}
 
@@ -195,15 +208,17 @@ public class GeracaoPlanoMestre {
 		List<ProdutoPlanoMestre> itens = new ArrayList<ProdutoPlanoMestre>(mapProdutos.values());
 		return new AgrupadorReferCorPlanoMestre(false, itens).getProdutos();
 	}
-	
-	public List<ProdutoPlanoMestrePorCor> getProdutosPorCorPlanoMestre(List<ProdutoPlanoMestre> itens) {				
-		boolean consideraPrevisaoVendas = false;		
-		if (parametros.tipoDistribuicao == 4) consideraPrevisaoVendas = true; 		
+
+	public List<ProdutoPlanoMestrePorCor> getProdutosPorCorPlanoMestre(List<ProdutoPlanoMestre> itens) {
+		boolean consideraPrevisaoVendas = false;
+		if (parametros.tipoDistribuicao == 4)
+			consideraPrevisaoVendas = true;
 		return new AgrupadorReferCorPlanoMestre(consideraPrevisaoVendas, itens).getProdutos();
 	}
-	
-	public PlanoMestreParamProgItem getParametrosProgramacaoItem(long idPlanoMestre, long idItemPlanoMestre, AlternativaRoteiroPadrao alternativaRoteiroPadrao) {		
-		
+
+	public PlanoMestreParamProgItem getParametrosProgramacaoItem(long idPlanoMestre, long idItemPlanoMestre,
+			AlternativaRoteiroPadrao alternativaRoteiroPadrao) {
+
 		PlanoMestreParamProgItem paramProgramacaoItem = new PlanoMestreParamProgItem();
 		paramProgramacaoItem.idPlanoMestre = idPlanoMestre;
 		paramProgramacaoItem.idItemPlanoMestre = idItemPlanoMestre;
@@ -211,9 +226,9 @@ public class GeracaoPlanoMestre {
 		paramProgramacaoItem.periodo = parametros.periodoPadrao;
 		paramProgramacaoItem.alternativa = alternativaRoteiroPadrao.alternativa;
 		paramProgramacaoItem.roteiro = alternativaRoteiroPadrao.roteiro;
-		
+
 		return paramProgramacaoItem;
-	}	
+	}
 
 	public PlanoMestre getCapaPlanoMestre() {
 		return new PlanoMestre(parametros.descricao.toUpperCase());
@@ -221,17 +236,17 @@ public class GeracaoPlanoMestre {
 
 	public PlanoMestreParametros getParametrosPlanoMestre() {
 
-		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros); 
-		
+		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
+
 		PlanoMestreParametros planoMestreParam = new PlanoMestreParametros();
 
 		// Global
-		planoMestreParam.tipoDistribuicao = parametros.tipoDistribuicao;		
+		planoMestreParam.tipoDistribuicao = parametros.tipoDistribuicao;
 		planoMestreParam.descTipoDistribuicao = parametrosFormatados.getDescTipoDistribuicao();
-		
-		planoMestreParam.periodoPadrao = parametros.periodoPadrao;  		 
+		planoMestreParam.periodoPadrao = parametros.periodoPadrao;
 		planoMestreParam.multiplicador = parametros.multiplicador;
-		
+		planoMestreParam.qtdeMinimaReferencia = parametros.qtdeMinimaReferencia;
+
 		// Análise
 		planoMestreParam.colecoes = concatChaveNumerica(parametros.colecoes);
 		planoMestreParam.colecoes_permanentes = concatChaveNumerica(parametros.colecoesPermanentes);
@@ -281,6 +296,9 @@ public class GeracaoPlanoMestre {
 		planoMestreParam.plano7_proc_fim = parametros.perProcFim07;
 		planoMestreParam.plano8_proc_fim = parametros.perProcFim08;
 
+		planoMestreParam.planoAcumProgInicio = parametros.planoAcumProgInicio;
+		planoMestreParam.planoAcumProgFim = parametros.planoAcumProgFim;
+
 		// Estoque
 		planoMestreParam.considera_deposito = parametros.consideraDepositos;
 		planoMestreParam.considera_prod_sem_estq = parametros.mostraProdSemEstoques;
@@ -303,11 +321,11 @@ public class GeracaoPlanoMestre {
 		planoMestreParam.periodoOP = 0;
 		planoMestreParam.observacaoOP = "";
 		planoMestreParam.depositoOP = 504;
-		
+
 		// Ocupação
 		planoMestreParam.periodoInicioOcupacao = 0;
 		planoMestreParam.periodoFimOcupacao = 0;
-		
+
 		return planoMestreParam;
 	}
 
@@ -358,5 +376,5 @@ public class GeracaoPlanoMestre {
 
 		return texto;
 	}
-		
+
 }

@@ -52,3 +52,10 @@ create sequence id_orion_016;
 
 create INDEX INDX_ORION_16_PLANO_MESTRE on orion_016 (num_plano_mestre);
 create INDEX INDX_ORION_16_ITENS on orion_016 (num_plano_mestre, grupo, item);
+
+-- Alteração na tabela (já está em produção)
+
+alter table orion_016
+add (qtde_dem_acum_prog number(6) default 0,
+	 qtde_proc_acum_prog number(6) default 0,
+	 qtde_saldo_acum_prog number(6) default 0);

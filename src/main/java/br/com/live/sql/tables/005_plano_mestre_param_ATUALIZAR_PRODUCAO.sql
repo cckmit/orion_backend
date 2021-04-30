@@ -89,3 +89,10 @@ create table orion_011
 );
 
 comment on table orion_011 is 'Tabela plano mestre de produção - parametros';
+
+-- Alteração na tabela (já está em produção)
+
+alter table orion_011
+add (qtde_minima_referencia number(6) default 0,
+     plano_acum_prog_inicio number(1) default 0,
+	 plano_acum_prog_fim number(1) default 0);

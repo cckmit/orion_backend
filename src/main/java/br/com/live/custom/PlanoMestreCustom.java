@@ -7,6 +7,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.GradeDistribuicaoGrupoItem;
+import br.com.live.model.ConsultaProgramadoReferencia;
+import br.com.live.model.ConsultaItensPlanoMestre;
+import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.ProdutoCompleto;
 import br.com.live.model.ProgramacaoPlanoMestre;
 import br.com.live.util.FormataParametrosPlanoMestre;
@@ -116,7 +120,191 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutoCompleto.class));		
 	}
 	
-	public List<ProgramacaoPlanoMestre> findProgramacaoIdByPlanoMestre(long idPlanoMestre) {
+	
+	private String getQueryItensPorRefCor() {
+	
+		String query = " select a.id, a.NUM_PLANO_MESTRE idPlanoMestre, a.codigo, a.grupo, a.item, "
+			       + " a.rank, a.QTDE_PREVISAO qtdePrevisao, a.QTDE_ESTOQUE qtdeEstoque, "
+			       + " a.QTDE_DEM_PLANO1 qtdeDemPlano1, a.QTDE_DEM_PLANO2 qtdeDemPlano2, a.QTDE_DEM_PLANO3 qtdeDemPlano3, a.QTDE_DEM_PLANO4 qtdeDemPlano4, "
+			       + " a.QTDE_DEM_PLANO5 qtdeDemPlano5, a.QTDE_DEM_PLANO6 qtdeDemPlano6, a.QTDE_DEM_PLANO7 qtdeDemPlano7, a.QTDE_DEM_PLANO8 qtdeDemPlano8, "
+			       + " a.QTDE_PROC_PLANO1 qtdeProcPlano1, a.QTDE_PROC_PLANO2 qtdeProcPlano2, a.QTDE_PROC_PLANO3 qtdeProcPlano3, a.QTDE_PROC_PLANO4 qtdeProcPlano4, "
+			       + " a.QTDE_PROC_PLANO5 qtdeProcPlano5, a.QTDE_PROC_PLANO6 qtdeProcPlano6, a.QTDE_PROC_PLANO7 qtdeProcPlano7, a.QTDE_PROC_PLANO8 qtdeProcPlano8, "
+			       + " a.QTDE_SALDO_PLANO1 qtdeSaldoPlano1, a.QTDE_SALDO_PLANO2 qtdeSaldoPlano2, a.QTDE_SALDO_PLANO3 qtdeSaldoPlano3, a.QTDE_SALDO_PLANO4 qtdeSaldoPlano4, "
+			       + " a.QTDE_SALDO_PLANO5 qtdeSaldoPlano5, a.QTDE_SALDO_PLANO6 qtdeSaldoPlano6, a.QTDE_SALDO_PLANO7 qtdeSaldoPlano7, a.QTDE_SALDO_PLANO8 qtdeSaldoPlano8, "
+			       + " a.QTDE_DEM_ACUMULADO qtdeDemAcumulado, a.QTDE_PROC_ACUMULADO qtdeProcAcumulado, a.QTDE_SALDO_ACUMULADO qtdeSaldoAcumulado, "
+			       + " a.QTDE_DEM_ACUM_PROG qtdeDemAcumProg, a.QTDE_PROC_ACUM_PROG qtdeProcAcumProg, a.QTDE_SALDO_ACUM_PROG qtdeSaldoAcumProg, "
+			       + " a.QTDE_SUGESTAO qtdeSugestao, a.QTDE_EQUALIZADO_SUGESTAO qtdeEqualizadoSugestao, a.QTDE_DIF_SUGESTAO qtdeDiferencaSugestao, a.QTDE_PROGRAMADA qtdeProgramada, "
+			       + " nvl((select 'S' from orion_030 o "
+		           + " where o.nivel = '1' "
+		           + " and o.grupo = a.grupo "
+		           + " and o.item = a.item),'N') sugCancelProd, "
+		           + " nvl((select max(b.codigo_cliente) from basi_010 b "
+		           + " where b.nivel_estrutura = '1' "
+		           + " and b.grupo_estrutura = a.grupo "
+		           + " and b.item_estrutura = a.item "
+		           + " ),' ') embarque "	       
+		           + " from orion_016 a ";
+		
+		return query;
+	}
+	
+	public List<ConsultaItensPlanoMestre> findItensPorRefCorByIdPlanoMestre(long idPlanoMestre) {
+			
+		String query = getQueryItensPorRefCor();
+		query += " where a.num_plano_mestre = " + idPlanoMestre;
+				
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaItensPlanoMestre.class));
+	}
+
+	public ConsultaItensPlanoMestre findItensPorRefCorByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item) {
+		
+		String query = getQueryItensPorRefCor();
+		
+		query += " where a.num_plano_mestre = " + idPlanoMestre;
+		query += "	and a.grupo = '" + grupo + "'";
+		query += " and a.item = '" + item + "'";
+				
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaItensPlanoMestre.class));
+	}
+	
+	public List<ConsultaItensTamPlanoMestre> findItensPorTamByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item) {
+				
+		String query = " select rownum id, a.num_plano_mestre idPlanoMestre, a.grupo, a.item, c.ordem_tamanho ordem, b.tamanho_ref sub, "
+		   + " nvl((select m.qtde_estoque "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeEstoque, "
+		   + " nvl((select m.qtde_dem_acum_prog "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeDemanda, "
+		   + " nvl((select m.qtde_proc_acum_prog "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeProcesso, "
+		   + " nvl((select m.qtde_saldo_acum_prog "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeSaldo, "
+		   + " nvl((select m.qtde_sugestao "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeSugestao, "
+		   + " nvl((select m.qtde_equalizado_sugestao "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeEqualizado, "
+		   + " nvl((select m.qtde_dif_sugestao "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeDiferenca, "
+		   + " nvl((select m.qtde_programada "
+		   + " from orion_015 m "
+		   + " where m.num_plano_mestre = a.num_plano_mestre "
+		   + " and m.nivel = '1' "
+		   + " and m.grupo = a.grupo "
+		   + " and m.sub = b.tamanho_ref "
+		   + " and m.item = a.item),0) qtdeProgramada "
+		   + " from orion_016 a, basi_020 b, basi_220 c "
+		   + " where b.basi030_nivel030 = '1' "
+		   + " and b.basi030_referenc = a.grupo "
+		   + " and c.tamanho_ref = b.tamanho_ref "		   
+		   + " and a.num_plano_mestre = " + idPlanoMestre		
+		   + " and a.grupo = '" + grupo + "'"
+		   + " and a.item = '" + item + "'"
+		   + " order by a.num_plano_mestre, a.grupo, a.item, c.ordem_tamanho ";		
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaItensTamPlanoMestre.class));
+	}	
+
+	public List<ConsultaProgramadoReferencia> findProgramacaoPorReferenciaByIdPlanoMestre(long idPlanoMestre) {
+				
+		String query = " select o.grupo, sum(o.qtde_programada) quantidade" 
+		+ " from orion_015 o "
+		+ " where o.num_plano_mestre = " + idPlanoMestre
+		+ " group by o.grupo "
+		+ " order by o.grupo ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaProgramadoReferencia.class));		
+	}	
+	
+	public List<GradeDistribuicaoGrupoItem> findDemandaByIdPlanoMestreGrupo(long idPlanoMestre, String grupo) {
+		
+		String query = " select o.grupo, o.item, sum(o.qtde_dem_acum_prog) qtdeItem, "				
+		+ "	(select sum(g.qtde_dem_acum_prog) from orion_015 g "
+		+ "	where g.num_plano_mestre = " + idPlanoMestre
+		+ "	and g.grupo = o.grupo) qtdeGrupo "
+		+ " from orion_015 o "
+		+ " where o.num_plano_mestre = " + idPlanoMestre
+		+ " and o.grupo = '" + grupo + "' "
+		+ " group by o.grupo, o.item "
+		+ " order by o.grupo, o.item ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(GradeDistribuicaoGrupoItem.class));
+	}	
+
+	public List<GradeDistribuicaoGrupoItem> findSugestaoByIdPlanoMestreGrupo(long idPlanoMestre, String grupo) {
+		
+		String query = " select o.grupo, o.item, sum(o.qtde_sugestao) qtdeItem, "
+		+ " (select sum(g.qtde_sugestao) from orion_015 g " 
+		+ " where g.num_plano_mestre = " + idPlanoMestre
+		+ " and g.grupo = o.grupo) qtdeGrupo " 
+		+ " from orion_015 o "
+		+ " where o.num_plano_mestre = " + idPlanoMestre
+		+ " and o.grupo = '" + grupo + "' "
+		+ " group by o.grupo, o.item "
+		+ " order by o.grupo, o.item ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(GradeDistribuicaoGrupoItem.class));
+	}	
+	
+	public List<GradeDistribuicaoGrupoItem> findDistribuicaoPadraoCorByIdPlanoMestreGrupo(long idPlanoMestre, String grupo) {
+		
+		String query = " select a.grupo_estrutura grupo, a.item_estrutura item, sum(a.distribuicao_cor) qtdeItem, "
+		+ "	(select nvl(sum(b.distribuicao_cor),0) "
+		+ "	from basi_010 b "
+		+ "	where b.nivel_estrutura = '1' "
+		+ "	and b.grupo_estrutura = a.grupo_estrutura "
+		+ "	and b.item_estrutura in (select g.item from orion_016 g "
+		+ "	where g.num_plano_mestre = " + idPlanoMestre
+		+ "	and g.grupo = a.grupo_estrutura)) qtdeGrupo "
+		+ "	from orion_016 o, basi_010 a "
+		+ "	where o.num_plano_mestre = " + idPlanoMestre
+		+ " and o.grupo = '" + grupo + "'" 
+		+ "	and a.nivel_estrutura = '1' "
+		+ "	and a.grupo_estrutura = o.grupo "
+		+ "	and a.item_estrutura = o.item "
+		+ "	group by a.grupo_estrutura, a.item_estrutura "
+		+ "	order by a.grupo_estrutura, a.item_estrutura ";
+		
+		System.out.println("query: " + query);
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(GradeDistribuicaoGrupoItem.class));
+	}	
+	
+	
+	public List<ProgramacaoPlanoMestre> findProgramacaoByIdPlanoMestre(long idPlanoMestre) {
 
 		String query = "select a.grupo, a.sub, a.item, a.qtde_programada, c.alternativa, c.roteiro, c.periodo from orion_015 a, orion_016 b, orion_017 c "
 				+ " where a.num_plano_mestre = " + idPlanoMestre + " and b.num_plano_mestre = a.num_plano_mestre "

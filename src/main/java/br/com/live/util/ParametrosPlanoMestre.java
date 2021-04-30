@@ -2,8 +2,8 @@ package br.com.live.util;
 
 import java.util.List;
 
-import br.com.live.entity.PlanoMestreConsultaItens;
-import br.com.live.entity.PlanoMestreConsultaTamanhos;
+import br.com.live.model.ConsultaItensPlanoMestre;
+import br.com.live.model.ConsultaItensTamPlanoMestre;
 
 public class ParametrosPlanoMestre {
 	
@@ -11,6 +11,7 @@ public class ParametrosPlanoMestre {
     public int periodoPadrao; 
     public int tipoDistribuicao; 
     public int multiplicador;
+    public int qtdeMinimaReferencia;
 	
 	public List<ConteudoChaveNumerica> colecoes;
 	public List<ConteudoChaveNumerica> colecoesPermanentes;	
@@ -62,6 +63,9 @@ public class ParametrosPlanoMestre {
 	public int perProcFim07;
 	public int perProcFim08;
 	
+	public int planoAcumProgInicio;
+	public int planoAcumProgFim;
+	
 	public int consideraDepositos; 
 	public int mostraProdSemEstoques; 
 	public int mostraProdSemProcessos; 
@@ -72,8 +76,8 @@ public class ParametrosPlanoMestre {
 	public long idPlanoMestre;
 	public int situacaoPlanoMestre;
 	public String codigoGrupoCor;
-	public List<PlanoMestreConsultaItens> itensPlanoMestre;
-	public List<PlanoMestreConsultaTamanhos> gradeTamanhosItem;
+	public List<ConsultaItensPlanoMestre> itensPlanoMestre;
+	public List<ConsultaItensTamPlanoMestre> gradeTamanhosItem;
 		
 	// Parâmetros Programação
 	public String codGrupoItemProg;

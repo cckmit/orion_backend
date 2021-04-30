@@ -82,11 +82,11 @@ public class AgrupadorReferCorPlanoMestre {
 			produto = mapProdutos.get(chave);
 
 			if (consideraPrevisaoVendas) {
-				produto.qtdeSaldoAcumulado = produto.qtdeSaldoAcumulado - produto.qtdePrevisao;
+				produto.qtdeSaldoAcumProg = produto.qtdeSaldoAcumProg - produto.qtdePrevisao;
 			}			
 			
-			if (produto.qtdeSaldoAcumulado < 0)
-				produto.qtdeSugestao = (produto.qtdeSaldoAcumulado * -1);
+			if (produto.qtdeSaldoAcumProg < 0)
+				produto.qtdeSugestao = (produto.qtdeSaldoAcumProg * -1);
 
 			produto.qtdeEqualizadoSugestao = produto.qtdeSugestao; 
 			produto.qtdeDiferencaSugestao = produto.qtdeEqualizadoSugestao - produto.qtdeSugestao;
@@ -149,6 +149,10 @@ public class AgrupadorReferCorPlanoMestre {
 			produtoCor.qtdeSaldoPlano7 += produto.qtdeSaldoPlano7;
 			produtoCor.qtdeSaldoPlano8 += produto.qtdeSaldoPlano8;
 
+			produtoCor.qtdeDemAcumProg += produto.qtdeDemAcumProg;
+			produtoCor.qtdeProcAcumProg += produto.qtdeProcAcumProg;
+			produtoCor.qtdeSaldoAcumProg += produto.qtdeSaldoAcumProg;
+			
 			produtoCor.qtdeDemAcumulado += produto.qtdeDemAcumulado;
 			produtoCor.qtdeProcAcumulado += produto.qtdeProcAcumulado;
 			produtoCor.qtdeSaldoAcumulado += produto.qtdeSaldoAcumulado;

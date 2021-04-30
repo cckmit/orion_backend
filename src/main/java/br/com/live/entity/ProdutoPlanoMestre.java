@@ -112,6 +112,15 @@ public class ProdutoPlanoMestre {
 	@Column(name = "qtde_saldo_acumulado")
 	public int qtdeSaldoAcumulado;
 	
+	@Column(name = "qtde_dem_acum_prog")
+	public int qtdeDemAcumProg;
+	
+	@Column(name = "qtde_proc_acum_prog")
+	public int qtdeProcAcumProg;
+	
+	@Column(name = "qtde_saldo_acum_prog")
+	public int qtdeSaldoAcumProg;	
+	
 	@Column(name = "qtde_sugestao")
 	public int qtdeSugestao;
 	
@@ -167,6 +176,10 @@ public class ProdutoPlanoMestre {
 		this.qtdeProcAcumulado = 0;
 		this.qtdeSaldoAcumulado = 0;
 		
+		this.qtdeDemAcumProg = 0;
+		this.qtdeProcAcumProg = 0;
+		this.qtdeSaldoAcumProg = 0;
+				
 		this.qtdeSugestao = 0;				
 		this.qtdeEqualizadoSugestao = 0;				
 		this.qtdeDiferencaSugestao = 0;				
@@ -175,7 +188,7 @@ public class ProdutoPlanoMestre {
 
 	public ProdutoPlanoMestre(String nivel, String grupo, String sub, String item) {
 		this();
-
+ 
 		this.nivel = nivel;
 		this.grupo = grupo;
 		this.sub = sub;

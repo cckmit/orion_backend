@@ -14,9 +14,9 @@ import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestreParametros;
 import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.OcupacaoPlanoMestre;
+import br.com.live.model.ConsultaItensPlanoMestre;
+import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.PreOrdemProducaoIndicadores;
-import br.com.live.entity.PlanoMestreConsultaItens;
-import br.com.live.entity.PlanoMestreConsultaTamanhos;
 import br.com.live.entity.PlanoMestreParamProgItem;
 import br.com.live.service.PlanoMestreService;
 import br.com.live.util.CodigoGrupoItem;
@@ -46,13 +46,13 @@ public class PlanoMestreController {
 	}
 	
 	@RequestMapping(value = "/salvar-itens", method = RequestMethod.POST)
-	public List<PlanoMestreConsultaItens> salvarItens(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<ConsultaItensPlanoMestre> salvarItens(@RequestBody ParametrosPlanoMestre parametros) {
 		planoMestreService.salvarItens(parametros.itensPlanoMestre);
 		return planoMestreService.findProdutos(parametros.idPlanoMestre);
 	}
 
 	@RequestMapping(value = "/salvar-grade", method = RequestMethod.POST)
-	public List<PlanoMestreConsultaTamanhos> salvarGrade(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<ConsultaItensTamPlanoMestre> salvarGrade(@RequestBody ParametrosPlanoMestre parametros) {
 		planoMestreService.salvarGrade(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codigoGrupoCor),
 				CodigoGrupoItem.getItem(parametros.codigoGrupoCor), parametros.gradeTamanhosItem);
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre,
@@ -82,12 +82,12 @@ public class PlanoMestreController {
 	}
 
 	@RequestMapping(value = "/produtos/{id}", method = RequestMethod.GET)
-	public List<PlanoMestreConsultaItens> findProdutos(@PathVariable("id") long idPlanoMestre) {
+	public List<ConsultaItensPlanoMestre> findProdutos(@PathVariable("id") long idPlanoMestre) {
 		return planoMestreService.findProdutos(idPlanoMestre);
 	}
 
 	@RequestMapping(value = "/tamanhos/{id}/{codigo}", method = RequestMethod.GET)
-	public List<PlanoMestreConsultaTamanhos> findTamanhos(@PathVariable("id") long idPlanoMestre,
+	public List<ConsultaItensTamPlanoMestre> findTamanhos(@PathVariable("id") long idPlanoMestre,
 			@PathVariable("codigo") String codigo) {
 		return planoMestreService.findTamanhos(idPlanoMestre, CodigoGrupoItem.getGrupo(codigo),
 				CodigoGrupoItem.getItem(codigo));
@@ -106,7 +106,7 @@ public class PlanoMestreController {
 	}
 
 	@RequestMapping(value = "/salvar-param-programacao", method = RequestMethod.POST)
-	public List<PlanoMestreConsultaTamanhos> salvarParamProgramacao(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<ConsultaItensTamPlanoMestre> salvarParamProgramacao(@RequestBody ParametrosPlanoMestre parametros) {
 		planoMestreService.salvarParametrosProgramacaoItem(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg), parametros.alternativaProg, parametros.roteiroProg, parametros.periodoProg, parametros.multiplicadorProg);		
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg));
 	}

@@ -25,6 +25,9 @@ public class PlanoMestreParametros {
 	
 	public int multiplicador;
 	
+	@Column(name="qtde_minima_referencia")
+	public int qtdeMinimaReferencia;
+	
 	// Análise Produto
 	public String colecoes;
 	public String colecoes_permanentes;
@@ -74,6 +77,11 @@ public class PlanoMestreParametros {
 	public int plano7_proc_fim;
 	public int plano8_proc_fim;
 	 
+	@Column(name="plano_acum_prog_inicio")
+	public int planoAcumProgInicio;
+	@Column(name="plano_acum_prog_fim")
+	public int planoAcumProgFim;
+	
 	// Estoque
 	public int considera_deposito;
 	public int considera_prod_sem_estq;
@@ -109,7 +117,19 @@ public class PlanoMestreParametros {
 	public int periodoInicioOcupacao;	
 	@Column(name="periodo_fim_ocupacao")
 	public int periodoFimOcupacao;	
-
+	
+	public int getPlanoAcumProgInicio() {
+		return planoAcumProgInicio;
+	}
+	public void setPlanoAcumProgInicio(int planoAcumProgInicio) {
+		this.planoAcumProgInicio = planoAcumProgInicio;
+	}
+	public int getPlanoAcumProgFim() {
+		return planoAcumProgFim;
+	}
+	public void setPlanoAcumProgFim(int planoAcumProgFim) {
+		this.planoAcumProgFim = planoAcumProgFim;
+	}
 	public int getPeriodoInicioOcupacao() {
 		return periodoInicioOcupacao;
 	}
