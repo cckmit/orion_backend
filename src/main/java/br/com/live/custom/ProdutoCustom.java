@@ -269,4 +269,23 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MarcacaoRisco.class));
 	}
 
+	public boolean existsItem(String grupo, String item) {
+		
+		int encontrou = 0;
+		
+		String query = " select 1 from basi_010 a "
+		+ " where a.nivel_estrutura = '1' "
+		+ " and a.grupo_estrutura = '" + grupo + "'"
+		+ " and a.item_estrutura = '" + item + "'"
+		+ " and rownum = 1 ";
+		
+		try {
+			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+
+		return (encontrou == 1);
+	}
+	
 }

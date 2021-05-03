@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class ConsultaPrevisaoVendasItens {
+public class ConsultaPrevisaoVendasItem {
 
 	public String id;
 	public String grupo;
@@ -14,8 +14,8 @@ public class ConsultaPrevisaoVendasItens {
 	public String grupoBase;
 	public String itemBase;
 	public String descricaoBase;
-	public int qtdeVendidaBase;
-	public int percentualAplicar;	
+	public int qtdeVendidaBase;	           
+	public int percAplicar;	
 	public int qtdePrevisao;
 	
 	public String getDescricaoBase() {
@@ -122,12 +122,12 @@ public class ConsultaPrevisaoVendasItens {
 		this.qtdeVendidaBase = qtdeVendidaBase;
 	}
 
-	public int getPercentalAplicar() {
-		return percentualAplicar;
+	public int getPercAplicar() {
+		return percAplicar;
 	}
 
-	public void setPercentalAplicar(int percentualAplicar) {
-		this.percentualAplicar = percentualAplicar;
+	public void setPercAplicar(int percAplicar) {
+		this.percAplicar = percAplicar;
 	}
 
 	public int getQtdePrevisao() {

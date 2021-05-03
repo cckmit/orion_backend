@@ -15,18 +15,16 @@ public class PlanoMestreParametros {
 	 	
 	// Global
 	@Column(name="periodo_padrao")
-	public int periodoPadrao ; 
-	 
+	public int periodoPadrao; 	 
 	@Column(name="tipo_distribuicao")
-	public int tipoDistribuicao ; 
-	 
+	public int tipoDistribuicao ; 	 
 	@Column(name="desc_tipo_distribuicao")
-	public String descTipoDistribuicao ; 	
-	
-	public int multiplicador;
-	
+	public String descTipoDistribuicao ; 		
+	public int multiplicador;	
 	@Column(name="qtde_minima_referencia")
 	public int qtdeMinimaReferencia;
+	@Column(name="id_previsao_vendas")
+	public long idPrevisaoVendas;
 	
 	// Análise Produto
 	public String colecoes;

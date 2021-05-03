@@ -2,7 +2,8 @@ package br.com.live.util;
 
 import java.util.List;
 
-import br.com.live.model.ConsultaPrevisaoVendasItens;
+import br.com.live.model.ConsultaPrevisaoVendasItem;
+import br.com.live.model.ConsultaPrevisaoVendasItemTam;
 
 public class BodyPrevisaoVendas {
 
@@ -10,8 +11,11 @@ public class BodyPrevisaoVendas {
 	public String descricao;	
 	public int colecao;
 	public String idTabelaPrecoSellIn; 
-	public String idTabelaPrecoSellOut;	
-	public List<ConsultaPrevisaoVendasItens> previsoesVendasItens;
+	public String idTabelaPrecoSellOut;		
+	public List<ConsultaPrevisaoVendasItem> previsaoVendasItens;
+	
+	public String codigoGrupoItem;
+	public List<ConsultaPrevisaoVendasItemTam> previsaoVendasItemTamanhos;
 
 	public int getColTabPrecoSellIn() {
 		String[] codigoSeparado = idTabelaPrecoSellIn.split("[.]");

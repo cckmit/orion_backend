@@ -246,6 +246,7 @@ public class GeracaoPlanoMestre {
 		planoMestreParam.periodoPadrao = parametros.periodoPadrao;
 		planoMestreParam.multiplicador = parametros.multiplicador;
 		planoMestreParam.qtdeMinimaReferencia = parametros.qtdeMinimaReferencia;
+		planoMestreParam.idPrevisaoVendas = parametros.idPrevisaoVendas;
 
 		// Análise
 		planoMestreParam.colecoes = concatChaveNumerica(parametros.colecoes);

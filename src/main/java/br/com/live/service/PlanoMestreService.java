@@ -434,10 +434,8 @@ public class PlanoMestreService {
 		planoMestreParametrosRepository.save(planoMestreParametros);
 
 		for (ProdutoPlanoMestre produtoPlanoMestre : produtos) {
-			produtoPlanoMestre.idPlanoMestre = planoMestre.id;
-			produtoPlanoMestre.qtdePrevisao = 0; // TODO - IMPLEMENTAR A REGRA NOVAMENTE:
-													// previsaoVendasCustom.findPrevisaoVendaByProduto(planoMestreParametros.colecoes,
-													// produtoPlanoMestre.grupo, produtoPlanoMestre.item);
+			produtoPlanoMestre.idPlanoMestre = planoMestre.id;			
+			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(planoMestreParametros.idPrevisaoVendas, produtoPlanoMestre.grupo, produtoPlanoMestre.item);			
 			produtoPlanoMestreRepository.save(produtoPlanoMestre);
 		}
 
@@ -655,8 +653,8 @@ public class PlanoMestreService {
 
 		PlanoMestrePreOrdem preOrdem;
 
-		int idPreOrdem = planoMestreCustom.findMaxIdPreOrdem();
-		int idPreOrdemItem = planoMestreCustom.findMaxIdPreOrdemItem();
+		int idPreOrdem = planoMestreCustom.findNextIdPreOrdem();
+		int idPreOrdemItem = planoMestreCustom.findNextIdPreOrdemItem();
 
 		for (Integer idMap : mapPreOrdens.keySet()) {
 

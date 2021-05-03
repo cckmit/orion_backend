@@ -15,5 +15,5 @@ public interface PrevisaoVendasRepository extends JpaRepository<PrevisaoVendas, 
 	
 	@Query("SELECT p FROM PrevisaoVendas p where p.id = :idPrevisaoVendas ")
 	PrevisaoVendas findById(long idPrevisaoVendas);
-	
+			
 }

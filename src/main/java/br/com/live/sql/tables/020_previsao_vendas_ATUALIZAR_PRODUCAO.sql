@@ -15,7 +15,7 @@ create table orion_040
 comment on table orion_040 is 'Tabela de previsão de vendas - capa';
 
 create table orion_041
-(id varchar2(30), -- idPrevisao - Referência - Cor 999999999-99999-999999
+(id varchar2(50), -- idPrevisaoVendas - grupo - item
  id_previsao_vendas number(9),
  grupo varchar2(5),
  item varchar2(6),
@@ -31,5 +31,24 @@ create table orion_041
 ); 
 
 comment on table orion_041 is 'Tabela de previsão de vendas - itens';
-
 create INDEX INDX_ORION_41_PREV_VENDAS on orion_041 (id_previsao_vendas);
+create INDEX INDX_ORION_41_PRODUTO on orion_041 (id_previsao_vendas, grupo, item);
+
+create table orion_042
+(id varchar2(50), -- idPrevisaoVendas - grupo - item - sub
+ id_previsao_vendas number(9),
+ id_item_previsao_vendas varchar2(50),
+ grupo varchar2(5),
+ item varchar2(6),
+ sub varchar2(3),
+ qtde_previsao number(6) default 0,
+ constraint orion_042_pk primary key (id),
+ constraint fk_orion_042_orion_040  foreign key (id_previsao_vendas) references orion_040 (id),
+ constraint fk_orion_042_orion_041  foreign key (id_item_previsao_vendas) references orion_041 (id)
+); 
+
+comment on table orion_042 is 'Tabela de previsão de vendas - itens e tamanhos';
+create INDEX INDX_ORION_42_PREV_VENDAS on orion_042 (id_previsao_vendas);
+create INDEX INDX_ORION_42_ITEM_PREV_VENDAS on orion_042 (id_previsao_vendas, id_item_previsao_vendas);
+create INDEX INDX_ORION_42_PRODUTO on orion_042 (id_previsao_vendas, grupo, item, sub);
+

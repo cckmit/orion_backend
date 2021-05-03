@@ -12,6 +12,7 @@ public class ParametrosPlanoMestre {
     public int tipoDistribuicao; 
     public int multiplicador;
     public int qtdeMinimaReferencia;
+    public long idPrevisaoVendas;
 	
 	public List<ConteudoChaveNumerica> colecoes;
 	public List<ConteudoChaveNumerica> colecoesPermanentes;	

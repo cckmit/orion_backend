@@ -473,7 +473,7 @@ public class PlanoMestreCustom {
 		return id;
 	}		
 	
-	public int findMaxIdPreOrdem() {
+	public int findNextIdPreOrdem() {
 
 		Integer id;
 
@@ -488,7 +488,7 @@ public class PlanoMestreCustom {
 		return (int) id;
 	}
 
-	public int findMaxIdPreOrdemItem() {
+	public int findNextIdPreOrdemItem() {
 
 		Integer id;
 

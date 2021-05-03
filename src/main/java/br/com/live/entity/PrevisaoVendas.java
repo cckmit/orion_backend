@@ -42,7 +42,7 @@ public class PrevisaoVendas {
 			int seqTabPrecoSellOut) {
 		
 		this.id = id;
-		this.descricao = descricao;
+		this.descricao = descricao.toUpperCase();
 		this.colecao = colecao; 
 		this.colTabPrecoSellIn = colTabPrecoSellIn; 
 		this.mesTabPrecoSellIn = mesTabPrecoSellIn;

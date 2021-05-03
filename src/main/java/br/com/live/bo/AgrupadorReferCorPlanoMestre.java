@@ -82,6 +82,7 @@ public class AgrupadorReferCorPlanoMestre {
 			produto = mapProdutos.get(chave);
 
 			if (consideraPrevisaoVendas) {
+				produto.qtdeSaldoAcumulado = produto.qtdeSaldoAcumulado - produto.qtdePrevisao;
 				produto.qtdeSaldoAcumProg = produto.qtdeSaldoAcumProg - produto.qtdePrevisao;
 			}			
 			
