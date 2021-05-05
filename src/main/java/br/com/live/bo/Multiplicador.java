@@ -27,6 +27,10 @@ public class Multiplicador {
 		} else
 			iNovaQtde = (int) (iValorInt * nMultAux);
 
+		// Arrendodar sempre para cima!		
+		iValorInt = (quantidade - iNovaQtde);
+		if (iValorInt > 0) iNovaQtde = iNovaQtde + multiplicador;
+		
 		return iNovaQtde;
 	}
 

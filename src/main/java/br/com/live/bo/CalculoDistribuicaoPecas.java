@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.live.entity.ProdutoPlanoMestre;
+import br.com.live.model.ConsultaPrevisaoVendasItemTam;
 import br.com.live.model.MarcacaoRisco;
 
 public class CalculoDistribuicaoPecas {
@@ -87,36 +88,34 @@ public class CalculoDistribuicaoPecas {
 		double proporcao = 0.000;
 		double qtdeProgramar = (int) qtdeDistribuir;
 
-		// System.out.println("qtdeDistribuir: " + qtdeDistribuir);
+		//System.out.println("qtdeDistribuir: " + qtdeDistribuir);
 
 		List<ProdutoPlanoMestre> produtosAtualizados = new ArrayList<ProdutoPlanoMestre>();
 
 		for (ProdutoPlanoMestre produto : produtos) {
-			qtdeTotalDemanda += produto.qtdeDemAcumulado;
-			qtdeTotalSaldo += produto.qtdeSaldoAcumulado;
+			qtdeTotalDemanda += produto.qtdeDemAcumProg;
+			if (produto.qtdeSaldoAcumProg < 0) qtdeTotalSaldo += produto.qtdeSaldoAcumProg;
 		}
 
-		// System.out.println("qtdeProgramar: " + qtdeProgramar + " - qtdeTotalSaldo: "
-		// + qtdeTotalSaldo);
+		//System.out.println("qtdeProgramar: " + qtdeProgramar + " - qtdeTotalSaldo: "
+		//+ qtdeTotalSaldo);
 
 		qtdeProgramar += qtdeTotalSaldo;
 
 		for (ProdutoPlanoMestre produto : produtos) {
-			proporcao = produto.qtdeDemAcumulado / qtdeTotalDemanda;
+			proporcao = produto.qtdeDemAcumProg / qtdeTotalDemanda;
 			produto.qtdeProgramada = (int) Math.ceil(qtdeProgramar * proporcao);
 
-			// System.out.println(produto.sub + " produto.qtdeProgramada: " +
-			// produto.qtdeProgramada);
+			//System.out.println(produto.sub + " produto.qtdeProgramada: " +
+			//produto.qtdeProgramada);
 
-			produto.qtdeProgramada = (produto.qtdeProgramada - (produto.qtdeSaldoAcumulado));
-
-			/*
-			if ((produto.grupo.equalsIgnoreCase("83351")) && (produto.item.equalsIgnoreCase("00BC01"))) {
-				System.out.println(produto.grupo + " " + produto.item);
-				System.out.println("produto.qtdeProgramada: " + produto.qtdeProgramada + " qtdeProgramar: "
-						+ qtdeProgramar + " produto.qtdeSaldoAcumulado: " + produto.qtdeSaldoAcumulado + " qtdeDistribuir: " + qtdeDistribuir);
-			}
-			*/
+			produto.qtdeProgramada = (produto.qtdeProgramada - (produto.qtdeSaldoAcumProg));
+			
+			//if ((produto.grupo.equalsIgnoreCase("83351")) && (produto.item.equalsIgnoreCase("00BC01"))) {
+			//	System.out.println(produto.grupo + " " + produto.item);
+			//	System.out.println("produto.qtdeProgramada: " + produto.qtdeProgramada + " qtdeProgramar: "
+			//			+ qtdeProgramar + " produto.qtdeSaldoAcumulado: " + produto.qtdeSaldoAcumProg + " qtdeDistribuir: " + qtdeDistribuir + " proporcao: " + proporcao);
+			//}			
 				
 			if ((produto.qtdeProgramada <= 0) || (qtdeDistribuir <= 0))
 				produto.qtdeProgramada = 0;
@@ -127,4 +126,37 @@ public class CalculoDistribuicaoPecas {
 		return produtosAtualizados;
 	}
 
+	
+	public static List<ProdutoPlanoMestre> distribuirPelaGradePrevisao(int qtdeDistribuir, List<ProdutoPlanoMestre> produtos, List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos) {
+		
+		double qtdeTotalPrevisao = 0.000;
+		double proporcao = 0.000;
+		Double qtdeTamanho = 0.000;
+
+		Map<String, Double> mapGradePrevisao = new HashMap<String, Double>();
+		List<ProdutoPlanoMestre> produtosAtualizados = new ArrayList<ProdutoPlanoMestre>();
+
+		for (ConsultaPrevisaoVendasItemTam previsao : previsaoTamanhos) {
+			qtdeTotalPrevisao += previsao.qtdePrevisao;			
+			mapGradePrevisao.put(previsao.sub, (double) previsao.qtdePrevisao);
+		}
+
+		for (ProdutoPlanoMestre produto : produtos) {
+			qtdeTamanho = mapGradePrevisao.get(produto.sub);
+			
+			if (qtdeTamanho == null)
+				qtdeTamanho = 0.000;
+
+			if (qtdeTotalPrevisao > 0.000)
+				proporcao = qtdeTamanho / qtdeTotalPrevisao;
+			else
+				proporcao = 0.000;
+						
+			produto.qtdeProgramada = (int) Math.ceil((double) qtdeDistribuir * proporcao);
+			produtosAtualizados.add(produto);
+		}
+
+		return produtosAtualizados;
+	}
+	
 }

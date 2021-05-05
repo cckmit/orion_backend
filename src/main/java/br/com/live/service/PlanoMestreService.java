@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import br.com.live.bo.CalculoDistribuicaoPecas;
 import br.com.live.bo.CopiarPlanoMestre;
@@ -35,6 +34,7 @@ import br.com.live.model.AlternativaRoteiroPadrao;
 import br.com.live.model.ArtigoCapacidadeProducao;
 import br.com.live.model.ConsultaProgramadoReferencia;
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.ConsultaPrevisaoVendasItemTam;
 import br.com.live.model.EstagioCapacidadeProducao;
 import br.com.live.model.GradeDistribuicaoGrupoItem;
 import br.com.live.model.MarcacaoRisco;
@@ -305,7 +305,7 @@ public class PlanoMestreService {
 				produtos = calcularGradeNegativa(produtoCor); 
 
 			if (parametros.tipoDistribuicao == 4)
-				produtos = calcularGradePadrao(produtoCor);
+				produtos = calcularGradePrevisao(produtoCor, parametros.idPrevisaoVendas);
 
 			produtoPlanoMestreRepository.saveAll(produtos);
 
@@ -498,7 +498,7 @@ public class PlanoMestreService {
 
 		return CalculoDistribuicaoPecas.distribuirPelaGradePadrao(produtoCor.qtdeProgramada, produtos, marcacoesRisco);
 	}
-
+	
 	private void calcularGradeVendaParaPlano(long idPlanoMestre) {
 
 		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
@@ -543,9 +543,38 @@ public class PlanoMestreService {
 	}
 
 	private void calcularGradePrevisaoParaPlano(long idPlanoMestre) {
-		calcularGradePadraoParaPlano(idPlanoMestre);
+		
+		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
+
+		List<ProdutoPlanoMestrePorCor> produtosCor = produtoPlanoMestrePorCorRepository
+				.findByIdPlanoMestre(idPlanoMestre);
+
+		for (ProdutoPlanoMestrePorCor produtoCor : produtosCor) {
+			List<ProdutoPlanoMestre> produtos = calcularGradePrevisao(produtoCor, parametros.idPlanoMestre);
+			produtoPlanoMestreRepository.saveAll(produtos);
+
+			aplicarMultiplicadorItem(idPlanoMestre, parametros.multiplicador, produtoCor);
+		}
 	}
 
+	private List<ProdutoPlanoMestre> calcularGradePrevisao(ProdutoPlanoMestrePorCor produtoCor, long idPrevisaoVendas) {
+		
+		List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos = previsaoVendasCustom.findPrevisaoVendasItemTamByIdPrevisaoVendasGrupoItem(idPrevisaoVendas, produtoCor.grupo, produtoCor.item);
+
+		int qtdePrevisao = 0;
+		
+		for (ConsultaPrevisaoVendasItemTam previsao : previsaoTamanhos) {
+			qtdePrevisao += previsao.qtdePrevisao;
+		}
+		
+		if (qtdePrevisao == 0) return calcularGradePadrao(produtoCor);
+		
+		List<ProdutoPlanoMestre> produtos = produtoPlanoMestreRepository
+				.findByIdPlanoCodGrupoCor(produtoCor.idPlanoMestre, produtoCor.grupo, produtoCor.item);
+		
+		return CalculoDistribuicaoPecas.distribuirPelaGradePrevisao(produtoCor.qtdeProgramada, produtos, previsaoTamanhos);
+	}	
+	
 	private void aplicarMultiplicadorItem(long idPlanoMestre, int multiplicador, ProdutoPlanoMestrePorCor produtoCor) {
 
 		int qtdeProgramada = 0;
