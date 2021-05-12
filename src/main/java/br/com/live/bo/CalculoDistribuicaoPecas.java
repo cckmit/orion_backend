@@ -18,8 +18,6 @@ public class CalculoDistribuicaoPecas {
 		double proporcao = 0.000;
 		double sugestao = 0.000;
 
-		// System.out.println(qtdeDistribuir);
-
 		List<ProdutoPlanoMestre> produtosAtualizados = new ArrayList<ProdutoPlanoMestre>();
 
 		for (ProdutoPlanoMestre produto : produtos) {
@@ -35,11 +33,8 @@ public class CalculoDistribuicaoPecas {
 				proporcao = 0.000;
 
 			produto.qtdeProgramada = (int) Math.ceil((double) qtdeDistribuir * proporcao);
-
-			// System.out.println(qtdeDistribuir);
-			// System.out.println("proporcao: " + proporcao + " qtdeDistribuir: " +
-			// qtdeDistribuir + " programada: " + produto.qtdeProgramada);
-
+			produto.qtdeProgramada = verificaQtdeMinimaProgramar(qtdeDistribuir, produto.qtdeProgramada, produto.qtdeSaldoAcumProg);
+			
 			produtosAtualizados.add(produto);
 		}
 
@@ -73,7 +68,10 @@ public class CalculoDistribuicaoPecas {
 				proporcao = qtdeTamanho / qtdeMarcacoes;
 			else
 				proporcao = 0.000;
+			
 			produto.qtdeProgramada = (int) Math.ceil((double) qtdeDistribuir * proporcao);
+			produto.qtdeProgramada = verificaQtdeMinimaProgramar(qtdeDistribuir, produto.qtdeProgramada, produto.qtdeSaldoAcumProg);
+			
 			produtosAtualizados.add(produto);
 		}
 
@@ -117,8 +115,7 @@ public class CalculoDistribuicaoPecas {
 			//			+ qtdeProgramar + " produto.qtdeSaldoAcumulado: " + produto.qtdeSaldoAcumProg + " qtdeDistribuir: " + qtdeDistribuir + " proporcao: " + proporcao);
 			//}			
 				
-			if ((produto.qtdeProgramada <= 0) || (qtdeDistribuir <= 0))
-				produto.qtdeProgramada = 0;
+			produto.qtdeProgramada = verificaQtdeMinimaProgramar(qtdeDistribuir, produto.qtdeProgramada, produto.qtdeSaldoAcumProg);
 			
 			produtosAtualizados.add(produto);
 		}
@@ -153,10 +150,36 @@ public class CalculoDistribuicaoPecas {
 				proporcao = 0.000;
 						
 			produto.qtdeProgramada = (int) Math.ceil((double) qtdeDistribuir * proporcao);
+			produto.qtdeProgramada = verificaQtdeMinimaProgramar(qtdeDistribuir, produto.qtdeProgramada, produto.qtdeSaldoAcumProg);
+			
 			produtosAtualizados.add(produto);
 		}
 
 		return produtosAtualizados;
 	}
 	
+	private static int verificaQtdeMinimaProgramar(int qtdeDistribuir, int qtdeProgramar, int qtdeSaldo) {
+		
+		if (qtdeDistribuir <= 0) return 0;
+		
+		if (qtdeProgramar <= 0) qtdeProgramar = 0;
+		
+		if (qtdeSaldo < 0) {			
+			qtdeSaldo = (qtdeSaldo * -1); // Positiva			
+			if (qtdeSaldo > qtdeProgramar) qtdeProgramar = qtdeSaldo; 					
+		}
+			
+		return qtdeProgramar;
+	}	
+	
+	private int somaQtdeSugestaoProdutos(List<ProdutoPlanoMestre> produtos) {
+		
+		int qtdeSugestao = 0;
+		
+		for (ProdutoPlanoMestre produto : produtos) {
+			qtdeSugestao += produto.qtdeSugestao;
+		}
+		
+		return qtdeSugestao;
+	}
 }

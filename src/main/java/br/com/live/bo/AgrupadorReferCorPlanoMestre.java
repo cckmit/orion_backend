@@ -86,9 +86,9 @@ public class AgrupadorReferCorPlanoMestre {
 				produto.qtdeSaldoAcumProg = produto.qtdeSaldoAcumProg - produto.qtdePrevisao;
 			}			
 			
-			if (produto.qtdeSaldoAcumProg < 0)
-				produto.qtdeSugestao = (produto.qtdeSaldoAcumProg * -1);
-
+			if (produto.qtdeSaldoAcumProg < 0) produto.qtdeSugestao = (produto.qtdeSaldoAcumProg * -1);
+			else if (produto.qtdeProgramada > 0) produto.qtdeSugestao = produto.qtdeProgramada;
+			
 			produto.qtdeEqualizadoSugestao = produto.qtdeSugestao; 
 			produto.qtdeDiferencaSugestao = produto.qtdeEqualizadoSugestao - produto.qtdeSugestao;
 			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;			
@@ -151,13 +151,16 @@ public class AgrupadorReferCorPlanoMestre {
 			produtoCor.qtdeSaldoPlano8 += produto.qtdeSaldoPlano8;
 
 			produtoCor.qtdeDemAcumProg += produto.qtdeDemAcumProg;
-			produtoCor.qtdeProcAcumProg += produto.qtdeProcAcumProg;
-			produtoCor.qtdeSaldoAcumProg += produto.qtdeSaldoAcumProg;
+			produtoCor.qtdeProcAcumProg += produto.qtdeProcAcumProg;			
+		    produtoCor.qtdeSaldoAcumProg += produto.qtdeSaldoAcumProg;
 			
 			produtoCor.qtdeDemAcumulado += produto.qtdeDemAcumulado;
-			produtoCor.qtdeProcAcumulado += produto.qtdeProcAcumulado;
-			produtoCor.qtdeSaldoAcumulado += produto.qtdeSaldoAcumulado;
+			produtoCor.qtdeProcAcumulado += produto.qtdeProcAcumulado;			
+		    produtoCor.qtdeSaldoAcumulado += produto.qtdeSaldoAcumulado;
 
+		    if (produto.qtdeSaldoAcumProg < 0) 
+		    	produtoCor.qtdeProgramada += (produto.qtdeSaldoAcumProg * -1); 
+		    
 			mapProdutos.put(codProduto, produtoCor);
 		}
 

@@ -15,6 +15,10 @@ import br.com.live.model.AlternativaRoteiroPadrao;
 import br.com.live.model.ArtigoCotas;
 import br.com.live.model.ArtigoProduto;
 import br.com.live.model.Colecao;
+import br.com.live.model.ConsultaDadosCompEstrutura;
+import br.com.live.model.ConsultaDadosEstrutura;
+import br.com.live.model.ConsultaDadosFilete;
+import br.com.live.model.ConsultaDadosRoteiro;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.LinhaProduto;
@@ -242,11 +246,15 @@ public class ProdutoCustom {
 
 	public int findSequenciaPrincipalRisco(String grupo, String item, int alternativa) {
 
-		String query = "select nvl(basi_050.sequencia,0) " + " from basi_050 "
-				+ " where basi_050.nivel_item       = '1' " + " and basi_050.grupo_item       = '" + grupo + "'"
-				+ " and (basi_050.item_item       = '" + item + "' or basi_050.item_item = '000000') "
-				+ " and basi_050.alternativa_item = " + alternativa + " and basi_050.tecido_principal = 1 "
-				+ " and rownum = 1 " + " order by basi_050.consumo desc ";
+		String query = "select nvl(basi_050.sequencia,0) " 
+		+ " from basi_050 "
+		+ " where basi_050.nivel_item = '1' " 
+		+ " and basi_050.grupo_item       = '" + grupo + "'"
+		+ " and (basi_050.item_item       = '" + item + "' or basi_050.item_item = '000000') "
+		+ " and basi_050.alternativa_item = " + alternativa 
+		+ " and basi_050.tecido_principal = 1 "
+		+ " and rownum = 1 " 
+		+ " order by basi_050.consumo desc ";
 
 		Integer sequencia = 0;
 
@@ -259,16 +267,93 @@ public class ProdutoCustom {
 		return (int) sequencia;
 	}
 
+	public int findMenorSeqRisco(String grupo, int alternativa) {
+		
+		String query = " select min(pcpc_200.ordem_estrutura) from pcpc_200 "
+		+ " where pcpc_200.codigo_risco = 1 "
+		+ " and pcpc_200.grupo_riscado = '00000' "                          
+		+ " and pcpc_200.alternativa_item = " + alternativa
+		+ " and pcpc_200.grupo_estrutura = '" + grupo + "'";                                                           
+
+		Integer sequencia = 0;
+
+		try {
+			sequencia = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			sequencia = 0;
+		}
+
+		return (int) sequencia;
+	}
+		
+	public int findQtdeMarcacoesTamanho(String grupo, String sub, int risco, int seqRisco, int alternativa) {
+		
+		int qtdeMarcacoes;
+		
+		String query = "select sum(pcpc_200.qtde_marcacoes) "
+		+ " from pcpc_200 " 
+		+ " where pcpc_200.codigo_risco = " + risco
+		+ " and pcpc_200.grupo_estrutura = '" + grupo + "' " 
+		+ " and pcpc_200.ordem_estrutura = " + seqRisco
+		+ " and pcpc_200.alternativa_item = " + alternativa
+		+ " and pcpc_200.tamanho = " + sub;
+		
+		try {
+			qtdeMarcacoes = (int) jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			qtdeMarcacoes = 0;
+		}
+	
+		return qtdeMarcacoes;
+	}
+	
 	public List<MarcacaoRisco> findMarcacoesRisco(String grupo, int risco, int seqRisco, int alternativa) {
 
 		String query = "select pcpc_200.grupo_estrutura grupo, pcpc_200.tamanho sub, pcpc_200.qtde_marc_proj quantidade "
-				+ " from pcpc_200 " + " where pcpc_200.codigo_risco     = " + risco
-				+ " and pcpc_200.grupo_estrutura  = '" + grupo + "' " + " and pcpc_200.ordem_estrutura  = " + seqRisco
+				+ " from pcpc_200 " 
+				+ " where pcpc_200.codigo_risco = " + risco
+				+ " and pcpc_200.grupo_estrutura = '" + grupo + "' " 
+				+ " and pcpc_200.ordem_estrutura  = " + seqRisco
 				+ " and pcpc_200.alternativa_item = " + alternativa;
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MarcacaoRisco.class));
 	}
 
+	public int findOrdemTamanho(String tamanho) {
+		
+		Integer ordemTamanho;
+		
+		String query = " select a.ordem_tamanho from basi_220 a where a.tamanho_ref = '" + tamanho + "'";
+		
+		try {
+			ordemTamanho = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			ordemTamanho = 0;
+		}
+
+		return ordemTamanho;
+	}	
+
+	public int findLoteFabricacao(String grupo, String sub) {
+		
+		int loteFabricao;
+		
+		String query = " select basi_020.lote_fabr_pecas from basi_020 "            
+		+ " where basi_020.basi030_nivel030 = '1' " 
+        + " and basi_020.basi030_referenc = '" + grupo + "'"
+        + " and basi_020.tamanho_ref      = '" + sub + "'" ;
+	     
+		try {
+			loteFabricao = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			loteFabricao = 0;
+		}
+	      
+	    if (loteFabricao == 0) loteFabricao = 99999999;
+	      
+	    return loteFabricao;    		
+	}
+	
 	public boolean existsItem(String grupo, String item) {
 		
 		int encontrou = 0;
@@ -286,6 +371,256 @@ public class ProdutoCustom {
 		}
 
 		return (encontrou == 1);
+	}
+	
+	public boolean isProdutoComprado(String grupo) {
+	      
+		int encontrou = 0;
+		
+		String query = " select 1 from basi_030 "
+	    + " where basi_030.nivel_estrutura = '1' "
+	    + " and basi_030.referencia      = '" + grupo + "' " 
+	    + " and basi_030.comprado_fabric = 1 ";
+
+		try {
+			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+
+		return (encontrou == 1);	   	
+	}
+	
+	public boolean existsEstrutura(String grupo, String sub, String item, int alternativa) {
+	
+		int encontrou = 0;
+		
+		String query = " select 1 from basi_050 "
+	    + " where  basi_050.nivel_item = '1' "  
+	    + " and  basi_050.grupo_item = '" + grupo + "'"
+	    + " and (basi_050.sub_item = '" + sub + "' or basi_050.sub_item  = '000') "
+	    + " and (basi_050.item_item = '" + item + "' or basi_050.item_item = '000000') "
+	    + " and  basi_050.alternativa_item = " + alternativa;
+	    
+		try {
+			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+
+		return (encontrou == 1);	   	
+	}
+	
+	public boolean existsRoteiro(String grupo, String sub, String item, int alternativa, int roteiro) {
+		int encontrou = 0;
+		
+		String query = " select 1 from mqop_050 "
+	    + " where mqop_050.nivel_estrutura = '1' "
+	    + " and mqop_050.grupo_estrutura   = '" + grupo + "'"
+	    + " and (mqop_050.subgru_estrutura = '" + sub + "' or mqop_050.subgru_estrutura = '000') "
+	    + " and (mqop_050.item_estrutura   = '" + item + "' or mqop_050.item_estrutura   = '000000') "
+	    + " and mqop_050.numero_alternati  = " + alternativa
+	    + " and mqop_050.numero_roteiro    = " + roteiro ;
+	    
+		try {
+			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+
+		return (encontrou == 1);	   	
+	}
+	
+	private String[] getCodProdutoCadRoteiro(String grupo, String sub, String item, int alternativa, int roteiro) {
+		
+		String[] codProdutoRoteiro = new String[3];
+		
+		String grupoRoteiro = grupo;
+		String subRoteiro = sub;
+		String itemRoteiro = item;
+		
+	    String query = " select 1 from mqop_050 "
+	    + " where mqop_050.nivel_estrutura = '1' "
+	    + " and mqop_050.grupo_estrutura  = '" + grupoRoteiro + "'"
+	    + " and mqop_050.subgru_estrutura = '" + subRoteiro + "'"
+	    + " and mqop_050.item_estrutura   = '" + itemRoteiro + "'"
+	    + " and mqop_050.numero_alternati = " + alternativa
+	    + " and mqop_050.numero_roteiro   = " + roteiro;
+	    
+		try {
+			jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+
+			itemRoteiro = "000000";
+			
+	        query = " select 1 from mqop_050 "
+	        + " where mqop_050.nivel_estrutura = '1' "
+		    + " and mqop_050.grupo_estrutura  = '" + grupoRoteiro + "'"
+		    + " and mqop_050.subgru_estrutura = '" + subRoteiro + "'"
+		    + " and mqop_050.item_estrutura   = '" + itemRoteiro + "'"
+		    + " and mqop_050.numero_alternati = " + alternativa
+		    + " and mqop_050.numero_roteiro   = " + roteiro;
+
+			try {
+				jdbcTemplate.queryForObject(query, Integer.class);
+			} catch (Exception f) {
+				
+				subRoteiro = "000";
+				itemRoteiro = item;
+				
+		        query = " select 1 from mqop_050 "
+		        + " where mqop_050.nivel_estrutura = '1' "
+			    + " and mqop_050.grupo_estrutura  = '" + grupoRoteiro + "'"
+			    + " and mqop_050.subgru_estrutura = '" + subRoteiro + "'"
+			    + " and mqop_050.item_estrutura   = '" + itemRoteiro + "'"
+			    + " and mqop_050.numero_alternati = " + alternativa
+			    + " and mqop_050.numero_roteiro   = " + roteiro;
+				
+				try {
+					jdbcTemplate.queryForObject(query, Integer.class);
+				} catch (Exception g) {
+					itemRoteiro = "000000";
+				}
+			}
+		}
+		
+		codProdutoRoteiro[0] = grupoRoteiro;
+		codProdutoRoteiro[1] = subRoteiro;
+		codProdutoRoteiro[2] = itemRoteiro;
+		
+		return codProdutoRoteiro;
+	}
+	
+	public List<ConsultaDadosRoteiro> findDadosRoteiro(String grupo, String sub, String item, int alternativa, int roteiro) {
+		
+		String[] strCodProdCadRoteiro = getCodProdutoCadRoteiro(grupo, sub, item, alternativa, roteiro);
+		String grupoRot = strCodProdCadRoteiro[0];
+		String subRot = strCodProdCadRoteiro[1];
+		String itemRot = strCodProdCadRoteiro[2];
+
+		String query = " select mqop_050.codigo_estagio estagio, mqop_050.codigo_operacao operacao, "
+        + " mqop_050.centro_custo centroCusto, mqop_050.minutos, " 
+        + " mqop_050.codigo_familia familia, mqop_050.seq_operacao seqOperacao, "
+        + " mqop_050.sequencia_estagio seqEstagio, mqop_050.estagio_depende estagioDepende, "
+        + " mqop_040.pede_produto pedeProduto, nvl((select 1 from mqop_045 "
+        + " where mqop_045.codigo_operacao = mqop_050.codigo_operacao),0) tipoOperCmc "
+        + " from mqop_040, mqop_050 "
+        + " where mqop_040.codigo_operacao  = mqop_050.codigo_operacao "
+        + " and mqop_050.nivel_estrutura = '1' "
+        + " and mqop_050.grupo_estrutura = '" + grupoRot + "'" 
+        + " and mqop_050.subgru_estrutura = '" + subRot + "'"
+        + " and mqop_050.item_estrutura = '" + itemRot + "'"
+        + " and mqop_050.numero_alternati = " + alternativa
+        + " and mqop_050.numero_roteiro = " + roteiro
+        + " order by mqop_050.seq_operacao ASC, "
+        + " mqop_050.sequencia_estagio ASC, "
+        + " mqop_050.estagio_depende ASC, "
+        + " mqop_050.codigo_estagio ASC " ;
+				
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaDadosRoteiro.class));
+	}
+	
+	public List<ConsultaDadosEstrutura> findDadosEstrutura(String grupo, String sub, String item, int alternativa) {
+				
+		String query = " select basi_050.sequencia, basi_050.qtde_camadas qtdeCamadas, "
+        + " basi_050.sub_item subItem, basi_050.item_item itemItem, "                        
+        + " basi_050.nivel_comp nivelComp, basi_050.grupo_comp grupoComp, "
+        + " basi_050.sub_comp subComp, basi_050.item_comp itemComp, "
+        + " basi_050.consumo, basi_050.alternativa_comp alternativaComp, "
+        + " basi_050.percent_perdas percPerdas "
+        + " from basi_050 "
+        + " where  basi_050.nivel_item = '1' "
+        + " and basi_050.grupo_item = '" + grupo + "'" 
+        + " and (basi_050.sub_item = '" + sub + "' or basi_050.sub_item = '000') "
+        + " and (basi_050.item_item = '" + item + "' or basi_050.item_item = '000000') "
+        + " and basi_050.alternativa_item = " + alternativa
+        + " and basi_050.nivel_comp       = '2' "                                                                                                  
+        + " order by basi_050.sequencia ASC " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaDadosEstrutura.class));
+	}
+	
+	public ConsultaDadosCompEstrutura findDadosComponenteEstrutura(String grupo, String sub, String item, int sequencia, int alternativa){
+				
+		ConsultaDadosCompEstrutura dadosCompEstrutura = null;
+		
+		String query = " select basi_040.sub_comp sub, basi_040.consumo, basi_040.item_comp item, basi_040.alternativa_comp alternativa"
+		+ " from basi_040 "
+		+ " where basi_040.nivel_item = '1' "
+		+ " and basi_040.grupo_item = '" + grupo + "'" 
+		+ " and basi_040.sub_item = '" + sub + "'"
+		+ " and basi_040.item_item = '" + item + "'"
+		+ " and basi_040.sequencia = " + sequencia
+		+ " and basi_040.alternativa_item = " + alternativa ;
+		
+		try {
+			dadosCompEstrutura = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaDadosCompEstrutura.class));
+		} catch (Exception e) {
+			dadosCompEstrutura = new ConsultaDadosCompEstrutura();
+		}
+		
+		return dadosCompEstrutura;
+	}
+	
+	public ConsultaDadosFilete findDadosFileteEstrutura(String grupo, String sub, String item, int sequencia, int alternativa) {
+		
+		ConsultaDadosFilete dadosFilete = null;
+		
+		String query = " select basi_060.tipo_corte_peca tipoCorte, basi_060.comprimento_debrum comprimentoFilete, basi_060.largura_debrum larguraFilete" 
+        + " from basi_060 "
+        + " where  basi_060.grupo_estrutura = '" + grupo + "'" 
+        + " and (basi_060.subgru_estrutura = '" + sub + "' or basi_060.subgru_estrutura = '000') "
+        + " and (basi_060.item_estrutura = '" + item + "' or basi_060.item_estrutura   = '000000') "
+        + " and  basi_060.alternativa_item = " + alternativa
+        + " and  basi_060.sequencia = " + sequencia;
+		
+		try {
+			dadosFilete = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaDadosFilete.class));
+		} catch (Exception e) {
+			dadosFilete = new ConsultaDadosFilete();
+		}
+		
+		return dadosFilete;
+	}
+	
+	public ConsultaDadosFilete findDadosFileteRisco(String grupo, int risco, int sequencia, int alternativa) {
+		
+		ConsultaDadosFilete dadosFilete = null;
+		
+		String query = " select pcpc_200.largura larguraRisco"
+		+ " from pcpc_200 "
+        + " where pcpc_200.codigo_risco = " + risco
+        + " and pcpc_200.grupo_estrutura = '" + grupo + "'"
+        + " and pcpc_200.alternativa_item = " + alternativa
+        + " and pcpc_200.ordem_estrutura = " + sequencia
+        + " and pcpc_200.grupo_riscado = '00000' ";
+		
+		try {
+			dadosFilete = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaDadosFilete.class));
+		} catch (Exception e) {
+			dadosFilete = new ConsultaDadosFilete();
+		}
+		
+		return dadosFilete;
+	}
+	
+	public ConsultaDadosFilete findDadosFileteTecidos(String grupo, String sub) {
+		
+		ConsultaDadosFilete dadosFilete = null;
+		       
+        String query = " select basi_020.largura_1 larguraTecido, basi_020.tubular_aberto tubularAberto"
+        + " from basi_020 "
+        + " where basi_020.basi030_nivel030 = '1' "
+        + " and basi_020.basi030_referenc = '" + grupo + "'"
+        + " and basi_020.tamanho_ref      = '" + sub + "'" ;
+		
+		try {
+			dadosFilete = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaDadosFilete.class));
+		} catch (Exception e) {
+			dadosFilete = new ConsultaDadosFilete();
+		}
+		
+		return dadosFilete;
 	}
 	
 }
