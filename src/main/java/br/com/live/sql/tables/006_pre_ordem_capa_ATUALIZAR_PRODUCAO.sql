@@ -21,3 +21,8 @@ comment on table orion_020 is 'Tabela de Pré-Ordens - Capa';
 --create sequence id_orion_020;
 
 create INDEX INDX_ORION_20_PLANO_MESTRE on orion_020 (num_plano_mestre);
+
+-- ATAUALIZAR PRODUCAO
+
+alter table orion_020
+add (status varchar2(50) default "PENDENTE");

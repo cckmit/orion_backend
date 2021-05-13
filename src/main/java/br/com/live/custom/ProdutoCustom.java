@@ -400,7 +400,8 @@ public class ProdutoCustom {
 	    + " and  basi_050.grupo_item = '" + grupo + "'"
 	    + " and (basi_050.sub_item = '" + sub + "' or basi_050.sub_item  = '000') "
 	    + " and (basi_050.item_item = '" + item + "' or basi_050.item_item = '000000') "
-	    + " and  basi_050.alternativa_item = " + alternativa;
+	    + " and  basi_050.alternativa_item = " + alternativa
+		+ " and rownum = 1 ";
 	    
 		try {
 			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
@@ -420,7 +421,8 @@ public class ProdutoCustom {
 	    + " and (mqop_050.subgru_estrutura = '" + sub + "' or mqop_050.subgru_estrutura = '000') "
 	    + " and (mqop_050.item_estrutura   = '" + item + "' or mqop_050.item_estrutura   = '000000') "
 	    + " and mqop_050.numero_alternati  = " + alternativa
-	    + " and mqop_050.numero_roteiro    = " + roteiro ;
+	    + " and mqop_050.numero_roteiro    = " + roteiro 
+	    + " and rownum = 1 ";
 	    
 		try {
 			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
@@ -445,7 +447,8 @@ public class ProdutoCustom {
 	    + " and mqop_050.subgru_estrutura = '" + subRoteiro + "'"
 	    + " and mqop_050.item_estrutura   = '" + itemRoteiro + "'"
 	    + " and mqop_050.numero_alternati = " + alternativa
-	    + " and mqop_050.numero_roteiro   = " + roteiro;
+	    + " and mqop_050.numero_roteiro   = " + roteiro
+	    + " and rownum = 1 ";
 	    
 		try {
 			jdbcTemplate.queryForObject(query, Integer.class);
@@ -459,7 +462,8 @@ public class ProdutoCustom {
 		    + " and mqop_050.subgru_estrutura = '" + subRoteiro + "'"
 		    + " and mqop_050.item_estrutura   = '" + itemRoteiro + "'"
 		    + " and mqop_050.numero_alternati = " + alternativa
-		    + " and mqop_050.numero_roteiro   = " + roteiro;
+		    + " and mqop_050.numero_roteiro   = " + roteiro
+		    + " and rownum = 1 ";
 
 			try {
 				jdbcTemplate.queryForObject(query, Integer.class);
@@ -474,7 +478,8 @@ public class ProdutoCustom {
 			    + " and mqop_050.subgru_estrutura = '" + subRoteiro + "'"
 			    + " and mqop_050.item_estrutura   = '" + itemRoteiro + "'"
 			    + " and mqop_050.numero_alternati = " + alternativa
-			    + " and mqop_050.numero_roteiro   = " + roteiro;
+			    + " and mqop_050.numero_roteiro   = " + roteiro
+			    + " and rownum = 1 ";
 				
 				try {
 					jdbcTemplate.queryForObject(query, Integer.class);
@@ -551,7 +556,8 @@ public class ProdutoCustom {
 		+ " and basi_040.sub_item = '" + sub + "'"
 		+ " and basi_040.item_item = '" + item + "'"
 		+ " and basi_040.sequencia = " + sequencia
-		+ " and basi_040.alternativa_item = " + alternativa ;
+		+ " and basi_040.alternativa_item = " + alternativa 
+		+ " and rownum = 1 ";
 		
 		try {
 			dadosCompEstrutura = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaDadosCompEstrutura.class));
@@ -572,7 +578,8 @@ public class ProdutoCustom {
         + " and (basi_060.subgru_estrutura = '" + sub + "' or basi_060.subgru_estrutura = '000') "
         + " and (basi_060.item_estrutura = '" + item + "' or basi_060.item_estrutura   = '000000') "
         + " and  basi_060.alternativa_item = " + alternativa
-        + " and  basi_060.sequencia = " + sequencia;
+        + " and  basi_060.sequencia = " + sequencia
+        + " and rownum = 1 ";
 		
 		try {
 			dadosFilete = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaDadosFilete.class));
@@ -593,7 +600,8 @@ public class ProdutoCustom {
         + " and pcpc_200.grupo_estrutura = '" + grupo + "'"
         + " and pcpc_200.alternativa_item = " + alternativa
         + " and pcpc_200.ordem_estrutura = " + sequencia
-        + " and pcpc_200.grupo_riscado = '00000' ";
+        + " and pcpc_200.grupo_riscado = '00000' "
+        + " and rownum = 1 ";
 		
 		try {
 			dadosFilete = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaDadosFilete.class));

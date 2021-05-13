@@ -10,7 +10,14 @@ public class ConsultaPreOrdemProducao {
 	public int quantidade;
 	public String deposito;
 	public int ordemGerada;
+	public String status;
 	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public int getOrdemGerada() {
 		return ordemGerada;
 	}

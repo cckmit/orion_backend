@@ -40,6 +40,8 @@ public class OrdemProducaoCustom {
 		query = " update empr_001 set empr_001.ordem_confeccao = " + idUltimaOrdemProducao;
 		jdbcTemplate.update(query);
 		
+		System.out.println("findNextIdOrdem: " + idUltimaOrdemProducao);
+		
 		return idUltimaOrdemProducao;
 	}
 	
@@ -67,6 +69,8 @@ public class OrdemProducaoCustom {
 			
 		jdbcTemplate.update(query);
 			
+		System.out.println("findNextIdPacote: " + idPacoteParam);
+		
 		return idPacoteParam;
 	}
 	
@@ -76,11 +80,15 @@ public class OrdemProducaoCustom {
 	    + " set pcpc_020.ultimo_estagio = " + ultimoEstagio         
 	    + " where pcpc_020.ordem_producao = " + idOrdemProducao;
 
+		System.out.println("atualizarUltimoEstagioOrdem: " + idOrdemProducao + " -> " + ultimoEstagio);
+		
 		jdbcTemplate.update(query);		
 	}
 	
-	public void gravarCapa(int idOrdemProducao, String referencia, int periodo, int alternativa, int roteiro, int quantidade, String observacao) {
-				
+	public void gravarCapa(int idOrdemProducao, String referencia, int periodo, int alternativa, int roteiro, int quantidade, String observacao, String observacao2) {
+		
+		System.out.println("gravarCapa: " + idOrdemProducao + " -> " + referencia);
+		
 		Date dataProgramacao = Date.valueOf(new Date(System.currentTimeMillis()).toString());
 		
 		String query = " insert into pcpc_020 ( " 
@@ -95,10 +103,12 @@ public class OrdemProducaoCustom {
 	    + " deposito_entrada, pedido_venda) "  
 	    + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " ;
 		
-		jdbcTemplate.update(query, idOrdemProducao, periodo, 3, alternativa, roteiro, 0, quantidade, 0, 0, 2, dataProgramacao, referencia, 1, idOrdemProducao,observacao, "", 0, 0);
+		jdbcTemplate.update(query, idOrdemProducao, periodo, 3, alternativa, roteiro, 0, quantidade, 0, 0, 2, dataProgramacao, referencia, 1, idOrdemProducao,observacao, observacao2, 0, 0);
 	}
 	
 	public void gravarTamanhoCor(int idOrdemProducao, String tamanho, String cor, int quantidade, int seqTamanho) {
+		
+		System.out.println("gravarTamanhoCor: " + idOrdemProducao + " -> tam: " + tamanho + " cor: " + cor);
 		
 		String query = " insert into pcpc_021 ( "
 		+ " ordem_producao, tamanho, "
@@ -111,6 +121,8 @@ public class OrdemProducaoCustom {
 
 	public void gravarMarcacaoTamanho(int idOrdemProducao, String sub, int qtdeMarcacoes, int seqTamanho) {
 
+		System.out.println("gravarMarcacaoTamanho: " + idOrdemProducao + " -> tam: " + sub + " qtdeMarcacoes: " + qtdeMarcacoes);
+		
 		String query = " insert into pcpc_025 (ordem_producao, tamanho, qtde_marcacoes, sequencia_tamanho) "
 	    + " values (?, ?, ?, ?) " ;
 
@@ -118,6 +130,8 @@ public class OrdemProducaoCustom {
 	}	
 	
 	public void gravarCapaEnfesto(int idOrdemProducao, String grupo, int seqEstrutura, int alternativa, int roteiro) {
+		
+		System.out.println("gravarCapaEnfesto: " + idOrdemProducao + " -> grupo: " + grupo);
 		
 		String query = "";
 		
@@ -129,24 +143,67 @@ public class OrdemProducaoCustom {
 		try {
 			jdbcTemplate.queryForObject(query, Integer.class);
 		} catch (Exception e) {
-			
+
 			query = " insert into pcpc_030 ( "
 				    + " ordem_producao, reforcor_nivel030, "
 				    + " reforcor_referenc, ordem_estrutura, "
 				    + " alternativa_peca, roteiro_peca, "
-				    + " cod_risco_padrao, comprimento, "
-				    + " qtde_programada, sequencia) " 
-				    + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";                 
-				    
-			jdbcTemplate.update(query, idOrdemProducao, '1', grupo, seqEstrutura, alternativa, roteiro, 0, 0.00, 0, 1);			
+				    + " sequencia ) " 
+				    + " values (?, ?, ?, ?, ?, ?, ?) ";                 
+
+			jdbcTemplate.update(query, idOrdemProducao, "1", grupo, seqEstrutura, alternativa, roteiro, 1);			
 		}
 	}
 	
-	public void gravarTecidosEnfesto( ) {
+	public void gravarTecidosEnfesto(int idOrdemProducao, String item, String nivelTecido, String grupoTecido, String subTecido, String itemTecido, int seqEstrutura, double qtdeKg, double qtdeMetros) {
+
+		System.out.println("gravarTecidosEnfesto: " + idOrdemProducao + " -> seqEstrutura: " + seqEstrutura + " tecido: " + grupoTecido + "." + subTecido  + "." + itemTecido);
 		
+		String query = "";
+		
+		int encontrou = 0;
+		
+		query = " select 1 from pcpc_032 "
+		+ " where pcpc0302_orprocor = " + idOrdemProducao
+		+ " and pcpc0302_seqorcor = " + seqEstrutura
+		+ " and pcpc0302_sequenor = 1 "
+		+ " and sortimento_peca = '" + item + "'" 
+		+ " and tecordco_subgrupo = '" + subTecido + "'" ;		
+		
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+						
+			query = " insert into pcpc_032 ( "          
+		    + " pcpc0302_orprocor, pcpc0302_sequenor, "                                      
+		    + " pcpc0302_seqorcor, sortimento_peca, "  
+		    + " qtde_enfe_prog, qtde_kg_prog, "
+		    + " qtde_sobra_falta, tecordco_nivel99, "
+		    + " tecordco_grupo, tecordco_subgrupo, "
+		    + " tecordco_item, qtde_metros) " 
+		    + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";                       
+		               
+			jdbcTemplate.update(query, idOrdemProducao, 1, seqEstrutura, item, 0, qtdeKg, 0, nivelTecido, grupoTecido, subTecido, itemTecido, qtdeMetros);
+		}
+
+		if (encontrou == 1) {
+			
+			query = " update pcpc_032 "
+	        + " set pcpc_032.qtde_kg_prog = pcpc_032.qtde_kg_prog + " + qtdeKg
+	        + " pcpc_032.qtde_metros = " + qtdeMetros
+	        + " where pcpc_032.pcpc0302_orprocor = " + idOrdemProducao
+	        + " and pcpc_032.pcpc0302_sequenor = 1 "
+	        + " and pcpc_032.pcpc0302_seqorcor = " + seqEstrutura
+	        + " and pcpc_032.sortimento_peca = '" + item + "'"
+	        + " and pcpc_032.tecordco_subgrupo = '" + subTecido + "'";
+			
+			jdbcTemplate.update(query); 
+		}		
 	}
 	
 	public void gravarMarcacoesEnfesto(int idOrdemProducao, String sub, int seqEstrutura, int qtdeMarcacoes) {
+		
+		System.out.println("gravarTecidosEnfesto: " + idOrdemProducao + " -> seqEstrutura: " + seqEstrutura + " qtdeMarcacoes: " + qtdeMarcacoes);
 		
 		String query = "";
 				
@@ -171,6 +228,8 @@ public class OrdemProducaoCustom {
 	
 	public void gravarPacoteConfeccao(int periodo, int idPacote, int estagio, int idOrdemProducao, String grupo, String sub, String item, int quantidade, 
 			int estagioAnterior, int familia, int seqOperacao, int estagioDepende, int seqEstagio) {
+		
+		System.out.println("gravarTecidosEnfesto: " + idOrdemProducao + " -> idPacote: " + idPacote + " periodo:  " + periodo + " quantidade: " + quantidade);
 		
 		String query = " insert into pcpc_040 ( "                
 	    + " periodo_producao, ordem_confeccao, "

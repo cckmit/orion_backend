@@ -1,12 +1,17 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.OrdemProducaoCustom;
+import br.com.live.custom.PlanoMestreCustom;
 import br.com.live.custom.ProdutoCustom;
+import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.entity.PlanoMestrePreOrdemItem;
 import br.com.live.model.ConsultaDadosCompEstrutura;
@@ -17,32 +22,35 @@ import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.PreOrdemProducao;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
+import br.com.live.repository.PlanoMestreRepository;
+import br.com.live.util.StatusGravacao;
 
 @Service
 @Transactional
 public class OrdemProducaoService {
 	 
+	private final PlanoMestreRepository planoMestreRepository;
 	private final PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository;
 	private final PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository;	 
 	private final OrdemProducaoCustom ordemProducaoCustom;
 	private final ProdutoCustom produtoCustom;
+	private final PlanoMestreCustom planoMestreCustom; 
 
-	public OrdemProducaoService(PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository, PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository, OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom) {
+	public OrdemProducaoService(PlanoMestreRepository planoMestreRepository, PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository, 
+			PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository, 
+			OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom, PlanoMestreCustom planoMestreCustom) {
+		this.planoMestreRepository = planoMestreRepository;
 		this.planoMestrePreOrdemRepository = planoMestrePreOrdemRepository;
 		this.planoMestrePreOrdemItemRepository = planoMestrePreOrdemItemRepository;		
 		this.ordemProducaoCustom = ordemProducaoCustom;
 		this.produtoCustom = produtoCustom;
+		this.planoMestreCustom = planoMestreCustom;
 	}	
 	
-	private void gravarStatusPreOrdem(PlanoMestrePreOrdem preOrdem, String erro) {		
-		// CRIAR CAMPO PARA GRAVAR O STATUS DA GERAÇÃO
-		System.out.println("gravarStatusPreOrdem: " + erro);
-	}
-	
-	// TODO - TRATAR ERRO... RETORNAR FALSE
 	private int gravarCapa(PlanoMestrePreOrdem preOrdem) {
 		int idOrdemProducao = ordemProducaoCustom.findNextIdOrdem();
-		ordemProducaoCustom.gravarCapa(idOrdemProducao, preOrdem.grupo, preOrdem.periodo, preOrdem.alternativa, preOrdem.roteiro, preOrdem.quantidade, preOrdem.observacao);
+		String observacao2 = "PLANO MESTRE: " + preOrdem.idPlanoMestre;		
+		ordemProducaoCustom.gravarCapa(idOrdemProducao, preOrdem.grupo, preOrdem.periodo, preOrdem.alternativa, preOrdem.roteiro, preOrdem.quantidade, preOrdem.observacao, observacao2);
 		return idOrdemProducao;
 	}
 	
@@ -58,8 +66,7 @@ public class OrdemProducaoService {
 		int qtdeMarcacoesTamanho = produtoCustom.findQtdeMarcacoesTamanho(preOrdem.grupo, preOrdemItem.sub, riscoPadrao, seqRisco, preOrdem.alternativa);				
 		ordemProducaoCustom.gravarMarcacaoTamanho(idOrdemProducao, preOrdemItem.sub, qtdeMarcacoesTamanho, ordemTamanho);		
 	}	
-	
-	// TODO - TRATAR ERRO... RETORNAR FALSE
+		
 	private void gravarPacotesConfeccao(int idOrdemProducao, PlanoMestrePreOrdem preOrdem, PlanoMestrePreOrdemItem preOrdemItem) {		
 		int idPacote;
 		int qtdeLote;
@@ -99,7 +106,7 @@ public class OrdemProducaoService {
 					
 					ordemProducaoCustom.gravarPacoteConfeccao(preOrdem.periodo, idPacote, dadosRoteiro.estagio, idOrdemProducao, preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, qtdeLote, 
 							estagioAnterior, dadosRoteiro.familia, dadosRoteiro.seqOperacao, dadosRoteiro.estagioDepende, dadosRoteiro.seqEstagio); 
-					
+					 
 					salvaSequencia = dadosRoteiro.seqEstagio;
 					salvaEstagio = dadosRoteiro.estagio;
 				}
@@ -168,7 +175,7 @@ public class OrdemProducaoService {
 				larguraRisco = dadosFileteRisco.larguraRisco;
 				
 				if (larguraRisco == 0.000) {				
-					dadosFileteTecido = produtoCustom.findDadosFileteTecidos(preOrdem.grupo, preOrdemItem.sub);
+					dadosFileteTecido = produtoCustom.findDadosFileteTecidos(dadosEstrutura.grupoComp, subTecido);
 					
 					if (dadosFileteTecido.tubularAberto == 2) larguraRisco = dadosFileteTecido.larguraTecido * 2;
 					
@@ -192,72 +199,127 @@ public class OrdemProducaoService {
 		            
 				}				
 			}
+			
+			ordemProducaoCustom.gravarTecidosEnfesto(idOrdemProducao, preOrdemItem.item, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subTecido, itemTecido, dadosEstrutura.sequencia, qtdeKgProg, qtdeTotMetrosTecido);			
 		}
 	}
 	
-	// TODO - TRATAR ERRO... RETORNAR FALSE
 	private void gravarDadosItem(int idOrdemProducao, PlanoMestrePreOrdem preOrdem, PlanoMestrePreOrdemItem preOrdemItem) {
-		boolean existeEstrutura = produtoCustom.existsEstrutura(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa);
-		boolean existeRoteiro = produtoCustom.existsRoteiro(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdem.roteiro);
-		
 		gravarTamanhoCor(idOrdemProducao, preOrdemItem);
 		gravarMarcacaoTamanho(idOrdemProducao, preOrdem, preOrdemItem);
 		gravarPacotesConfeccao(idOrdemProducao, preOrdem, preOrdemItem);			
 		gravarDadosTecidos(idOrdemProducao, preOrdem, preOrdemItem);		
 	}
 	
-	public void gerarOrdens(List<ConsultaPreOrdemProducao> preOrdens) {
+	private boolean validarDadosOrdem(PlanoMestrePreOrdem preOrdem, Map<Long, StatusGravacao> mapPreOrdensComErro) {
+		
+		boolean dadosOk = true;
+		
+		if (preOrdem.periodo == 0) {
+			dadosOk = false;
+			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Período de produção não informado!"));
+		}
+		
+		if (produtoCustom.isProdutoComprado(preOrdem.grupo)) {
+			dadosOk = false;
+			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Referência é um produto comprado!"));
+		}
+		
+		return dadosOk;
+	}
+	
+	private boolean validarDadosItem(PlanoMestrePreOrdem preOrdem, List<PlanoMestrePreOrdemItem> preOrdemItens, Map<Long, StatusGravacao> mapPreOrdensComErro) {
+		
+		boolean dadosOk = true;
+		boolean existeEstrutura = true;
+		boolean existeRoteiro = true;
+
+		for (PlanoMestrePreOrdemItem preOrdemItem : preOrdemItens) {
+			existeEstrutura = produtoCustom.existsEstrutura(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa);
+			existeRoteiro = produtoCustom.existsRoteiro(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdem.roteiro);
+			if ((!existeEstrutura)||(!existeRoteiro)) break;
+		}
+		
+		if (!existeEstrutura) {
+			dadosOk = false;
+			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não existe estrutura para a alternativa!"));			
+		}
+
+		if (!existeRoteiro) {
+			dadosOk = false;
+			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não existe roteiro para a alternativa e roteiro!"));			
+		}
+		
+		return dadosOk;
+	}	
+	
+	private void atualizarPreOrdens(List<PlanoMestrePreOrdem> preOrdens) {
+		long idPlanoMestre = 0;
+		PlanoMestre planoMestre;
+		
+		for (PlanoMestrePreOrdem preOrdem : preOrdens) {
+			idPlanoMestre = preOrdem.idPlanoMestre;
+			preOrdem.situacao = 1;
+			preOrdem.status = "ORDEM GERADA COM SUCESSO";
+			planoMestrePreOrdemRepository.save(preOrdem);
+		}
+		
+		if (idPlanoMestre > 0) { 
+			planoMestre = planoMestreRepository.findById(idPlanoMestre);
+			planoMestre.situacao = 2;
+			planoMestreRepository.save(planoMestre);
+		}	
+	}
+	
+	private void atualizarErrosPreOrdens(Map<Long, StatusGravacao> mapPreOrdensComErro) {
+		
+		StatusGravacao status;
+		PlanoMestrePreOrdem preOrdem;
+		
+		for (long idPreOrdem : mapPreOrdensComErro.keySet()) {
+			preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
+			status = mapPreOrdensComErro.get(idPreOrdem);
+			if (!status.isConcluido()) {
+				preOrdem.status = status.getMensagem().toUpperCase();	
+				planoMestrePreOrdemRepository.save(preOrdem);
+			}			
+		}				
+	}	
+	
+	public List<ConsultaPreOrdemProducao> gerarOrdens(long idPlanoMestre, List<Long> preOrdens) {
 		
 		int idOrdemProducao;
-		String erro = ""; // TODO - Melhorar a validação de erro - usar uma variavel fora do metodo
 		
-		for (ConsultaPreOrdemProducao consultaPreOrdem : preOrdens) {			
-			System.out.println("Pré ordens: " + consultaPreOrdem.id + " - " + consultaPreOrdem.referencia);
+		System.out.println("dentro do método de geracao");
+		System.out.println("qtde IDs: " + preOrdens.size());		
+		
+		Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao> ();
+		List<PlanoMestrePreOrdem> listaPreOrdensConcluidas = new ArrayList<PlanoMestrePreOrdem> ();
+		
+		for (long idPreOrdem : preOrdens) {			
+			System.out.println("Pré ordens: " + idPreOrdem);
 			
-			PlanoMestrePreOrdem preOrdem = planoMestrePreOrdemRepository.findById(consultaPreOrdem.id);
-			List<PlanoMestrePreOrdemItem> preOrdemItens = planoMestrePreOrdemItemRepository.findByIdOrdem(consultaPreOrdem.id);
+			PlanoMestrePreOrdem preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
+			List<PlanoMestrePreOrdemItem> preOrdemItens = planoMestrePreOrdemItemRepository.findByIdOrdem(idPreOrdem);			
 			
-			
-			
-			if (produtoCustom.isProdutoComprado(preOrdem.grupo)) 
-				erro = "Referência é um produto comprado!";
-			
-			if (!erro.equalsIgnoreCase(""))
-				gravarStatusPreOrdem(preOrdem, erro);
-			
-			if (!erro.equalsIgnoreCase("")) continue;
-			
-			
-			
+			if (!validarDadosOrdem(preOrdem, mapPreOrdensComErro)) continue;
+			if (!validarDadosItem(preOrdem, preOrdemItens, mapPreOrdensComErro)) continue;
 			
 			idOrdemProducao = gravarCapa(preOrdem);
 			
-			for (PlanoMestrePreOrdemItem preOrdemItem : preOrdemItens) {
-				//gravarDadosItem(idOrdemProducao, preOrdemItem);
+			for (PlanoMestrePreOrdemItem preOrdemItem : preOrdemItens) {				
+				System.out.println(preOrdemItem.idOrdem + " - " + preOrdemItem.id);												
+				gravarDadosItem(idOrdemProducao, preOrdem, preOrdemItem);
 			}
 			
-			
-			
-			
-			
-			// Validar se a referencia é comprada - OK			
-			// Gravar capa da ordem (pcpc_020) - OK			
-			// Gravar tamanhos (pcpc_021) - OK
-			// Validar alternativa / roteiro
-			
-			
-			// Gravar pacotes enfestos (pcpc_040)
-			
-			// Gravar tamanhos peças (pcpc_025)
-
-			// Gravar enfestos de tecidos (pcpc_030)
-			
-			// Gravar camadas (pcpc_032)
-			
-			
-			
-			
-		}		
-	}
+			preOrdem.ordemGerada = idOrdemProducao;		
+			listaPreOrdensConcluidas.add(preOrdem);
+		}
+		
+		atualizarPreOrdens(listaPreOrdensConcluidas);
+		atualizarErrosPreOrdens(mapPreOrdensComErro);		
+		
+		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
+	}	
 	
 }

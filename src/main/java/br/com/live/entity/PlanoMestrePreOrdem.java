@@ -28,6 +28,7 @@ public class PlanoMestrePreOrdem {
 	public String observacao;
 	public int deposito;
     public int situacao;
+    public String status;
     
     @Column(name="ordem_gerada")
     public int ordemGerada;

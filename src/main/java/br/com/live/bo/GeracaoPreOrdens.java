@@ -91,6 +91,7 @@ public class GeracaoPreOrdens {
 			planoMestrePreOrdem.deposito = depositoOrdem;
 			planoMestrePreOrdem.observacao = observacaoOrdem;
 			planoMestrePreOrdem.situacao = 0;
+			planoMestrePreOrdem.status = "PENDENTE";
 
 			mapPlanoMestrePreOrdens.put(ordemCapa.id, planoMestrePreOrdem);
 		}
