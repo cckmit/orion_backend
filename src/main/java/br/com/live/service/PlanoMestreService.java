@@ -250,7 +250,15 @@ public class PlanoMestreService {
 	}
 
 	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens(long idPlanoMestre, List<Integer> preOrdens) {
-
+		List<PlanoMestrePreOrdem> preOrdensComOpsGeradas = planoMestrePreOrdemRepository.findByIdPlanoMestreAndOrdemGerada(idPlanoMestre);
+				
+		if (preOrdensComOpsGeradas.size() > 0) {
+			preOrdens.clear();			
+			for (PlanoMestrePreOrdem preOrdemComOp : preOrdensComOpsGeradas) {
+				preOrdens.add((int) preOrdemComOp.id);	
+			}
+		}
+		
 		long idMaiorOP = planoMestreCustom.findIDMaiorOrdemByPreOrdens(preOrdens);
 		long idMenorOP = planoMestreCustom.findIDMenorOrdemByPreOrdens(preOrdens);
 

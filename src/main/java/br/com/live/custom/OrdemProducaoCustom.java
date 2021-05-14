@@ -119,25 +119,15 @@ public class OrdemProducaoCustom {
 		jdbcTemplate.update(query, idOrdemProducao, tamanho, cor, quantidade, seqTamanho);
 	}
 
-	public void gravarMarcacaoTamanho(int idOrdemProducao, String sub, int qtdeMarcacoes, int seqTamanho) {
-
-		System.out.println("gravarMarcacaoTamanho: " + idOrdemProducao + " -> tam: " + sub + " qtdeMarcacoes: " + qtdeMarcacoes);
-		
-		String query = " insert into pcpc_025 (ordem_producao, tamanho, qtde_marcacoes, sequencia_tamanho) "
-	    + " values (?, ?, ?, ?) " ;
-
-		jdbcTemplate.update(query, idOrdemProducao, sub, qtdeMarcacoes, seqTamanho);		
-	}	
-	
 	public void gravarCapaEnfesto(int idOrdemProducao, String grupo, int seqEstrutura, int alternativa, int roteiro) {
 		
-		System.out.println("gravarCapaEnfesto: " + idOrdemProducao + " -> grupo: " + grupo);
+		System.out.println("gravarCapaEnfesto: " + idOrdemProducao + " -> grupo: " + grupo + " seqEstrutura: " + seqEstrutura + " alternativa: " + alternativa + " roteiro: " + roteiro);
 		
 		String query = "";
 		
 		query = " select 1 from pcpc_030 "
-		+ " where ordem_producao = '" + idOrdemProducao
-		+ " and ordem_estrutura = '" + seqEstrutura
+		+ " where ordem_producao = " + idOrdemProducao
+		+ " and ordem_estrutura = " + seqEstrutura
 		+ " and sequencia = 1 "	;	
 		  
 		try {
@@ -189,8 +179,8 @@ public class OrdemProducaoCustom {
 		if (encontrou == 1) {
 			
 			query = " update pcpc_032 "
-	        + " set pcpc_032.qtde_kg_prog = pcpc_032.qtde_kg_prog + " + qtdeKg
-	        + " pcpc_032.qtde_metros = " + qtdeMetros
+	        + " set pcpc_032.qtde_kg_prog = pcpc_032.qtde_kg_prog + " + qtdeKg + " ,"
+	        + " pcpc_032.qtde_metros = pcpc_032.qtde_metros + " + qtdeMetros
 	        + " where pcpc_032.pcpc0302_orprocor = " + idOrdemProducao
 	        + " and pcpc_032.pcpc0302_sequenor = 1 "
 	        + " and pcpc_032.pcpc0302_seqorcor = " + seqEstrutura
@@ -200,31 +190,6 @@ public class OrdemProducaoCustom {
 			jdbcTemplate.update(query); 
 		}		
 	}
-	
-	public void gravarMarcacoesEnfesto(int idOrdemProducao, String sub, int seqEstrutura, int qtdeMarcacoes) {
-		
-		System.out.println("gravarTecidosEnfesto: " + idOrdemProducao + " -> seqEstrutura: " + seqEstrutura + " qtdeMarcacoes: " + qtdeMarcacoes);
-		
-		String query = "";
-				
-		query = " select 1 from pcpc_035 "
-		+ " where pcpc0305_orprocor = " + idOrdemProducao
-		+ " and pcpc0305_seqorcor = " + seqEstrutura
-		+ " and pcpc0305_sequenor = 1 " ;
-		
-		try {
-			jdbcTemplate.queryForObject(query, Integer.class);
-		} catch (Exception e) {
-			
-			query = " insert into pcpc_035 ( "       
-		    + " pcpc0305_orprocor, pcpc0305_seqorcor, " 
-		    + " tamanho_peca, qtde_marc_prog, "
-		    + " pcpc0305_sequenor) "
-		    + " values (?, ?, ?, ?, ?) ";
-		    
-			jdbcTemplate.update(query, idOrdemProducao, seqEstrutura, sub, qtdeMarcacoes, 1); 
-		}
-	}	
 	
 	public void gravarPacoteConfeccao(int periodo, int idPacote, int estagio, int idOrdemProducao, String grupo, String sub, String item, int quantidade, 
 			int estagioAnterior, int familia, int seqOperacao, int estagioDepende, int seqEstagio) {
@@ -246,4 +211,57 @@ public class OrdemProducaoCustom {
 		jdbcTemplate.update(query, periodo, idPacote, estagio, idOrdemProducao, "1", grupo, sub, item, quantidade, estagioAnterior, familia, 1, quantidade, seqOperacao, estagioDepende, seqEstagio, 3);
 	}	
 	
+	public boolean isExistsApontProducao (int idOrdemProducao) {
+		
+		int encontrou = 0;
+		
+		String query = " select 1 from pcpc_045 " 
+		+ " where ordem_producao = " + idOrdemProducao
+		+ " and rownum = 1 " ;
+		
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+
+		return (encontrou == 1);
+	}
+	
+	public void excluirOrdemProducao(int idOrdemProducao) {
+		
+		String query1 = " delete FROM pcpc_021 "
+	    + " where pcpc_021.ordem_producao = " + idOrdemProducao;
+
+		String query2 = " delete FROM pcpc_022 "
+	    + " where pcpc_022.ordem_producao = " + idOrdemProducao;
+
+		String query3 = " delete FROM pcpc_025 "
+	    + " where pcpc_025.ordem_producao = " + idOrdemProducao; 
+	     
+		String query4 = " delete FROM pcpc_035 "
+		+ " where pcpc0305_orprocor = " + idOrdemProducao;
+	    
+		String query5 = " delete FROM pcpc_032 "
+		+ " where pcpc0302_orprocor = " + idOrdemProducao;
+	      
+		String query6 = " delete FROM pcpc_030 "
+		+ " where pcpc_030.ordem_producao = " + idOrdemProducao;
+	    
+		String query7 = " update pcpc_040 "
+		+ " set   pcpc_040.executa_trigger = 3 "
+	    + " where pcpc_040.ordem_producao  = " + idOrdemProducao;	            
+	    
+		String query8 = " delete FROM pcpc_040 "
+		+ " where pcpc_040.ordem_producao = " + idOrdemProducao;
+ 
+		jdbcTemplate.update(query1);
+		jdbcTemplate.update(query2);
+		jdbcTemplate.update(query3);
+		jdbcTemplate.update(query4);
+		jdbcTemplate.update(query5);
+		jdbcTemplate.update(query6);
+		jdbcTemplate.update(query7);
+		jdbcTemplate.update(query8);		
+	}
 }

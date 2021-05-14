@@ -23,9 +23,11 @@ public class OrdemProducaoController {
 	
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)
 	public List<ConsultaPreOrdemProducao> gerar(@RequestBody BodyOrdemProducao body) {
-		
-		System.out.println("geracao de ordens de producao");
-		
 		return ordemProducaoService.gerarOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
+	
+	@RequestMapping(value = "/excluir", method = RequestMethod.POST)
+	public List<ConsultaPreOrdemProducao> excluir(@RequestBody BodyOrdemProducao body) {
+		return ordemProducaoService.excluirOrdens(body.idPlanoMestre, body.listaPreOrdens);		
+	}	
 }

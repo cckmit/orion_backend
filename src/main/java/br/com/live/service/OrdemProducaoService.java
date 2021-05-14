@@ -58,15 +58,7 @@ public class OrdemProducaoService {
 		int ordemTamanho = produtoCustom.findOrdemTamanho(preOrdemItem.sub);
 		ordemProducaoCustom.gravarTamanhoCor(idOrdemProducao, preOrdemItem.sub, preOrdemItem.item, preOrdemItem.quantidade, ordemTamanho);
 	}
-	
-	private void gravarMarcacaoTamanho(int idOrdemProducao, PlanoMestrePreOrdem preOrdem, PlanoMestrePreOrdemItem preOrdemItem) {		
-		int riscoPadrao = produtoCustom.findRiscoPadraoByCodigo(preOrdem.grupo);
-		int seqRisco = produtoCustom.findMenorSeqRisco(preOrdem.grupo, preOrdem.alternativa);
-		int ordemTamanho = produtoCustom.findOrdemTamanho(preOrdemItem.sub);		
-		int qtdeMarcacoesTamanho = produtoCustom.findQtdeMarcacoesTamanho(preOrdem.grupo, preOrdemItem.sub, riscoPadrao, seqRisco, preOrdem.alternativa);				
-		ordemProducaoCustom.gravarMarcacaoTamanho(idOrdemProducao, preOrdemItem.sub, qtdeMarcacoesTamanho, ordemTamanho);		
-	}	
-		
+			
 	private void gravarPacotesConfeccao(int idOrdemProducao, PlanoMestrePreOrdem preOrdem, PlanoMestrePreOrdemItem preOrdemItem) {		
 		int idPacote;
 		int qtdeLote;
@@ -130,8 +122,7 @@ public class OrdemProducaoService {
 		double metrosOrdem = 0.0;
 		double qtdeTotMetrosTecido = 0.0;
 		double tirasLargura = 0.0;
-		double qtdePerdas = 0.0;
-		int qtdeMarcacoesTamanho = 0;
+		double qtdePerdas = 0.0;		
 		int riscoPadrao = produtoCustom.findRiscoPadraoByCodigo(preOrdem.grupo);
 		
 		ConsultaDadosCompEstrutura dadosComponente;
@@ -157,16 +148,15 @@ public class OrdemProducaoService {
 				itemTecido = dadosComponente.item;				
 			}
 		
-			qtdeMarcacoesTamanho = produtoCustom.findQtdeMarcacoesTamanho(preOrdem.grupo, preOrdemItem.sub, riscoPadrao, dadosEstrutura.sequencia, preOrdem.alternativa);
-			
 			ordemProducaoCustom.gravarCapaEnfesto(idOrdemProducao, preOrdem.grupo, dadosEstrutura.sequencia, preOrdem.alternativa, preOrdem.roteiro);
-			ordemProducaoCustom.gravarMarcacoesEnfesto(idOrdemProducao, preOrdemItem.sub, dadosEstrutura.sequencia, qtdeMarcacoesTamanho);			
 			
 			qtdeKgProg = (consumoTecido * (float) preOrdemItem.quantidade);
 			metrosTecido = 0.0; 
 			qtdeTotMetrosTecido = 0.0;
 			
 			dadosFileteEstrutura = produtoCustom.findDadosFileteEstrutura(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, dadosEstrutura.sequencia, preOrdem.alternativa);
+									 
+			System.out.println("seq: " + dadosEstrutura.sequencia + " - tipo corte: " + dadosFileteEstrutura.tipoCorte);
 			
 			if (dadosFileteEstrutura.tipoCorte == 2) {				
 				dadosFileteRisco = produtoCustom.findDadosFileteRisco(preOrdem.grupo, riscoPadrao, dadosEstrutura.sequencia, preOrdem.alternativa);
@@ -174,30 +164,44 @@ public class OrdemProducaoService {
 				larguraFilete = dadosFileteEstrutura.larguraFilete; 
 				larguraRisco = dadosFileteRisco.larguraRisco;
 				
+				System.out.println("larguraRisco: " + larguraRisco);
+				System.out.println("larguraFilete: " + larguraFilete);				
+				
 				if (larguraRisco == 0.000) {				
 					dadosFileteTecido = produtoCustom.findDadosFileteTecidos(dadosEstrutura.grupoComp, subTecido);
 					
-					if (dadosFileteTecido.tubularAberto == 2) larguraRisco = dadosFileteTecido.larguraTecido * 2;
-					
-					if (larguraRisco == 0.000) larguraRisco = 1.000;
-					if (larguraFilete == 0.000) larguraFilete = 1.000;
-					
-					metrosOrdem = ((double) preOrdemItem.quantidade * dadosFileteEstrutura.comprimentoFilete);					
-					
-					tirasLargura = larguraRisco / larguraFilete;
-					
-					if (tirasLargura == 0.000) tirasLargura = 1.000; 
-					
-					metrosTecido = metrosOrdem / tirasLargura; 
-					
-					if (dadosEstrutura.percPerdas > 0.000) {						
-						qtdePerdas = (dadosEstrutura.percPerdas * metrosTecido) / 100;
-						metrosTecido += qtdePerdas;  
-					}
-					
-					qtdeTotMetrosTecido += metrosTecido;
-		            
-				}				
+					if (dadosFileteTecido.tubularAberto == 2) larguraRisco = dadosFileteTecido.larguraTecido * 2;					
+				}	
+										
+				if (larguraRisco == 0.000) larguraRisco = 1.000;
+				if (larguraFilete == 0.000) larguraFilete = 1.000;
+				
+				System.out.println("larguraRisco: " + larguraRisco);
+				System.out.println("larguraFilete: " + larguraFilete);
+				System.out.println("qtde: " + preOrdemItem.quantidade + " comprimento: " + dadosFileteEstrutura.comprimentoFilete);
+				
+				metrosOrdem = ((double) preOrdemItem.quantidade * dadosFileteEstrutura.comprimentoFilete);					
+				
+				System.out.println("metrosOrdem: " + metrosOrdem);
+				
+				tirasLargura = larguraRisco / larguraFilete;
+				
+				if (tirasLargura == 0.000) tirasLargura = 1.000; 
+				
+				System.out.println("tirasLargura: " + tirasLargura);
+				
+				metrosTecido = metrosOrdem / tirasLargura; 
+				
+				System.out.println("metrosTecido: " + metrosTecido);
+				
+				if (dadosEstrutura.percPerdas > 0.000) {						
+					qtdePerdas = (dadosEstrutura.percPerdas * metrosTecido) / 100;
+					metrosTecido += qtdePerdas;  
+				}
+				
+				System.out.println("metrosTecido: " + metrosTecido);					
+				
+				qtdeTotMetrosTecido += metrosTecido;		            								
 			}
 			
 			ordemProducaoCustom.gravarTecidosEnfesto(idOrdemProducao, preOrdemItem.item, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subTecido, itemTecido, dadosEstrutura.sequencia, qtdeKgProg, qtdeTotMetrosTecido);			
@@ -206,7 +210,6 @@ public class OrdemProducaoService {
 	
 	private void gravarDadosItem(int idOrdemProducao, PlanoMestrePreOrdem preOrdem, PlanoMestrePreOrdemItem preOrdemItem) {
 		gravarTamanhoCor(idOrdemProducao, preOrdemItem);
-		gravarMarcacaoTamanho(idOrdemProducao, preOrdem, preOrdemItem);
 		gravarPacotesConfeccao(idOrdemProducao, preOrdem, preOrdemItem);			
 		gravarDadosTecidos(idOrdemProducao, preOrdem, preOrdemItem);		
 	}
@@ -257,18 +260,14 @@ public class OrdemProducaoService {
 		long idPlanoMestre = 0;
 		PlanoMestre planoMestre;
 		
-		for (PlanoMestrePreOrdem preOrdem : preOrdens) {
-			idPlanoMestre = preOrdem.idPlanoMestre;
-			preOrdem.situacao = 1;
-			preOrdem.status = "ORDEM GERADA COM SUCESSO";
-			planoMestrePreOrdemRepository.save(preOrdem);
-		}
-		
+		for (PlanoMestrePreOrdem preOrdem : preOrdens) {			
+			planoMestrePreOrdemRepository.saveAndFlush(preOrdem);			
+		}		
 		if (idPlanoMestre > 0) { 
 			planoMestre = planoMestreRepository.findById(idPlanoMestre);
 			planoMestre.situacao = 2;
-			planoMestreRepository.save(planoMestre);
-		}	
+			planoMestreRepository.saveAndFlush(planoMestre);
+		}				
 	}
 	
 	private void atualizarErrosPreOrdens(Map<Long, StatusGravacao> mapPreOrdensComErro) {
@@ -290,9 +289,6 @@ public class OrdemProducaoService {
 		
 		int idOrdemProducao;
 		
-		System.out.println("dentro do método de geracao");
-		System.out.println("qtde IDs: " + preOrdens.size());		
-		
 		Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao> ();
 		List<PlanoMestrePreOrdem> listaPreOrdensConcluidas = new ArrayList<PlanoMestrePreOrdem> ();
 		
@@ -301,6 +297,8 @@ public class OrdemProducaoService {
 			
 			PlanoMestrePreOrdem preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
 			List<PlanoMestrePreOrdemItem> preOrdemItens = planoMestrePreOrdemItemRepository.findByIdOrdem(idPreOrdem);			
+			
+			if (preOrdem.ordemGerada > 0) continue;
 			
 			if (!validarDadosOrdem(preOrdem, mapPreOrdensComErro)) continue;
 			if (!validarDadosItem(preOrdem, preOrdemItens, mapPreOrdensComErro)) continue;
@@ -312,7 +310,9 @@ public class OrdemProducaoService {
 				gravarDadosItem(idOrdemProducao, preOrdem, preOrdemItem);
 			}
 			
-			preOrdem.ordemGerada = idOrdemProducao;		
+			preOrdem.ordemGerada = idOrdemProducao;
+			preOrdem.situacao = 1;
+			preOrdem.status = "ORDEM GERADA COM SUCESSO!";
 			listaPreOrdensConcluidas.add(preOrdem);
 		}
 		
@@ -322,4 +322,31 @@ public class OrdemProducaoService {
 		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
 	}	
 	
+	public boolean validarExclusaoOrdem(PlanoMestrePreOrdem preOrdem, Map<Long, StatusGravacao> mapPreOrdensComErro) {
+		boolean dadosOk = true;
+				
+		if (ordemProducaoCustom.isExistsApontProducao(preOrdem.ordemGerada)) {
+			dadosOk = false;
+			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Existe apontamento de produção!"));			
+		}
+		
+		return dadosOk;
+	}
+	
+	public List<ConsultaPreOrdemProducao> excluirOrdens(long idPlanoMestre, List<Long> preOrdens) {
+		
+		Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao> ();
+		List<PlanoMestrePreOrdem> listaPreOrdensConcluidas = new ArrayList<PlanoMestrePreOrdem> ();
+		
+		for (long idPreOrdem : preOrdens) {
+			PlanoMestrePreOrdem preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
+			if (!validarExclusaoOrdem(preOrdem, mapPreOrdensComErro)) continue;
+			ordemProducaoCustom.excluirOrdemProducao(preOrdem.ordemGerada);
+			
+			preOrdem.status = "ORDEM PRODUÇÃO EXCLUÍDA!";		
+			listaPreOrdensConcluidas.add(preOrdem);
+		}
+		
+		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
+	}	
 }
