@@ -25,4 +25,4 @@ create INDEX INDX_ORION_20_PLANO_MESTRE on orion_020 (num_plano_mestre);
 -- ATAUALIZAR PRODUCAO
 
 alter table orion_020
-add (status varchar2(50) default "PENDENTE");
+add (status varchar2(50) default 'PENDENTE');

@@ -22,7 +22,7 @@ public class OrdemProducaoController {
 	private OrdemProducaoService ordemProducaoService;
 	
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)
-	public List<ConsultaPreOrdemProducao> gerar(@RequestBody BodyOrdemProducao body) {
+	public BodyOrdemProducao gerar(@RequestBody BodyOrdemProducao body) {
 		return ordemProducaoService.gerarOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
 	

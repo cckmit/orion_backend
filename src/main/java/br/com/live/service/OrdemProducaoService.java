@@ -23,6 +23,7 @@ import br.com.live.model.PreOrdemProducao;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
+import br.com.live.util.BodyOrdemProducao;
 import br.com.live.util.StatusGravacao;
 
 @Service
@@ -257,17 +258,9 @@ public class OrdemProducaoService {
 	}	
 	
 	private void atualizarPreOrdens(List<PlanoMestrePreOrdem> preOrdens) {
-		long idPlanoMestre = 0;
-		PlanoMestre planoMestre;
-		
 		for (PlanoMestrePreOrdem preOrdem : preOrdens) {			
 			planoMestrePreOrdemRepository.saveAndFlush(preOrdem);			
 		}		
-		if (idPlanoMestre > 0) { 
-			planoMestre = planoMestreRepository.findById(idPlanoMestre);
-			planoMestre.situacao = 2;
-			planoMestreRepository.saveAndFlush(planoMestre);
-		}				
 	}
 	
 	private void atualizarErrosPreOrdens(Map<Long, StatusGravacao> mapPreOrdensComErro) {
@@ -280,15 +273,16 @@ public class OrdemProducaoService {
 			status = mapPreOrdensComErro.get(idPreOrdem);
 			if (!status.isConcluido()) {
 				preOrdem.status = status.getMensagem().toUpperCase();	
-				planoMestrePreOrdemRepository.save(preOrdem);
+				planoMestrePreOrdemRepository.saveAndFlush(preOrdem);
 			}			
 		}				
 	}	
 	
-	public List<ConsultaPreOrdemProducao> gerarOrdens(long idPlanoMestre, List<Long> preOrdens) {
+	public BodyOrdemProducao gerarOrdens(long idPlanoMestre, List<Long> preOrdens) {
 		
 		int idOrdemProducao;
 		
+		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
 		Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao> ();
 		List<PlanoMestrePreOrdem> listaPreOrdensConcluidas = new ArrayList<PlanoMestrePreOrdem> ();
 		
@@ -315,11 +309,16 @@ public class OrdemProducaoService {
 			preOrdem.status = "ORDEM GERADA COM SUCESSO!";
 			listaPreOrdensConcluidas.add(preOrdem);
 		}
-		
+				
 		atualizarPreOrdens(listaPreOrdensConcluidas);
-		atualizarErrosPreOrdens(mapPreOrdensComErro);		
+		atualizarErrosPreOrdens(mapPreOrdensComErro);
 		
-		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
+		if (listaPreOrdensConcluidas.size() > 0) { 
+			planoMestre.situacao=2; // Ordens Geradas;
+			planoMestreRepository.saveAndFlush(planoMestre);
+		}
+		
+		return new BodyOrdemProducao(idPlanoMestre, planoMestre.situacao, planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre));
 	}	
 	
 	public boolean validarExclusaoOrdem(PlanoMestrePreOrdem preOrdem, Map<Long, StatusGravacao> mapPreOrdensComErro) {
@@ -340,12 +339,18 @@ public class OrdemProducaoService {
 		
 		for (long idPreOrdem : preOrdens) {
 			PlanoMestrePreOrdem preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
+			
+			if (preOrdem.ordemGerada == 0) continue;
+			
 			if (!validarExclusaoOrdem(preOrdem, mapPreOrdensComErro)) continue;
 			ordemProducaoCustom.excluirOrdemProducao(preOrdem.ordemGerada);
 			
-			preOrdem.status = "ORDEM PRODUÇÃO EXCLUÍDA!";		
+			preOrdem.status = "ORDEM EXCLUÍDA COM SUCESSO!";		
 			listaPreOrdensConcluidas.add(preOrdem);
 		}
+		
+		atualizarPreOrdens(listaPreOrdensConcluidas);
+		atualizarErrosPreOrdens(mapPreOrdensComErro);
 		
 		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
 	}	

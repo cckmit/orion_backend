@@ -662,70 +662,82 @@ public class PlanoMestreService {
 
 	public void gerarPreOrdens(ParametrosPlanoMestre parametros) {
 
-		// Atualiza os parâmetros do plano mestre.
-		PlanoMestreParametros planoMestreParametros = planoMestreParametrosRepository
-				.findByIdPlanoMestre(parametros.idPlanoMestre);
-		planoMestreParametros.agrupaOpPorRefer = parametros.agrupaOpPorRefer;
-		planoMestreParametros.qtdeMaximaOP = parametros.qtdeMaximaOP;
-		planoMestreParametros.qtdeMinimaOP = parametros.qtdeMinimaOP;
-		planoMestreParametros.periodoOP = parametros.periodoOP;
-		planoMestreParametros.depositoOP = parametros.depositoOP;
-		planoMestreParametros.observacaoOP = parametros.observacaoOP;
-		planoMestreParametrosRepository.save(planoMestreParametros);
-
-		// Elimina as pré-ordens geradas anteriormente para o plano mestre.
-		planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
-		planoMestrePreOrdemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
-
-		// Calcula e gera as pré-ordens
-		List<ProgramacaoPlanoMestre> programacao = planoMestreCustom
-				.findProgramacaoByIdPlanoMestre(parametros.idPlanoMestre);
-
-		GeracaoPreOrdens geracaoPreOrdens = new GeracaoPreOrdens(parametros.idPlanoMestre, parametros.agrupaOpPorRefer,
-				parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP, parametros.depositoOP,
-				parametros.observacaoOP, programacao);
-
-		Map<Integer, PlanoMestrePreOrdem> mapPreOrdens = geracaoPreOrdens.getMapPreOrdens();
-		List<PlanoMestrePreOrdemItem> listPreOrdemItens;
-
-		PlanoMestrePreOrdem preOrdem;
-
-		int idPreOrdem = planoMestreCustom.findNextIdPreOrdem();
-		int idPreOrdemItem = planoMestreCustom.findNextIdPreOrdemItem();
-
-		for (Integer idMap : mapPreOrdens.keySet()) {
-
-			idPreOrdem++;
-
-			preOrdem = mapPreOrdens.get(idMap);
-			preOrdem.id = idPreOrdem;
-			preOrdem = planoMestrePreOrdemRepository.save(preOrdem);
-
-			listPreOrdemItens = geracaoPreOrdens.getListPreOrdemItens(idMap);
-
-			for (PlanoMestrePreOrdemItem preOrdemItem : listPreOrdemItens) {
-
-				idPreOrdemItem++;
-
-				preOrdemItem.id = idPreOrdemItem;
-				preOrdemItem.idOrdem = idPreOrdem;
-				planoMestrePreOrdemItemRepository.save(preOrdemItem);
+		PlanoMestre planoMestre = planoMestreRepository.findById(parametros.idPlanoMestre);
+		
+		// Se tiver ordens geradas, não recria as pré-ordens
+		
+		if (planoMestre.situacao < 2) {		
+			// Atualiza os parâmetros do plano mestre.
+			PlanoMestreParametros planoMestreParametros = planoMestreParametrosRepository
+					.findByIdPlanoMestre(parametros.idPlanoMestre);
+			planoMestreParametros.agrupaOpPorRefer = parametros.agrupaOpPorRefer;
+			planoMestreParametros.qtdeMaximaOP = parametros.qtdeMaximaOP;
+			planoMestreParametros.qtdeMinimaOP = parametros.qtdeMinimaOP;
+			planoMestreParametros.periodoOP = parametros.periodoOP;
+			planoMestreParametros.depositoOP = parametros.depositoOP;
+			planoMestreParametros.observacaoOP = parametros.observacaoOP;
+			planoMestreParametrosRepository.save(planoMestreParametros);
+	
+			// Elimina as pré-ordens geradas anteriormente para o plano mestre.
+			planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
+			planoMestrePreOrdemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
+			planoMestrePreOrdemItemRepository.flush();
+			planoMestrePreOrdemRepository.flush();
+	
+			// Calcula e gera as pré-ordens
+			List<ProgramacaoPlanoMestre> programacao = planoMestreCustom
+					.findProgramacaoByIdPlanoMestre(parametros.idPlanoMestre);
+	
+			GeracaoPreOrdens geracaoPreOrdens = new GeracaoPreOrdens(parametros.idPlanoMestre, parametros.agrupaOpPorRefer,
+					parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP, parametros.depositoOP,
+					parametros.observacaoOP, programacao);
+	
+			Map<Integer, PlanoMestrePreOrdem> mapPreOrdens = geracaoPreOrdens.getMapPreOrdens();
+			List<PlanoMestrePreOrdemItem> listPreOrdemItens;
+	
+			PlanoMestrePreOrdem preOrdem;
+	
+			int idPreOrdem = planoMestreCustom.findNextIdPreOrdem();
+			int idPreOrdemItem = planoMestreCustom.findNextIdPreOrdemItem();
+			
+			for (Integer idMap : mapPreOrdens.keySet()) {
+	
+				idPreOrdem++;
+	
+				preOrdem = mapPreOrdens.get(idMap);
+				preOrdem.id = idPreOrdem;
+				preOrdem = planoMestrePreOrdemRepository.save(preOrdem);
+	
+				listPreOrdemItens = geracaoPreOrdens.getListPreOrdemItens(idMap);
+	
+				for (PlanoMestrePreOrdemItem preOrdemItem : listPreOrdemItens) {
+	
+					idPreOrdemItem++;
+	
+					preOrdemItem.id = idPreOrdemItem;
+					preOrdemItem.idOrdem = idPreOrdem;
+					planoMestrePreOrdemItemRepository.save(preOrdemItem);
+				}
 			}
 		}
 	}
 
 	public List<PlanoMestre> delete(long idPlanoMestre) {
 
-		planoMestreOcupacaoEstagioRepository.deleteByIdPlanoMestre(idPlanoMestre);
-		planoMestreOcupacaoArtigoRepository.deleteByIdPlanoMestre(idPlanoMestre);
-		planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(idPlanoMestre);
-		planoMestrePreOrdemRepository.deleteByIdPlanoMestre(idPlanoMestre);
-		planoMestreParamProgItemRepository.deleteByIdPlanoMestre(idPlanoMestre);
-		produtoPlanoMestrePorCorRepository.deleteByIdPlanoMestre(idPlanoMestre);
-		produtoPlanoMestreRepository.deleteByIdPlanoMestre(idPlanoMestre);
-		planoMestreParametrosRepository.deleteById(idPlanoMestre);
-		planoMestreRepository.deleteById(idPlanoMestre);
-
+		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
+		
+		if (planoMestre.situacao == 0) {  
+			planoMestreOcupacaoEstagioRepository.deleteByIdPlanoMestre(idPlanoMestre);
+			planoMestreOcupacaoArtigoRepository.deleteByIdPlanoMestre(idPlanoMestre);
+			planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(idPlanoMestre);
+			planoMestrePreOrdemRepository.deleteByIdPlanoMestre(idPlanoMestre);
+			planoMestreParamProgItemRepository.deleteByIdPlanoMestre(idPlanoMestre);
+			produtoPlanoMestrePorCorRepository.deleteByIdPlanoMestre(idPlanoMestre);
+			produtoPlanoMestreRepository.deleteByIdPlanoMestre(idPlanoMestre);
+			planoMestreParametrosRepository.deleteById(idPlanoMestre);
+			planoMestreRepository.deleteById(idPlanoMestre);
+		}
+		
 		return findAll();
 	}
 

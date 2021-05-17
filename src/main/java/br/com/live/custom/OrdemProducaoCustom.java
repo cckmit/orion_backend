@@ -20,6 +20,9 @@ public class OrdemProducaoCustom {
 		Integer idUltimaOrdemProducao = 0;
 		String query = "";
 
+		
+		System.out.println("findNextIdOrdem");
+		
 		query = " select nvl(empr_001.ordem_confeccao,0) from empr_001 ";
 
 		try {
@@ -255,6 +258,9 @@ public class OrdemProducaoCustom {
 		String query8 = " delete FROM pcpc_040 "
 		+ " where pcpc_040.ordem_producao = " + idOrdemProducao;
  
+		String query9 = " delete FROM pcpc_020 "
+		+ " where pcpc_020.ordem_producao = " + idOrdemProducao;
+		
 		jdbcTemplate.update(query1);
 		jdbcTemplate.update(query2);
 		jdbcTemplate.update(query3);
@@ -263,5 +269,6 @@ public class OrdemProducaoCustom {
 		jdbcTemplate.update(query6);
 		jdbcTemplate.update(query7);
 		jdbcTemplate.update(query8);		
+		jdbcTemplate.update(query9);
 	}
 }
