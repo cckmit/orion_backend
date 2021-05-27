@@ -1,5 +1,6 @@
 package br.com.live.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,7 @@ import br.com.live.repository.PlanoMestreRepository;
 import br.com.live.repository.ProdutoPlanoMestrePorCorRepository;
 import br.com.live.repository.ProdutoPlanoMestreRepository;
 import br.com.live.util.ParametrosPlanoMestre;
+import br.com.live.util.StatusGravacao;
 
 @Service
 @Transactional
@@ -79,6 +81,7 @@ public class PlanoMestreService {
 	private final OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom;
 	private final PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository;
 	private final PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository;
+	private final OrdemProducaoService ordemProducaoService;
 
 	public PlanoMestreService(PlanoMestreRepository planoMestreRepository,
 			ProdutoPlanoMestreRepository produtoPlanoMestreRepository, EstoqueProdutoCustom estoqueProdutoCustom,
@@ -92,7 +95,8 @@ public class PlanoMestreService {
 			PrevisaoVendasCustom previsaoVendasCustom, CapacidadeProducaoCustom capacidadeProducaoCustom,
 			OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom,
 			PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository,
-			PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository) {
+			PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository,
+			OrdemProducaoService ordemProducaoService) {
 		this.planoMestreRepository = planoMestreRepository;
 		this.produtoPlanoMestreRepository = produtoPlanoMestreRepository;
 		this.estoqueProdutoCustom = estoqueProdutoCustom;
@@ -111,6 +115,7 @@ public class PlanoMestreService {
 		this.ocupacaoPlanoMestreCustom = ocupacaoPlanoMestreCustom;
 		this.planoMestreOcupacaoEstagioRepository = planoMestreOcupacaoEstagioRepository;
 		this.planoMestreOcupacaoArtigoRepository = planoMestreOcupacaoArtigoRepository;
+		this.ordemProducaoService = ordemProducaoService;
 	}
 
 	public List<PlanoMestre> findAll() {
@@ -680,8 +685,8 @@ public class PlanoMestreService {
 	
 			// Elimina as pré-ordens geradas anteriormente para o plano mestre.
 			planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
-			planoMestrePreOrdemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
 			planoMestrePreOrdemItemRepository.flush();
+			planoMestrePreOrdemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);			
 			planoMestrePreOrdemRepository.flush();
 	
 			// Calcula e gera as pré-ordens
@@ -696,29 +701,26 @@ public class PlanoMestreService {
 			List<PlanoMestrePreOrdemItem> listPreOrdemItens;
 	
 			PlanoMestrePreOrdem preOrdem;
-	
-			int idPreOrdem = planoMestreCustom.findNextIdPreOrdem();
-			int idPreOrdemItem = planoMestreCustom.findNextIdPreOrdemItem();
+			Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao> ();
 			
 			for (Integer idMap : mapPreOrdens.keySet()) {
 	
-				idPreOrdem++;
-	
 				preOrdem = mapPreOrdens.get(idMap);
-				preOrdem.id = idPreOrdem;
-				preOrdem = planoMestrePreOrdemRepository.save(preOrdem);
-	
+				preOrdem.id = planoMestreCustom.findNextIdPreOrdem();
+				preOrdem = planoMestrePreOrdemRepository.saveAndFlush(preOrdem);				
 				listPreOrdemItens = geracaoPreOrdens.getListPreOrdemItens(idMap);
-	
+
 				for (PlanoMestrePreOrdemItem preOrdemItem : listPreOrdemItens) {
-	
-					idPreOrdemItem++;
-	
-					preOrdemItem.id = idPreOrdemItem;
-					preOrdemItem.idOrdem = idPreOrdem;
-					planoMestrePreOrdemItemRepository.save(preOrdemItem);
+					preOrdemItem.id = planoMestreCustom.findNextIdPreOrdemItem();
+					preOrdemItem.idOrdem = preOrdem.id;
+					planoMestrePreOrdemItemRepository.saveAndFlush(preOrdemItem);					
 				}
+				
+				ordemProducaoService.validarDadosOrdem(preOrdem, mapPreOrdensComErro);
+				ordemProducaoService.validarDadosItem(preOrdem, listPreOrdemItens, mapPreOrdensComErro);
 			}
+			
+			ordemProducaoService.atualizarErrosPreOrdens(mapPreOrdensComErro);
 		}
 	}
 

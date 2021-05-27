@@ -117,7 +117,7 @@ public class PlanoMestreCustom {
 			       + " nvl((select 'S' from orion_030 o "
 		           + " where o.nivel = '1' "
 		           + " and o.grupo = a.grupo "
-		           + " and o.item = a.item),'N') sugCancelProd, "
+		           + " and o.item = a.item),'N') sugCancelProducao, "
 		           + " nvl((select max(b.codigo_cliente) from basi_010 b "
 		           + " where b.nivel_estrutura = '1' "
 		           + " and b.grupo_estrutura = a.grupo "
@@ -465,6 +465,8 @@ public class PlanoMestreCustom {
 			id = 0;
 		}
 
+		id++;
+		
 		return (int) id;
 	}
 
@@ -480,6 +482,8 @@ public class PlanoMestreCustom {
 			id = 0;
 		}
 
+		id++;
+		
 		return (int) id;
 	}
 

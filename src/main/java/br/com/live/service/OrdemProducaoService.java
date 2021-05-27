@@ -19,7 +19,6 @@ import br.com.live.model.ConsultaDadosEstrutura;
 import br.com.live.model.ConsultaDadosFilete;
 import br.com.live.model.ConsultaDadosRoteiro;
 import br.com.live.model.ConsultaPreOrdemProducao;
-import br.com.live.model.PreOrdemProducao;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
@@ -215,7 +214,7 @@ public class OrdemProducaoService {
 		gravarDadosTecidos(idOrdemProducao, preOrdem, preOrdemItem);		
 	}
 	
-	private boolean validarDadosOrdem(PlanoMestrePreOrdem preOrdem, Map<Long, StatusGravacao> mapPreOrdensComErro) {
+	public boolean validarDadosOrdem(PlanoMestrePreOrdem preOrdem, Map<Long, StatusGravacao> mapPreOrdensComErro) {
 		
 		boolean dadosOk = true;
 		
@@ -232,7 +231,7 @@ public class OrdemProducaoService {
 		return dadosOk;
 	}
 	
-	private boolean validarDadosItem(PlanoMestrePreOrdem preOrdem, List<PlanoMestrePreOrdemItem> preOrdemItens, Map<Long, StatusGravacao> mapPreOrdensComErro) {
+	public boolean validarDadosItem(PlanoMestrePreOrdem preOrdem, List<PlanoMestrePreOrdemItem> preOrdemItens, Map<Long, StatusGravacao> mapPreOrdensComErro) {
 		
 		boolean dadosOk = true;
 		boolean existeEstrutura = true;
@@ -263,7 +262,7 @@ public class OrdemProducaoService {
 		}		
 	}
 	
-	private void atualizarErrosPreOrdens(Map<Long, StatusGravacao> mapPreOrdensComErro) {
+	public void atualizarErrosPreOrdens(Map<Long, StatusGravacao> mapPreOrdensComErro) {
 		
 		StatusGravacao status;
 		PlanoMestrePreOrdem preOrdem;

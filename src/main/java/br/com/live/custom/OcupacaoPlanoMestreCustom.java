@@ -157,6 +157,8 @@ public class OcupacaoPlanoMestreCustom {
 	
 	public OcupacaoPlanoMestre findOcupacaoCalculadaByPlanoEstagio(long idPlanoMestre, int estagio) {
 	
+		OcupacaoPlanoMestre ocupacao;
+		
 		String query = "select o.estagio, "
 		   + " o.qtde_capacidade_pecas qtdeCapacidadePecas, " 
 	       + " o.qtde_plano_pecas qtdePecasPlano, "
@@ -171,8 +173,13 @@ public class OcupacaoPlanoMestreCustom {
 	    + " from orion_025 o "
 	    + " where o.num_plano_mestre = " + idPlanoMestre
 	    + " and o.estagio = " + estagio ;
-
-		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OcupacaoPlanoMestre.class));				
+		try {
+			ocupacao = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OcupacaoPlanoMestre.class));
+		} catch (Exception e) {
+			ocupacao = new OcupacaoPlanoMestre();
+		}
+		
+		return ocupacao;
 	}
 
 	
