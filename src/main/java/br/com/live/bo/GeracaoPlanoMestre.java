@@ -231,7 +231,7 @@ public class GeracaoPlanoMestre {
 	}
 
 	public PlanoMestre getCapaPlanoMestre() {
-		return new PlanoMestre(parametros.descricao.toUpperCase());
+		return new PlanoMestre(parametros.descricao.toUpperCase(), parametros.usuario);
 	}
 
 	public PlanoMestreParametros getParametrosPlanoMestre() {

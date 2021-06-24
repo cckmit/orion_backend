@@ -31,16 +31,21 @@ public class PlanoMestre {
     @Column(name="situacao")
     public int situacao;
     
+    @Column(name="usuario")
+    public String usuario;
+    
     public PlanoMestre() {
     	this.id = 0;
     	this.descricao = "";
     	this.data = new Date();
     	this.situacao = PlanoMestre.EM_ANALISE;
+    	this.usuario = "";
     }
            
-    public PlanoMestre(String descricao) {
+    public PlanoMestre(String descricao, String usuario) {
     	this();
     	this.descricao = descricao;
+    	this.usuario = usuario;
     }
     
     public long getId() {
@@ -73,5 +78,13 @@ public class PlanoMestre {
 
 	public void setSituacao(int situacao) {
 		this.situacao = situacao;
+	}
+	
+	public String getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
 	}
 }
