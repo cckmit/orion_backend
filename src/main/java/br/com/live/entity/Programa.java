@@ -14,16 +14,18 @@ public class Programa {
 	public String descricao;
 	public String modulo;
 	public String path;
+	public String help;
 	
 	public Programa() {
 		
 	}
 	
-	public Programa(long id, String descricao, String modulo, String path) {
+	public Programa(long id, String descricao, String modulo, String path, String help) {
 		this.id = id;
 		this.descricao = descricao;
-		this.modulo= modulo;
-		this.path= path;
+		this.modulo = modulo;
+		this.path = path;
+		this.help = help;
 	}
 	
 }

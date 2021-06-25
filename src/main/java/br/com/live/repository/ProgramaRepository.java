@@ -15,4 +15,7 @@ public interface ProgramaRepository extends JpaRepository<Programa, Long> {
 	@Query("SELECT u FROM Programa u where u.id = :idPrograma")
 	Programa findByIdPrograma(long idPrograma);
 	
+	@Query("SELECT p FROM Programa p where p.descricao = :descricao")
+	Programa findProgramaByDescricao(String descricao);
+	
 }

@@ -7,3 +7,5 @@ create table orion_002
 );
 
 comment on table orion_002 is 'Tabela de Programas - capa';
+
+alter table orion_002 add help long;
