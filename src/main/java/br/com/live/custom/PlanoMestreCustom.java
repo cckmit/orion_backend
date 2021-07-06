@@ -43,7 +43,7 @@ public class PlanoMestreCustom {
 		           + " where a.nivel_estrutura = '1' "
 		           + " and b.nivel_estrutura = a.nivel_estrutura "
 		           + " and b.grupo_estrutura = a.referencia "
-		           + " and b.item_ativo = 1 "
+		           + " and b.item_ativo = 0 "
 		           + " and ver_permanente.grupo = a.referencia ";  
 	           
 		if (!parametrosFormatados.getSubColecoes().equalsIgnoreCase("")) {
