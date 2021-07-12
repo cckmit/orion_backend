@@ -19,10 +19,13 @@ public class TabelaPrecoCustom {
 
 	public List<TabelaPreco> findAll() {
 
-		String query = "select p.col_tabela_preco || '.' || p.mes_tabela_preco  || '.' ||  p.seq_tabela_preco id, " 
-		            + " p.col_tabela_preco colecao, p.mes_tabela_preco mes, p.seq_tabela_preco sequencia, p.descricao " 
-		            + " from pedi_090 p order by p.col_tabela_preco, p.mes_tabela_preco, p.seq_tabela_preco " ;
-
+		String query = " select tabelas.id, tabelas.colecao, tabelas.mes, tabelas.sequencia, tabelas.descricao "
+				+ " from (select p.col_tabela_preco || '.' || p.mes_tabela_preco || '.' || p.seq_tabela_preco id, "
+				+ " p.col_tabela_preco colecao, p.mes_tabela_preco mes, p.seq_tabela_preco sequencia, p.descricao " 
+				+ " from pedi_090 p "
+				+ " union select '0.0.0' id, 0 colecao, 0 mes, 0 sequencia, 'SEM TABELA DE PREÇO' descricao from dual) tabelas "
+				+ " order by tabelas.colecao, tabelas.mes, tabelas.sequencia ";
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(TabelaPreco.class));
 	}
 

@@ -23,8 +23,7 @@ public class PlanoMestreParametros {
 	public int multiplicador;	
 	@Column(name="qtde_minima_referencia")
 	public int qtdeMinimaReferencia;
-	@Column(name="id_previsao_vendas")
-	public long idPrevisaoVendas;
+	public String previsoes;
 	
 	// Análise Produto
 	public String colecoes;

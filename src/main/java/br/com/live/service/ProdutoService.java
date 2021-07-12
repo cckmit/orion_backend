@@ -40,7 +40,7 @@ public class ProdutoService {
 	}
 	
 	public List<Embarque> findEmbarques() {		
-		return produtoRepository.findAllEmbarques();		
+		return produtoRepository.findAllEmbarquesBasi();		
 	}
 	
 	public List<Alternativa> findAlternativasByCodigo(String grupo, String item) {		

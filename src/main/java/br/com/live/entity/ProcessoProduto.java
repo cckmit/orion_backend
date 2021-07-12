@@ -29,10 +29,10 @@ public class ProcessoProduto {
 
 	public int origem;
 	public int permanente;
-	public String embarque;
+	public long embarque;
 
 	public ProcessoProduto(int id, String nivel, String grupo, String sub, String item, int quantidade, int periodo,
-			int colecao, int linha, int artigo, int artigoCotas, int origem, int permanente, String embarque) {
+			int colecao, int linha, int artigo, int artigoCotas, int origem, int permanente, long embarque) {
 		this.id = id;
 		this.nivel = nivel;
 		this.grupo = grupo;

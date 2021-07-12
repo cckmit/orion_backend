@@ -99,11 +99,11 @@ public class ProdutoCustom {
 		
 		return cores;
 	}
+	
+	public List<Embarque> findAllEmbarquesBasi() {
 
-	public List<Embarque> findAllEmbarques() {
-
-		String query = "select min(rownum) id, b.codigo_cliente descricao from basi_010 b where b.codigo_cliente like '% EMBARQUE' "
-				+ " group by b.codigo_cliente " + " order by b.codigo_cliente ";
+		String query = "select a.grupo_embarque as id, a.data_entrega as descricao from basi_590 a "
+				+ " group by a.grupo_embarque, a.data_entrega ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Embarque.class));
 	}

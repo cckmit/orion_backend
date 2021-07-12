@@ -34,7 +34,7 @@ public class PlanoMestreCustom {
 		String query = " select b.nivel_estrutura nivel, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, b.narrativa, ";
 
 		query += " 0 qtdePrevisaoVendas "
-		           + " from basi_030 a, basi_010 b, "
+		           + " from basi_030 a, basi_010 b, basi_590 g, "
 		           + " (select d.referencia grupo, nvl((select 1 from basi_140 c "
 		           + " where c.colecao = d.colecao "
 		           + " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente "
@@ -44,6 +44,8 @@ public class PlanoMestreCustom {
 		           + " and b.nivel_estrutura = a.nivel_estrutura "
 		           + " and b.grupo_estrutura = a.referencia "
 		           + " and b.item_ativo = 1 "
+		           + " and g.nivel (+) = a.nivel_estrutura "
+		           + " and g.grupo (+) = a.referencia "
 		           + " and ver_permanente.grupo = a.referencia ";  
 	           
 		if (!parametrosFormatados.getSubColecoes().equalsIgnoreCase("")) {
@@ -63,7 +65,7 @@ public class PlanoMestreCustom {
 		}
 		
 		if (!parametrosFormatados.getEmbarques().equalsIgnoreCase("")) {
-			query += " and b.codigo_cliente in " + parametrosFormatados.getEmbarques();
+			query += " and g.grupo_embarque in " + parametrosFormatados.getEmbarques();
 		}
 	  		
 		if (!parametrosFormatados.getProdutos().equalsIgnoreCase("")) {
@@ -94,6 +96,12 @@ public class PlanoMestreCustom {
 				   + " and n.subgrupo_ref = b.subgru_estrutura "
 				   + " and n.item_ref = b.item_estrutura) or ver_permanente.permanente = 0) " ;	  
 		}
+		
+		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
+			query += "and exists (select 1 from PrevisaoVendasItem v where v.idPrevisao in (" + parametrosFormatados.getPrevisoes() + ")"
+	               + " where v.grupo = b.grupo_estrutura "
+			       + " and v.item = b.item_estrutura ";
+		}
 	  
 		System.out.println("Query ProdutoCompleto: " + query);
 		
@@ -118,11 +126,11 @@ public class PlanoMestreCustom {
 		           + " where o.nivel = '1' "
 		           + " and o.grupo = a.grupo "
 		           + " and o.item = a.item),'N') sugCancelProducao, "
-		           + " nvl((select max(b.codigo_cliente) from basi_010 b "
-		           + " where b.nivel_estrutura = '1' "
-		           + " and b.grupo_estrutura = a.grupo "
-		           + " and b.item_estrutura = a.item "
-		           + " ),' ') embarque "	       
+		           + " nvl((select max(b.grupo_embarque) from basi_590 b "
+		           + " where b.nivel = '1' "
+		           + " and b.grupo = a.grupo "
+		           + " and b.item = a.item "
+		           + " ),0) embarque "	       
 		           + " from orion_016 a ";
 		
 		return query;

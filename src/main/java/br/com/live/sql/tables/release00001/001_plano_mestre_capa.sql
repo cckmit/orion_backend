@@ -10,5 +10,3 @@ create table orion_010
 comment on table orion_010 is 'Tabela plano mestre de produção - capa';
 
 create sequence id_orion_010;
-
-alter table orion_010 add usuario varchar2(100);

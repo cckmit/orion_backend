@@ -318,7 +318,7 @@ public class PlanoMestreService {
 				produtos = calcularGradeNegativa(produtoCor); 
 
 			if (parametros.tipoDistribuicao == 4)
-				produtos = calcularGradePrevisao(produtoCor, parametros.idPrevisaoVendas);
+				produtos = calcularGradePrevisao(produtoCor, parametros.previsoes);
 
 			produtoPlanoMestreRepository.saveAll(produtos);
 
@@ -448,7 +448,7 @@ public class PlanoMestreService {
 
 		for (ProdutoPlanoMestre produtoPlanoMestre : produtos) {
 			produtoPlanoMestre.idPlanoMestre = planoMestre.id;			
-			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(planoMestreParametros.idPrevisaoVendas, produtoPlanoMestre.grupo, produtoPlanoMestre.item);			
+			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(planoMestreParametros.previsoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);			
 			produtoPlanoMestreRepository.save(produtoPlanoMestre);
 		}
 
@@ -563,16 +563,16 @@ public class PlanoMestreService {
 				.findByIdPlanoMestre(idPlanoMestre);
 
 		for (ProdutoPlanoMestrePorCor produtoCor : produtosCor) {
-			List<ProdutoPlanoMestre> produtos = calcularGradePrevisao(produtoCor, parametros.idPlanoMestre);
+			List<ProdutoPlanoMestre> produtos = calcularGradePrevisao(produtoCor, parametros.previsoes);
 			produtoPlanoMestreRepository.saveAll(produtos);
 
 			aplicarMultiplicadorItem(idPlanoMestre, parametros.multiplicador, produtoCor);
 		}
 	}
 
-	private List<ProdutoPlanoMestre> calcularGradePrevisao(ProdutoPlanoMestrePorCor produtoCor, long idPrevisaoVendas) {
+	private List<ProdutoPlanoMestre> calcularGradePrevisao(ProdutoPlanoMestrePorCor produtoCor, String idsPrevisoes) {
 		
-		List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos = previsaoVendasCustom.findPrevisaoVendasItemTamByIdPrevisaoVendasGrupoItem(idPrevisaoVendas, produtoCor.grupo, produtoCor.item);
+		List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos = previsaoVendasCustom.findPrevisaoVendasItemTamByIdsPrevisaoVendasGrupoItem(idsPrevisoes, produtoCor.grupo, produtoCor.item);
 
 		int qtdePrevisao = 0;
 		

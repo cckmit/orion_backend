@@ -29,14 +29,14 @@ public class GeracaoPlanoMestre {
 	private List<DemandaProdutoPlano> demandas;
 	private List<ProcessoProdutoPlano> processos;
 	private List<ProdutoCompleto> produtos;
-
+	
 	private Map<String, ProdutoPlanoMestre> mapProdutos;
 
 	private final static int PRODUTO = 0;
 	private final static int ESTOQUE = 1;
 	private final static int DEMANDA = 2;
 	private final static int PROCESSO = 3;
-
+	
 	public GeracaoPlanoMestre(ParametrosPlanoMestre parametros, List<EstoqueProduto> estoques,
 			List<DemandaProdutoPlano> demandas, List<ProcessoProdutoPlano> processos, List<ProdutoCompleto> produtos) {
 
@@ -246,7 +246,7 @@ public class GeracaoPlanoMestre {
 		planoMestreParam.periodoPadrao = parametros.periodoPadrao;
 		planoMestreParam.multiplicador = parametros.multiplicador;
 		planoMestreParam.qtdeMinimaReferencia = parametros.qtdeMinimaReferencia;
-		planoMestreParam.idPrevisaoVendas = parametros.idPrevisaoVendas;
+		planoMestreParam.previsoes = concatChaveNumerica(parametros.previsoes);
 
 		// Análise
 		planoMestreParam.colecoes = concatChaveNumerica(parametros.colecoes);
