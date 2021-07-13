@@ -39,6 +39,11 @@ public class ProgramaController {
 		return programaRepository.findByIdPrograma(idPrograma);
 	}
 	
+	@RequestMapping(value = "/path/{path}", method = RequestMethod.GET)
+	public Programa findByPath(@PathVariable("path") String path) {
+		return programaRepository.findProgramaByPath("/" + path);
+	}
+	
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public Programa saveHelpPrograma(@RequestBody BodyPrograma body) {
 		return programaService.saveHelpPrograma(body.id, body.help);
