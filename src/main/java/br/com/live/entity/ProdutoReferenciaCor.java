@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "orion_vi_itens")
-public class ProdutoReferCor {
+public class ProdutoReferenciaCor {
 
 	@Id
 	public String id;
@@ -30,7 +30,7 @@ public class ProdutoReferCor {
 	@Column(name = "risco_padrao")
 	public int riscoPadrao;
 	
-	public ProdutoReferCor(String id, String grupo, String item, String descricao, int colecao,
+	public ProdutoReferenciaCor(String id, String grupo, String item, String descricao, int colecao,
 			int permanente, String embarque, String sugCancelProducao, int alternativaPadrao, int roteiroPadrao, int riscoPadrao) {
 		this.id = id;
 		this.grupo = grupo;		

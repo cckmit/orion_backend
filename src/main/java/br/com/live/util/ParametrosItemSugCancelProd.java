@@ -14,6 +14,7 @@ public class ParametrosItemSugCancelProd {
 		String[] codSeparado ;
 		String grupo ;		
 		String item ;		
+		int colecao ;
 		
 		ItemSugCancelProducao itemSugerido ;
 		List<ItemSugCancelProducao> itensSugeridos = new ArrayList<ItemSugCancelProducao> ();
@@ -24,8 +25,9 @@ public class ParametrosItemSugCancelProd {
 			
 			grupo = codSeparado[0];			
 			item = codSeparado[1];
+			colecao = Integer.parseInt(codSeparado[2]);
 			
-			itemSugerido = new ItemSugCancelProducao("1", grupo, item) ;
+			itemSugerido = new ItemSugCancelProducao("1", grupo, item, colecao) ;
 			itensSugeridos.add(itemSugerido);
 		}
 		

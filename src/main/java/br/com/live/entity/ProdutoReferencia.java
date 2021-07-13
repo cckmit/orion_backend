@@ -6,7 +6,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="orion_vi_produtos")
-public class Produto {
+public class ProdutoReferencia {
 
 	@Id		
 	public String id;
@@ -15,7 +15,7 @@ public class Produto {
     public int colecao;
     public int permanente;
     
-    public Produto (String id, String grupo, String descricao, int colecao, int permanente) {
+    public ProdutoReferencia (String id, String grupo, String descricao, int colecao, int permanente) {
     	this.id=id;        
     	this.grupo=grupo;
     	this.descricao=descricao;

@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.entity.Produto;
-import br.com.live.entity.ProdutoReferCor;
+import br.com.live.entity.ProdutoReferencia;
+import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
 import br.com.live.model.ArtigoCotas;
@@ -19,6 +19,7 @@ import br.com.live.model.ConsultaDadosCompEstrutura;
 import br.com.live.model.ConsultaDadosEstrutura;
 import br.com.live.model.ConsultaDadosFilete;
 import br.com.live.model.ConsultaDadosRoteiro;
+import br.com.live.model.ConsultaItemSugestaoCancelProducao;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.LinhaProduto;
@@ -38,7 +39,7 @@ public class ProdutoCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<Produto> findProdutosByParameters(FiltroProduto filtro) {
+	public List<ProdutoReferencia> findProdutosByParameters(FiltroProduto filtro) {
 
 		String query = "select new br.com.live.entity.Produto (p.id, p.grupo, p.descricao, p.colecao, p.permanente) from Produto p ";
 		String condicao = "where ";
@@ -59,7 +60,7 @@ public class ProdutoCustom {
 
 		System.out.println("Produtos - query: " + query);
 
-		var q = manager.createQuery(query, Produto.class);
+		var q = manager.createQuery(query, ProdutoReferencia.class);
 
 		return q.getResultList();
 	}
@@ -108,9 +109,9 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Embarque.class));
 	}
 
-	public List<ProdutoReferCor> findItensByParameters(FiltroProduto filtro) {
+	public List<ProdutoReferenciaCor> findItensByParameters(FiltroProduto filtro) {
 
-		String query = "select new br.com.live.entity.ProdutoReferCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.sugCancelProducao, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferCor p ";
+		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.sugCancelProducao, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
 		String condicao = "where ";
 
 		if (!filtro.getReferencias().equalsIgnoreCase("")) {
@@ -137,19 +138,83 @@ public class ProdutoCustom {
 
 		query += " order by p.grupo, p.item ";
 
-		System.out.println("ProdutoReferCor - query: " + query);
+		System.out.println("ProdutoReferenciaCor - query: " + query);
 
-		var q = manager.createQuery(query, ProdutoReferCor.class);
+		var q = manager.createQuery(query, ProdutoReferenciaCor.class);
 
 		return q.getResultList();
 	}
 
-	public ProdutoReferCor findItemByCodigo(String grupo, String item) {
-		String query = "select new br.com.live.entity.ProdutoReferCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.sugCancelProducao, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferCor p ";
+	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelProducaoByParameters(FiltroProduto filtro) {
+		
+		String query = " select itens.grupo_estrutura grupo, itens.item_estrutura item, itens.descricao, "
+		+ " itens.colecao, itens.descr_colecao descColecao, itens.sug_cancel_prod sugCancelProducao " 
+		+ " from ( "
+		+ " select b.grupo_estrutura, b.item_estrutura, max(a.descr_referencia) || ' - ' || max(b.descricao_15) descricao, "
+		+ "        a.colecao, c.descr_colecao, "
+		+ "        nvl((select 'S' from orion_030 o "
+		+ "             where o.nivel = '1' "
+		+ "               and o.grupo = b.grupo_estrutura "
+		+ "               and o.item = b.item_estrutura "
+		+ "               and o.colecao = a.colecao),'N') sug_cancel_prod "
+		+ " from basi_030 a, basi_010 b, basi_140 c "
+		+ " where a.nivel_estrutura = '1' "
+		+ "   and b.nivel_estrutura = a.nivel_estrutura "
+		+ "   and b.grupo_estrutura = a.referencia "
+		+ "   and c.colecao = a.colecao "
+		+ "   and c.descricao_espanhol not like '%COLECAO PERMANENTE%' " ;
+		  
+		if (!filtro.getColecoes().equalsIgnoreCase("")) {
+			query += " and a.colecao in " + filtro.getColecoes();			
+		}
+  
+        query += " group by b.grupo_estrutura, b.item_estrutura, a.colecao, c.descr_colecao "
+		+ " union "
+		+ " select b.grupo_estrutura, b.item_estrutura, max(a.descr_referencia) || ' - ' || max(b.descricao_15) descricao, "
+		+ "        d.cd_agrupador colecao, e.ds_agrupador descr_colecao, "
+		+ "        nvl((select 'S' from orion_030 o "
+		+ "              where o.nivel = '1' "
+		+ "                and o.grupo = b.grupo_estrutura "
+		+ "                and o.item = b.item_estrutura "
+		+ "                and o.colecao = d.cd_agrupador),'N') sug_cancel_prod "
+		+ "  from basi_030 a, basi_010 b, basi_140 c, basi_632 d, basi_630 e "
+		+ " where a.nivel_estrutura = '1' "
+		+ "   and b.nivel_estrutura = a.nivel_estrutura "
+		+ "   and b.grupo_estrutura = a.referencia "
+		+ "   and c.colecao = a.colecao "
+		+ "   and c.descricao_espanhol like '%COLECAO PERMANENTE%' "
+		+ "   and d.grupo_ref = a.referencia "
+		+ "   and d.item_ref = b.item_estrutura "
+		+ "   and e.cd_agrupador = d.cd_agrupador ";
+        
+		if (!filtro.getColecoes().equalsIgnoreCase("")) {
+			query += " and a.colecao in " + filtro.getColecoes();			
+		}
+
+		if (!filtro.getSubColecoes().equalsIgnoreCase("")) {
+			query += " and d.cd_agrupador in " + filtro.getSubColecoes();
+		}
+		
+		query += " group by b.grupo_estrutura, b.item_estrutura, d.cd_agrupador , e.ds_agrupador ) itens ";				
+				
+		if (!filtro.getReferencias().equalsIgnoreCase("")) {
+			query += " and itens.grupo_estrutura in " + filtro.getReferencias();			
+		}
+
+		if (!filtro.getCores().equalsIgnoreCase("")) {
+			query += " and itens.item_estrutura in " + filtro.getCores();			
+		}
+		query += " order by itens.grupo_estrutura, itens.item_estrutura, itens.colecao, itens.descr_colecao, itens.sug_cancel_prod ";
+				
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaItemSugestaoCancelProducao.class));
+	}	
+	
+	public ProdutoReferenciaCor findItemByCodigo(String grupo, String item) {
+		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.sugCancelProducao, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
 		query += " where p.grupo = '" + grupo + "'";
 		query += " and p.item = '" + item + "'";
 
-		var q = manager.createQuery(query, ProdutoReferCor.class);
+		var q = manager.createQuery(query, ProdutoReferenciaCor.class);
 
 		return q.getSingleResult();
 	}

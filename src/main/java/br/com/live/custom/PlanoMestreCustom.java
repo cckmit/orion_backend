@@ -109,7 +109,7 @@ public class PlanoMestreCustom {
 	}
 	
 	
-	private String getQueryItensPorRefCor() {
+	private String getQueryItensPorRefCor(String colecoes) {
 	
 		String query = " select a.id, a.NUM_PLANO_MESTRE idPlanoMestre, a.codigo, a.grupo, a.item, "
 			       + " a.rank, a.QTDE_PREVISAO qtdePrevisao, a.QTDE_ESTOQUE qtdeEstoque, "
@@ -122,10 +122,13 @@ public class PlanoMestreCustom {
 			       + " a.QTDE_DEM_ACUMULADO qtdeDemAcumulado, a.QTDE_PROC_ACUMULADO qtdeProcAcumulado, a.QTDE_SALDO_ACUMULADO qtdeSaldoAcumulado, "
 			       + " a.QTDE_DEM_ACUM_PROG qtdeDemAcumProg, a.QTDE_PROC_ACUM_PROG qtdeProcAcumProg, a.QTDE_SALDO_ACUM_PROG qtdeSaldoAcumProg, "
 			       + " a.QTDE_SUGESTAO qtdeSugestao, a.QTDE_EQUALIZADO_SUGESTAO qtdeEqualizadoSugestao, a.QTDE_DIF_SUGESTAO qtdeDiferencaSugestao, a.QTDE_PROGRAMADA qtdeProgramada, "
+			       
 			       + " nvl((select 'S' from orion_030 o "
 		           + " where o.nivel = '1' "
 		           + " and o.grupo = a.grupo "
-		           + " and o.item = a.item),'N') sugCancelProducao, "
+		           + " and o.item = a.item"
+		           + " and o.colecao in (" + colecoes + ")),'N') sugCancelProducao, "
+		           
 		           + " nvl((select max(b.grupo_embarque) from basi_590 b "
 		           + " where b.nivel = '1' "
 		           + " and b.grupo = a.grupo "
@@ -138,7 +141,9 @@ public class PlanoMestreCustom {
 	
 	public List<ConsultaItensPlanoMestre> findItensPorRefCorByIdPlanoMestre(long idPlanoMestre) {
 			
-		String query = getQueryItensPorRefCor();
+		String colecoes = getColecoesPlanoMestre(idPlanoMestre);
+		
+		String query = getQueryItensPorRefCor(colecoes);
 		query += " where a.num_plano_mestre = " + idPlanoMestre;
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaItensPlanoMestre.class));
@@ -146,7 +151,9 @@ public class PlanoMestreCustom {
 
 	public ConsultaItensPlanoMestre findItensPorRefCorByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item) {
 		
-		String query = getQueryItensPorRefCor();
+		String colecoes = getColecoesPlanoMestre(idPlanoMestre);
+		
+		String query = getQueryItensPorRefCor(colecoes);
 		
 		query += " where a.num_plano_mestre = " + idPlanoMestre;
 		query += "	and a.grupo = '" + grupo + "'";
@@ -495,6 +502,58 @@ public class PlanoMestreCustom {
 		return (int) id;
 	}
 
+	private String getColecoesPlanoMestre(long idPlanoMestre) {
+		
+		String query = "";
+		String colecoes = "";
+		String colecoesPermanentes = "";		
+		String previsoes = "";
+		List<Integer> colecoesPrevisao;
+		
+		query = " select m.colecoes from orion_011 m where m.num_plano_mestre = " + idPlanoMestre;
+		
+		try {
+			colecoes = jdbcTemplate.queryForObject(query, String.class);
+			if (colecoes.equalsIgnoreCase("")) colecoes = "0"; 
+		} catch (Exception e) {
+			colecoes = "0";
+		}
+		
+		query = " select m.colecoes_permanentes from orion_011 m where m.num_plano_mestre = " + idPlanoMestre;
+
+		try {
+			colecoesPermanentes = jdbcTemplate.queryForObject(query, String.class);
+			if (colecoesPermanentes.equalsIgnoreCase("")) colecoesPermanentes = "0";
+		} catch (Exception e) {
+			colecoesPermanentes = "0";
+		}
+		
+		colecoes += "," + colecoesPermanentes;
+				
+		query = " select m.previsoes from orion_011 m where m.num_plano_mestre = " + idPlanoMestre;
+		
+		try {
+			previsoes = jdbcTemplate.queryForObject(query, String.class);
+			if (previsoes.equalsIgnoreCase("")) previsoes = "0";
+		} catch (Exception e) {
+			previsoes = "0";
+		}
+					
+		query = " select a.colecao from orion_040 a where a.id in ( " + previsoes + " ) ";   
+		
+		try {
+			colecoesPrevisao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Integer.class));			
+		} catch (Exception e) {
+			colecoesPrevisao = null;
+		}
+		
+		if (!colecoesPrevisao.isEmpty()) colecoes += "," + parseToString(colecoesPrevisao);
+		
+		System.out.println("COLECOES ENCONTRADAS: " + colecoes);
+		
+		return colecoes;		
+	}
+	
 	private String parseToString(List<Integer> listaIDs) {
 	
 		String listaString = "";
