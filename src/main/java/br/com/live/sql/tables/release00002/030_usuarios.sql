@@ -3,7 +3,7 @@ create table orion_001
  nome varchar2(100),
  usuario varchar2(50),
  senha varchar2(50),
- usuario number(1),
+ situacao number(1),
  constraint orion_001_pk primary key (id)
 );
 

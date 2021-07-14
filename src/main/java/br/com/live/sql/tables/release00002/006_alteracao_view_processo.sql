@@ -23,6 +23,4 @@ where b.ordem_producao = a.ordem_producao
   and w.item (+) = a.proconf_item
 group by rownum, a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, b.periodo_producao,
          c.colecao, c.conta_estoque, c.linha_produto, c.artigo, c.artigo_cotas, d.origem_prod, o.permanente, w.grupo_embarque
-order by a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, b.periodo_producao
-
-;
+order by a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, b.periodo_producao;
