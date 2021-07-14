@@ -41,7 +41,7 @@ public class ProdutoCustom {
 
 	public List<ProdutoReferencia> findProdutosByParameters(FiltroProduto filtro) {
 
-		String query = "select new br.com.live.entity.Produto (p.id, p.grupo, p.descricao, p.colecao, p.permanente) from Produto p ";
+		String query = "select new br.com.live.entity.ProdutoReferencia (p.id, p.grupo, p.descricao, p.colecao, p.permanente) from ProdutoReferencia p ";
 		String condicao = "where ";
 
 		if (!filtro.getColecoes().equalsIgnoreCase("")) {
@@ -111,7 +111,7 @@ public class ProdutoCustom {
 
 	public List<ProdutoReferenciaCor> findItensByParameters(FiltroProduto filtro) {
 
-		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.sugCancelProducao, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
+		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
 		String condicao = "where ";
 
 		if (!filtro.getReferencias().equalsIgnoreCase("")) {
@@ -146,6 +146,8 @@ public class ProdutoCustom {
 	}
 
 	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelProducaoByParameters(FiltroProduto filtro) {
+		
+		String comando = " where ";
 		
 		String query = " select itens.grupo_estrutura grupo, itens.item_estrutura item, itens.descricao, "
 		+ " itens.colecao, itens.descr_colecao descColecao, itens.sug_cancel_prod sugCancelProducao " 
@@ -198,11 +200,12 @@ public class ProdutoCustom {
 		query += " group by b.grupo_estrutura, b.item_estrutura, d.cd_agrupador , e.ds_agrupador ) itens ";				
 				
 		if (!filtro.getReferencias().equalsIgnoreCase("")) {
-			query += " and itens.grupo_estrutura in " + filtro.getReferencias();			
+			query += comando + " itens.grupo_estrutura in " + filtro.getReferencias();
+			comando = " and ";
 		}
 
 		if (!filtro.getCores().equalsIgnoreCase("")) {
-			query += " and itens.item_estrutura in " + filtro.getCores();			
+			query += comando + " itens.item_estrutura in " + filtro.getCores();			
 		}
 		query += " order by itens.grupo_estrutura, itens.item_estrutura, itens.colecao, itens.descr_colecao, itens.sug_cancel_prod ";
 				
@@ -210,7 +213,7 @@ public class ProdutoCustom {
 	}	
 	
 	public ProdutoReferenciaCor findItemByCodigo(String grupo, String item) {
-		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.sugCancelProducao, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
+		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
 		query += " where p.grupo = '" + grupo + "'";
 		query += " and p.item = '" + item + "'";
 

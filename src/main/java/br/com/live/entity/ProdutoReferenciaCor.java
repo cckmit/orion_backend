@@ -18,9 +18,6 @@ public class ProdutoReferenciaCor {
 	public int permanente;
 	public String embarque;
 	
-	@Column(name = "sug_cancel_prod")
-	public String sugCancelProducao;
-
 	@Column(name = "alternativa_padrao")
 	public int alternativaPadrao;
 	
@@ -39,7 +36,6 @@ public class ProdutoReferenciaCor {
 		this.colecao = colecao;
 		this.permanente = permanente;
 		this.embarque = embarque;
-		this.sugCancelProducao = sugCancelProducao;
 		this.alternativaPadrao = alternativaPadrao;
 		this.roteiroPadrao = roteiroPadrao;
 		this.riscoPadrao = riscoPadrao;

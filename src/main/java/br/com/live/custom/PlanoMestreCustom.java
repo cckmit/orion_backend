@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -544,7 +545,7 @@ public class PlanoMestreCustom {
 		try {
 			colecoesPrevisao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Integer.class));			
 		} catch (Exception e) {
-			colecoesPrevisao = null;
+			colecoesPrevisao = new ArrayList<Integer> ();
 		}
 		
 		if (!colecoesPrevisao.isEmpty()) colecoes += "," + parseToString(colecoesPrevisao);

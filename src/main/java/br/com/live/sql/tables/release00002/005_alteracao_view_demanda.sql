@@ -8,7 +8,7 @@ select rownum id, live_view_demanda."NIVEL",live_view_demanda."GRUPO",live_view_
 from (select a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item,
        a.codigo_deposito deposito, (a.qtde_pedida - a.qtde_faturada) quantidade, p.num_periodo_prod periodo,
        b.colecao, b.conta_estoque, b.linha_produto, b.artigo, b.artigo_cotas, c.origem_prod origem, a.cod_nat_op natureza, p.numero_controle,
-       p.pedido_venda pedido, w.grupo_embarque embarque, p.situacao_venda
+       p.pedido_venda pedido, nvl(w.grupo_embarque,0) embarque, p.situacao_venda
 from pedi_100 p, pedi_110 a, basi_030 b, basi_010 c, basi_590 w
 where p.situacao_venda  <> 10
   and p.tecido_peca      = '1'
@@ -32,7 +32,7 @@ UNION
 select a.item_nivel99 nivel, a.item_grupo grupo, a.item_sub sub, a.item_item item,
        a.codigo_deposito deposito, a.qtde_pedida quantidade, c.periodo_producao periodo,
        b.colecao, b.conta_estoque, b.linha_produto, b.artigo, b.artigo_cotas, d.origem_prod origem, a.cod_nat_op natureza, i.numero_controle,
-       i.pedido_venda pedido, w.grupo_embarque embarque, 0 situacao_venda
+       i.pedido_venda pedido, nvl(w.grupo_embarque,0) embarque, 0 situacao_venda
 from inte_100 i, inte_110 a, basi_030 b, pcpc_010 c, basi_010 d, basi_590 w
 where i.tecido_peca     = '1'
   and i.tipo_registro   = 1
@@ -55,4 +55,5 @@ where i.tecido_peca     = '1'
                where basi_205.codigo_deposito = a.codigo_deposito
                  and basi_205.considera_tmrp  = 1)) live_view_demanda, orion_vi_produtos o
 where o.grupo = live_view_demanda.grupo
-order by live_view_demanda."NIVEL",live_view_demanda."GRUPO",live_view_demanda."SUB",live_view_demanda."ITEM",live_view_demanda."DEPOSITO";
+order by live_view_demanda."NIVEL",live_view_demanda."GRUPO",live_view_demanda."SUB",live_view_demanda."ITEM",live_view_demanda."DEPOSITO"
+;

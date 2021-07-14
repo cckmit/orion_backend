@@ -4,7 +4,7 @@ select rownum id, a.proconf_nivel99 nivel, a.proconf_grupo grupo, a.proconf_subg
        nvl(sum(a.qtde_a_produzir_pacote),0) quantidade,
        --nvl(sum(a.qtde_pecas_prog),0) - nvl(sum(a.qtde_pecas_prod),0) - nvl(sum(a.qtde_pecas_2a),0) - nvl(sum(a.qtde_perdas),0) quantidade,
        --nvl(sum(a.qtde_conserto),0),
-       c.colecao, c.conta_estoque, c.linha_produto, c.artigo, c.artigo_cotas, d.origem_prod origem, o.permanente, w.grupo_embarque embarque
+       c.colecao, c.conta_estoque, c.linha_produto, c.artigo, c.artigo_cotas, d.origem_prod origem, o.permanente, nvl(w.grupo_embarque,0) embarque
 from pcpc_040 a, pcpc_020 b, basi_030 c, basi_010 d, orion_vi_produtos o, basi_590 w
 where b.ordem_producao = a.ordem_producao
   and b.ultimo_estagio = a.codigo_estagio
@@ -23,4 +23,6 @@ where b.ordem_producao = a.ordem_producao
   and w.item (+) = a.proconf_item
 group by rownum, a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, b.periodo_producao,
          c.colecao, c.conta_estoque, c.linha_produto, c.artigo, c.artigo_cotas, d.origem_prod, o.permanente, w.grupo_embarque
-order by a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, b.periodo_producao;
+order by a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, b.periodo_producao
+
+;
