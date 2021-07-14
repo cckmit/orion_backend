@@ -5,7 +5,7 @@ INSERT INTO orion_002 (id, descricao, modulo, path)
 VALUES (2,'Capacidade de Produção','Confecção','/capacidade-producao');
 
 INSERT INTO orion_002 (id, descricao, modulo, path)
-VALUES (3,'Sugestão Cancelamento','Confecção','/sugestao-cancelamento');
+VALUES (3,'Sugestão Cancelamento','Comercial','/sugestao-cancelamento');
 
 INSERT INTO orion_002 (id, descricao, modulo, path)
 VALUES (4,'Plano Mestre','Confecção','/plano-mestre');

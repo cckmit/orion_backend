@@ -38,7 +38,7 @@ public class UsuarioCustom {
 		
 		List <ConsultaProgramasUsuario> programas = null;
 		
-		String query = "select b.id_usuario idUsuario,c.id idPrograma,c.descricao,c.modulo,c.path from orion_003 b, orion_002 c where b.id_usuario =" + idUsuario + " and c.id = b.id_programa";
+		String query = "select b.id_usuario idUsuario,c.id idPrograma,c.descricao,c.modulo,c.path from orion_003 b, orion_002 c where b.id_usuario =" + idUsuario + " and c.id = b.id_programa order by c.descricao";
 		
 		try {
 			programas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaProgramasUsuario.class));
