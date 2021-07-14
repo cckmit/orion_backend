@@ -550,8 +550,6 @@ public class PlanoMestreCustom {
 		
 		if (!colecoesPrevisao.isEmpty()) colecoes += "," + parseToString(colecoesPrevisao);
 		
-		System.out.println("COLECOES ENCONTRADAS: " + colecoes);
-		
 		return colecoes;		
 	}
 	

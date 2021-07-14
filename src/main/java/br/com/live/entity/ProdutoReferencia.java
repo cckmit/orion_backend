@@ -15,6 +15,10 @@ public class ProdutoReferencia {
     public int colecao;
     public int permanente;
     
+    public ProdutoReferencia () {
+    	
+    }
+    
     public ProdutoReferencia (String id, String grupo, String descricao, int colecao, int permanente) {
     	this.id=id;        
     	this.grupo=grupo;

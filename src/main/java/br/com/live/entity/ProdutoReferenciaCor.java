@@ -27,8 +27,12 @@ public class ProdutoReferenciaCor {
 	@Column(name = "risco_padrao")
 	public int riscoPadrao;
 	
+	public ProdutoReferenciaCor() {
+		
+	}
+	
 	public ProdutoReferenciaCor(String id, String grupo, String item, String descricao, int colecao,
-			int permanente, String embarque, String sugCancelProducao, int alternativaPadrao, int roteiroPadrao, int riscoPadrao) {
+			int permanente, String embarque, int alternativaPadrao, int roteiroPadrao, int riscoPadrao) {
 		this.id = id;
 		this.grupo = grupo;		
 		this.item = item;
