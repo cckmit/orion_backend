@@ -139,7 +139,7 @@ public class PrevisaoVendasCustom {
 		String query = " select orion041.id_previsao_vendas idPrevisaoVendas, orion041.id_item_previsao_vendas idItemPrevisaoVendas, nvl(f.id,'') id, orion041.sub, orion041.ordem, nvl(f.qtde_previsao,0) qtdePrevisao "
 				+ " from (select o.id_previsao_vendas, o.id id_item_previsao_vendas, b.tamanho_ref sub, b.ordem_tamanho ordem "
 				+ " from orion_041 o, basi_020 a, basi_220 b " + " where o.id_previsao_vendas = " + idPrevisao
-				+ "'" + " and o.grupo = '" + grupo + "'" + " and o.item = '" + item + "'"
+				+ " and o.grupo = '" + grupo + "'" + " and o.item = '" + item + "'"
 				+ " and a.basi030_nivel030 = '1' " + " and a.basi030_referenc = o.grupo "
 				+ " and b.tamanho_ref = a.tamanho_ref " + " order by o.id, b.ordem_tamanho) orion041, orion_042 f "
 				+ " where f.id_previsao_vendas (+)= orion041.id_previsao_vendas "
