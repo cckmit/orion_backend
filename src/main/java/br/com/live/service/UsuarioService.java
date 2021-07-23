@@ -40,7 +40,7 @@ public class UsuarioService {
 			dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
 
 			dadosUsuario.nome = nome;
-			dadosUsuario.usuario = usuario;
+			dadosUsuario.usuario = usuario.toLowerCase();
 			dadosUsuario.senha = Criptografia.criptografar(senha);
 			dadosUsuario.situacao = situacao;
 			
@@ -48,7 +48,7 @@ public class UsuarioService {
 		} else {
 			idUsuario = usuarioCustom.findNextIdUsuario();
 			
-			dadosUsuario = new Usuario(idUsuario, nome, usuario, Criptografia.criptografar(senha), situacao);
+			dadosUsuario = new Usuario(idUsuario, nome, usuario.toLowerCase(), Criptografia.criptografar(senha), situacao);
 		}
 		
 		usuarioRepository.save(dadosUsuario);
