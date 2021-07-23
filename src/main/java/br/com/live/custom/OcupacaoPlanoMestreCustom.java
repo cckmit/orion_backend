@@ -19,7 +19,7 @@ public class OcupacaoPlanoMestreCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public OcupacaoEstagioArtigo findOcupacaoPlanoMestreByEstagio(long idPlanoMestre, int estagio) {
+	public OcupacaoEstagioArtigo findOcupacaoPlanoMestreByPeriodoEstagio(long idPlanoMestre, int periodoInicial, int periodoFinal, int estagio) {
 		
 		OcupacaoEstagioArtigo ocupacaoEstagio;
 		
@@ -28,8 +28,9 @@ public class OcupacaoPlanoMestreCustom {
 		        + " from orion_016 a, orion_017 b, mqop_050 c "
 		        + " where a.num_plano_mestre = " + idPlanoMestre
 		          + " and a.qtde_programada  > 0 "
-		          + " and b.num_plano_mestre = a.num_plano_mestre"
+		          + " and b.num_plano_mestre = a.num_plano_mestre "
 		          + " and b.num_item_plano_mestre = a.id "
+		          + " and b.periodo between " + periodoInicial + " and " + periodoFinal
 		          + " and c.nivel_estrutura = '1' " 
 		          + " and c.grupo_estrutura = a.grupo " 
 		          + " and (c.item_estrutura = a.item or c.item_estrutura = '000000') " 
@@ -48,7 +49,7 @@ public class OcupacaoPlanoMestreCustom {
 		return ocupacaoEstagio; 
 	}
 
-	public OcupacaoEstagioArtigo findOcupacaoPlanoMestreArtigoByEstagioArtigo(long idPlanoMestre, int estagio, int artigo) {
+	public OcupacaoEstagioArtigo findOcupacaoPlanoMestreArtigoByPeriodoEstagioArtigo(long idPlanoMestre, int periodoInicial, int periodoFinal, int estagio, int artigo) {
 		
 		OcupacaoEstagioArtigo ocupacaoArtigo;
 				
@@ -59,6 +60,7 @@ public class OcupacaoPlanoMestreCustom {
 		           + " and a.qtde_programada  > 0 "
 		           + " and b.num_plano_mestre = a.num_plano_mestre "
 		           + " and b.num_item_plano_mestre = a.id " 
+		           + " and b.periodo between " + periodoInicial + " and " + periodoFinal
 		           + " and c.nivel_estrutura = '1' " 
 		           + " and c.grupo_estrutura = a.grupo "  
 		           + " and (c.item_estrutura = a.item or c.item_estrutura = '000000') "  

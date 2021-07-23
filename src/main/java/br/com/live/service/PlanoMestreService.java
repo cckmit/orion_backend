@@ -180,8 +180,10 @@ public class PlanoMestreService {
 			qtdeFaltaSobraPecas = 0;
 			qtdeFaltaSobraMinutos = 0.000;
 
+			// TODO - ALTERAR - CONSIDERAR PERIODO 
 			OcupacaoEstagioArtigo ocupacaoEstagioPlanoMestre = ocupacaoPlanoMestreCustom
-					.findOcupacaoPlanoMestreByEstagio(idPlanoMestre, capacidade.estagio);
+					.findOcupacaoPlanoMestreByPeriodoEstagio(idPlanoMestre, periodoInicio, periodoFim, capacidade.estagio);
+
 			OcupacaoEstagioArtigo ocupacaoEstagioProgramada = ocupacaoPlanoMestreCustom
 					.findOcupacaoProgramadaByPeriodoEstagio(periodoInicio, periodoFim, capacidade.estagio);
 			List<ArtigoCapacidadeProducao> artigosCapacidades = capacidadeProducaoCustom
@@ -219,7 +221,7 @@ public class PlanoMestreService {
 				qtdeFaltaSobraMinutos = 0.000;
 
 				OcupacaoEstagioArtigo ocupacaoArtigoPlanoMestre = ocupacaoPlanoMestreCustom
-						.findOcupacaoPlanoMestreArtigoByEstagioArtigo(idPlanoMestre, capacidade.estagio,
+						.findOcupacaoPlanoMestreArtigoByPeriodoEstagioArtigo(idPlanoMestre, periodoInicio, periodoFim, capacidade.estagio,
 								artigoCapacidade.artigo);
 				OcupacaoEstagioArtigo ocupacaoArtigoProgramado = ocupacaoPlanoMestreCustom
 						.findOcupacaoProgramadaArtigoByPeriodoEstagioArtigo(periodoInicio, periodoFim,
