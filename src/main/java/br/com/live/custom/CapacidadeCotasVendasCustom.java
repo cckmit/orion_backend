@@ -21,16 +21,14 @@ public class CapacidadeCotasVendasCustom {
 	
 	public List<CapacidadesCotasVendas> findAllCapacidadesCotasVendas() {
 		
-		String query = " select a.periodo, b.data_ini_periodo dataInicial, b.data_fim_periodo dataFinal, a.id, a.linha, c.descricao_linha descLinha, a.categoria, d.conteudo_escolha descCategoria, nvl(sum(e.qtde_minutos),0) minutos, nvl(sum(e.qtde_pecas),0) pecas from orion_045 a, pcpc_010 b, basi_120 c, basi_542 d, orion_046 e "
+		String query = " select a.periodo, b.data_ini_periodo dataInicial, b.data_fim_periodo dataFinal, a.id, a.linha, c.descricao_linha descLinha, a.colecao, d.descr_colecao descColecao, nvl(sum(e.qtde_minutos),0) minutos, nvl(sum(e.qtde_pecas),0) pecas from orion_045 a, pcpc_010 b, basi_120 c, basi_140 d, orion_046 e "
 				+ " where b.periodo_producao = a.periodo "
 				+ " and b.area_periodo = 1 "
 				+ " and c.linha_produto = a.linha "
-				+ " and d.familia_atributo = '000001' "
-				+ "	and d.codigo_atributo = 5 "
-				+ " and d.seq_escolha = a.categoria "
+				+ " and d.colecao = a.colecao"
 				+ " and e.id_capacidade_cotas (+) = a.id "
-				+ " group by a.periodo, b.data_ini_periodo, b.data_fim_periodo, a.linha, c.descricao_linha, a.categoria, d.conteudo_escolha, a.id "
-				+ " order by a.periodo, a.linha, a.categoria ";
+				+ " group by a.periodo, b.data_ini_periodo, b.data_fim_periodo, a.linha, c.descricao_linha, a.colecao, d.descr_colecao, a.id "
+				+ " order by a.periodo, a.linha, a.colecao ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadesCotasVendas.class));
 	}
