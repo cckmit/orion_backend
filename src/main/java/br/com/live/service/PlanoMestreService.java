@@ -81,7 +81,7 @@ public class PlanoMestreService {
 	private final OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom;
 	private final PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository;
 	private final PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository;
-	private final OrdemProducaoService ordemProducaoService;
+	private final OrdemProducaoServiceTransaction ordemProducaoService;
 
 	public PlanoMestreService(PlanoMestreRepository planoMestreRepository,
 			ProdutoPlanoMestreRepository produtoPlanoMestreRepository, EstoqueProdutoCustom estoqueProdutoCustom,
@@ -96,7 +96,7 @@ public class PlanoMestreService {
 			OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom,
 			PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository,
 			PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository,
-			OrdemProducaoService ordemProducaoService) {
+			OrdemProducaoServiceTransaction ordemProducaoService) {
 		this.planoMestreRepository = planoMestreRepository;
 		this.produtoPlanoMestreRepository = produtoPlanoMestreRepository;
 		this.estoqueProdutoCustom = estoqueProdutoCustom;

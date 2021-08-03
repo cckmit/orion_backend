@@ -233,6 +233,8 @@ public class OrdemProducaoCustom {
 	
 	public void excluirOrdemProducao(int idOrdemProducao) {
 		
+		System.out.println("excluirOrdemProducao: " + idOrdemProducao);
+		
 		String query1 = " delete FROM pcpc_021 "
 	    + " where pcpc_021.ordem_producao = " + idOrdemProducao;
 
