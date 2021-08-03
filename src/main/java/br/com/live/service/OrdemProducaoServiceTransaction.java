@@ -18,7 +18,6 @@ import br.com.live.model.ConsultaDadosCompEstrutura;
 import br.com.live.model.ConsultaDadosEstrutura;
 import br.com.live.model.ConsultaDadosFilete;
 import br.com.live.model.ConsultaDadosRoteiro;
-import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
@@ -32,8 +31,7 @@ public class OrdemProducaoServiceTransaction {
 	private final PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository;
 	private final PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository;	 
 	private final OrdemProducaoCustom ordemProducaoCustom;
-	private final ProdutoCustom produtoCustom;
-	private final PlanoMestreCustom planoMestreCustom; 
+	private final ProdutoCustom produtoCustom;	 
 
 	public OrdemProducaoServiceTransaction(PlanoMestreRepository planoMestreRepository, PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository, 
 			PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository, 
@@ -43,7 +41,6 @@ public class OrdemProducaoServiceTransaction {
 		this.planoMestrePreOrdemItemRepository = planoMestrePreOrdemItemRepository;		
 		this.ordemProducaoCustom = ordemProducaoCustom;
 		this.produtoCustom = produtoCustom;
-		this.planoMestreCustom = planoMestreCustom;
 	}	
 	
 	private int gravarCapa(PlanoMestrePreOrdem preOrdem) {

@@ -79,7 +79,7 @@ public class CapacidadeCotasVendasService {
 		capacidadeCotasVendasItensRepository.deleteByIdCapa(idCapacidade);
 		
 		for (ProdutosCapacidadeProd modelo : modelos) {
-			if ((modelo.getMinutos() > 0) || (modelo.getPecas() >0)) { 
+			if ((modelo.getMinutos() > 0) || (modelo.getPecas() > 0)) { 
 				CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, modelo.getModelo(), modelo.getMinutos(),modelo.getPecas());
 				capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);
 			}
