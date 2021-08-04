@@ -8,8 +8,8 @@ public class CapacidadesCotasVendas {
 	private Date dataFinal;
 	private int linha;
 	private String descLinha;
-	private int categoria;
-	private String descCategoria;
+	private int colecao;
+	private String descColecao;
 	private int minutos;
 	private int pecas;
 	private String id;
@@ -44,17 +44,17 @@ public class CapacidadesCotasVendas {
 	public void setDescLinha(String descLinha) {
 		this.descLinha = descLinha;
 	}
-	public int getCategoria() {
-		return categoria;
+	public int getColecao() {
+		return colecao;
 	}
-	public void setCategoria(int categoria) {
-		this.categoria = categoria;
+	public void setColecao(int colecao) {
+		this.colecao= colecao;
 	}
-	public String getDescCategoria() {
-		return descCategoria;
+	public String getDescColecao() {
+		return descColecao;
 	}
-	public void setDescCategoria(String descCategoria) {
-		this.descCategoria = descCategoria;
+	public void setDescColecao(String descColecao) {
+		this.descColecao = descColecao;
 	}
 	public int getMinutos() {
 		return minutos;

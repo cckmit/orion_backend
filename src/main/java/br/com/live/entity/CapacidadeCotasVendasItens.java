@@ -17,6 +17,9 @@ public class CapacidadeCotasVendasItens {
 	
 	public String modelo;
 	
+	@Column(name="tempo_")
+	public float tempoUnitario;
+	
 	@Column(name="qtde_minutos")
 	public int minutos;
 	
@@ -27,10 +30,11 @@ public class CapacidadeCotasVendasItens {
 		
 	}
 	
-	public CapacidadeCotasVendasItens(String idCapa, String modelo, int minutos, int pecas) {
+	public CapacidadeCotasVendasItens(String idCapa, String modelo, float tempoUnitario, int minutos, int pecas) {
 		this.id = idCapa + "-" + modelo;
 		this.idCapa = idCapa;
 		this.modelo = modelo;
+		this.tempoUnitario = tempoUnitario;
 		this.minutos = minutos;
 		this.pecas =pecas;
 	}

@@ -38,8 +38,8 @@ public class CapacidadeCotasVendasService {
 		return capacidadeCotasVendasCustom.findCategoriasProd();
 	}
 
-	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int categoria, int linha, int periodo, boolean listarComQtde) {
-		return capacidadeCotasVendasCustom.findProdutosByCategoriaLinha(categoria, linha, periodo, listarComQtde);
+	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde) {
+		return capacidadeCotasVendasCustom.findProdutosByCategoriaLinha(colecao, linha, periodo, listarComQtde);
 	}
 	
 	public List<ProdutosCapacidadeProd> findProdutosByIdCapacidadeCotas(String idCapacidadeCotas) {
@@ -51,22 +51,23 @@ public class CapacidadeCotasVendasService {
 		capacidadeCotasVendasItensRepository.deleteByIdCapa(idCapacidadeCotas);
 	}
 
-	public void saveCapacidadeCotasVendas(int periodo, int categoria, int linha, List<ProdutosCapacidadeProd> modelos) {
+	public void saveCapacidadeCotasVendas(int periodo, int colecao, int linha, List<ProdutosCapacidadeProd> modelos, int minDistribuir) {
 		
 		CapacidadeCotasVendasCapa dadosCapacidadeCapa = null;
 
-		dadosCapacidadeCapa = capacidadeCotasVendasRepository.findByPeriodoCategoriaLinha(periodo, categoria, linha);
+		dadosCapacidadeCapa = capacidadeCotasVendasRepository.findByPeriodoColecaoLinha(periodo, colecao, linha);
 
 		// EDIÇÃO
 		if (dadosCapacidadeCapa != null) {
 
 			dadosCapacidadeCapa.periodo = periodo;
-			dadosCapacidadeCapa.categoria = categoria;
+			dadosCapacidadeCapa.colecao = colecao;
 			dadosCapacidadeCapa.linha = linha;
+			dadosCapacidadeCapa.minDistribuir = minDistribuir;
 
 			// INSERÇÃO
 		} else {
-			dadosCapacidadeCapa = new CapacidadeCotasVendasCapa(periodo, linha, categoria);
+			dadosCapacidadeCapa = new CapacidadeCotasVendasCapa(periodo, linha, colecao, minDistribuir);
 		}
 
 		capacidadeCotasVendasRepository.save(dadosCapacidadeCapa);
@@ -80,7 +81,7 @@ public class CapacidadeCotasVendasService {
 		
 		for (ProdutosCapacidadeProd modelo : modelos) {
 			if ((modelo.getMinutos() > 0) || (modelo.getPecas() > 0)) { 
-				CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, modelo.getModelo(), modelo.getMinutos(),modelo.getPecas());
+				CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, modelo.getModelo(), modelo.getTempoUnitario(),modelo.getMinutos(),modelo.getPecas());
 				capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);
 			}
 		}

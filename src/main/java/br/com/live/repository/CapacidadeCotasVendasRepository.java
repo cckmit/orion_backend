@@ -13,6 +13,6 @@ public interface CapacidadeCotasVendasRepository extends JpaRepository<Capacidad
 	@Query("SELECT u FROM CapacidadeCotasVendasCapa u where u.id = :idCotasVendas")
 	CapacidadeCotasVendasCapa findByIdCapacidadeCotasVendas(String idCotasVendas);
 	
-	@Query("SELECT u FROM CapacidadeCotasVendasCapa u where u.periodo = :periodo and u.categoria = :categoria and u.linha = :linha")
-	CapacidadeCotasVendasCapa findByPeriodoCategoriaLinha(int periodo, int categoria, int linha);
+	@Query("SELECT u FROM CapacidadeCotasVendasCapa u where u.periodo = :periodo and u.colecao = :colecao and u.linha = :linha")
+	CapacidadeCotasVendasCapa findByPeriodoColecaoLinha(int periodo, int colecao, int linha);
 }

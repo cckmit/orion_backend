@@ -45,7 +45,7 @@ public class CapacidadeCotasVendasCustom {
 	
 	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde){
 		
-		String query = " select ordenacao.modelo, ordenacao.descricao, categorias.des_categoria categoria, ordenacao.tempo_unit, ordenacao.minutos, ordenacao.pecas " 
+		String query = " select ordenacao.modelo, ordenacao.descricao, categorias.des_categoria categoria, ordenacao.tempo_unit tempoUnitario, ordenacao.minutos, ordenacao.pecas " 
 		  + " from (select capac_cotas.modelo, capac_cotas.descricao, sum(capac_cotas.tempo_unit) tempo_unit, sum(capac_cotas.minutos) minutos, sum(capac_cotas.pecas) pecas " 
 		  + " from (select orion_046.modelo, basi_030.descr_referencia descricao, orion_046.tempo_unitario tempo_unit, orion_046.qtde_minutos minutos, orion_046.qtde_pecas pecas " 
 		  + " from orion_045, orion_046, basi_030 " 
@@ -64,7 +64,7 @@ public class CapacidadeCotasVendasCustom {
 		  + " union all "	                  
 		  + " select a.referencia modelo , a.descr_referencia descricao, 0 tempo_unit, 0 minutos, 0 pecas "
 		  + " from basi_030 a "
-		  + " where basi_030.linha_produto = " + linha
+		  + " where a.linha_produto = " + linha
 		  + " and exists (select 1 from basi_631 b "
 		  + " where b.cd_agrupador = " + colecao
 		  + " and b.grupo_ref = a.referencia)) capac_cotas " 

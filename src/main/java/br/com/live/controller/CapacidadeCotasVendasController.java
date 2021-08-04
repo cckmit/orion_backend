@@ -45,9 +45,9 @@ public class CapacidadeCotasVendasController {
 		return capacidadeCotasVendasService.findCategoriasProd();
 	}
 	
-	@RequestMapping(value = "/itens/{categoria}/{linha}/{periodo}/{listarComQtde}", method = RequestMethod.GET)
-	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(@PathVariable("categoria") int categoria, @PathVariable("linha") int linha, @PathVariable("periodo") int periodo,  @PathVariable("listarComQtde") boolean listarComQtde) {
-		return capacidadeCotasVendasService.findProdutosByCategoriaLinha(categoria, linha, periodo, listarComQtde);
+	@RequestMapping(value = "/itens/{colecao}/{linha}/{periodo}/{listarComQtde}", method = RequestMethod.GET)
+	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(@PathVariable("colecao") int colecao, @PathVariable("linha") int linha, @PathVariable("periodo") int periodo,  @PathVariable("listarComQtde") boolean listarComQtde) {
+		return capacidadeCotasVendasService.findProdutosByCategoriaLinha(colecao, linha, periodo, listarComQtde);
 	}
 	
 	@RequestMapping(value = "/id-capacidade-cotas/{idCapacidadeCotas}", method = RequestMethod.GET)
@@ -63,8 +63,8 @@ public class CapacidadeCotasVendasController {
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public List<ProdutosCapacidadeProd> saveCapacidadeCotasVendas(@RequestBody BodyCapacidadeCotasVendas body) {
-		capacidadeCotasVendasService.saveCapacidadeCotasVendas(body.periodo, body.categoria, body.linha, body.modelos);
-		return capacidadeCotasVendasService.findProdutosByCategoriaLinha(body.categoria, body.linha, body.periodo, body.listarComQtde);
+		capacidadeCotasVendasService.saveCapacidadeCotasVendas(body.periodo, body.colecao, body.linha, body.modelos, body.minDistribuir);
+		return capacidadeCotasVendasService.findProdutosByCategoriaLinha(body.colecao, body.linha, body.periodo, body.listarComQtde);
 	}
 
 }
