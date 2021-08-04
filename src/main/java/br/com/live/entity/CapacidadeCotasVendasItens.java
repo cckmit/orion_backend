@@ -17,7 +17,7 @@ public class CapacidadeCotasVendasItens {
 	
 	public String modelo;
 	
-	@Column(name="tempo_")
+	@Column(name="tempo_unitario")
 	public float tempoUnitario;
 	
 	@Column(name="qtde_minutos")
