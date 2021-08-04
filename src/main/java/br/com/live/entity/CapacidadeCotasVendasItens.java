@@ -34,9 +34,11 @@ public class CapacidadeCotasVendasItens {
 		this.id = idCapa + "-" + modelo;
 		this.idCapa = idCapa;
 		this.modelo = modelo;
-		this.tempoUnitario = tempoUnitario;
-		this.minutos = minutos;
+		this.tempoUnitario = tempoUnitario;		
 		this.pecas =pecas;
+		
+		if (pecas > 0) this.minutos = ((float) pecas * tempoUnitario);
+		else this.minutos = minutos;				
 	}
 
 }

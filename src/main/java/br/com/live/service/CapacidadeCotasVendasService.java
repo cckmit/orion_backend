@@ -87,9 +87,6 @@ public class CapacidadeCotasVendasService {
 		capacidadeCotasVendasItensRepository.deleteByIdCapa(idCapacidade);
 		
 		for (ProdutosCapacidadeProd modelo : modelos) {			
-			//System.out.println("modelo.getTempoUnitario(): " + modelo.getTempoUnitario() + " modelo.getMinutos(): " + modelo.getMinutos() + " modelo.getPecas(): " + modelo.getPecas());
-			//System.out.println("Modelo: " + modelo.getModelo() + " - min unit: " + modelo.getTempoUnitario() + " - minutos: " + modelo.getMinutos() + " - pecas" + modelo.getPecas());
-			
 			CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, modelo.getModelo(), modelo.getTempoUnitario(),modelo.getMinutos(),modelo.getPecas());
 			capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);			
 		}
@@ -97,8 +94,6 @@ public class CapacidadeCotasVendasService {
 	
 	private void distribuirMinutos(int colecao, int minDistribuir, List<ProdutosCapacidadeProd> modelos) {
 		
-		System.out.println("distribuirMinutos - minDistribuir: " + minDistribuir + " - qtde modelos: " + modelos.size());
-
 		int qtdePecas;
 		float qtdeMinutos;
 		float minutosUnitario;
@@ -106,8 +101,6 @@ public class CapacidadeCotasVendasService {
 		
 		if (modelos.size() > 0) minutosPadrao = (float) ((float) minDistribuir / (float) modelos.size());
 						
-		System.out.println("minutosPadrao: " + minutosPadrao + " minDistribuir: " + minDistribuir + " modelos.size(): " + modelos.size());
-		
 		for (ProdutosCapacidadeProd modelo : modelos) {
 			minutosUnitario = capacidadeCotasVendasCustom.findTempoUnitarioByReferenciaColecao(modelo.getModelo(), colecao);
 			
@@ -115,14 +108,12 @@ public class CapacidadeCotasVendasService {
 			
 			if (minutosUnitario > 0.0000) qtdePecas = (int )(minutosPadrao / minutosUnitario);							
 			
-			System.out.println(modelo.getModelo() + " minutosPadrao: " + minutosPadrao + " - minutosUnitario: " + minutosUnitario + " PECAS: " + qtdePecas);
-			
-			if (qtdePecas > 0) qtdeMinutos = ((float) qtdePecas * minutosUnitario);
-			else qtdeMinutos = minutosPadrao;
+			//if (qtdePecas > 0) qtdeMinutos = ((float) qtdePecas * minutosUnitario);
+			//else qtdeMinutos = minutosPadrao;
 			
 			modelo.setTempoUnitario(minutosUnitario);
 			modelo.setPecas(qtdePecas);
-			modelo.setMinutos(qtdeMinutos);			
+			modelo.setMinutos(minutosPadrao);			
 		}			
 	}
 	

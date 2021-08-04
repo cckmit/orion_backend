@@ -92,8 +92,6 @@ public class CapacidadeCotasVendasCustom {
         	query += " and (ordenacao.pecas > 0) ";
         }
 		
-		System.out.println("SQL: " + query);
-		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutosCapacidadeProd.class));
 	}
 	
