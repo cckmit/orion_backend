@@ -106,4 +106,42 @@ public class CapacidadeCotasVendasCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutosCapacidadeProd.class));
 	}
 
+	public float findTempoUnitarioByReferenciaColecao(String referencia, int colecao) {
+		
+		float minutosUnitario;
+		
+		String query = " select nvl(sum(m.minutos_homem),0) minutos "
+		+ " from mqop_050 m "
+		+ " where m.nivel_estrutura  = '1' "
+		  + " and m.grupo_estrutura  = '" + referencia + "' " 
+		  + " and m.codigo_estagio   = 20 " // ESTAGIO DE COSTURA
+		  + " and exists (select 1 "
+		                 + " from (select a.referencia modelo, min(b.numero_alternati) alternativa, min(b.numero_roteiro) roteiro "
+		                         + " from basi_030 a, basi_010 b "
+		                        + " where a.nivel_estrutura = '1' "
+		                          + " and a.referencia = '" + referencia + "' " 
+		                          + " and b.nivel_estrutura = a.nivel_estrutura "
+		                          + " and b.grupo_estrutura = a.referencia "
+		                          + " and b.item_ativo = 0 "
+		                          + " and b.numero_alternati > 0 "
+		                          + " and b.numero_roteiro   > 0 "
+		                          + " and exists (select 1 "
+		                                        + " from basi_632 c "
+		                                       + " where c.cd_agrupador = " + colecao
+		                                         + " and c.grupo_ref = b.grupo_estrutura "
+		                                         + " and c.item_ref  = b.item_estrutura) "                
+		                        + " group by a.referencia) roteiro "
+		                + " where roteiro.modelo = m.grupo_estrutura "
+		                  + " and roteiro.alternativa = m.numero_alternati " 
+		                  + " and roteiro.roteiro = m.numero_roteiro) " ;        
+
+		
+		try {
+			minutosUnitario = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			minutosUnitario = 0;
+		}
+		
+		return minutosUnitario; 
+	}		
 }

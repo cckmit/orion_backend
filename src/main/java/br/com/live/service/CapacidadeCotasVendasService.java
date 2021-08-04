@@ -71,6 +71,8 @@ public class CapacidadeCotasVendasService {
 		}
 
 		capacidadeCotasVendasRepository.save(dadosCapacidadeCapa);
+
+		distribuirMinutos(colecao, minDistribuir, modelos);
 		
 		saveModelos(dadosCapacidadeCapa.id, modelos);
 	}
@@ -85,6 +87,30 @@ public class CapacidadeCotasVendasService {
 				capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);
 			}
 		}
-
 	}
+	
+	private void distribuirMinutos(int colecao, int minDistribuir, List<ProdutosCapacidadeProd> modelos) {
+		
+		System.out.println("distribuirMinutos - minDistribuir: " + minDistribuir + " - qtde modelos: " + modelos.size());
+		
+		int qtdePecas;
+		float minutosUnitario;
+		float minutosPadrao = (float) (minDistribuir / modelos.size());
+		
+				
+		System.out.println("minutos: " + minutosPadrao);
+		
+		for (ProdutosCapacidadeProd modelo : modelos) {
+			minutosUnitario = capacidadeCotasVendasCustom.findTempoUnitarioByReferenciaColecao(modelo.getModelo(), colecao);
+			qtdePecas = (int )(minutosPadrao / minutosUnitario);
+			
+			System.out.println(modelo.getModelo() + " -> minutosUnitario: " + minutosUnitario);
+			
+			modelo.setTempoUnitario(minutosUnitario);
+			modelo.setPecas(qtdePecas);
+			modelo.setMinutos(qtdePecas * minutosUnitario);
+		}
+	}
+	
+	
 }

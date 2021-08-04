@@ -6,7 +6,7 @@ public class ProdutosCapacidadeProd {
 	private String descricao;
 	private String categoria;
 	private float tempoUnitario;
-	private int minutos;
+	private float minutos;
 	private int pecas;
 	
 	public String getModelo() {
@@ -21,10 +21,10 @@ public class ProdutosCapacidadeProd {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-	public int getMinutos() {
+	public float getMinutos() {
 		return minutos;
 	}
-	public void setMinutos(int minutos) {
+	public void setMinutos(float minutos) {
 		this.minutos = minutos;
 	}
 	public int getPecas() {
