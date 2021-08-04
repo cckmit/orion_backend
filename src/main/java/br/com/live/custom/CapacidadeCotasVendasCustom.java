@@ -45,7 +45,7 @@ public class CapacidadeCotasVendasCustom {
 	
 	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde, boolean listarTempUnit){
 		
-		String query = " select ordenacao.modelo, ordenacao.descricao, categorias.des_categoria categoria, ordenacao.tempo_unit tempoUnitario, ordenacao.minutos, ordenacao.pecas " 
+		String query = " select ordenacao.modelo, ordenacao.descricao, nvl(categorias.des_categoria,' ') categoria, ordenacao.tempo_unit tempoUnitario, ordenacao.minutos, ordenacao.pecas " 
 		  + " from (select capac_cotas.modelo, capac_cotas.descricao, sum(capac_cotas.tempo_unit) tempo_unit, sum(capac_cotas.minutos) minutos, sum(capac_cotas.pecas) pecas " 
 		  + " from (select orion_046.modelo, basi_030.descr_referencia descricao, orion_046.tempo_unitario tempo_unit, orion_046.qtde_minutos minutos, orion_046.qtde_pecas pecas " 
 		  + " from orion_045, orion_046, basi_030 " 
@@ -65,6 +65,8 @@ public class CapacidadeCotasVendasCustom {
 		  + " select a.referencia modelo , a.descr_referencia descricao, 0 tempo_unit, 0 minutos, 0 pecas "
 		  + " from basi_030 a "
 		  + " where a.linha_produto = " + linha
+		  + " and a.colecao in (select 1 from basi_140 " 
+          + " where basi_140.descricao_espanhol like '%PERMANENTE%') "
 		  + " and exists (select 1 from basi_631 b "
 		  + " where b.cd_agrupador = " + colecao
 		  + " and b.grupo_ref = a.referencia)) capac_cotas " 
@@ -86,9 +88,11 @@ public class CapacidadeCotasVendasCustom {
 		  + " and a.codigo_grupo_atrib = 1 "
 		  + " and a.codigo_subgrupo_atrib = 1 " 
 		  + " and a.codigo_atributo = 5) categorias "
-		  + " where categorias.cod_refere = ordenacao.modelo ";
-		
-		System.out.println();
+		  + " where categorias.cod_refere (+) = ordenacao.modelo "		
+		  + " and exists (select 1 from basi_010 " 
+	      + " where basi_010.nivel_estrutura = '1' "
+	      + " and basi_010.grupo_estrutura = categorias.cod_refere "
+	      + " and basi_010.item_ativo = 0) " ;
 		
         if (listarComQtde) {
         	query += " and (ordenacao.pecas > 0) ";
