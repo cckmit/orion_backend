@@ -54,6 +54,8 @@ public class CapacidadeCotasVendasService {
 
 	public void saveCapacidadeCotasVendas(int periodo, int colecao, int linha, List<ProdutosCapacidadeProd> modelos, int minDistribuir) {
 		
+		boolean distribuirMinutosCapac = true;
+		
 		CapacidadeCotasVendasCapa dadosCapacidadeCapa = null;
 
 		dadosCapacidadeCapa = capacidadeCotasVendasRepository.findByPeriodoColecaoLinha(periodo, colecao, linha);
@@ -61,6 +63,8 @@ public class CapacidadeCotasVendasService {
 		// EDIÇÃO
 		if (dadosCapacidadeCapa != null) {
 
+			if (dadosCapacidadeCapa.minDistribuir == minDistribuir) distribuirMinutosCapac = false;
+			
 			dadosCapacidadeCapa.periodo = periodo;
 			dadosCapacidadeCapa.colecao = colecao;
 			dadosCapacidadeCapa.linha = linha;
@@ -73,7 +77,8 @@ public class CapacidadeCotasVendasService {
 
 		capacidadeCotasVendasRepository.save(dadosCapacidadeCapa);
 
-		modelos = distribuirMinutos(colecao, minDistribuir, modelos);
+		// Se alterou os minutos a distribuir, o sistema deve distribuir novamente
+		if (distribuirMinutosCapac) distribuirMinutos(colecao, minDistribuir, modelos);
 		
 		saveModelos(dadosCapacidadeCapa.id, modelos);
 	}
@@ -82,27 +87,21 @@ public class CapacidadeCotasVendasService {
 		
 		capacidadeCotasVendasItensRepository.deleteByIdCapa(idCapacidade);
 		
-		for (ProdutosCapacidadeProd modelo : modelos) {
+		for (ProdutosCapacidadeProd modelo : modelos) {			
+			//System.out.println("modelo.getTempoUnitario(): " + modelo.getTempoUnitario() + " modelo.getMinutos(): " + modelo.getMinutos() + " modelo.getPecas(): " + modelo.getPecas());
+			//System.out.println("Modelo: " + modelo.getModelo() + " - min unit: " + modelo.getTempoUnitario() + " - minutos: " + modelo.getMinutos() + " - pecas" + modelo.getPecas());
 			
-			System.out.println("modelo.getTempoUnitario(): " + modelo.getTempoUnitario() + " modelo.getMinutos(): " + modelo.getMinutos() + " modelo.getPecas(): " + modelo.getPecas());
-			
-			if ((modelo.getTempoUnitario() > 0) && (modelo.getMinutos() > 0) || (modelo.getPecas() > 0)) { 
-				
-				System.out.println("Modelo: " + modelo.getModelo() + " - min unit: " + modelo.getTempoUnitario() + " - minutos: " + modelo.getMinutos() + " - pecas" + modelo.getPecas());
-				
-				CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, modelo.getModelo(), modelo.getTempoUnitario(),modelo.getMinutos(),modelo.getPecas());
-				capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);
-			}
+			CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, modelo.getModelo(), modelo.getTempoUnitario(),modelo.getMinutos(),modelo.getPecas());
+			capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);			
 		}
 	}
 	
-	private List<ProdutosCapacidadeProd> distribuirMinutos(int colecao, int minDistribuir, List<ProdutosCapacidadeProd> modelos) {
+	private void distribuirMinutos(int colecao, int minDistribuir, List<ProdutosCapacidadeProd> modelos) {
 		
 		System.out.println("distribuirMinutos - minDistribuir: " + minDistribuir + " - qtde modelos: " + modelos.size());
 
-		List<ProdutosCapacidadeProd> modelosAlterados = new ArrayList<ProdutosCapacidadeProd>();
-		
 		int qtdePecas;
+		float qtdeMinutos;
 		float minutosUnitario;
 		float minutosPadrao = 0;
 		
@@ -119,14 +118,13 @@ public class CapacidadeCotasVendasService {
 			
 			System.out.println(modelo.getModelo() + " minutosPadrao: " + minutosPadrao + " - minutosUnitario: " + minutosUnitario + " PECAS: " + qtdePecas);
 			
+			if (qtdePecas > 0) qtdeMinutos = ((float) qtdePecas * minutosUnitario);
+			else qtdeMinutos = minutosPadrao;
+			
 			modelo.setTempoUnitario(minutosUnitario);
 			modelo.setPecas(qtdePecas);
-			modelo.setMinutos(qtdePecas * minutosUnitario);
-			
-			modelosAlterados.add(modelo);
-		}
-		
-		return modelosAlterados;
+			modelo.setMinutos(qtdeMinutos);			
+		}			
 	}
 	
 	

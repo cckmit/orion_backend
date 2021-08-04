@@ -124,12 +124,13 @@ public class CapacidadeCotasVendasCustom {
 		                          + " and b.grupo_estrutura = a.referencia "
 		                          + " and b.item_ativo = 0 "
 		                          + " and b.numero_alternati > 0 "
-		                          + " and b.numero_roteiro   > 0 "
-		                          + " and exists (select 1 "
-		                                        + " from basi_632 c "
-		                                       + " where c.cd_agrupador = " + colecao
-		                                         + " and c.grupo_ref = b.grupo_estrutura "
-		                                         + " and c.item_ref  = b.item_estrutura) "                
+		                          + " and b.numero_roteiro   > 0 "		                         		                          
+								  + " and (a.colecao = " + colecao   
+								  + " or exists (select 1 "
+	                                        + " from basi_632 c "
+	                                       + " where c.cd_agrupador = " + colecao
+	                                         + " and c.grupo_ref = b.grupo_estrutura "
+	                                         + " and c.item_ref  = b.item_estrutura)) "
 		                        + " group by a.referencia) roteiro "
 		                + " where roteiro.modelo = m.grupo_estrutura "
 		                  + " and roteiro.alternativa = m.numero_alternati " 
