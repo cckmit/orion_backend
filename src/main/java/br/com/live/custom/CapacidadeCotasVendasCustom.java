@@ -43,7 +43,7 @@ public class CapacidadeCotasVendasCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Categoria.class));
 	}
 	
-	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde){
+	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde, boolean listarTempUnit){
 		
 		String query = " select ordenacao.modelo, ordenacao.descricao, categorias.des_categoria categoria, ordenacao.tempo_unit tempoUnitario, ordenacao.minutos, ordenacao.pecas " 
 		  + " from (select capac_cotas.modelo, capac_cotas.descricao, sum(capac_cotas.tempo_unit) tempo_unit, sum(capac_cotas.minutos) minutos, sum(capac_cotas.pecas) pecas " 
@@ -87,9 +87,15 @@ public class CapacidadeCotasVendasCustom {
 		  + " and a.codigo_subgrupo_atrib = 1 " 
 		  + " and a.codigo_atributo = 5) categorias "
 		  + " where categorias.cod_refere = ordenacao.modelo ";
-
+		
+		System.out.println();
+		
         if (listarComQtde) {
         	query += " and (ordenacao.pecas > 0) ";
+        }
+        
+        if (listarTempUnit) {
+        	query += " and (ordenacao.tempo_unit > 0) ";
         }
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutosCapacidadeProd.class));

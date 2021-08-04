@@ -38,8 +38,8 @@ public class CapacidadeCotasVendasService {
 		return capacidadeCotasVendasCustom.findCategoriasProd();
 	}
 
-	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde) {
-		return capacidadeCotasVendasCustom.findProdutosByCategoriaLinha(colecao, linha, periodo, listarComQtde);
+	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde, boolean listarTempUnit) {
+		return capacidadeCotasVendasCustom.findProdutosByCategoriaLinha(colecao, linha, periodo, listarComQtde, listarTempUnit);
 	}
 	
 	public List<ProdutosCapacidadeProd> findProdutosByIdCapacidadeCotas(String idCapacidadeCotas) {
@@ -95,27 +95,38 @@ public class CapacidadeCotasVendasService {
 	private void distribuirMinutos(int colecao, int minDistribuir, List<ProdutosCapacidadeProd> modelos) {
 		
 		int qtdePecas;
-		float qtdeMinutos;
 		float minutosUnitario;
 		float minutosPadrao = 0;
+		int totalModelos;
 		
-		if (modelos.size() > 0) minutosPadrao = (float) ((float) minDistribuir / (float) modelos.size());
-						
+		totalModelos = salvarTempoUnitario(modelos, colecao);
+		
+		if (totalModelos > 0) minutosPadrao = (float) ((float) minDistribuir / (float) totalModelos);
+		
 		for (ProdutosCapacidadeProd modelo : modelos) {
-			minutosUnitario = capacidadeCotasVendasCustom.findTempoUnitarioByReferenciaColecao(modelo.getModelo(), colecao);
+			
+			minutosUnitario = modelo.getTempoUnitario();
 			
 			qtdePecas = 0;
 			
 			if (minutosUnitario > 0.0000) qtdePecas = (int )(minutosPadrao / minutosUnitario);							
-			
-			//if (qtdePecas > 0) qtdeMinutos = ((float) qtdePecas * minutosUnitario);
-			//else qtdeMinutos = minutosPadrao;
-			
-			modelo.setTempoUnitario(minutosUnitario);
+
 			modelo.setPecas(qtdePecas);
-			modelo.setMinutos(minutosPadrao);			
-		}			
+			if (minutosUnitario > 0) modelo.setMinutos(minutosPadrao);			
+		}	
 	}
 	
-	
+	private int salvarTempoUnitario(List<ProdutosCapacidadeProd> modelos, int colecao) {
+		float minutosUnitario;
+		int sequencia = 0;
+		
+		for (ProdutosCapacidadeProd modelo : modelos) {
+			minutosUnitario = capacidadeCotasVendasCustom.findTempoUnitarioByReferenciaColecao(modelo.getModelo(), colecao);
+			
+			if (minutosUnitario > 0) sequencia++;
+			
+			modelo.setTempoUnitario(minutosUnitario);
+		}
+		return sequencia;
+	}
 }

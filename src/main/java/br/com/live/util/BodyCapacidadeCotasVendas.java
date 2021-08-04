@@ -11,5 +11,6 @@ public class BodyCapacidadeCotasVendas {
 	public int minDistribuir;
 	public List<ProdutosCapacidadeProd> modelos;
 	public boolean listarComQtde;
+	public boolean listarTempUnit;
 	
 }
