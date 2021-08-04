@@ -89,7 +89,7 @@ public class CapacidadeCotasVendasCustom {
 		  + " where categorias.cod_refere = ordenacao.modelo ";
 
         if (listarComQtde) {
-        	query += " and (ordenacao.minutos > 0 or ordenacao.pecas > 0) ";
+        	query += " and (ordenacao.pecas > 0) ";
         }
 		
 		System.out.println("SQL: " + query);
