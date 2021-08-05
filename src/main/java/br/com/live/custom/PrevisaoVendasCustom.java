@@ -236,4 +236,17 @@ public class PrevisaoVendasCustom {
 		return qtdePrevisao;
 	}
 
+	public List<Integer> findColecoesByPrevisoes (String previsoes) {
+		List<Integer> colecoes;
+		
+		String query = " select a.colecao from orion_040 a where a.id in (" + previsoes + ") group by a.colecao ";
+
+		try {
+			colecoes = jdbcTemplate.queryForList(query, Integer.class);
+		} catch (Exception e) {
+			colecoes = new ArrayList<Integer>();
+		}
+
+		return colecoes;
+	}	
 }

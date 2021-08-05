@@ -126,8 +126,30 @@ public class PlanoMestreService {
 		return planoMestreCustom.findItensPorRefCorByIdPlanoMestre(idPlanoMestre);
 	}
 
-	public List<ConsultaItensTamPlanoMestre> findTamanhos(long idPlanoMestre, String grupo, String item) {
-		return planoMestreCustom.findItensPorTamByIdPlanoMestreGrupoItem(idPlanoMestre, grupo, item);
+	private String findTodasColecoesPlanoMestre (long idPlanoMestre) {
+		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
+		
+		String colecoes = parametros.colecoes; 
+		String previsoes = parametros.previsoes;
+		
+		if (colecoes == null) colecoes = "";
+		if (previsoes == null) previsoes = "";
+		
+		if (!previsoes.equalsIgnoreCase("")) {		
+			List<Integer> colecoesPrevisoes = previsaoVendasCustom.findColecoesByPrevisoes(previsoes);
+		
+			for (Integer colecaoPrev : colecoesPrevisoes) {
+				if (!colecoes.equalsIgnoreCase("")) colecoes += "," + colecaoPrev;
+				else colecoes += colecaoPrev;
+			}
+		}	
+
+		return colecoes;
+	}
+		
+	public List<ConsultaItensTamPlanoMestre> findTamanhos(long idPlanoMestre, String grupo, String item) {		
+		String colecoes = findTodasColecoesPlanoMestre(idPlanoMestre);				
+		return planoMestreCustom.findItensPorTamByIdPlanoMestreGrupoItem(idPlanoMestre, grupo, item, colecoes);
 	}
 
 	public PlanoMestreParametros findParametros(long idPlanoMestre) {
@@ -657,8 +679,6 @@ public class PlanoMestreService {
 						
 						ConsultaItensPlanoMestre item = planoMestreCustom.findItensPorRefCorByIdPlanoMestreGrupoItem(idPlanoMestre, grade.grupo, grade.item);
 						item.qtdeProgramada = qtdeProgramar;						
-						
-						//System.out.println("ref: " + grade.grupo + "." + grade.item + " - qtde programar: " + item.qtdeProgramada);
 						
 						salvarItem(item);						
 					}

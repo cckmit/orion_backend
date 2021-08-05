@@ -49,8 +49,8 @@ public class PlanoMestreCustom {
 		           + " and g.grupo (+) = a.referencia "
 		           + " and ver_permanente.grupo = a.referencia ";  
 	           
-		if (!parametrosFormatados.getSubColecoes().equalsIgnoreCase("")) {
-			query += " and a.colecao in " + parametrosFormatados.getSubColecoes();  
+		if (!parametrosFormatados.getColecoes().equalsIgnoreCase("")) {
+			query += " and a.colecao in " + parametrosFormatados.getColecoes();  
 		}
 		
 		if (!parametrosFormatados.getLinhasProduto().equalsIgnoreCase("")) {
@@ -163,7 +163,7 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaItensPlanoMestre.class));
 	}
 	
-	public List<ConsultaItensTamPlanoMestre> findItensPorTamByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item) {
+	public List<ConsultaItensTamPlanoMestre> findItensPorTamByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item, String colecoes) {
 				
 		String query = " select rownum id, a.num_plano_mestre idPlanoMestre, a.grupo, a.item, c.ordem_tamanho ordem, b.tamanho_ref sub, "
 		   + " nvl((select m.qtde_estoque "
@@ -222,14 +222,30 @@ public class PlanoMestreCustom {
 		   + " and m.grupo = a.grupo "
 		   + " and m.sub = b.tamanho_ref "
 		   + " and m.item = a.item),0) qtdeProgramada "
-		   + " from orion_016 a, basi_020 b, basi_220 c "
+		   + " from orion_016 a, basi_020 b, basi_220 c, "		  
+           + " (select d.referencia grupo, nvl((select 1 from basi_140 c " 
+           + " where c.colecao = d.colecao " 
+		   + " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente " 
+		   + " from basi_030 d " 
+		   + " where d.nivel_estrutura = '1') ver_permanente "		   
 		   + " where b.basi030_nivel030 = '1' "
 		   + " and b.basi030_referenc = a.grupo "
 		   + " and c.tamanho_ref = b.tamanho_ref "		   
 		   + " and a.num_plano_mestre = " + idPlanoMestre		
 		   + " and a.grupo = '" + grupo + "'"
-		   + " and a.item = '" + item + "'"
-		   + " order by a.num_plano_mestre, a.grupo, a.item, c.ordem_tamanho ";		
+		   + " and a.item = '" + item + "'"		   		   
+		   + " and ver_permanente.grupo = a.grupo " ; 
+  		   
+		   if (!colecoes.equalsIgnoreCase("")) {
+			   query += " and (ver_permanente.permanente = 1 and exists (select 1 from basi_631 m, basi_632 n "
+	           + " where n.cd_agrupador (+) = m.cd_agrupador " 
+			   + " and n.grupo_ref (+) = m.grupo_ref "  		   
+			   + " and m.cd_agrupador in (" + colecoes + ") " // colecao informada + colecao da previsao de vendas		  
+			   + " and m.grupo_ref = a.grupo "
+			   + " and n.subgrupo_ref = b.tamanho_ref) or ver_permanente.permanente = 0) ";	  
+		   }
+		   		   
+		   query += " order by a.num_plano_mestre, a.grupo, a.item, c.ordem_tamanho ";		
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaItensTamPlanoMestre.class));
 	}	
