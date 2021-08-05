@@ -99,9 +99,9 @@ public class PlanoMestreCustom {
 		}
 		
 		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
-			query += "and exists (select 1 from PrevisaoVendasItem v where v.idPrevisao in (" + parametrosFormatados.getPrevisoes() + ")"
-	               + " where v.grupo = b.grupo_estrutura "
-			       + " and v.item = b.item_estrutura ";
+			query += "and exists (select 1 from orion_041 v where v.id_previsao_vendas in (" + parametrosFormatados.getPrevisoes() + ")"
+	               + " where v.grupo_base = b.grupo_estrutura "
+			       + " and v.item_base = b.item_estrutura ";
 		}
 	  
 		System.out.println("Query ProdutoCompleto: " + query);

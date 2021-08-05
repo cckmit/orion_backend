@@ -351,13 +351,14 @@ public class OrdemProducaoServiceTransaction {
 		if (validarExclusaoOrdem(preOrdem, mapPreOrdensComErro)) {		
 			try {			
 				ordemProducaoCustom.excluirOrdemProducao(preOrdem.ordemGerada);				
-				preOrdem.status = "ORDEM EXCLUÍDA COM SUCESSO!";		
+				preOrdem.status = "ORDEM EXCLUÍDA COM SUCESSO!";
+				preOrdem.situacao = 2; // Excluida
 				listaPreOrdensConcluidas.add(preOrdem);
 			} catch (Exception e) {
 				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível excluir essa ordem!"));
 			}
 		}
-			
+		
 		atualizarPreOrdens(listaPreOrdensConcluidas);
 		atualizarErrosPreOrdens(mapPreOrdensComErro);
 		

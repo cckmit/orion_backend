@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 
 import br.com.live.custom.PlanoMestreCustom;
 import br.com.live.entity.PlanoMestre;
+import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
 import br.com.live.util.BodyOrdemProducao;
 
@@ -15,11 +17,13 @@ public class OrdemProducaoService {
 	private final OrdemProducaoServiceTransaction ordemProducaoServiceTransaction;
 	private final PlanoMestreCustom planoMestreCustom;
 	private final PlanoMestreRepository planoMestreRepository;
+	private final PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository;
 		
-	public OrdemProducaoService (OrdemProducaoServiceTransaction ordemProducaoServiceTransaction, PlanoMestreCustom planoMestreCustom, PlanoMestreRepository planoMestreRepository) {
+	public OrdemProducaoService (OrdemProducaoServiceTransaction ordemProducaoServiceTransaction, PlanoMestreCustom planoMestreCustom, PlanoMestreRepository planoMestreRepository, PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository) {
 		this.ordemProducaoServiceTransaction = ordemProducaoServiceTransaction;
 		this.planoMestreCustom = planoMestreCustom;
 		this.planoMestreRepository = planoMestreRepository;
+		this.planoMestrePreOrdemRepository = planoMestrePreOrdemRepository;
 	}	
 	
 	public BodyOrdemProducao gerarOrdens(long idPlanoMestre, List<Long> preOrdens) {
@@ -36,10 +40,28 @@ public class OrdemProducaoService {
 	public List<ConsultaPreOrdemProducao> excluirOrdens(long idPlanoMestre, List<Long> preOrdens) {
 		
 		for (long idPreOrdem : preOrdens) {
-			ordemProducaoServiceTransaction.excluirOrdem(idPreOrdem);			
+			ordemProducaoServiceTransaction.excluirOrdem(idPreOrdem);
 		}
-			
+		
+		atualizarStatusPlanoMestre(idPlanoMestre);
+		
 		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
+	}
+	
+	public void atualizarStatusPlanoMestre(long idPlanoMestre){
+		int todasOrdensExcluidas = 1;
+		
+		List<PlanoMestrePreOrdem> allPreOrdens = planoMestrePreOrdemRepository.findByIdPlanoMestre(idPlanoMestre);
+		
+		for (PlanoMestrePreOrdem preOrdem : allPreOrdens) {
+			if (preOrdem.situacao != 2) todasOrdensExcluidas = 0;
+		}
+		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
+		
+		if (todasOrdensExcluidas == 1) planoMestre.situacao = 3; // 3 - Ordens Excluidas
+		
+		planoMestreRepository.save(planoMestre);
+		
 	}
 	
 }
