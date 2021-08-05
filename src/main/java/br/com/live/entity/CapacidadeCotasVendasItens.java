@@ -36,9 +36,7 @@ public class CapacidadeCotasVendasItens {
 		this.modelo = modelo;
 		this.tempoUnitario = tempoUnitario;		
 		this.pecas =pecas;
-		
-		if (pecas > 0) this.minutos = ((float) pecas * tempoUnitario);
-		else this.minutos = minutos;				
+		this.minutos = ((float) pecas * tempoUnitario);
 	}
 
 }
