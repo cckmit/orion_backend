@@ -109,6 +109,13 @@ public class ProcessoProdutoCustom {
 
 		if (!parametrosFormatados.consideraSemProcesso()) {
 			query += condicao + " p.quantidade > 0.00 ";
+			condicao = " and ";
+		}
+		
+		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
+			query += condicao + " exists (select 1 from PrevisaoVendasItem v where v.idPrevisaoVendas in " + parametrosFormatados.getPrevisoes()
+	              + " and v.grupo = p.grupo "
+			      + " and v.item = p.item)";
 		}
 
 		System.out.println("Processos - query: " + query);

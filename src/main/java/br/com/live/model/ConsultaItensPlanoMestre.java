@@ -7,7 +7,7 @@ public class ConsultaItensPlanoMestre {
 	public String codigo;
 	public String grupo;	
 	public String item;    
-	public String embarque; 	
+	public long embarque; 	
 	public int rank;	
 	public String sugCancelProducao;	
 	public int qtdePrevisao;
@@ -77,10 +77,10 @@ public class ConsultaItensPlanoMestre {
 	public void setItem(String item) {
 		this.item = item;
 	}
-	public String getEmbarque() {
+	public long getEmbarque() {
 		return embarque;
 	}
-	public void setEmbarque(String embarque) {
+	public void setEmbarque(long embarque) {
 		this.embarque = embarque;
 	}
 	public int getRank() {

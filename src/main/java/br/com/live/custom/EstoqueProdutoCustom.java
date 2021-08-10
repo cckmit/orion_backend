@@ -28,7 +28,7 @@ public class EstoqueProdutoCustom {
 
 		String query = "select new br.com.live.entity.EstoqueProduto (e.id, e.nivel, e.grupo, e.sub, e.item, e.deposito, e.quantidade, e.colecao, e.linha, e.artigo, e.artigoCotas, e.origem, e.permanente, e.embarque) from EstoqueProduto e ";
 		String condicao = "where ";
-
+		
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
 
 		if (!parametrosFormatados.consideraDepositos())
@@ -96,8 +96,17 @@ public class EstoqueProdutoCustom {
 					
 		if (!parametrosFormatados.consideraSemEstoque()) {
 			query += condicao + " e.quantidade > 0.00 ";
+			condicao = " and ";
 		}
-
+		
+		System.out.println("Previsões: " + parametrosFormatados.getPrevisoes());
+		
+		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
+		query += condicao + " exists (select 1 from PrevisaoVendasItem v where v.idPrevisaoVendas in " + parametrosFormatados.getPrevisoes()
+              + " and v.grupo = e.grupo "
+		      + " and v.item = e.item )";
+		}
+		
 		System.out.println("Estoques - query: " + query);
 
 		var q = manager.createQuery(query, EstoqueProduto.class);

@@ -39,16 +39,16 @@ public class PrevisaoVendasCustom {
 
 		List<ConsultaPrevisaoVendas> previsoes;
 
-		String query = " select a.id, a.descricao, " + " a.colecao || '-' || b.descr_colecao descricaoColecao, "
-				+ "  (select c.col_tabela_preco || '.' || c.mes_tabela_preco || '.' || c.seq_tabela_preco || '-' || c.descricao from pedi_090 c "
-				+ "    where c.col_tabela_preco = a.col_tab_preco_sell_in "
-				+ "      and c.mes_tabela_preco = a.mes_tab_preco_sell_in "
-				+ "      and c.seq_tabela_preco = a.seq_tab_preco_sell_in) descricaoTabPrecoSellIn, "
-				+ "  (select d.col_tabela_preco || '.' || d.mes_tabela_preco || '.' || d.seq_tabela_preco || '-' || d.descricao from pedi_090 d "
-				+ "    where d.col_tabela_preco = a.col_tab_preco_sell_out "
-				+ "      and d.mes_tabela_preco = a.mes_tab_preco_sell_out "
-				+ "      and d.seq_tabela_preco = a.seq_tab_preco_sell_out) descricaoTabPrecoSellOut "
-				+ " from orion_040 a, basi_140 b " + " where b.colecao = a.colecao " + " order by a.id ";
+		String query = 	" select a.id, a.descricao, a.colecao || '-' || b.descr_colecao descricaoColecao, "
+		        + " nvl((select c.col_tabela_preco || '.' || c.mes_tabela_preco || '.' || c.seq_tabela_preco || '-' || c.descricao from pedi_090 c "
+		        + " where c.col_tabela_preco = a.col_tab_preco_sell_in " 
+		        + " and c.mes_tabela_preco = a.mes_tab_preco_sell_in "
+		        + " and c.seq_tabela_preco = a.seq_tab_preco_sell_in),'SEM TABELA DE PREÇO') descricaoTabPrecoSellIn, "
+		        + " nvl((select d.col_tabela_preco || '.' || d.mes_tabela_preco || '.' || d.seq_tabela_preco || '-' || d.descricao from pedi_090 d "
+				+ " where d.col_tabela_preco = a.col_tab_preco_sell_out "
+				+ " and d.mes_tabela_preco = a.mes_tab_preco_sell_out "
+				+ " and d.seq_tabela_preco = a.seq_tab_preco_sell_out),'SEM TABELA DE PREÇO') descricaoTabPrecoSellOut "
+				+ " from orion_040 a, basi_140 b where b.colecao = a.colecao order by a.id ";
 
 		try {
 			previsoes = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPrevisaoVendas.class));
@@ -134,14 +134,14 @@ public class PrevisaoVendasCustom {
 	}
 
 	public List<ConsultaPrevisaoVendasItemTam> findPrevisaoVendasItemTamByIdPrevisaoVendasGrupoItem(
-			long idPrevisaoVendas, String grupo, String item) {
+			long idPrevisao, String grupo, String item) {
 
 		List<ConsultaPrevisaoVendasItemTam> tamanhos;
 
 		String query = " select orion041.id_previsao_vendas idPrevisaoVendas, orion041.id_item_previsao_vendas idItemPrevisaoVendas, nvl(f.id,'') id, orion041.sub, orion041.ordem, nvl(f.qtde_previsao,0) qtdePrevisao "
 				+ " from (select o.id_previsao_vendas, o.id id_item_previsao_vendas, b.tamanho_ref sub, b.ordem_tamanho ordem "
-				+ " from orion_041 o, basi_020 a, basi_220 b " + " where o.id_previsao_vendas = '" + idPrevisaoVendas
-				+ "'" + " and o.grupo = '" + grupo + "'" + " and o.item = '" + item + "'"
+				+ " from orion_041 o, basi_020 a, basi_220 b " + " where o.id_previsao_vendas = " + idPrevisao
+				+ " and o.grupo = '" + grupo + "'" + " and o.item = '" + item + "'"
 				+ " and a.basi030_nivel030 = '1' " + " and a.basi030_referenc = o.grupo "
 				+ " and b.tamanho_ref = a.tamanho_ref " + " order by o.id, b.ordem_tamanho) orion041, orion_042 f "
 				+ " where f.id_previsao_vendas (+)= orion041.id_previsao_vendas "
@@ -158,6 +158,36 @@ public class PrevisaoVendasCustom {
 		return tamanhos;
 	}
 
+	public List<ConsultaPrevisaoVendasItemTam> findPrevisaoVendasItemTamByIdsPrevisaoVendasGrupoItem(
+			String idsPrevisoes, String grupo, String item) {
+
+		List<ConsultaPrevisaoVendasItemTam> tamanhos;
+
+		String query = " select orion041.sub, orion041.ordem, nvl(sum(f.qtde_previsao),0) qtdePrevisao " 
+		+ " from (select o.id_previsao_vendas, o.id id_item_previsao_vendas, b.tamanho_ref sub, b.ordem_tamanho ordem " 
+		+ " from orion_041 o, basi_020 a, basi_220 b " 
+		+ " where o.id_previsao_vendas in (" + idsPrevisoes + ") "
+		+ " and o.grupo = '" + grupo + "'"
+		+ " and o.item = '" + item + "'"
+		+ " and a.basi030_nivel030 = '1' "
+		+ " and a.basi030_referenc = o.grupo " 
+		+ " and b.tamanho_ref = a.tamanho_ref "
+		+ " order by o.id, b.ordem_tamanho) orion041, orion_042 f " 
+		+ "  where f.id_previsao_vendas (+)= orion041.id_previsao_vendas " 
+		+ "  and f.id_item_previsao_vendas (+)= orion041.id_item_previsao_vendas " 
+		+ "  and f.sub (+)= orion041.sub "
+		+ " group by orion041.sub, orion041.ordem ";
+			
+		try {
+			tamanhos = jdbcTemplate.query(query,
+					BeanPropertyRowMapper.newInstance(ConsultaPrevisaoVendasItemTam.class));
+		} catch (Exception e) {
+			tamanhos = new ArrayList<ConsultaPrevisaoVendasItemTam>();
+		}
+
+		return tamanhos;
+	}
+	
 	public int findQtdeVendidaByItem(String grupo, String item) {
 
 		int qtdeVendida = 0;
@@ -176,13 +206,13 @@ public class PrevisaoVendasCustom {
 		return qtdeVendida;
 	}
 
-	public int findQtdePrevisaoByIdPrevisaoVendasGrupoItem(long idPrevisaoVendas, String grupo, String item) {
+	public int findQtdePrevisaoByIdPrevisaoVendasGrupoItem(String idsPrevisao, String grupo, String item) {
 
 		int qtdePrevisao = 0;
 		String query = "";
 
 		query = " select sum(o.qtde_previsao) from orion_042 o "
-		+ " where o.id_previsao_vendas = " + idPrevisaoVendas
+		+ " where o.id_previsao_vendas in ( " + idsPrevisao + ")"
 		+ " and o.grupo = '" + grupo + "'" 
 		+ " and o.item = '" + item + "'";		
 
@@ -194,7 +224,7 @@ public class PrevisaoVendasCustom {
 
 		if (qtdePrevisao <= 0) {
 			query = " select o.qtde_previsao from orion_041 o " 
-		    + " where o.id_previsao_vendas = " + idPrevisaoVendas
+		    + " where o.id_previsao_vendas in (" + idsPrevisao + ")"
 			+ " and o.grupo = '" + grupo + "'" 
 		    + " and o.item = '" + item + "'";
 
@@ -208,4 +238,17 @@ public class PrevisaoVendasCustom {
 		return qtdePrevisao;
 	}
 
+	public List<Integer> findColecoesByPrevisoes (String previsoes) {
+		List<Integer> colecoes;
+		
+		String query = " select a.colecao from orion_040 a where a.id in (" + previsoes + ") group by a.colecao ";
+
+		try {
+			colecoes = jdbcTemplate.queryForList(query, Integer.class);
+		} catch (Exception e) {
+			colecoes = new ArrayList<Integer>();
+		}
+
+		return colecoes;
+	}	
 }

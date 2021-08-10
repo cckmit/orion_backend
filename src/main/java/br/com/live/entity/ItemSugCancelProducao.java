@@ -14,16 +14,18 @@ public class ItemSugCancelProducao {
 	public String nivel;
 	public String grupo;	
 	public String item;
+	public int colecao;
 	
 	public ItemSugCancelProducao() {
 		
 	}
 	
-	public ItemSugCancelProducao(String nivel, String grupo, String item) {
-		this.id = nivel + '.' + grupo + '.' + item;
+	public ItemSugCancelProducao(String nivel, String grupo, String item, int colecao) {
+		this.id = nivel + '.' + grupo + '.' + item + '.' + colecao;
 		this.nivel = nivel;
 		this.grupo = grupo;		
 		this.item = item;		 
+		this.colecao = colecao;
 	}
 		
 }

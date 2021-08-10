@@ -81,7 +81,7 @@ public class PlanoMestreService {
 	private final OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom;
 	private final PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository;
 	private final PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository;
-	private final OrdemProducaoService ordemProducaoService;
+	private final OrdemProducaoServiceTransaction ordemProducaoService;
 
 	public PlanoMestreService(PlanoMestreRepository planoMestreRepository,
 			ProdutoPlanoMestreRepository produtoPlanoMestreRepository, EstoqueProdutoCustom estoqueProdutoCustom,
@@ -96,7 +96,7 @@ public class PlanoMestreService {
 			OcupacaoPlanoMestreCustom ocupacaoPlanoMestreCustom,
 			PlanoMestreOcupacaoEstagioRepository planoMestreOcupacaoEstagioRepository,
 			PlanoMestreOcupacaoArtigoRepository planoMestreOcupacaoArtigoRepository,
-			OrdemProducaoService ordemProducaoService) {
+			OrdemProducaoServiceTransaction ordemProducaoService) {
 		this.planoMestreRepository = planoMestreRepository;
 		this.produtoPlanoMestreRepository = produtoPlanoMestreRepository;
 		this.estoqueProdutoCustom = estoqueProdutoCustom;
@@ -126,8 +126,30 @@ public class PlanoMestreService {
 		return planoMestreCustom.findItensPorRefCorByIdPlanoMestre(idPlanoMestre);
 	}
 
-	public List<ConsultaItensTamPlanoMestre> findTamanhos(long idPlanoMestre, String grupo, String item) {
-		return planoMestreCustom.findItensPorTamByIdPlanoMestreGrupoItem(idPlanoMestre, grupo, item);
+	private String findTodasColecoesPlanoMestre (long idPlanoMestre) {
+		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
+		
+		String colecoes = parametros.colecoes; 
+		String previsoes = parametros.previsoes;
+		
+		if (colecoes == null) colecoes = "";
+		if (previsoes == null) previsoes = "";
+		
+		if (!previsoes.equalsIgnoreCase("")) {		
+			List<Integer> colecoesPrevisoes = previsaoVendasCustom.findColecoesByPrevisoes(previsoes);
+		
+			for (Integer colecaoPrev : colecoesPrevisoes) {
+				if (!colecoes.equalsIgnoreCase("")) colecoes += "," + colecaoPrev;
+				else colecoes += colecaoPrev;
+			}
+		}	
+
+		return colecoes;
+	}
+		
+	public List<ConsultaItensTamPlanoMestre> findTamanhos(long idPlanoMestre, String grupo, String item) {		
+		String colecoes = findTodasColecoesPlanoMestre(idPlanoMestre);				
+		return planoMestreCustom.findItensPorTamByIdPlanoMestreGrupoItem(idPlanoMestre, grupo, item, colecoes);
 	}
 
 	public PlanoMestreParametros findParametros(long idPlanoMestre) {
@@ -180,8 +202,10 @@ public class PlanoMestreService {
 			qtdeFaltaSobraPecas = 0;
 			qtdeFaltaSobraMinutos = 0.000;
 
+			// TODO - ALTERAR - CONSIDERAR PERIODO 
 			OcupacaoEstagioArtigo ocupacaoEstagioPlanoMestre = ocupacaoPlanoMestreCustom
-					.findOcupacaoPlanoMestreByEstagio(idPlanoMestre, capacidade.estagio);
+					.findOcupacaoPlanoMestreByPeriodoEstagio(idPlanoMestre, periodoInicio, periodoFim, capacidade.estagio);
+
 			OcupacaoEstagioArtigo ocupacaoEstagioProgramada = ocupacaoPlanoMestreCustom
 					.findOcupacaoProgramadaByPeriodoEstagio(periodoInicio, periodoFim, capacidade.estagio);
 			List<ArtigoCapacidadeProducao> artigosCapacidades = capacidadeProducaoCustom
@@ -219,7 +243,7 @@ public class PlanoMestreService {
 				qtdeFaltaSobraMinutos = 0.000;
 
 				OcupacaoEstagioArtigo ocupacaoArtigoPlanoMestre = ocupacaoPlanoMestreCustom
-						.findOcupacaoPlanoMestreArtigoByEstagioArtigo(idPlanoMestre, capacidade.estagio,
+						.findOcupacaoPlanoMestreArtigoByPeriodoEstagioArtigo(idPlanoMestre, periodoInicio, periodoFim, capacidade.estagio,
 								artigoCapacidade.artigo);
 				OcupacaoEstagioArtigo ocupacaoArtigoProgramado = ocupacaoPlanoMestreCustom
 						.findOcupacaoProgramadaArtigoByPeriodoEstagioArtigo(periodoInicio, periodoFim,
@@ -318,7 +342,7 @@ public class PlanoMestreService {
 				produtos = calcularGradeNegativa(produtoCor); 
 
 			if (parametros.tipoDistribuicao == 4)
-				produtos = calcularGradePrevisao(produtoCor, parametros.idPrevisaoVendas);
+				produtos = calcularGradePrevisao(produtoCor, parametros.previsoes);
 
 			produtoPlanoMestreRepository.saveAll(produtos);
 
@@ -448,7 +472,7 @@ public class PlanoMestreService {
 
 		for (ProdutoPlanoMestre produtoPlanoMestre : produtos) {
 			produtoPlanoMestre.idPlanoMestre = planoMestre.id;			
-			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(planoMestreParametros.idPrevisaoVendas, produtoPlanoMestre.grupo, produtoPlanoMestre.item);			
+			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(planoMestreParametros.previsoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);			
 			produtoPlanoMestreRepository.save(produtoPlanoMestre);
 		}
 
@@ -563,16 +587,16 @@ public class PlanoMestreService {
 				.findByIdPlanoMestre(idPlanoMestre);
 
 		for (ProdutoPlanoMestrePorCor produtoCor : produtosCor) {
-			List<ProdutoPlanoMestre> produtos = calcularGradePrevisao(produtoCor, parametros.idPlanoMestre);
+			List<ProdutoPlanoMestre> produtos = calcularGradePrevisao(produtoCor, parametros.previsoes);
 			produtoPlanoMestreRepository.saveAll(produtos);
 
 			aplicarMultiplicadorItem(idPlanoMestre, parametros.multiplicador, produtoCor);
 		}
 	}
 
-	private List<ProdutoPlanoMestre> calcularGradePrevisao(ProdutoPlanoMestrePorCor produtoCor, long idPrevisaoVendas) {
+	private List<ProdutoPlanoMestre> calcularGradePrevisao(ProdutoPlanoMestrePorCor produtoCor, String idsPrevisoes) {
 		
-		List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos = previsaoVendasCustom.findPrevisaoVendasItemTamByIdPrevisaoVendasGrupoItem(idPrevisaoVendas, produtoCor.grupo, produtoCor.item);
+		List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos = previsaoVendasCustom.findPrevisaoVendasItemTamByIdsPrevisaoVendasGrupoItem(idsPrevisoes, produtoCor.grupo, produtoCor.item);
 
 		int qtdePrevisao = 0;
 		
@@ -655,8 +679,6 @@ public class PlanoMestreService {
 						
 						ConsultaItensPlanoMestre item = planoMestreCustom.findItensPorRefCorByIdPlanoMestreGrupoItem(idPlanoMestre, grade.grupo, grade.item);
 						item.qtdeProgramada = qtdeProgramar;						
-						
-						//System.out.println("ref: " + grade.grupo + "." + grade.item + " - qtde programar: " + item.qtdeProgramada);
 						
 						salvarItem(item);						
 					}

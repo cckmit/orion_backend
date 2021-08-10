@@ -1,0 +1,1 @@
+alter table orion_010 add usuario varchar2(100);

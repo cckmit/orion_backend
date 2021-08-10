@@ -7,12 +7,12 @@ import br.com.live.model.ConsultaItensTamPlanoMestre;
 
 public class ParametrosPlanoMestre {
 	
-	public String descricao;	
+	public String descricao;
+	public String usuario;
     public int periodoPadrao; 
     public int tipoDistribuicao; 
     public int multiplicador;
     public int qtdeMinimaReferencia;
-    public long idPrevisaoVendas;
 	
 	public List<ConteudoChaveNumerica> colecoes;
 	public List<ConteudoChaveNumerica> colecoesPermanentes;	
@@ -27,6 +27,7 @@ public class ParametrosPlanoMestre {
 	public List<ConteudoChaveNumerica> depositos; 	
 	public List<ConteudoChaveNumerica> pedidos;
 	public List<ConteudoChaveNumerica> naturezas;
+	public List<ConteudoChaveNumerica> previsoes;
 	
 	public int perDemInicio01;
 	public int perDemInicio02;

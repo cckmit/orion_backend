@@ -40,26 +40,6 @@ public class FormataParametrosPlanoMestre {
 		return texto;
 	}
 
-	private String formataLabel(List<ConteudoChaveNumerica> listConteudo) {
-
-		String texto = "";
-
-		if (listConteudo != null) {
-
-			for (ConteudoChaveNumerica conteudo : listConteudo) {
-				if (texto.equalsIgnoreCase(""))
-					texto = "('" + conteudo.label + "'";
-				else
-					texto = texto + ",'" + conteudo.label + "'";
-			}
-
-			if (!texto.equalsIgnoreCase(""))
-				texto = texto + ")";
-		}
-
-		return texto;
-	}
-
 	private String formataValueString(List<ConteudoChaveAlfaNum> listConteudo) {
 
 		String texto = "";
@@ -119,7 +99,7 @@ public class FormataParametrosPlanoMestre {
 	}
 
 	public String getEmbarques() {
-		return formataLabel(parametros.embarques);
+		return formataValue(parametros.embarques);
 	}
 
 	public String getProdutos() {
@@ -144,6 +124,10 @@ public class FormataParametrosPlanoMestre {
 
 	public String getNaturezas() {
 		return formataValue(parametros.naturezas);
+	}
+	
+	public String getPrevisoes( ) {
+		return formataValue(parametros.previsoes);
 	}
 
 	public int getNrInternoPedido() {

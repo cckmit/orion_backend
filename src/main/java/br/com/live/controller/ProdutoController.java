@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.entity.Produto;
-import br.com.live.entity.ProdutoReferCor;
+import br.com.live.entity.ProdutoReferencia;
+import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
+import br.com.live.model.ConsultaItemSugestaoCancelProducao;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.Roteiro;
@@ -29,9 +30,9 @@ public class ProdutoController {
 	private ProdutoService produtoService;
 
 	@RequestMapping(value = "/produtos-colecoes", method = RequestMethod.POST)
-	public List<Produto> findByColecoes(@RequestBody FiltroProduto filtro) {
+	public List<ProdutoReferencia> findByColecoes(@RequestBody FiltroProduto filtro) {
 
-		List<Produto> produtos = null;
+		List<ProdutoReferencia> produtos = null;
 
 		if (!filtro.colecoes.isEmpty() || !filtro.colecoesPermanentes.isEmpty()) {
 			produtos = produtoService.findProdutosByParameters(filtro);
@@ -52,10 +53,11 @@ public class ProdutoController {
 		return cores;
 	}
 
+	// TODO - ELIMINAR MÉTODO
 	@RequestMapping(value = "/itens-colecoes", method = RequestMethod.POST)
-	public List<ProdutoReferCor> findItensByFiltro(@RequestBody FiltroProduto filtro) {
+	public List<ProdutoReferenciaCor> findItensByFiltro(@RequestBody FiltroProduto filtro) {
 
-		List<ProdutoReferCor> itens = null;
+		List<ProdutoReferenciaCor> itens = null;
 
 		if (!filtro.colecoes.isEmpty() || !filtro.colecoesPermanentes.isEmpty() || !filtro.referencias.isEmpty()
 				|| !filtro.cores.isEmpty()) {
@@ -64,9 +66,22 @@ public class ProdutoController {
 
 		return itens;
 	}
+	
+	@RequestMapping(value = "/itens-sug-cancelamento", method = RequestMethod.POST)
+	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelProducaoByFiltro(@RequestBody FiltroProduto filtro) {
+		
+		List<ConsultaItemSugestaoCancelProducao> itens = null;
+		
+		if (!filtro.colecoes.isEmpty() || !filtro.colecoesPermanentes.isEmpty() || !filtro.referencias.isEmpty()
+				|| !filtro.cores.isEmpty()) {
+			itens = produtoService.findItensSugestaoCancelamentoByParameters(filtro);
+		}
+		
+		return itens;
+	}	
 
 	@RequestMapping(value = "/item/{codigo}", method = RequestMethod.GET)
-	public ProdutoReferCor findItemByCodigo(@PathVariable String codigo) {
+	public ProdutoReferenciaCor findItemByCodigo(@PathVariable String codigo) {
 		return produtoService.findItemByCodigo(CodigoGrupoItem.getGrupo(codigo), CodigoGrupoItem.getItem(codigo));
 	}
 

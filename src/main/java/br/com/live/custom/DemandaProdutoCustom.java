@@ -135,6 +135,13 @@ public class DemandaProdutoCustom {
 		
 		if (!parametrosFormatados.consideraSemDemanda()) {
 			query += condicao + " d.quantidade > 0.00 ";
+			condicao = " and ";
+		}
+		
+		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
+		query += condicao + " exists (select 1 from PrevisaoVendasItem v where v.idPrevisaoVendas in " + parametrosFormatados.getPrevisoes()
+              + " and v.grupo = d.grupo "
+		      + " and v.item = d.item)";
 		}
 
 		System.out.println("Demandas - query: " + query);

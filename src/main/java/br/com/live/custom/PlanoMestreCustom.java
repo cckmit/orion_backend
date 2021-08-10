@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -34,7 +35,7 @@ public class PlanoMestreCustom {
 		String query = " select b.nivel_estrutura nivel, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, b.narrativa, ";
 
 		query += " 0 qtdePrevisaoVendas "
-		           + " from basi_030 a, basi_010 b, "
+		           + " from basi_030 a, basi_010 b, basi_590 g, "
 		           + " (select d.referencia grupo, nvl((select 1 from basi_140 c "
 		           + " where c.colecao = d.colecao "
 		           + " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente "
@@ -44,10 +45,12 @@ public class PlanoMestreCustom {
 		           + " and b.nivel_estrutura = a.nivel_estrutura "
 		           + " and b.grupo_estrutura = a.referencia "
 		           + " and b.item_ativo = 0 "
+		           + " and g.nivel (+) = a.nivel_estrutura "
+		           + " and g.grupo (+) = a.referencia "
 		           + " and ver_permanente.grupo = a.referencia ";  
 	           
-		if (!parametrosFormatados.getSubColecoes().equalsIgnoreCase("")) {
-			query += " and a.colecao in " + parametrosFormatados.getSubColecoes();  
+		if (!parametrosFormatados.getColecoes().equalsIgnoreCase("")) {
+			query += " and a.colecao in " + parametrosFormatados.getColecoes();  
 		}
 		
 		if (!parametrosFormatados.getLinhasProduto().equalsIgnoreCase("")) {
@@ -63,7 +66,7 @@ public class PlanoMestreCustom {
 		}
 		
 		if (!parametrosFormatados.getEmbarques().equalsIgnoreCase("")) {
-			query += " and b.codigo_cliente in " + parametrosFormatados.getEmbarques();
+			query += " and g.grupo_embarque in " + parametrosFormatados.getEmbarques();
 		}
 	  		
 		if (!parametrosFormatados.getProdutos().equalsIgnoreCase("")) {
@@ -94,6 +97,12 @@ public class PlanoMestreCustom {
 				   + " and n.subgrupo_ref = b.subgru_estrutura "
 				   + " and n.item_ref = b.item_estrutura) or ver_permanente.permanente = 0) " ;	  
 		}
+		
+		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
+			query += "and exists (select 1 from orion_041 v where v.id_previsao_vendas in (" + parametrosFormatados.getPrevisoes() + ")"
+	               + " where v.grupo_base = b.grupo_estrutura "
+			       + " and v.item_base = b.item_estrutura ";
+		}
 	  
 		System.out.println("Query ProdutoCompleto: " + query);
 		
@@ -101,7 +110,7 @@ public class PlanoMestreCustom {
 	}
 	
 	
-	private String getQueryItensPorRefCor() {
+	private String getQueryItensPorRefCor(String colecoes) {
 	
 		String query = " select a.id, a.NUM_PLANO_MESTRE idPlanoMestre, a.codigo, a.grupo, a.item, "
 			       + " a.rank, a.QTDE_PREVISAO qtdePrevisao, a.QTDE_ESTOQUE qtdeEstoque, "
@@ -114,15 +123,18 @@ public class PlanoMestreCustom {
 			       + " a.QTDE_DEM_ACUMULADO qtdeDemAcumulado, a.QTDE_PROC_ACUMULADO qtdeProcAcumulado, a.QTDE_SALDO_ACUMULADO qtdeSaldoAcumulado, "
 			       + " a.QTDE_DEM_ACUM_PROG qtdeDemAcumProg, a.QTDE_PROC_ACUM_PROG qtdeProcAcumProg, a.QTDE_SALDO_ACUM_PROG qtdeSaldoAcumProg, "
 			       + " a.QTDE_SUGESTAO qtdeSugestao, a.QTDE_EQUALIZADO_SUGESTAO qtdeEqualizadoSugestao, a.QTDE_DIF_SUGESTAO qtdeDiferencaSugestao, a.QTDE_PROGRAMADA qtdeProgramada, "
+			       
 			       + " nvl((select 'S' from orion_030 o "
 		           + " where o.nivel = '1' "
 		           + " and o.grupo = a.grupo "
-		           + " and o.item = a.item),'N') sugCancelProducao, "
-		           + " nvl((select max(b.codigo_cliente) from basi_010 b "
-		           + " where b.nivel_estrutura = '1' "
-		           + " and b.grupo_estrutura = a.grupo "
-		           + " and b.item_estrutura = a.item "
-		           + " ),' ') embarque "	       
+		           + " and o.item = a.item"
+		           + " and o.colecao in (" + colecoes + ")),'N') sugCancelProducao, "
+		           
+		           + " nvl((select max(b.grupo_embarque) from basi_590 b "
+		           + " where b.nivel = '1' "
+		           + " and b.grupo = a.grupo "
+		           + " and b.item = a.item "
+		           + " ),0) embarque "	       
 		           + " from orion_016 a ";
 		
 		return query;
@@ -130,7 +142,9 @@ public class PlanoMestreCustom {
 	
 	public List<ConsultaItensPlanoMestre> findItensPorRefCorByIdPlanoMestre(long idPlanoMestre) {
 			
-		String query = getQueryItensPorRefCor();
+		String colecoes = getColecoesPlanoMestre(idPlanoMestre);
+		
+		String query = getQueryItensPorRefCor(colecoes);
 		query += " where a.num_plano_mestre = " + idPlanoMestre;
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaItensPlanoMestre.class));
@@ -138,7 +152,9 @@ public class PlanoMestreCustom {
 
 	public ConsultaItensPlanoMestre findItensPorRefCorByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item) {
 		
-		String query = getQueryItensPorRefCor();
+		String colecoes = getColecoesPlanoMestre(idPlanoMestre);
+		
+		String query = getQueryItensPorRefCor(colecoes);
 		
 		query += " where a.num_plano_mestre = " + idPlanoMestre;
 		query += "	and a.grupo = '" + grupo + "'";
@@ -147,7 +163,7 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaItensPlanoMestre.class));
 	}
 	
-	public List<ConsultaItensTamPlanoMestre> findItensPorTamByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item) {
+	public List<ConsultaItensTamPlanoMestre> findItensPorTamByIdPlanoMestreGrupoItem(long idPlanoMestre, String grupo, String item, String colecoes) {
 				
 		String query = " select rownum id, a.num_plano_mestre idPlanoMestre, a.grupo, a.item, c.ordem_tamanho ordem, b.tamanho_ref sub, "
 		   + " nvl((select m.qtde_estoque "
@@ -206,14 +222,30 @@ public class PlanoMestreCustom {
 		   + " and m.grupo = a.grupo "
 		   + " and m.sub = b.tamanho_ref "
 		   + " and m.item = a.item),0) qtdeProgramada "
-		   + " from orion_016 a, basi_020 b, basi_220 c "
+		   + " from orion_016 a, basi_020 b, basi_220 c, "		  
+           + " (select d.referencia grupo, nvl((select 1 from basi_140 c " 
+           + " where c.colecao = d.colecao " 
+		   + " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente " 
+		   + " from basi_030 d " 
+		   + " where d.nivel_estrutura = '1') ver_permanente "		   
 		   + " where b.basi030_nivel030 = '1' "
 		   + " and b.basi030_referenc = a.grupo "
 		   + " and c.tamanho_ref = b.tamanho_ref "		   
 		   + " and a.num_plano_mestre = " + idPlanoMestre		
 		   + " and a.grupo = '" + grupo + "'"
-		   + " and a.item = '" + item + "'"
-		   + " order by a.num_plano_mestre, a.grupo, a.item, c.ordem_tamanho ";		
+		   + " and a.item = '" + item + "'"		   		   
+		   + " and ver_permanente.grupo = a.grupo " ; 
+  		   
+		   if (!colecoes.equalsIgnoreCase("")) {
+			   query += " and (ver_permanente.permanente = 1 and exists (select 1 from basi_631 m, basi_632 n "
+	           + " where n.cd_agrupador (+) = m.cd_agrupador " 
+			   + " and n.grupo_ref (+) = m.grupo_ref "  		   
+			   + " and m.cd_agrupador in (" + colecoes + ") " // colecao informada + colecao da previsao de vendas		  
+			   + " and m.grupo_ref = a.grupo "
+			   + " and n.subgrupo_ref = b.tamanho_ref) or ver_permanente.permanente = 0) ";	  
+		   }
+		   		   
+		   query += " order by a.num_plano_mestre, a.grupo, a.item, c.ordem_tamanho ";		
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaItensTamPlanoMestre.class));
 	}	
@@ -487,6 +519,56 @@ public class PlanoMestreCustom {
 		return (int) id;
 	}
 
+	private String getColecoesPlanoMestre(long idPlanoMestre) {
+		
+		String query = "";
+		String colecoes = "";
+		String colecoesPermanentes = "";		
+		String previsoes = "";
+		List<Integer> colecoesPrevisao;
+		
+		query = " select m.colecoes from orion_011 m where m.num_plano_mestre = " + idPlanoMestre;
+		
+		try {
+			colecoes = jdbcTemplate.queryForObject(query, String.class);
+			if (colecoes.equalsIgnoreCase("")) colecoes = "0"; 
+		} catch (Exception e) {
+			colecoes = "0";
+		}
+		
+		query = " select m.colecoes_permanentes from orion_011 m where m.num_plano_mestre = " + idPlanoMestre;
+
+		try {
+			colecoesPermanentes = jdbcTemplate.queryForObject(query, String.class);
+			if (colecoesPermanentes.equalsIgnoreCase("")) colecoesPermanentes = "0";
+		} catch (Exception e) {
+			colecoesPermanentes = "0";
+		}
+		
+		colecoes += "," + colecoesPermanentes;
+				
+		query = " select m.previsoes from orion_011 m where m.num_plano_mestre = " + idPlanoMestre;
+		
+		try {
+			previsoes = jdbcTemplate.queryForObject(query, String.class);
+			if (previsoes.equalsIgnoreCase("")) previsoes = "0";
+		} catch (Exception e) {
+			previsoes = "0";
+		}
+					
+		query = " select a.colecao from orion_040 a where a.id in ( " + previsoes + " ) ";   
+		
+		try {
+			colecoesPrevisao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Integer.class));			
+		} catch (Exception e) {
+			colecoesPrevisao = new ArrayList<Integer> ();
+		}
+		
+		if (!colecoesPrevisao.isEmpty()) colecoes += "," + parseToString(colecoesPrevisao);
+		
+		return colecoes;		
+	}
+	
 	private String parseToString(List<Integer> listaIDs) {
 	
 		String listaString = "";

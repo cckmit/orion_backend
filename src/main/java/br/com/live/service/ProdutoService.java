@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import br.com.live.custom.ProdutoCustom;
-import br.com.live.entity.Produto;
-import br.com.live.entity.ProdutoReferCor;
+import br.com.live.entity.ProdutoReferencia;
+import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.ConsultaItemSugestaoCancelProducao;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.MarcacaoRisco;
@@ -23,7 +24,7 @@ public class ProdutoService {
 		this.produtoRepository = produtoRepository;		
 	}
 
-	public List<Produto> findProdutosByParameters(FiltroProduto filtro) {		
+	public List<ProdutoReferencia> findProdutosByParameters(FiltroProduto filtro) {		
 		return produtoRepository.findProdutosByParameters(filtro);		
 	}
 
@@ -31,16 +32,20 @@ public class ProdutoService {
 		return produtoRepository.findCoresByParameters(filtro);		
 	}
 
-	public List<ProdutoReferCor> findItensByParameters(FiltroProduto filtro) {		
+	public List<ProdutoReferenciaCor> findItensByParameters(FiltroProduto filtro) {		
 		return produtoRepository.findItensByParameters(filtro);		
 	}
 
-	public ProdutoReferCor findItemByCodigo(String grupo, String item) {
+	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelamentoByParameters(FiltroProduto filtro) {
+		return produtoRepository.findItensSugestaoCancelProducaoByParameters(filtro);
+	}
+	
+	public ProdutoReferenciaCor findItemByCodigo(String grupo, String item) {
 		return produtoRepository.findItemByCodigo(grupo, item);
 	}
 	
 	public List<Embarque> findEmbarques() {		
-		return produtoRepository.findAllEmbarques();		
+		return produtoRepository.findAllEmbarquesBasi();		
 	}
 	
 	public List<Alternativa> findAlternativasByCodigo(String grupo, String item) {		
