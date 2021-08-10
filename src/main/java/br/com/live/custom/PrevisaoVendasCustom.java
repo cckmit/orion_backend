@@ -89,6 +89,7 @@ public class PrevisaoVendasCustom {
         + " and a.colecao = " + colecao
         + " and b.nivel_estrutura = a.nivel_estrutura "  
         + " and b.grupo_estrutura = a.referencia "
+        + " and b.item_ativo = 0 "
         + " group by a.referencia, a.linha_produto, a.artigo, b.item_estrutura "  
         + " union "
         + " select a.referencia grupo, b.item_estrutura item, max(a.descr_referencia) || ' - ' || max(b.descricao_15) descricao, " 
@@ -99,6 +100,7 @@ public class PrevisaoVendasCustom {
         + " where c.descricao_espanhol like '%COLECAO PERMANENTE%') " 
         + " and b.nivel_estrutura = a.nivel_estrutura "
         + " and b.grupo_estrutura = a.referencia "
+        + " and b.item_ativo = 0 "
         + " and exists (select 1 from basi_632 c " 
         + " where c.cd_agrupador = " + colecao
         + " and c.grupo_ref = b.grupo_estrutura " 
