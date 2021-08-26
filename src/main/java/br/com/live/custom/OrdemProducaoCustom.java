@@ -1,9 +1,15 @@
 package br.com.live.custom;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import br.com.live.model.EstagioProducao;
+import br.com.live.model.OrdemConfeccao;
 
 @Repository
 public class OrdemProducaoCustom {
@@ -273,4 +279,60 @@ public class OrdemProducaoCustom {
 		jdbcTemplate.update(query8);		
 		jdbcTemplate.update(query9);
 	}
+	
+	public List<EstagioProducao> findAllEstagios() {
+		
+		List<EstagioProducao> estagios;
+		
+		String query = " select m.codigo_estagio estagio, m.descricao from mqop_005 m  where m.codigo_estagio > 0 order by m.codigo_estagio ";
+		
+		try {
+			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
+		} catch (Exception e) {
+			estagios = new ArrayList<EstagioProducao> ();
+		}
+		
+		return estagios;
+	}	
+	
+	public OrdemConfeccao findOrdemConfeccaoByOrdProdPeriodoOrdConfec(int ordemProducao, int periodo, int ordemConfeccao) {
+		
+		OrdemConfeccao dadosOrdemConfeccao = new OrdemConfeccao();
+		
+		if ((ordemProducao == 0) && (periodo == 0) && (ordemConfeccao == 0)) return dadosOrdemConfeccao; 
+		
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca || ' - ' || c.descr_referencia referencia, a.periodo_producao periodo, a.qtde_programada qtdePecasProgramada, "
+	    + " b.ordem_confeccao ordemConfeccao, b.proconf_subgrupo tamanho, b.proconf_item || ' - ' || d.descricao_15 cor, b.qtde_pecas_prog qtdePecas" 
+	    + " from pcpc_020 a, pcpc_040 b, basi_030 c, basi_010 d "
+	    + " where a.cod_cancelamento = 0 "
+	    + " and b.ordem_producao   = a.ordem_producao ";
+
+		if (ordemProducao > 0)
+			query += " and b.ordem_producao = " + ordemProducao;  
+		
+		if (periodo > 0)
+			query += " and b.periodo_producao = " + periodo;
+		 
+		if (ordemConfeccao > 0)
+			query += " and b.ordem_confeccao = " + ordemConfeccao;
+	  	  
+		query += " and c.nivel_estrutura  = b.proconf_nivel99 "
+        + " and c.referencia       = b.proconf_grupo "
+		+ " and d.nivel_estrutura  = b.proconf_nivel99 "
+		+ " and d.grupo_estrutura  = b.proconf_grupo "
+		+ " and d.subgru_estrutura = b.proconf_subgrupo "
+		+ " and d.item_estrutura   = b.proconf_item "
+	    + " group by a.ordem_producao, a.referencia_peca, c.descr_referencia, a.periodo_producao, a.qtde_programada, "	    
+	    + " b.ordem_confeccao, b.proconf_subgrupo, b.proconf_item, d.descricao_15, b.qtde_pecas_prog ";
+		
+		try {
+			dadosOrdemConfeccao = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OrdemConfeccao.class));
+		} catch (Exception e) {
+			dadosOrdemConfeccao = new OrdemConfeccao();
+			System.out.println("EXCEPTION");
+		}
+		
+		return dadosOrdemConfeccao;
+	}
+	
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.EstagioProducao;
 import br.com.live.service.OrdemProducaoService;
 import br.com.live.util.BodyOrdemProducao;
 
@@ -20,6 +21,11 @@ public class OrdemProducaoController {
 
 	@Autowired
 	private OrdemProducaoService ordemProducaoService;
+
+    @RequestMapping(value = "/estagios-producao", method = RequestMethod.GET)
+    public List<EstagioProducao> findAll() {
+          return ordemProducaoService.findAllEstagios();
+    }
 	
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)
 	public BodyOrdemProducao gerar(@RequestBody BodyOrdemProducao body) {

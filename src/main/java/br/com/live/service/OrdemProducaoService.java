@@ -3,10 +3,12 @@ package br.com.live.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.PlanoMestreCustom;
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.EstagioProducao;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
 import br.com.live.util.BodyOrdemProducao;
@@ -18,13 +20,19 @@ public class OrdemProducaoService {
 	private final PlanoMestreCustom planoMestreCustom;
 	private final PlanoMestreRepository planoMestreRepository;
 	private final PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository;
+	private final OrdemProducaoCustom ordemProducaoCustom; 
 		
-	public OrdemProducaoService (OrdemProducaoServiceTransaction ordemProducaoServiceTransaction, PlanoMestreCustom planoMestreCustom, PlanoMestreRepository planoMestreRepository, PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository) {
+	public OrdemProducaoService (OrdemProducaoServiceTransaction ordemProducaoServiceTransaction, PlanoMestreCustom planoMestreCustom, PlanoMestreRepository planoMestreRepository, PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository, OrdemProducaoCustom ordemProducaoCustom) {
 		this.ordemProducaoServiceTransaction = ordemProducaoServiceTransaction;
 		this.planoMestreCustom = planoMestreCustom;
 		this.planoMestreRepository = planoMestreRepository;
 		this.planoMestrePreOrdemRepository = planoMestrePreOrdemRepository;
+		this.ordemProducaoCustom = ordemProducaoCustom;
 	}	
+	
+	public List<EstagioProducao> findAllEstagios() {
+		return ordemProducaoCustom.findAllEstagios();
+	}
 	
 	public BodyOrdemProducao gerarOrdens(long idPlanoMestre, List<Long> preOrdens) {
 				
@@ -48,7 +56,7 @@ public class OrdemProducaoService {
 		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
 	}
 	
-	public void atualizarStatusPlanoMestre(long idPlanoMestre){
+	private void atualizarStatusPlanoMestre(long idPlanoMestre){
 		int todasOrdensExcluidas = 1;
 		
 		List<PlanoMestrePreOrdem> allPreOrdens = planoMestrePreOrdemRepository.findByIdPlanoMestre(idPlanoMestre);
