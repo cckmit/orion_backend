@@ -1,7 +1,7 @@
 package br.com.live.util;
 
-import br.com.live.entity.InspecaoQualidadePeca;
-import br.com.live.entity.InspecaoQualidadePecaLancto;
+import br.com.live.entity.InspecaoQualidade;
+import br.com.live.entity.InspecaoQualidadeLanctoPeca;
 import br.com.live.model.OrdemConfeccao;
 
 public class BodyInspecaoQualidade {
@@ -9,8 +9,8 @@ public class BodyInspecaoQualidade {
 	public OrdemConfeccao dadosOrdemConfeccao;
 	public boolean ordemValida;	
 	public String dataInspecao;
-	public InspecaoQualidadePeca inspecaoQualidadePeca;
-	public InspecaoQualidadePecaLancto inspecaoQualidadePecaLancto;
+	public InspecaoQualidade inspecaoQualidade;
+	public InspecaoQualidadeLanctoPeca inspecaoQualidadeLanctoPeca;
 	
 	public BodyInspecaoQualidade() {}
 	
@@ -19,8 +19,8 @@ public class BodyInspecaoQualidade {
 		this.ordemValida = (dadosOrdemConfeccao.ordemProducao > 0);
 	}
 	
-	public BodyInspecaoQualidade(InspecaoQualidadePeca inspecaoQualidadePeca, InspecaoQualidadePecaLancto inspecaoQualidadePecaLancto) {
-		this.inspecaoQualidadePeca = inspecaoQualidadePeca;
-		this.inspecaoQualidadePecaLancto = inspecaoQualidadePecaLancto;
+	public BodyInspecaoQualidade(InspecaoQualidade inspecaoQualidade, InspecaoQualidadeLanctoPeca inspecaoQualidadeLanctoPeca) {
+		this.inspecaoQualidade = inspecaoQualidade;
+		this.inspecaoQualidadeLanctoPeca = inspecaoQualidadeLanctoPeca;
 	}	
 }
