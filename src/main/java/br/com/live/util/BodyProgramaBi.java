@@ -2,7 +2,7 @@ package br.com.live.util;
 
 import java.util.List;
 
-import br.com.live.entity.TiposEmailBi;
+import br.com.live.model.SalvarTipoEmailBi;
 
 public class BodyProgramaBi {
 	public String id;
@@ -14,6 +14,5 @@ public class BodyProgramaBi {
 	public String extrator;
 	public String planilha;
 	public String help;
-	public List<TiposEmailBi> tiposEmail;
-
+	public List<SalvarTipoEmailBi> tiposEmail;
 }

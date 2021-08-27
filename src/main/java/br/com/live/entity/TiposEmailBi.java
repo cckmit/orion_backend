@@ -20,15 +20,20 @@ public class TiposEmailBi {
 	
 	public String descricao;
 	
+	@Column(name="perm_relacionar_usuarios")
+	public boolean permRelacUsuarios;
+	
+	
 	public TiposEmailBi() {
 		
 	}
 	
-	public TiposEmailBi(String idPrograma, int codTipoEmail, String descricao) {
+	public TiposEmailBi(String idPrograma, int codTipoEmail, String descricao, boolean permRelacUsuarios) {
 		this.id = idPrograma + Integer.toString(codTipoEmail);
 		this.idPrograma = idPrograma;
 		this.codTipoEmail = codTipoEmail;
 		this.descricao = descricao;
+		this.permRelacUsuarios = permRelacUsuarios;
 	}
 	
 }

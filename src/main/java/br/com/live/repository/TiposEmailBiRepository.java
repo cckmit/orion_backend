@@ -15,6 +15,9 @@ public interface TiposEmailBiRepository extends JpaRepository<TiposEmailBi, Stri
 	
 	@Query("SELECT u FROM TiposEmailBi u where u.idPrograma = :idProgramaBi order by u.codTipoEmail")
 	List<TiposEmailBi> findByIdPrograma(String idProgramaBi);
+
+	@Query("SELECT u FROM TiposEmailBi u where u.id = :id")
+	TiposEmailBi findByIdTipoEmail(String id);
 	
 	void deleteByIdPrograma(String idPrograma);
 	

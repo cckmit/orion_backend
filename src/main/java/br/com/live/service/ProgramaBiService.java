@@ -8,27 +8,31 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.live.custom.ProgramaBiCustom;
 import br.com.live.entity.ProgramaBi;
 import br.com.live.entity.TiposEmailBi;
+import br.com.live.model.SalvarTipoEmailBi;
 import br.com.live.repository.ProgramaBiRepository;
 import br.com.live.repository.TiposEmailBiRepository;
 
 @Service
 @Transactional
 public class ProgramaBiService {
-	
+
 	private final ProgramaBiRepository programaBiRepository;
 	private final ProgramaBiCustom programaBiCustom;
 	private final TiposEmailBiRepository tiposEmailBiRepository;
 
-	public ProgramaBiService(ProgramaBiRepository programaBiRepository, ProgramaBiCustom programaBiCustom, TiposEmailBiRepository tiposEmailBiRepository) {
+	public ProgramaBiService(ProgramaBiRepository programaBiRepository, ProgramaBiCustom programaBiCustom,
+			TiposEmailBiRepository tiposEmailBiRepository) {
 		this.programaBiRepository = programaBiRepository;
 		this.programaBiCustom = programaBiCustom;
 		this.tiposEmailBiRepository = tiposEmailBiRepository;
 	}
 
-	public ProgramaBi saveProgramaBi(String idProgramaBi, String areaModulo, int atividade, String descricao, String ferramenta, String frequencia, String planilha, String extrator, String help, List<TiposEmailBi> tiposEmail) {
-		
+	public ProgramaBi saveProgramaBi(String idProgramaBi, String areaModulo, int atividade, String descricao,
+			String ferramenta, String frequencia, String planilha, String extrator, String help,
+			List<SalvarTipoEmailBi> tiposEmail) {
+
 		ProgramaBi dadosPrograma = null;
-		
+
 		// EDIÇÃO
 		if (idProgramaBi != "") {
 			dadosPrograma = programaBiRepository.findByIdPrograma(idProgramaBi);
@@ -38,34 +42,60 @@ public class ProgramaBiService {
 			dadosPrograma.ferramenta = ferramenta;
 			dadosPrograma.frequencia = frequencia;
 			dadosPrograma.planilha = planilha;
-			dadosPrograma.help= help;
-			
-		// INSERÇÃO
+			dadosPrograma.help = help;
+
+			// INSERÇÃO
 		} else {
-			atividade = programaBiCustom.findNextAtividade();
-			
-			dadosPrograma = new ProgramaBi(areaModulo, atividade, descricao, ferramenta, frequencia, planilha, extrator, help);
+			atividade = programaBiCustom.findNextAtividade(areaModulo);
+
+			dadosPrograma = new ProgramaBi(areaModulo, atividade, descricao, ferramenta, frequencia, planilha, extrator,
+					help);
 		}
-		
+
 		programaBiRepository.save(dadosPrograma);
-		
+
 		saveTiposEmail(dadosPrograma.id, tiposEmail);
-		
+
 		return dadosPrograma;
 	}
-	
-	public void saveTiposEmail(String idProgramaBi, List<TiposEmailBi> listaIdsProgramas) {
+
+	public void saveTiposEmail(String idProgramaBi, List<SalvarTipoEmailBi> listaIdsProgramas) {
 		
-		tiposEmailBiRepository.deleteByIdPrograma(idProgramaBi);
-		
-		for (TiposEmailBi dadosTipoEmail: listaIdsProgramas) {
+		for (SalvarTipoEmailBi dadosTipoEmail : listaIdsProgramas) {
+			TiposEmailBi tipoEmailBI = tiposEmailBiRepository.findByIdTipoEmail(dadosTipoEmail.getId());
 			
-			TiposEmailBi tipoEmail = new TiposEmailBi (idProgramaBi, dadosTipoEmail.codTipoEmail, dadosTipoEmail.descricao);
-			tiposEmailBiRepository.save(tipoEmail);
-		}
+			boolean permiteRelacionarUsuariuo = false;
+			
+			if (dadosTipoEmail.getPermRelacUsuarios().equals("Sim")) {
+				permiteRelacionarUsuariuo = true;
+			}
+			
+			if (tipoEmailBI != null) {				
+				tipoEmailBI.descricao = dadosTipoEmail.getDescricao();
+				tipoEmailBI.permRelacUsuarios = permiteRelacionarUsuariuo; 
+				tiposEmailBiRepository.save(tipoEmailBI);
+			} else {
+				tipoEmailBI = new TiposEmailBi(idProgramaBi, dadosTipoEmail.getCodTipoEmail(), dadosTipoEmail.getDescricao(), permiteRelacionarUsuariuo);
+				tiposEmailBiRepository.save(tipoEmailBI);
+			}	
+		}		
 		
+		List<TiposEmailBi> listaTodosTiposEmail = tiposEmailBiRepository.findByIdPrograma(idProgramaBi);
+
+		for (TiposEmailBi dadosTipoEmailBanco : listaTodosTiposEmail) {
+			boolean excluir = true;			
+			for (SalvarTipoEmailBi dadosTipoEmail : listaIdsProgramas) {
+				
+				String idMontado = dadosTipoEmailBanco.idPrograma + dadosTipoEmail.getCodTipoEmail();
+				
+				if (dadosTipoEmailBanco.id.equals(idMontado)) {
+					excluir = false;
+				}
+			}
+			if (excluir) tiposEmailBiRepository.deleteById(dadosTipoEmailBanco.id);			
+		}
 	}
-	
+
 	public void deleteByIdPrograma(String idPrograma) {
 		tiposEmailBiRepository.deleteByIdPrograma(idPrograma);
 		programaBiRepository.deleteById(idPrograma);

@@ -3,6 +3,7 @@ create table orion_bi_002
  id_programa varchar2(10),
  cod_tipo_email number(3),
  descricao varchar2(100),
+ perm_relacionar_usuarios number(1),
  constraint orion_bi_002_pk primary key (id)
 );
 

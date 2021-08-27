@@ -59,4 +59,24 @@ public class UsuarioBiCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(FiltroProgramaBi.class));
 	}
+	
+	public boolean existsUsuario(long idUsuario, String usuario)	{
+		
+		int encontrou;
+		
+		String query = " select 1 from orion_bi_003 a ";
+		query += " where a.usuario = '" + usuario + "'";		
+
+		if (idUsuario > 0) query += " and a.cod_usuario <> " + idUsuario;	
+		
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+		
+		return (encontrou == 1);
+	}
+	
+	
 }

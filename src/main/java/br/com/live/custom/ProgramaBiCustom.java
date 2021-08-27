@@ -12,12 +12,12 @@ public class ProgramaBiCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public int findNextAtividade() {
+	public int findNextAtividade(String areaModulo) {
 
 		Integer nextAtividade;
 
-		String query = " select nvl(max(atividade),0) + 1 from orion_bi_001 ";
-
+		String query = " select nvl(max(atividade),0) + 1 from orion_bi_001 a "
+					+  " where a.area_modulo = '" + areaModulo + "'";
 		try {
 			nextAtividade = jdbcTemplate.queryForObject(query, Integer.class);
 		} catch (Exception e) {

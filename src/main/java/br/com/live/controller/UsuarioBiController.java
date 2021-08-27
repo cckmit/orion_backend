@@ -99,6 +99,11 @@ public class UsuarioBiController {
 	public void excluiAllTipoEmail(@RequestBody BodyUsuarioBi body) {
 		usuarioBiService.excluiTodosTiposEmailSelecionado(body.id, body.idPrograma);
 	}
+	
+	@RequestMapping(value = "validar-usuario/{idUsuario}/{usuario}", method = RequestMethod.GET)
+	public boolean validarUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("usuario") String usuario) {
+		return usuarioBiService.existsUsuario(idUsuario, usuario);
+	}
 
 
 }

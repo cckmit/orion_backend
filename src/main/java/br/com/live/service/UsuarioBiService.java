@@ -170,5 +170,8 @@ public class UsuarioBiService {
 		}
 		return listaIdsTiposEmail;
 	}
-
+	
+	public boolean existsUsuario(long idUsuario, String usuario) {
+		return usuarioBiCustom.existsUsuario(idUsuario, usuario);
+	}
 }
