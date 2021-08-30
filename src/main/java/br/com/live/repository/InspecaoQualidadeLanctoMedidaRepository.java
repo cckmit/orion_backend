@@ -7,5 +7,8 @@ import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 
 @Repository
 public interface InspecaoQualidadeLanctoMedidaRepository extends JpaRepository<InspecaoQualidadeLanctoMedida, Long> {
+
+	void deleteByIdLancamento(long IdLancamento);
+	void deleteByIdInspecao(long idInspecao);
 	
 }

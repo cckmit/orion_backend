@@ -10,9 +10,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.entity.InspecaoQualidade;
+import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
+import br.com.live.model.TipoMedida;
 
 @Repository
 public class InspecaoQualidadeCustom {
@@ -22,6 +23,19 @@ public class InspecaoQualidadeCustom {
 	public InspecaoQualidadeCustom (JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}	
+	
+	public List<TipoMedida> findTiposMedidasByReferencia(String referencia) {
+		
+		String query = " select b.codigo, b.descricao from basi_065 a, hdoc_001 b "
+		+ " where a.referencia  = '" + referencia + "'"
+		+ " and b.codigo = a.tipo_medida " 
+		+ " and b.tipo = 64 "
+		+ " and b.descricao like '%PEÇA PRONTA%' "
+		+ " group by b.codigo, b.descricao "
+		+ " order by b.codigo, b.descricao "; 
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(TipoMedida.class));		
+	}
 	
 	public List<MotivoRejeicao> findAllMotivos() {
 		
@@ -37,6 +51,18 @@ public class InspecaoQualidadeCustom {
 		+ " order by motivos.codigo_motivo, motivos.desc_motivo, motivos.codigo_estagio, motivos.desc_estagio " ;     
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MotivoRejeicao.class));
+	}
+	
+	public List<InspecaoQualidadeLanctoMedida> findMedidasByReferenciaTamanhoTipo(String referencia, String tamanho, int tipoMedida) {
+		
+		String query = " select a.sequencia, a.descricao, a.medida, a.tolerancia_max toleranciaMaxima, a.tolerancia_min toleranciaMinima "
+		+ " from basi_065 a "
+		+ " where a.referencia = '" + referencia + "'"
+		+ " and a.tamanho = '" + tamanho + "'"
+		+ " and a.tipo_medida = " + tipoMedida
+		+ " order by a.sequencia ";  
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(InspecaoQualidadeLanctoMedida.class));				
 	}
 	
 	public long findNextIdInspecao() {

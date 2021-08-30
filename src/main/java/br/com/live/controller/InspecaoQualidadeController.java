@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.entity.InspecaoQualidade;
+import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
+import br.com.live.model.TipoMedida;
 import br.com.live.service.InspecaoQualidadeService;
 import br.com.live.util.BodyInspecaoQualidade;
 
@@ -42,6 +44,16 @@ public class InspecaoQualidadeController {
 	@RequestMapping(value = "/inspecoes-ordem-estagio/{ordemProducao}/{ordemConfeccao}/{codEstagio}/{tipo}", method = RequestMethod.GET)
 	public List<InspecaoQualidade> findInspecoesQualidadeByOrdemEstagioTipo(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("codEstagio") int codEstagio, @PathVariable("tipo") int tipo) {
 		return inspecaoQualidadeService.findInspecoesQualidadeByOrdemEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);
+	}
+	
+	@RequestMapping(value = "/tipos-medida/{referencia}", method = RequestMethod.GET)
+	public List<TipoMedida> findTiposMedidasByReferencia(@PathVariable("referencia") String referencia) {
+		return inspecaoQualidadeService.findTiposMedidasByReferencia(referencia);
+	}
+	
+	@RequestMapping(value = "/medidas/{referencia}/{tamanho}/{tipoMedida}", method = RequestMethod.GET)
+	public List<InspecaoQualidadeLanctoMedida> findMedidasByReferenciaTamanhoTipo(@PathVariable("referencia") String referencia, @PathVariable("tamanho") String tamanho, @PathVariable("tipoMedida") int tipoMedida) {
+		return inspecaoQualidadeService.findMedidasByReferenciaTamanhoTipo(referencia, tamanho, tipoMedida);
 	}
 	
 	@RequestMapping(value = "/lanctos-pecas/{idInspecao}", method = RequestMethod.GET)

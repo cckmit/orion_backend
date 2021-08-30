@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.live.custom.InspecaoQualidadeCustom;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.entity.InspecaoQualidade;
+import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.entity.InspecaoQualidadeLanctoPeca;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.OrdemConfeccao;
+import br.com.live.model.TipoMedida;
 import br.com.live.repository.InspecaoQualidadeLanctoMedidaRepository;
 import br.com.live.repository.InspecaoQualidadeLanctoPecaRepository;
 import br.com.live.repository.InspecaoQualidadeRepository;
@@ -71,6 +73,14 @@ public class InspecaoQualidadeService {
 		BodyInspecaoQualidade bodyRetorno = new BodyInspecaoQualidade(dadosOrdemConfeccao);
 		
 		return bodyRetorno;
+	}
+	
+	public List<TipoMedida> findTiposMedidasByReferencia(String referencia) {
+		return inspecaoQualidadeCustom.findTiposMedidasByReferencia(referencia);
+	}
+	
+	public List<InspecaoQualidadeLanctoMedida> findMedidasByReferenciaTamanhoTipo(String referencia, String tamanho, int tipoMedida) {
+		return inspecaoQualidadeCustom.findMedidasByReferenciaTamanhoTipo(referencia, tamanho, tipoMedida);
 	}
 	
 	public List<MotivoRejeicao> findAllMotivos() {
