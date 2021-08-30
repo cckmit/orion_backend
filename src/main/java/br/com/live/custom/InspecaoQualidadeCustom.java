@@ -1,11 +1,17 @@
 package br.com.live.custom;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Column;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.entity.InspecaoQualidade;
+import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 
 @Repository
@@ -33,7 +39,7 @@ public class InspecaoQualidadeCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MotivoRejeicao.class));
 	}
 	
-	public long findNextIdInspecaoPeca() {
+	public long findNextIdInspecao() {
 		String query = " select nvl(max(id_inspecao),0) from orion_050 ";
 		
 		long id = jdbcTemplate.queryForObject(query, Integer.class);
@@ -42,7 +48,7 @@ public class InspecaoQualidadeCustom {
 		return id;
 	}
 	
-	public long findNextIdInspecaoPecaLancamento() {		
+	public long findNextIdInspecaoLanctoPeca() {		
 		String query = " select nvl(max(id_lancamento),0) from orion_051 ";
 		
 		long id = jdbcTemplate.queryForObject(query, Integer.class);
@@ -66,6 +72,28 @@ public class InspecaoQualidadeCustom {
 		+ "  and a.cod_motivo  > 0 " ;
 		
 		return jdbcTemplate.queryForObject(query, Integer.class);
+	}	
+	
+	public List<ConsultaInspecaoQualidLanctoPecas> findLancamentoPecasByIdInspecao(long idInspecao) {
+		
+		List<ConsultaInspecaoQualidLanctoPecas> lancamentos;
+		
+		String query = " select a.id_lancamento id, a.cod_motivo || ' - ' || nvl(b.descricao, 'SEM DEFEITO') motivo, " 
+	    + " b.codigo_estagio || ' - ' || c.descricao estagio, "  
+	    + " a.quantidade, a.usuario, a.data_hora " 
+	    + " from orion_051 a, efic_040 b, mqop_005 c "
+	    + " where a.id_inspecao = " + idInspecao
+	    + " and b.codigo_motivo  (+) = a.cod_motivo "
+	    + " and c.codigo_estagio (+) = b.codigo_estagio "
+	    + " order by a.id_lancamento " ;
+		
+		try {
+			lancamentos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaInspecaoQualidLanctoPecas.class));
+		} catch (Exception e) {
+			lancamentos = new ArrayList<ConsultaInspecaoQualidLanctoPecas>();
+		}
+		
+		return lancamentos;
 	}
 	
 }

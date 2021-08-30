@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="orion_052")
-public class InspecaoQualidadeMedidaBKP {
+public class InspecaoQualidadeLanctoMedida {
 
 	@Id
 	public long id;

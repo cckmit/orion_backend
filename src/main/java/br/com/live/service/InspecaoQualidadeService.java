@@ -8,13 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.InspecaoQualidadeCustom;
 import br.com.live.custom.OrdemProducaoCustom;
-import br.com.live.entity.InspecaoQualidadePeca;
-import br.com.live.entity.InspecaoQualidadePecaLancto;
+import br.com.live.entity.InspecaoQualidade;
+import br.com.live.entity.InspecaoQualidadeLanctoPeca;
+import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.OrdemConfeccao;
-import br.com.live.repository.InspecaoQualidadeMedidaRepository;
-import br.com.live.repository.InspecaoQualidadePecaLanctoRepository;
-import br.com.live.repository.InspecaoQualidadePecaRepository;
+import br.com.live.repository.InspecaoQualidadeLanctoMedidaRepository;
+import br.com.live.repository.InspecaoQualidadeLanctoPecaRepository;
+import br.com.live.repository.InspecaoQualidadeRepository;
 import br.com.live.util.BodyInspecaoQualidade;
 import br.com.live.util.FormataData;
 
@@ -22,20 +23,20 @@ import br.com.live.util.FormataData;
 @Transactional
 public class InspecaoQualidadeService {
 
-	private final InspecaoQualidadePecaRepository inspecaoQualidadePecaRepository;
-	private final InspecaoQualidadePecaLanctoRepository inspecaoQualidadePecaLanctoRepository;
-	private final InspecaoQualidadeMedidaRepository inspecaoQualidadeMedidasRepository;
+	private final InspecaoQualidadeRepository inspecaoQualidadeRepository;
+	private final InspecaoQualidadeLanctoPecaRepository inspecaoQualidadeLanctoPecaRepository;
+	private final InspecaoQualidadeLanctoMedidaRepository inspecaoQualidadeLanctoMedidaRepository;
 	private final InspecaoQualidadeCustom inspecaoQualidadeCustom;
 	private final OrdemProducaoCustom ordemProducaoCustom;
 
-	public InspecaoQualidadeService(InspecaoQualidadePecaRepository inspecaoQualidadeRepository,
-			InspecaoQualidadePecaLanctoRepository inspecaoQualidadePecasRepository,
-			InspecaoQualidadeMedidaRepository inspecaoQualidadeMedidasRepository,
+	public InspecaoQualidadeService(InspecaoQualidadeRepository inspecaoQualidadeRepository,
+			InspecaoQualidadeLanctoPecaRepository inspecaoQualidadeLanctoPecaRepository,
+			InspecaoQualidadeLanctoMedidaRepository inspecaoQualidadeLanctoMedidaRepository,
 			InspecaoQualidadeCustom inspecaoQualidadeCustom,
 			OrdemProducaoCustom ordemProducaoCustom) {
-		this.inspecaoQualidadePecaRepository = inspecaoQualidadeRepository;
-		this.inspecaoQualidadePecaLanctoRepository = inspecaoQualidadePecasRepository;
-		this.inspecaoQualidadeMedidasRepository = inspecaoQualidadeMedidasRepository;
+		this.inspecaoQualidadeRepository = inspecaoQualidadeRepository;
+		this.inspecaoQualidadeLanctoPecaRepository = inspecaoQualidadeLanctoPecaRepository;
+		this.inspecaoQualidadeLanctoMedidaRepository = inspecaoQualidadeLanctoMedidaRepository;
 		this.inspecaoQualidadeCustom = inspecaoQualidadeCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;
 	}
@@ -76,13 +77,27 @@ public class InspecaoQualidadeService {
 		return inspecaoQualidadeCustom.findAllMotivos();		
 	}
 	
-	public InspecaoQualidadePeca saveInspecaoQualidadePeca(InspecaoQualidadePeca inspecaoQualidadePeca, InspecaoQualidadePecaLancto inspecaoQualidadePecaLancto, String data) {
+	public List<InspecaoQualidade> findInspecoesQualidadeByOrdemEstagioTipo(int ordemProducao, int ordemConfeccao, int codEstagio, int tipo) {
+		return inspecaoQualidadeRepository.findAllByOrdemProdConfecEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);		
+	}
+	
+	public List<ConsultaInspecaoQualidLanctoPecas> findLancamentoPecasByIdInspecao(long idInspecao) {
+		return inspecaoQualidadeCustom.findLancamentoPecasByIdInspecao(idInspecao);
+	}
+	
+	public InspecaoQualidade findInspecaoQualidadeById(long id) {
+		return inspecaoQualidadeRepository.findById(id);
+	}
+	
+	public InspecaoQualidade saveInspecaoQualidadePeca(InspecaoQualidade inspecaoQualidadePeca, InspecaoQualidadeLanctoPeca inspecaoQualidadePecaLancto, String data) {
 				
-		InspecaoQualidadePeca inspecao = inspecaoQualidadePecaRepository.findById(inspecaoQualidadePeca.id);
+		InspecaoQualidade inspecao = inspecaoQualidadeRepository.findById(inspecaoQualidadePeca.id);
 		
 		if (inspecao == null) {
-			inspecao = new InspecaoQualidadePeca();
-			inspecao.id = inspecaoQualidadeCustom.findNextIdInspecaoPeca();
+			inspecao = new InspecaoQualidade();
+			inspecao.id = inspecaoQualidadeCustom.findNextIdInspecao();
+			inspecao.tipo = inspecaoQualidadePeca.tipo;
+			inspecao.codEstagio = inspecaoQualidadePeca.codEstagio;
 			inspecao.data = FormataData.parseStringToDate(data);
 			inspecao.usuario = inspecaoQualidadePeca.usuario;
 			inspecao.turno = inspecaoQualidadePeca.turno;
@@ -91,21 +106,43 @@ public class InspecaoQualidadeService {
 			inspecao.periodo = inspecaoQualidadePeca.periodo;
 			inspecao.percInspecionarPcs = inspecaoQualidadePeca.percInspecionarPcs;
 			inspecao.qtdeInspecionarPcs = inspecaoQualidadePeca.qtdeInspecionarPcs;			
-			inspecao = inspecaoQualidadePecaRepository.saveAndFlush(inspecao);
+			inspecao = inspecaoQualidadeRepository.saveAndFlush(inspecao);
 		}
 		
-		InspecaoQualidadePecaLancto lancamento = new InspecaoQualidadePecaLancto();		
-		lancamento.id = inspecaoQualidadeCustom.findNextIdInspecaoPecaLancamento();
+		InspecaoQualidadeLanctoPeca lancamento = new InspecaoQualidadeLanctoPeca();		
+		lancamento.id = inspecaoQualidadeCustom.findNextIdInspecaoLanctoPeca();
 		lancamento.idInspecao = inspecao.id;
 		lancamento.codMotivo = inspecaoQualidadePecaLancto.codMotivo;
 		lancamento.quantidade = inspecaoQualidadePecaLancto.quantidade;
 		lancamento.usuario = inspecaoQualidadePecaLancto.usuario;
 		lancamento.dataHora = new Date();
-		inspecaoQualidadePecaLanctoRepository.saveAndFlush(lancamento);
+		inspecaoQualidadeLanctoPecaRepository.saveAndFlush(lancamento);
 		
-		inspecao.atualizaQuantidadesInpecionadas(inspecaoQualidadeCustom.getQtdeInspecionadaPeca(inspecao.id), inspecaoQualidadeCustom.getQtdeRejeitadaPeca(inspecao.id));
-		inspecaoQualidadePecaRepository.saveAndFlush(inspecao);		
+		inspecao.atualizaQuantidadesInpecionadas(inspecaoQualidadeCustom.getQtdeInspecionadaPeca(inspecao.id), inspecaoQualidadeCustom.getQtdeRejeitadaPeca(inspecao.id));		
+		inspecaoQualidadeRepository.saveAndFlush(inspecao);		
 		
 		return inspecao;
+	}
+	
+	public InspecaoQualidade deleteInspecaoQualidadeLanctoPeca(long idInspecao, long idLancamento) {
+		inspecaoQualidadeLanctoPecaRepository.deleteById(idLancamento);		
+		inspecaoQualidadeLanctoPecaRepository.flush();
+		InspecaoQualidade inspecao = inspecaoQualidadeRepository.findById(idInspecao);
+		inspecao.atualizaQuantidadesInpecionadas(inspecaoQualidadeCustom.getQtdeInspecionadaPeca(inspecao.id), inspecaoQualidadeCustom.getQtdeRejeitadaPeca(inspecao.id));		
+		inspecaoQualidadeRepository.saveAndFlush(inspecao);		
+		return inspecao; 
+	}	
+	
+	public List<InspecaoQualidade> deleteInspecaoQualidade(long idInspecao) {		
+		InspecaoQualidade inspecao = findInspecaoQualidadeById(idInspecao);
+		int ordemProducao = inspecao.ordemProducao; 
+		int ordemConfeccao = inspecao.ordemConfeccao;
+		int codEstagio = inspecao.codEstagio;
+		int tipo= inspecao.tipo;		
+		inspecaoQualidadeLanctoPecaRepository.deleteByIdInspecao(idInspecao);
+		inspecaoQualidadeRepository.deleteById(idInspecao);
+		inspecaoQualidadeLanctoPecaRepository.flush();
+		inspecaoQualidadeRepository.flush();
+		return findInspecoesQualidadeByOrdemEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);
 	}
 }
