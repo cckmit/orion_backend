@@ -15,6 +15,7 @@ public class InspecaoQualidade {
 	@Column(name = "id_inspecao")
 	public long id;
 			
+	public int tipo;
 	public Date data;
 	public int turno;
 	public String usuario;	
@@ -57,6 +58,14 @@ public class InspecaoQualidade {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public int getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(int tipo) {
+		this.tipo = tipo;
 	}
 
 	public Date getData() {

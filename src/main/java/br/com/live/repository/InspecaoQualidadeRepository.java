@@ -14,7 +14,7 @@ public interface InspecaoQualidadeRepository extends JpaRepository<InspecaoQuali
 	@Query("SELECT i FROM InspecaoQualidade i where i.id = :id")
 	InspecaoQualidade findById(long id);
 	
-	@Query("SELECT i FROM InspecaoQualidade i where i.ordemProducao = :ordemProducao and i.ordemConfeccao = :ordemConfeccao and i.codEstagio = :codEstagio order by i.id")
-	List<InspecaoQualidade> findAllByOrdemProdConfecEstagio(int ordemProducao, int ordemConfeccao, int codEstagio); 
+	@Query("SELECT i FROM InspecaoQualidade i where i.ordemProducao = :ordemProducao and i.ordemConfeccao = :ordemConfeccao and i.codEstagio = :codEstagio and tipo = :tipo order by i.id")
+	List<InspecaoQualidade> findAllByOrdemProdConfecEstagioTipo(int ordemProducao, int ordemConfeccao, int codEstagio, int tipo); 
 	
 }

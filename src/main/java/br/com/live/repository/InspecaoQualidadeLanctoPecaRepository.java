@@ -8,4 +8,6 @@ import br.com.live.entity.InspecaoQualidadeLanctoPeca;
 @Repository
 public interface InspecaoQualidadeLanctoPecaRepository extends JpaRepository<InspecaoQualidadeLanctoPeca, Long> {
 	
+	void deleteByIdInspecao(long idInspecao);
+	
 }

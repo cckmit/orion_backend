@@ -77,8 +77,8 @@ public class InspecaoQualidadeService {
 		return inspecaoQualidadeCustom.findAllMotivos();		
 	}
 	
-	public List<InspecaoQualidade> findInspecoesQualidadeByOrdemAndEstagio(int ordemProducao, int ordemConfeccao, int codEstagio) {
-		return inspecaoQualidadeRepository.findAllByOrdemProdConfecEstagio(ordemProducao, ordemConfeccao, codEstagio);		
+	public List<InspecaoQualidade> findInspecoesQualidadeByOrdemEstagioTipo(int ordemProducao, int ordemConfeccao, int codEstagio, int tipo) {
+		return inspecaoQualidadeRepository.findAllByOrdemProdConfecEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);		
 	}
 	
 	public List<ConsultaInspecaoQualidLanctoPecas> findLancamentoPecasByIdInspecao(long idInspecao) {
@@ -96,6 +96,8 @@ public class InspecaoQualidadeService {
 		if (inspecao == null) {
 			inspecao = new InspecaoQualidade();
 			inspecao.id = inspecaoQualidadeCustom.findNextIdInspecao();
+			inspecao.tipo = inspecaoQualidadePeca.tipo;
+			inspecao.codEstagio = inspecaoQualidadePeca.codEstagio;
 			inspecao.data = FormataData.parseStringToDate(data);
 			inspecao.usuario = inspecaoQualidadePeca.usuario;
 			inspecao.turno = inspecaoQualidadePeca.turno;
@@ -120,5 +122,27 @@ public class InspecaoQualidadeService {
 		inspecaoQualidadeRepository.saveAndFlush(inspecao);		
 		
 		return inspecao;
+	}
+	
+	public InspecaoQualidade deleteInspecaoQualidadeLanctoPeca(long idInspecao, long idLancamento) {
+		inspecaoQualidadeLanctoPecaRepository.deleteById(idLancamento);		
+		inspecaoQualidadeLanctoPecaRepository.flush();
+		InspecaoQualidade inspecao = inspecaoQualidadeRepository.findById(idInspecao);
+		inspecao.atualizaQuantidadesInpecionadas(inspecaoQualidadeCustom.getQtdeInspecionadaPeca(inspecao.id), inspecaoQualidadeCustom.getQtdeRejeitadaPeca(inspecao.id));		
+		inspecaoQualidadeRepository.saveAndFlush(inspecao);		
+		return inspecao; 
+	}	
+	
+	public List<InspecaoQualidade> deleteInspecaoQualidade(long idInspecao) {		
+		InspecaoQualidade inspecao = findInspecaoQualidadeById(idInspecao);
+		int ordemProducao = inspecao.ordemProducao; 
+		int ordemConfeccao = inspecao.ordemConfeccao;
+		int codEstagio = inspecao.codEstagio;
+		int tipo= inspecao.tipo;		
+		inspecaoQualidadeLanctoPecaRepository.deleteByIdInspecao(idInspecao);
+		inspecaoQualidadeRepository.deleteById(idInspecao);
+		inspecaoQualidadeLanctoPecaRepository.flush();
+		inspecaoQualidadeRepository.flush();
+		return findInspecoesQualidadeByOrdemEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);
 	}
 }

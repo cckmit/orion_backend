@@ -39,9 +39,9 @@ public class InspecaoQualidadeController {
 		return inspecaoQualidadeService.findInspecaoQualidadeById(id);
 	}
 	
-	@RequestMapping(value = "/inspecoes-ordem-estagio/{ordemProducao}/{ordemConfeccao}/{codEstagio}", method = RequestMethod.GET)
-	public List<InspecaoQualidade> findInspecoesQualidadeByOrdemAndEstagio(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("codEstagio") int codEstagio) {
-		return inspecaoQualidadeService.findInspecoesQualidadeByOrdemAndEstagio(ordemProducao, ordemConfeccao, codEstagio);
+	@RequestMapping(value = "/inspecoes-ordem-estagio/{ordemProducao}/{ordemConfeccao}/{codEstagio}/{tipo}", method = RequestMethod.GET)
+	public List<InspecaoQualidade> findInspecoesQualidadeByOrdemEstagioTipo(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("codEstagio") int codEstagio, @PathVariable("tipo") int tipo) {
+		return inspecaoQualidadeService.findInspecoesQualidadeByOrdemEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);
 	}
 	
 	@RequestMapping(value = "/lanctos-pecas/{idInspecao}", method = RequestMethod.GET)
@@ -53,4 +53,14 @@ public class InspecaoQualidadeController {
 	public InspecaoQualidade saveInspecaoQualidadePeca(@RequestBody BodyInspecaoQualidade body) {
 		return inspecaoQualidadeService.saveInspecaoQualidadePeca(body.inspecaoQualidade, body.inspecaoQualidadeLanctoPeca, body.dataInspecao);		
 	}
+		
+	@RequestMapping(value = "lancto-peca/{idInspecao}/{idLancamento}", method = RequestMethod.DELETE)	
+	public InspecaoQualidade deleteInspecaoQualidadeLanctoPeca(@PathVariable("idInspecao") long idInspecao, @PathVariable("idLancamento") long idLancamento) {
+		return inspecaoQualidadeService.deleteInspecaoQualidadeLanctoPeca(idInspecao, idLancamento);		 
+	}	
+	
+	@RequestMapping(value = "inspecao/{idInspecao}", method = RequestMethod.DELETE)
+	public List<InspecaoQualidade> deleteInspecaoQualidade(@PathVariable("idInspecao") long idInspecao) {
+		return inspecaoQualidadeService.deleteInspecaoQualidade(idInspecao);
+	}	
 }
