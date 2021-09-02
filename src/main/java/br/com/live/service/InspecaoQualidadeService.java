@@ -11,6 +11,7 @@ import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.entity.InspecaoQualidade;
 import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.entity.InspecaoQualidadeLanctoPeca;
+import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.OrdemConfeccao;
@@ -79,8 +80,17 @@ public class InspecaoQualidadeService {
 		return inspecaoQualidadeCustom.findTiposMedidasByReferencia(referencia);
 	}
 	
-	public List<InspecaoQualidadeLanctoMedida> findMedidasByReferenciaTamanhoTipo(String referencia, String tamanho, int tipoMedida) {
-		return inspecaoQualidadeCustom.findMedidasByReferenciaTamanhoTipo(referencia, tamanho, tipoMedida);
+ 	public List<InspecaoQualidadeLanctoMedida> findMedidasByOrdemProducaoConfeccaoTipoMedida(int ordemProducao, int ordemConfeccao, int tipoMedida) {
+		List<InspecaoQualidadeLanctoMedida> lancamentos;		
+		OrdemConfeccao dadosOrdemConfeccao = ordemProducaoCustom.findOrdemConfeccaoByOrdemProducaoConfeccao(ordemProducao, ordemConfeccao);
+		lancamentos = inspecaoQualidadeCustom.findMedidasByReferenciaTamanhoTipo(dadosOrdemConfeccao.referencia, dadosOrdemConfeccao.tamanho, tipoMedida);					
+		return lancamentos; 
+	}
+	
+	public List<InspecaoQualidadeLanctoMedida> findMedidasByOrdemProducaoConfeccaoIdInspecaoIdLancamento(int ordemProducao, int ordemConfeccao, int idInspecao, int idLancamento) {
+		List<InspecaoQualidadeLanctoMedida> lancamentos;
+		lancamentos = inspecaoQualidadeCustom.findMedidasByIdInspecaoIdLancamento(idInspecao, idLancamento);						
+		return lancamentos; 
 	}
 	
 	public List<MotivoRejeicao> findAllMotivos() {
@@ -94,13 +104,17 @@ public class InspecaoQualidadeService {
 	public List<ConsultaInspecaoQualidLanctoPecas> findLancamentoPecasByIdInspecao(long idInspecao) {
 		return inspecaoQualidadeCustom.findLancamentoPecasByIdInspecao(idInspecao);
 	}
+
+	public List<ConsultaInspecaoQualidLanctoMedidas> findLancamentoMedidasByIdInspecao(long idInspecao) {
+		return inspecaoQualidadeCustom.findLancamentoMedidasByIdInspecao(idInspecao);
+	}
 	
 	public InspecaoQualidade findInspecaoQualidadeById(long id) {
 		return inspecaoQualidadeRepository.findById(id);
 	}
 	
-	public InspecaoQualidade saveInspecaoQualidadePeca(InspecaoQualidade inspecaoQualidadePeca, InspecaoQualidadeLanctoPeca inspecaoQualidadePecaLancto, String data) {
-				
+	public InspecaoQualidade gravaInspecaoQualidade(InspecaoQualidade inspecaoQualidadePeca, String data) {
+		
 		InspecaoQualidade inspecao = inspecaoQualidadeRepository.findById(inspecaoQualidadePeca.id);
 		
 		if (inspecao == null) {
@@ -118,9 +132,16 @@ public class InspecaoQualidadeService {
 			inspecao.qtdeInspecionarPcs = inspecaoQualidadePeca.qtdeInspecionarPcs;			
 			inspecao = inspecaoQualidadeRepository.saveAndFlush(inspecao);
 		}
+				
+		return inspecao;
+	}
+	
+	public InspecaoQualidade saveInspecaoQualidadePeca(InspecaoQualidade inspecaoQualidadePeca, InspecaoQualidadeLanctoPeca inspecaoQualidadePecaLancto, String data) {
 		
+		InspecaoQualidade inspecao = gravaInspecaoQualidade(inspecaoQualidadePeca, data);
+				
 		InspecaoQualidadeLanctoPeca lancamento = new InspecaoQualidadeLanctoPeca();		
-		lancamento.id = inspecaoQualidadeCustom.findNextIdInspecaoLanctoPeca();
+		lancamento.id = inspecaoQualidadeCustom.findNextIdLancamentoPeca();
 		lancamento.idInspecao = inspecao.id;
 		lancamento.codMotivo = inspecaoQualidadePecaLancto.codMotivo;
 		lancamento.quantidade = inspecaoQualidadePecaLancto.quantidade;
@@ -133,7 +154,58 @@ public class InspecaoQualidadeService {
 		
 		return inspecao;
 	}
-	
+	 
+	public InspecaoQualidade saveInspecaoQualidadeMedida(InspecaoQualidade inspecaoQualidadePeca, List<InspecaoQualidadeLanctoMedida> inspecaoQualidadeLanctoMedidas, String data) {
+		
+		InspecaoQualidade inspecao = gravaInspecaoQualidade(inspecaoQualidadePeca, data);
+		
+		long id = 0;
+		long idLancamento = 0; 
+		
+		for (InspecaoQualidadeLanctoMedida lancamento : inspecaoQualidadeLanctoMedidas) {
+			
+			if (idLancamento == 0) {
+				if (lancamento.idLancamento > 0) {				
+					idLancamento = lancamento.idLancamento;
+				} else {
+					idLancamento = inspecaoQualidadeCustom.findNextIdLancamentoMedida(inspecao.id);
+				}
+			}
+						
+			id = inspecaoQualidadeCustom.findNextIdMedida(inspecao.id, idLancamento, lancamento.sequencia);
+			InspecaoQualidadeLanctoMedida medida = inspecaoQualidadeLanctoMedidaRepository.findById(id);
+			
+			if (medida == null) {				
+				medida = new InspecaoQualidadeLanctoMedida();
+				
+				medida.id = id;
+				medida.idLancamento = idLancamento;
+				medida.idInspecao = inspecao.id;
+				medida.sequencia = lancamento.sequencia;
+				medida.descricao = lancamento.descricao;
+				medida.medidaPadrao = lancamento.medidaPadrao;
+				medida.toleranciaMaxima = lancamento.toleranciaMaxima;
+				medida.toleranciaMinima = lancamento.toleranciaMinima;
+				medida.medidaReal = lancamento.medidaReal;
+				medida.variacao = lancamento.variacao;
+				medida.usuario = lancamento.usuario;
+				medida.dataHora = new Date();
+			}
+			
+			medida.medidaReal = lancamento.medidaReal;
+			medida.variacao = lancamento.variacao;
+			medida.usuario = lancamento.usuario;
+			medida.dataHora = new Date();
+			
+			inspecaoQualidadeLanctoMedidaRepository.saveAndFlush(medida);
+		}		
+		
+		inspecao.atualizaQuantidadesInpecionadas(inspecaoQualidadeCustom.getQtdeInspecionadaMedida(inspecao.id), inspecaoQualidadeCustom.getQtdeRejeitadaMedida(inspecao.id));		
+		inspecaoQualidadeRepository.saveAndFlush(inspecao);		
+		
+		return inspecao;
+	}
+		
 	public InspecaoQualidade deleteInspecaoQualidadeLanctoPeca(long idInspecao, long idLancamento) {
 		inspecaoQualidadeLanctoPecaRepository.deleteById(idLancamento);		
 		inspecaoQualidadeLanctoPecaRepository.flush();
@@ -142,6 +214,15 @@ public class InspecaoQualidadeService {
 		inspecaoQualidadeRepository.saveAndFlush(inspecao);		
 		return inspecao; 
 	}	
+		
+	public InspecaoQualidade deleteInspecaoQualidadeLanctoMedida(long idInspecao, long idLancamento) {
+		inspecaoQualidadeLanctoMedidaRepository.deleteByIdInspecaoAndIdLancamento(idInspecao, idLancamento);
+		inspecaoQualidadeLanctoMedidaRepository.flush();		
+		InspecaoQualidade inspecao = inspecaoQualidadeRepository.findById(idInspecao);
+		inspecao.atualizaQuantidadesInpecionadas(inspecaoQualidadeCustom.getQtdeInspecionadaMedida(inspecao.id), inspecaoQualidadeCustom.getQtdeRejeitadaMedida(inspecao.id));		
+		inspecaoQualidadeRepository.saveAndFlush(inspecao);		
+		return inspecao; 
+	}		
 	
 	public List<InspecaoQualidade> deleteInspecaoQualidade(long idInspecao) {		
 		InspecaoQualidade inspecao = findInspecaoQualidadeById(idInspecao);

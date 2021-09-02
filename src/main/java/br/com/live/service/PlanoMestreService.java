@@ -1,5 +1,6 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -437,10 +438,18 @@ public class PlanoMestreService {
 		long idPlanoMestre = 0;
 
 		System.out.println("Inicio geração do plano mestre");
-
-		List<EstoqueProduto> estoques = estoqueProdutoCustom.findByParameters(parametros);
-		List<DemandaProdutoPlano> demandas = demandaProdutoCustom.findByParameters(parametros);
-		List<ProcessoProdutoPlano> processos = processoProdutoCustom.findByParameters(parametros);
+			
+		// Carrega demanda apenas para o tipo de distribuição diferente de 4 - Previsão de Vendas.
+		List<EstoqueProduto> estoques = new ArrayList<EstoqueProduto>();
+		List<DemandaProdutoPlano> demandas = new ArrayList<DemandaProdutoPlano>();
+		List<ProcessoProdutoPlano> processos = new ArrayList<ProcessoProdutoPlano>();
+		
+		if (parametros.tipoDistribuicao != 4) {
+			estoques = estoqueProdutoCustom.findByParameters(parametros);
+			demandas = demandaProdutoCustom.findByParameters(parametros);		
+			processos = processoProdutoCustom.findByParameters(parametros);
+		}
+		
 		List<ProdutoCompleto> produtos = planoMestreCustom.findProdutosByParameters(parametros);
 
 		System.out.println("Criando o plano mestre");

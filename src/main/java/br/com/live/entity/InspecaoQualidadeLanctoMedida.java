@@ -81,7 +81,7 @@ public class InspecaoQualidadeLanctoMedida {
 	}
 
 	public void setDescricao(String descricao) {
-		descricao = descricao;
+		this.descricao = descricao;
 	}
 
 	public float getMedidaPadrao() {

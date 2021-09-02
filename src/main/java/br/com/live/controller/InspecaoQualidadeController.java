@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.entity.InspecaoQualidade;
 import br.com.live.entity.InspecaoQualidadeLanctoMedida;
+import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.TipoMedida;
@@ -50,25 +51,46 @@ public class InspecaoQualidadeController {
 	public List<TipoMedida> findTiposMedidasByReferencia(@PathVariable("referencia") String referencia) {
 		return inspecaoQualidadeService.findTiposMedidasByReferencia(referencia);
 	}
+		
+	// TODO - QUEBRAR EM DUAS REGRAS
+	@RequestMapping(value = "/medidas-tipo/{ordemProducao}/{ordemConfeccao}/{tipoMedida}", method = RequestMethod.GET)
+	public List<InspecaoQualidadeLanctoMedida> findMedidasByOrdemProducaoConfeccaoTipoMedida(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("tipoMedida") int tipoMedida) {								
+		return inspecaoQualidadeService.findMedidasByOrdemProducaoConfeccaoTipoMedida(ordemProducao, ordemConfeccao, tipoMedida);
+	}
 	
-	@RequestMapping(value = "/medidas/{referencia}/{tamanho}/{tipoMedida}", method = RequestMethod.GET)
-	public List<InspecaoQualidadeLanctoMedida> findMedidasByReferenciaTamanhoTipo(@PathVariable("referencia") String referencia, @PathVariable("tamanho") String tamanho, @PathVariable("tipoMedida") int tipoMedida) {
-		return inspecaoQualidadeService.findMedidasByReferenciaTamanhoTipo(referencia, tamanho, tipoMedida);
+	@RequestMapping(value = "/medidas-lancamento/{ordemProducao}/{ordemConfeccao}/{idInspecao}/{idLancamento}", method = RequestMethod.GET)
+	public List<InspecaoQualidadeLanctoMedida> findMedidasByOrdemProducaoConfeccaoIdInspecaoIdLancamento(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("idInspecao") int idInspecao, @PathVariable("idLancamento") int idLancamento) {								
+		return inspecaoQualidadeService.findMedidasByOrdemProducaoConfeccaoIdInspecaoIdLancamento(ordemProducao, ordemConfeccao, idInspecao, idLancamento);
 	}
 	
 	@RequestMapping(value = "/lanctos-pecas/{idInspecao}", method = RequestMethod.GET)
 	public List<ConsultaInspecaoQualidLanctoPecas> findLancamentoPecasByIdInspecao(@PathVariable("idInspecao") long idInspecao) {		
 		return inspecaoQualidadeService.findLancamentoPecasByIdInspecao(idInspecao);
 	}
+		
+	@RequestMapping(value = "/lanctos-medidas/{idInspecao}", method = RequestMethod.GET)
+	public List<ConsultaInspecaoQualidLanctoMedidas> findLancamentoMedidasByIdInspecao(@PathVariable("idInspecao") long idInspecao) {		
+		return inspecaoQualidadeService.findLancamentoMedidasByIdInspecao(idInspecao);
+	}	
 	
 	@RequestMapping(value = "/salvar-inspecao-peca", method = RequestMethod.POST)	
 	public InspecaoQualidade saveInspecaoQualidadePeca(@RequestBody BodyInspecaoQualidade body) {
 		return inspecaoQualidadeService.saveInspecaoQualidadePeca(body.inspecaoQualidade, body.inspecaoQualidadeLanctoPeca, body.dataInspecao);		
 	}
 		
+	@RequestMapping(value = "/salvar-inspecao-medida", method = RequestMethod.POST)
+	public InspecaoQualidade saveInspecaoQualidadeMedida(@RequestBody BodyInspecaoQualidade body) {
+		return inspecaoQualidadeService.saveInspecaoQualidadeMedida(body.inspecaoQualidade, body.inspecaoQualidadeLanctoMedidas, body.dataInspecao);
+	}	
+	
 	@RequestMapping(value = "lancto-peca/{idInspecao}/{idLancamento}", method = RequestMethod.DELETE)	
 	public InspecaoQualidade deleteInspecaoQualidadeLanctoPeca(@PathVariable("idInspecao") long idInspecao, @PathVariable("idLancamento") long idLancamento) {
 		return inspecaoQualidadeService.deleteInspecaoQualidadeLanctoPeca(idInspecao, idLancamento);		 
+	}	
+
+	@RequestMapping(value = "lancto-medida/{idInspecao}/{idLancamento}", method = RequestMethod.DELETE)	
+	public InspecaoQualidade deleteInspecaoQualidadeLanctoMedida(@PathVariable("idInspecao") long idInspecao, @PathVariable("idLancamento") long idLancamento) {
+		return inspecaoQualidadeService.deleteInspecaoQualidadeLanctoMedida(idInspecao, idLancamento);		 
 	}	
 	
 	@RequestMapping(value = "inspecao/{idInspecao}", method = RequestMethod.DELETE)

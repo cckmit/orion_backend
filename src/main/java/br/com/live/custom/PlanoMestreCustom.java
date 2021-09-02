@@ -28,9 +28,11 @@ public class PlanoMestreCustom {
 
 	public List<ProdutoCompleto> findProdutosByParameters(ParametrosPlanoMestre parametros) {
 		
+		System.out.println("findProdutosByParameters");
+		
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
 		
-		if (parametrosFormatados.getColecoes().equalsIgnoreCase("")) return null;
+		if (parametrosFormatados.getColecoes().equalsIgnoreCase("") && parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) return null;
 				
 		String query = " select b.nivel_estrutura nivel, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, b.narrativa, ";
 
@@ -99,9 +101,9 @@ public class PlanoMestreCustom {
 		}
 		
 		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
-			query += "and exists (select 1 from orion_041 v where v.id_previsao_vendas in (" + parametrosFormatados.getPrevisoes() + ")"
-	               + " where v.grupo_base = b.grupo_estrutura "
-			       + " and v.item_base = b.item_estrutura ";
+			query += " and exists (select 1 from orion_041 v where v.id_previsao_vendas in " + parametrosFormatados.getPrevisoes()  
+	               + " and v.grupo = b.grupo_estrutura "
+			       + " and v.item = b.item_estrutura )";
 		}
 	  
 		System.out.println("Query ProdutoCompleto: " + query);

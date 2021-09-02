@@ -328,11 +328,31 @@ public class OrdemProducaoCustom {
 		try {
 			dadosOrdemConfeccao = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OrdemConfeccao.class));
 		} catch (Exception e) {
-			dadosOrdemConfeccao = new OrdemConfeccao();
-			System.out.println("EXCEPTION");
+			dadosOrdemConfeccao = new OrdemConfeccao();			
 		}
 		
 		return dadosOrdemConfeccao;
 	}
 	
+	public OrdemConfeccao findOrdemConfeccaoByOrdemProducaoConfeccao(int ordemProducao, int ordemConfeccao) {
+		OrdemConfeccao dadosOrdemConfeccao;
+				
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.periodo_producao periodo, a.qtde_programada qtdePecasProgramada, "
+	    + " b.ordem_confeccao ordemConfeccao, b.proconf_subgrupo tamanho, b.proconf_item cor, b.qtde_pecas_prog qtdePecas" 
+	    + " from pcpc_020 a, pcpc_040 b "
+	    + " where a.cod_cancelamento = 0 "
+	    + " and b.ordem_producao   = a.ordem_producao "
+	    + " and b.ordem_producao   = " + ordemProducao  
+	    + " and b.ordem_confeccao  = " + ordemConfeccao	  	 
+	    + " group by a.ordem_producao, a.referencia_peca, a.periodo_producao, a.qtde_programada, "	    
+	    + " b.ordem_confeccao, b.proconf_subgrupo, b.proconf_item, b.qtde_pecas_prog ";
+		
+		try {
+			dadosOrdemConfeccao = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OrdemConfeccao.class));
+		} catch (Exception e) {
+			dadosOrdemConfeccao = new OrdemConfeccao();			
+		}
+		
+		return dadosOrdemConfeccao;		
+	}	
 }

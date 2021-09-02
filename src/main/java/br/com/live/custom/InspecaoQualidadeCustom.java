@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.InspecaoQualidadeLanctoMedida;
+import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.TipoMedida;
@@ -55,7 +56,7 @@ public class InspecaoQualidadeCustom {
 	
 	public List<InspecaoQualidadeLanctoMedida> findMedidasByReferenciaTamanhoTipo(String referencia, String tamanho, int tipoMedida) {
 		
-		String query = " select a.sequencia, a.descricao, a.medida, a.tolerancia_max toleranciaMaxima, a.tolerancia_min toleranciaMinima "
+		String query = " select 0 idInspecao, 0 idLancamento, a.sequencia, a.descricao, a.medida medidaPadrao, a.tolerancia_max toleranciaMaxima, a.tolerancia_min toleranciaMinima "
 		+ " from basi_065 a "
 		+ " where a.referencia = '" + referencia + "'"
 		+ " and a.tamanho = '" + tamanho + "'"
@@ -65,28 +66,64 @@ public class InspecaoQualidadeCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(InspecaoQualidadeLanctoMedida.class));				
 	}
 	
-	public long findNextIdInspecao() {
-		String query = " select nvl(max(id_inspecao),0) from orion_050 ";
+	public List<InspecaoQualidadeLanctoMedida> findMedidasByIdInspecaoIdLancamento(long idInspecao, long idLancamento) {
 		
-		long id = jdbcTemplate.queryForObject(query, Integer.class);
-		id++;
-
-		return id;
+		String query = " select a.id_inspecao idInspecao, a.id_lancamento idLancamento, a.sequencia, a.descricao, a.medida_padrao medidaPadrao, a.toler_maxima toleranciaMaxima, a.toler_minima toleranciaMinima, a.medida_real medidaReal, variacao " 
+		+ " from orion_052 a "
+		+ " where a.id_inspecao = " + idInspecao
+		+ " and a.id_lancamento = " + idLancamento;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(InspecaoQualidadeLanctoMedida.class));				
+	}
+		
+	public long findNextIdInspecao() {
+		String query = " select nvl(max(id_inspecao),0) + 1 from orion_050 ";
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 	
-	public long findNextIdInspecaoLanctoPeca() {		
-		String query = " select nvl(max(id_lancamento),0) from orion_051 ";
-		
-		long id = jdbcTemplate.queryForObject(query, Integer.class);
-		id++;
-		
-		return id;
+	public long findNextIdLancamentoPeca() {		
+		String query = " select nvl(max(id_lancamento),0) + 1 from orion_051 ";
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
+	public long findNextIdLancamentoMedida(long idInspecao) {					
+		String query = " select nvl(max(a.id_lancamento),0) + 1 from orion_052 a where a.id_inspecao = " + idInspecao;
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}	
+
+	public long findNextIdMedida(long idInspecao, long idLancamento, int sequencia) {
+		
+		long id;
+		String query = "";
+				
+		try {
+			query = " select a.id from orion_052 a " 
+			+ " where a.id_inspecao = " + idInspecao
+			+ " and a.id_lancamento = " + idLancamento 
+			+ " and a.sequencia = " + sequencia ;
+
+			id = jdbcTemplate.queryForObject(query, Integer.class);			
+		} catch (Exception e) {
+			query = " select nvl(max(a.id),0) + 1 from orion_052 a ";			
+			id = jdbcTemplate.queryForObject(query, Integer.class);
+		}		
+		
+		return id;
+	}	
+	
 	public int getQtdeInspecionadaPeca(long idInspecao) {
 		
 		String query = " select nvl(sum(a.quantidade),0) from orion_051 a "
 		+ " where a.id_inspecao = " + idInspecao;		
+		
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
+	public int getQtdeInspecionadaMedida(long idInspecao) {		
+		
+		String query = " select count(*) from (select a.id_lancamento from orion_052 a " 
+        + " where a.id_inspecao = " + idInspecao
+        + " group by a.id_lancamento) lancamentos " ;
 		
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
@@ -97,6 +134,22 @@ public class InspecaoQualidadeCustom {
 		+ " where a.id_inspecao = " + idInspecao
 		+ "  and a.cod_motivo  > 0 " ;
 		
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}	
+
+	public int getQtdeRejeitadaMedida(long idInspecao) {
+		
+		String query = " select count(*) from (select a.id_lancamento from orion_052 a " 
+		+ " where a.id_inspecao = " + idInspecao
+		+ "	and (a.variacao > 0 and a.variacao > a.toler_maxima) "
+		+ "	group by a.id_lancamento "
+		+ "	union "
+		+ "	select a.id_lancamento from orion_052 a " 
+		+ "	where a.id_inspecao = " + idInspecao
+		+ "	and (a.variacao < 0 and (a.variacao * -1) > a.toler_minima) "
+		+ "	group by a.id_lancamento "
+		+ "	) lancamentos ";
+				  
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}	
 	
@@ -122,4 +175,39 @@ public class InspecaoQualidadeCustom {
 		return lancamentos;
 	}
 	
+	public List<ConsultaInspecaoQualidLanctoMedidas> findLancamentoMedidasByIdInspecao(long idInspecao) {
+		
+		List<ConsultaInspecaoQualidLanctoMedidas> lancamentos;
+				
+		String query = " select orion_052.id_inspecao idInspecao, orion_052.id_lancamento idLancamento, max(orion_052.tipo_medida) tipoMedida, "      
+	    + " max(nvl(lancamentos.qtde_fora_toler,0)) qtdeMedidaForaTolerancia, " 
+	    + " max(orion_052.usuario) usuario, " 
+	    + " max(orion_052.data_hora) dataHora "
+	    + " from orion_052, (select agrup_lancamentos.id_inspecao, " 
+	    + " agrup_lancamentos.id_lancamento, " 
+	    + " sum(agrup_lancamentos.qtde_fora_toler) qtde_fora_toler "
+	    + " from (select a.id_inspecao, a.id_lancamento, count(*) qtde_fora_toler from orion_052 a " 
+	    + " where (a.variacao > 0 and a.variacao > a.toler_maxima) "
+	    + " group by a.id_inspecao, a.id_lancamento "
+	    + " union all "
+	    + " select a.id_inspecao, a.id_lancamento, count(*) qtde_fora_toler from orion_052 a " 
+	    + " where (a.variacao < 0 and (a.variacao * -1) > a.toler_minima) "
+	    + " group by a.id_inspecao, a.id_lancamento) agrup_lancamentos "
+	    + " group by agrup_lancamentos.id_inspecao, agrup_lancamentos.id_lancamento "
+	    + " ) lancamentos "
+	    + " where orion_052.id_inspecao = " + idInspecao
+	    + " and lancamentos.id_inspecao (+) = orion_052.id_inspecao "
+	    + " and lancamentos.id_lancamento (+)= orion_052.id_lancamento "
+	    + " group by orion_052.id_inspecao, orion_052.id_lancamento "
+		+ " order by orion_052.id_inspecao, orion_052.id_lancamento ";
+
+		try {
+			lancamentos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaInspecaoQualidLanctoMedidas.class));
+		} catch (Exception e) {
+			lancamentos = new ArrayList<ConsultaInspecaoQualidLanctoMedidas>();
+		}
+		
+		return lancamentos;
+	}
+
 }

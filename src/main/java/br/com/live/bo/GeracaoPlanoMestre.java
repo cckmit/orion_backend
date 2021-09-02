@@ -29,14 +29,14 @@ public class GeracaoPlanoMestre {
 	private List<DemandaProdutoPlano> demandas;
 	private List<ProcessoProdutoPlano> processos;
 	private List<ProdutoCompleto> produtos;
-	
+
 	private Map<String, ProdutoPlanoMestre> mapProdutos;
 
 	private final static int PRODUTO = 0;
 	private final static int ESTOQUE = 1;
 	private final static int DEMANDA = 2;
 	private final static int PROCESSO = 3;
-	
+
 	public GeracaoPlanoMestre(ParametrosPlanoMestre parametros, List<EstoqueProduto> estoques,
 			List<DemandaProdutoPlano> demandas, List<ProcessoProdutoPlano> processos, List<ProdutoCompleto> produtos) {
 
@@ -103,7 +103,7 @@ public class GeracaoPlanoMestre {
 
 			if ((plano >= parametros.planoAcumProgInicio) && (plano <= parametros.planoAcumProgFim))
 				produto.qtdeProcAcumProg += quantidade;
-			
+
 			if (plano == 1)
 				produto.qtdeProcPlano1 += quantidade;
 			if (plano == 2)
@@ -128,8 +128,8 @@ public class GeracaoPlanoMestre {
 	private void atualizarProduto(int tipoDistribuicao) {
 		if (produtos != null) {
 			for (ProdutoCompleto produto : produtos) {
-				if (tipoDistribuicao == 4 && produto.qtdePrevisaoVendas == 0)
-					continue;
+				/*if (tipoDistribuicao == 4 && produto.qtdePrevisaoVendas == 0)
+					continue;*/
 				atualizarProduto(GeracaoPlanoMestre.PRODUTO, 0, produto.nivel, produto.grupo, produto.sub, produto.item,
 						produto.qtdePrevisaoVendas);
 			}
@@ -149,8 +149,10 @@ public class GeracaoPlanoMestre {
 	private void atualizarDemanda() {
 		if (demandas != null) {
 			for (DemandaProdutoPlano demanda : demandas) {
-				atualizarProduto(GeracaoPlanoMestre.DEMANDA, demanda.plano, demanda.nivel, demanda.grupo, demanda.sub,
-						demanda.item, demanda.quantidade);
+				if (demanda.plano > 0) {
+					atualizarProduto(GeracaoPlanoMestre.DEMANDA, demanda.plano, demanda.nivel, demanda.grupo,
+							demanda.sub, demanda.item, demanda.quantidade);
+				}
 			}
 		}
 	}
@@ -158,8 +160,10 @@ public class GeracaoPlanoMestre {
 	private void atualizarProcesso() {
 		if (processos != null) {
 			for (ProcessoProdutoPlano processo : processos) {
-				atualizarProduto(GeracaoPlanoMestre.PROCESSO, processo.plano, processo.nivel, processo.grupo,
-						processo.sub, processo.item, processo.quantidade);
+				if (processo.plano > 0) {
+					atualizarProduto(GeracaoPlanoMestre.PROCESSO, processo.plano, processo.nivel, processo.grupo,
+							processo.sub, processo.item, processo.quantidade);
+				}
 			}
 		}
 	}
@@ -192,7 +196,7 @@ public class GeracaoPlanoMestre {
 
 			if (mapProdutos.get(chave).qtdeSaldoAcumProg < 0)
 				mapProdutos.get(chave).qtdeSugestao = (mapProdutos.get(chave).qtdeSaldoAcumProg * -1);
-			
+
 			mapProdutos.get(chave).qtdeEqualizadoSugestao = mapProdutos.get(chave).qtdeSugestao;
 			mapProdutos.get(chave).qtdeDiferencaSugestao = mapProdutos.get(chave).qtdeEqualizadoSugestao
 					- mapProdutos.get(chave).qtdeSugestao;

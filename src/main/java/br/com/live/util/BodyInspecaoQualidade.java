@@ -1,6 +1,9 @@
 package br.com.live.util;
 
+import java.util.List;
+
 import br.com.live.entity.InspecaoQualidade;
+import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.entity.InspecaoQualidadeLanctoPeca;
 import br.com.live.model.OrdemConfeccao;
 
@@ -11,6 +14,7 @@ public class BodyInspecaoQualidade {
 	public String dataInspecao;
 	public InspecaoQualidade inspecaoQualidade;
 	public InspecaoQualidadeLanctoPeca inspecaoQualidadeLanctoPeca;
+	public List<InspecaoQualidadeLanctoMedida> inspecaoQualidadeLanctoMedidas;
 	
 	public BodyInspecaoQualidade() {}
 	
@@ -22,5 +26,10 @@ public class BodyInspecaoQualidade {
 	public BodyInspecaoQualidade(InspecaoQualidade inspecaoQualidade, InspecaoQualidadeLanctoPeca inspecaoQualidadeLanctoPeca) {
 		this.inspecaoQualidade = inspecaoQualidade;
 		this.inspecaoQualidadeLanctoPeca = inspecaoQualidadeLanctoPeca;
+	}
+	
+	public BodyInspecaoQualidade(InspecaoQualidade inspecaoQualidade, List<InspecaoQualidadeLanctoMedida> inspecaoQualidadeLanctoMedidas) {
+		this.inspecaoQualidade = inspecaoQualidade;
+		this.inspecaoQualidadeLanctoMedidas = inspecaoQualidadeLanctoMedidas;
 	}	
 }
