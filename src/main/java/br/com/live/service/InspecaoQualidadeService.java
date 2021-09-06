@@ -231,8 +231,10 @@ public class InspecaoQualidadeService {
 		int codEstagio = inspecao.codEstagio;
 		int tipo= inspecao.tipo;		
 		inspecaoQualidadeLanctoPecaRepository.deleteByIdInspecao(idInspecao);
+		inspecaoQualidadeLanctoMedidaRepository.deleteByIdInspecao(idInspecao);
 		inspecaoQualidadeRepository.deleteById(idInspecao);
 		inspecaoQualidadeLanctoPecaRepository.flush();
+		inspecaoQualidadeLanctoMedidaRepository.flush();
 		inspecaoQualidadeRepository.flush();
 		return findInspecoesQualidadeByOrdemEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);
 	}
