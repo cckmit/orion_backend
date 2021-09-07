@@ -52,7 +52,6 @@ public class InspecaoQualidadeController {
 		return inspecaoQualidadeService.findTiposMedidasByReferencia(referencia);
 	}
 		
-	// TODO - QUEBRAR EM DUAS REGRAS
 	@RequestMapping(value = "/medidas-tipo/{ordemProducao}/{ordemConfeccao}/{tipoMedida}", method = RequestMethod.GET)
 	public List<InspecaoQualidadeLanctoMedida> findMedidasByOrdemProducaoConfeccaoTipoMedida(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("tipoMedida") int tipoMedida) {								
 		return inspecaoQualidadeService.findMedidasByOrdemProducaoConfeccaoTipoMedida(ordemProducao, ordemConfeccao, tipoMedida);

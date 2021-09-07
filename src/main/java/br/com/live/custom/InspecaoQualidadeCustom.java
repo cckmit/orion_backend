@@ -71,7 +71,8 @@ public class InspecaoQualidadeCustom {
 		String query = " select a.id_inspecao idInspecao, a.id_lancamento idLancamento, a.sequencia, a.descricao, a.medida_padrao medidaPadrao, a.toler_maxima toleranciaMaxima, a.toler_minima toleranciaMinima, a.medida_real medidaReal, variacao " 
 		+ " from orion_052 a "
 		+ " where a.id_inspecao = " + idInspecao
-		+ " and a.id_lancamento = " + idLancamento;
+		+ " and a.id_lancamento = " + idLancamento
+		+ " order by a.sequencia " ;
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(InspecaoQualidadeLanctoMedida.class));				
 	}
