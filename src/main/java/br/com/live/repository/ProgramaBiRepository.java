@@ -11,12 +11,13 @@ import br.com.live.entity.ProgramaBi;
 @Repository
 public interface ProgramaBiRepository extends JpaRepository<ProgramaBi, String> {
 	
+	@Query("SELECT u FROM ProgramaBi u order by u.id")
 	List<ProgramaBi> findAll();
 	
 	@Query("SELECT u FROM ProgramaBi u where u.id = :idProgramaBi")
 	ProgramaBi findByIdPrograma(String idProgramaBi);
 	
-	@Query("SELECT u FROM ProgramaBi u where u.id || u.descricao || u.areaModulo like '%:chavePesquisa%'")
+	@Query("SELECT u FROM ProgramaBi u where u.id || u.descricao || u.areaModulo like '%:chavePesquisa%' order by u.id")
 	List<ProgramaBi> filtrarProgramas(String idProgramaBi);
 
 }

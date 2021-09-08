@@ -11,6 +11,8 @@ import br.com.live.entity.TiposEmailBi;
 import br.com.live.model.SalvarTipoEmailBi;
 import br.com.live.repository.ProgramaBiRepository;
 import br.com.live.repository.TiposEmailBiRepository;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Service
 @Transactional
@@ -27,6 +29,10 @@ public class ProgramaBiService {
 		this.tiposEmailBiRepository = tiposEmailBiRepository;
 	}
 
+	public List<ProgramaBi> findProgramasByListaAreasModulosAndUsuarios(List<ConteudoChaveAlfaNum> listaAreasModulos, List<ConteudoChaveNumerica> listaUsuarios) {
+		return programaBiCustom.findProgramasByListaAreasModulosAndUsuarios(ConteudoChaveAlfaNum.parseValueToString(listaAreasModulos), ConteudoChaveNumerica.parseValueToString(listaUsuarios));
+	}
+	
 	public ProgramaBi saveProgramaBi(String idProgramaBi, String areaModulo, int atividade, String descricao,
 			String ferramenta, String frequencia, String planilha, String extrator, String help,
 			List<SalvarTipoEmailBi> tiposEmail) {

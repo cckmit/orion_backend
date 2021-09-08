@@ -59,5 +59,10 @@ public class ProgramaBiController {
 	public List<TiposEmailBi> findTipoEmailByIdPrograma(@PathVariable("idPrograma") String idPrograma) {
 		return tiposEmailBiRepository.findByIdPrograma(idPrograma);
 	}
+
+	@RequestMapping(value = "/programas-area-usuario", method = RequestMethod.POST)
+	public List<ProgramaBi> findProgramasByListaAreasModulosAndUsuarios(@RequestBody BodyProgramaBi body) {
+		return programaBiService.findProgramasByListaAreasModulosAndUsuarios(body.listaAreasModulos, body.listaUsuarios);
+	}
 	
 }

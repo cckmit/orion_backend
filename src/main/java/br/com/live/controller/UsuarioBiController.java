@@ -49,29 +49,41 @@ public class UsuarioBiController {
 		return usuarioBiRepository.findByCodUsuario(idUsuario);
 	}
 	
-	@RequestMapping(value = "programas-usuario/{idUsuario}", method = RequestMethod.GET)
+	@RequestMapping(value = "/programas-usuario/{idUsuario}", method = RequestMethod.GET)
 	public List<String> findByCodUsuario(@PathVariable("idUsuario") long idUsuario) {
 		return usuarioBiService.findIdsProgramasByUsuario(idUsuario);
 	}
 	
-	@RequestMapping(value = "programas-por-usuario/{idUsuario}", method = RequestMethod.GET)
+	@RequestMapping(value = "/programas-por-usuario/{idUsuario}", method = RequestMethod.GET)
 	public List<ProgramaBi> findProgramasByUsuario(@PathVariable("idUsuario") long idUsuario) {
 		return usuarioBiService.findProgramasPorUsuario(idUsuario);
 	}
 	
-	@RequestMapping(value = "tiposEmail-por-usuario/{idUsuario}/{idPrograma}", method = RequestMethod.GET)
+	@RequestMapping(value = "/tiposEmail-por-usuario/{idUsuario}/{idPrograma}", method = RequestMethod.GET)
 	public List<String> findTiposEmailByUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idPrograma") String idPrograma) {
 		return usuarioBiService.findTiposEmailByUsuario(idUsuario, idPrograma);
 	}
 	
-	@RequestMapping(value = "programas-usuario/filtrar/{chavePesquisa}", method = RequestMethod.GET)
+	@RequestMapping(value = "/programas-usuario/filtrar/{chavePesquisa}", method = RequestMethod.GET)
 	public List<FiltroProgramaBi> findProgramasByUsuario(@PathVariable("chavePesquisa") String chavePesquisa) {
 		return usuarioBiCustom.filtrarProgramas(chavePesquisa);
 	}
 	
-	@RequestMapping(value = "programas-usuario", method = RequestMethod.POST)
+	@RequestMapping(value = "/programas-usuario", method = RequestMethod.POST)
 	public List<ProgramaBi> saveProgramasUsuario(@RequestBody BodyUsuarioBi body) {
 		usuarioBiService.saveProgramas(body.id, body.listaIdsProgramas);
+		return usuarioBiService.findProgramasPorUsuario(body.id);
+	}
+
+	@RequestMapping(value = "/adicionar-programas-usuario", method = RequestMethod.POST)
+	public List<ProgramaBi> adicionarProgramasUsuario(@RequestBody BodyUsuarioBi body) {
+		usuarioBiService.adicionarProgramas(body.id, body.listaIdsProgramas);
+		return usuarioBiService.findProgramasPorUsuario(body.id);
+	}
+
+	@RequestMapping(value = "/sobrepor-programas-usuario", method = RequestMethod.POST)
+	public List<ProgramaBi> sobreporProgramasUsuario(@RequestBody BodyUsuarioBi body) {
+		usuarioBiService.sobreporProgramas(body.id, body.listaIdsProgramas);
 		return usuarioBiService.findProgramasPorUsuario(body.id);
 	}
 	
@@ -80,30 +92,29 @@ public class UsuarioBiController {
 		return usuarioBiService.saveUsuario(body.id, body.nome, body.usuario, body.senha, body.situacao, body.administrador, body.email);
 	}
 	
-	@RequestMapping(value = "insere-tipo-email", method = RequestMethod.POST)
+	@RequestMapping(value = "/insere-tipo-email", method = RequestMethod.POST)
 	public void insereTipoEmail(@RequestBody BodyUsuarioBi body) {
 		usuarioBiService.insereTiposEmailSelecionado(body.id, body.idPrograma, body.idTipoEmail);
 	}
 	
-	@RequestMapping(value = "excluir-tipo-email", method = RequestMethod.POST)
+	@RequestMapping(value = "/excluir-tipo-email", method = RequestMethod.POST)
 	public void excluiTipoEmail(@RequestBody BodyUsuarioBi body) {
 		usuarioBiService.excluiTiposEmailSelecionado(body.id, body.idPrograma, body.idTipoEmail);
 	}
 	
-	@RequestMapping(value = "insere-all-tipo-email", method = RequestMethod.POST)
+	@RequestMapping(value = "/insere-all-tipo-email", method = RequestMethod.POST)
 	public void insereAllTipoEmail(@RequestBody BodyUsuarioBi body) {
 		usuarioBiService.insereTodosTiposEmailSelecionado(body.id, body.idPrograma);
 	}
 	
-	@RequestMapping(value = "excluir-all-tipo-email", method = RequestMethod.POST)
+	@RequestMapping(value = "/excluir-all-tipo-email", method = RequestMethod.POST)
 	public void excluiAllTipoEmail(@RequestBody BodyUsuarioBi body) {
 		usuarioBiService.excluiTodosTiposEmailSelecionado(body.id, body.idPrograma);
 	}
 	
-	@RequestMapping(value = "validar-usuario/{idUsuario}/{usuario}", method = RequestMethod.GET)
+	@RequestMapping(value = "/validar-usuario/{idUsuario}/{usuario}", method = RequestMethod.GET)
 	public boolean validarUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("usuario") String usuario) {
 		return usuarioBiService.existsUsuario(idUsuario, usuario);
 	}
-
 
 }

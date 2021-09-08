@@ -89,6 +89,30 @@ public class UsuarioBiService {
 		}
 	}
 
+	public void adicionarProgramas(long codUsuario, List<String> listaIdsProgramas) {
+		for (String idPrograma : listaIdsProgramas) {
+			UsuarioProgramaBi usuarioProgramaBi = usuarioProgramaBiRepository.findByCodUsuarioAndIdPrograma(codUsuario, idPrograma);
+			if (usuarioProgramaBi == null) {			
+				usuarioProgramaBi = new UsuarioProgramaBi(codUsuario, idPrograma);
+				usuarioProgramaBiRepository.save(usuarioProgramaBi);
+			}
+		}
+	}	
+	
+	public void sobreporProgramas(long codUsuario, List<String> listaIdsProgramas) {
+		
+		usuarioTipoEmailBiRepository.deleteByCodUsuario(codUsuario);
+		usuarioProgramaBiRepository.deleteByCodUsuario(codUsuario);
+		
+		for (String idPrograma : listaIdsProgramas) {
+			UsuarioProgramaBi usuarioProgramaBi = usuarioProgramaBiRepository.findByCodUsuarioAndIdPrograma(codUsuario, idPrograma);
+			if (usuarioProgramaBi == null) {			
+				usuarioProgramaBi = new UsuarioProgramaBi(codUsuario, idPrograma);
+				usuarioProgramaBiRepository.save(usuarioProgramaBi);
+			}
+		}
+	}	
+	
 	public void insereTiposEmailSelecionado(long codUsuario, String idPrograma, String idTipoEmail) {
 
 		if (codUsuario > 0) {

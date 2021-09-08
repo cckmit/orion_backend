@@ -15,4 +15,7 @@ public class BodyProgramaBi {
 	public String planilha;
 	public String help;
 	public List<SalvarTipoEmailBi> tiposEmail;
+	
+	public List<ConteudoChaveAlfaNum> listaAreasModulos;
+	public List<ConteudoChaveNumerica> listaUsuarios;	
 }
