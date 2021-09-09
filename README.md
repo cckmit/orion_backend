@@ -5,6 +5,7 @@
 - [Maven](https://maven.apache.org/)
 - [Node LTS](https://nodejs.org/en/)
 - [Eclipse](https://www.eclipse.org/downloads/)
+- [VsCode](https://code.visualstudio.com/)
 - [ConEmu](https://conemu.github.io/en/Downloads.html)
 
 
