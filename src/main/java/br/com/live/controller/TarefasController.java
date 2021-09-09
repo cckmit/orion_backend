@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.custom.TarefasCustom;
-import br.com.live.entity.LancamentoHoras;
 import br.com.live.entity.Tarefas;
 import br.com.live.model.ConsultaDadosLancHoras;
 import br.com.live.model.ConsultaGridTarefas;
@@ -57,10 +56,10 @@ public class TarefasController {
 		return tarefasCustom.findAllTarefas(idUsuario);
 	}
 	
-	@RequestMapping(value = "/{idTarefa}", method = RequestMethod.DELETE)
-	public List<Tarefas> deleteById(@PathVariable("idTarefa") int idTarefa) {
+	@RequestMapping(value = "/{idTarefa}/{listarAbertos}", method = RequestMethod.DELETE)
+	public List<ConsultaGridTarefas> deleteById(@PathVariable("idTarefa") int idTarefa, @PathVariable("listarAbertos") boolean listarAbertos) {
 		tarefasRepository.deleteById(idTarefa);
-		return findAll();
+		return tarefasCustom.findAllTarefasGridConsulta(listarAbertos);
 	}
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
@@ -80,7 +79,7 @@ public class TarefasController {
 	}
 	
 	@RequestMapping(value = "/lancamento-horas/{idLancamento}", method = RequestMethod.DELETE)
-	public List<LancamentoHoras> deleteById(@PathVariable("idLancamento") String idLancamento) {
+	public List<ConsultaHorasTarefa> deleteById(@PathVariable("idLancamento") String idLancamento) {
 		return tarefasService.deleteLancamento(idLancamento); 
 	}
 	

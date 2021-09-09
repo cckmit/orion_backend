@@ -107,13 +107,17 @@ public class TarefasCustom {
 	public List<ConsultaGridTarefas> findAllTarefasGridConsulta(boolean listarAbertos) {
 		List<ConsultaGridTarefas> gridTarefas = null;
 		
-		String query = " select d.id,d.sistema,d.tipo,d.titulo,d.situacao,d.data_prevista dataPrevista, d.tempo_estimado tempoEstimado, e.nome usuarioSolicitante, f.nome usuarioAtribuido from orion_adm_001 d, orion_001 e, orion_001 f "
+		String query = " select d.id,d.sistema,d.tipo,d.titulo,d.situacao,d.data_prevista dataPrevista, d.tempo_estimado tempoEstimado, e.nome usuarioSolicitante, f.nome usuarioAtribuido, nvl(sum(b.tempo_gasto), 0) horasLancadas"
+				+ " from orion_adm_001 d, orion_001 e, orion_001 f, orion_adm_002 b "
 				+ " where d.usuario_solicitante = e.id "
-				+ " and d.usuario_atribuido = f.id ";
+				+ " and d.usuario_atribuido = f.id "
+				+ " and d.id = b.id_tarefa (+) ";
 		
 		if (listarAbertos == true) {
 			query += " and d.situacao = 0 ";
 		}
+		
+		query += " group by d.id,d.tipo, d.sistema, d.situacao, d.titulo, e.nome, d.data_prevista, d.tempo_estimado, f.nome "; 
 		
 		try {
 			gridTarefas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGridTarefas.class));

@@ -13,6 +13,7 @@ public class ConsultaGridTarefas {
 	public int situacao;
 	public float tempoEstimado;
 	public Date dataPrevista;
+	public float horasLancadas;
 
 	public int getId() {
 		return id;
@@ -85,12 +86,20 @@ public class ConsultaGridTarefas {
 	public void setDataPrevista(Date dataPrevista) {
 		this.dataPrevista = dataPrevista;
 	}
+	
+	public float getHorasLancadas() {
+		return horasLancadas;
+	}
+
+	public void setHorasLancadas(float horasLancadas) {
+		this.horasLancadas = horasLancadas;
+	}
 
 	public ConsultaGridTarefas() {
 
 	}
 
-	public ConsultaGridTarefas(int id, String titulo, int sistema, float tempoEstimado, Date dataPrevista, int situacao, String usuarioAtribuido, String usuarioSolicitante, int tipo) {
+	public ConsultaGridTarefas(int id, String titulo, int sistema, float tempoEstimado, Date dataPrevista, int situacao, String usuarioAtribuido, String usuarioSolicitante, int tipo, float horasLancadas) {
 		this.dataPrevista = dataPrevista;
 		this.id = id;
 		this.sistema = sistema;
@@ -100,6 +109,7 @@ public class ConsultaGridTarefas {
 		this.titulo = titulo;
 		this.usuarioAtribuido = usuarioAtribuido;
 		this.usuarioSolicitante = usuarioSolicitante;
+		this.horasLancadas = horasLancadas;
 	}
 
 }

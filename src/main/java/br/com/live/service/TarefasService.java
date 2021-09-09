@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.live.custom.TarefasCustom;
 import br.com.live.entity.LancamentoHoras;
 import br.com.live.entity.Tarefas;
+import br.com.live.model.ConsultaHorasTarefa;
 import br.com.live.repository.LancamentoHorasRepository;
 import br.com.live.repository.TarefasRepository;
 import br.com.live.util.FormataData;
@@ -79,14 +80,14 @@ public class TarefasService {
 		lancamentoHorasRepository.save(dadosLancamento);
 	}
 
-	public List<LancamentoHoras> deleteLancamento(String idLancamento) {
+	public List<ConsultaHorasTarefa> deleteLancamento(String idLancamento) {
 
 		LancamentoHoras dadosLancamento = lancamentoHorasRepository.findByIdLancamento(idLancamento);
 
 		lancamentoHorasRepository.deleteById(idLancamento);
+		lancamentoHorasRepository.flush();
 
-		return lancamentoHorasRepository.findByIdTarefaAndIdUsuario(dadosLancamento.idTarefa,
-				dadosLancamento.idUsuario);
+		return tarefasCustom.findAllLancamentosTarefa(dadosLancamento.idTarefa);
 	}
 
 	public void fecharTarefa(int idTarefa) {
