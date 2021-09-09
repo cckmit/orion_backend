@@ -14,7 +14,8 @@ import br.com.live.custom.TarefasCustom;
 import br.com.live.entity.LancamentoHoras;
 import br.com.live.entity.Tarefas;
 import br.com.live.model.ConsultaDadosLancHoras;
-import br.com.live.repository.LancamentoHorasRepository;
+import br.com.live.model.ConsultaGridTarefas;
+import br.com.live.model.ConsultaHorasTarefa;
 import br.com.live.repository.TarefasRepository;
 import br.com.live.service.TarefasService;
 import br.com.live.util.BodyLancamentoHoras;
@@ -28,20 +29,23 @@ public class TarefasController {
     private TarefasRepository tarefasRepository;
     private TarefasService tarefasService;
     private TarefasCustom tarefasCustom;
-    private LancamentoHorasRepository lancamentoHorasRepository;
 
     @Autowired
-    public TarefasController(TarefasRepository tarefasRepository, TarefasService tarefasService, TarefasCustom tarefasCustom, LancamentoHorasRepository lancamentoHorasRepository) {
+    public TarefasController(TarefasRepository tarefasRepository, TarefasService tarefasService, TarefasCustom tarefasCustom) {
           this.tarefasRepository = tarefasRepository;
           this.tarefasService = tarefasService;
           this.tarefasCustom = tarefasCustom;
-          this.lancamentoHorasRepository = lancamentoHorasRepository;
     }
 	
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<Tarefas> findAll() {
           return tarefasRepository.findAll(); 
     }
+    
+    @RequestMapping(value = "/grid-tarefas/{listarAbertos}", method = RequestMethod.GET)
+	public List<ConsultaGridTarefas> findAllTarefasGridConsulta(@PathVariable("listarAbertos") boolean listarAbertos) {
+		return tarefasCustom.findAllTarefasGridConsulta(listarAbertos);
+	}
     
 	@RequestMapping(value = "/{idTarefa}", method = RequestMethod.GET)
 	public Tarefas findByIdUsuario(@PathVariable("idTarefa") int idTarefa) {
@@ -64,14 +68,15 @@ public class TarefasController {
 		return tarefasService.saveTarefas(body.id, body.anexo, body.assunto, body.origem, body.sistema, body.situacao, body.tempoEstimado, body.tipo, body.titulo, body.usuarioAtribuido, body.usuarioSolicitante, body.dataPrevista);
 	}
 	
-	@RequestMapping(value = "/lancamento-horas/{idTarefa}/{idUsuario}", method = RequestMethod.GET)
-	public List<LancamentoHoras> findAllByIdUsuario(@PathVariable("idTarefa") int idTarefa, @PathVariable("idUsuario") int idUsuario) {
-		return lancamentoHorasRepository.findByIdTarefaAndIdUsuario(idTarefa, idUsuario);
+	@RequestMapping(value = "/lancamento-horas/{idTarefa}", method = RequestMethod.GET)
+	public List<ConsultaHorasTarefa> findAllLancamentosByIdTarefa(@PathVariable("idTarefa") int idTarefa) {
+		return tarefasCustom.findAllLancamentosTarefa(idTarefa);
 	}
 	
 	@RequestMapping(value = "/lancamento-horas", method = RequestMethod.POST)
-	public List<LancamentoHoras> saveLancamentoHoras(@RequestBody BodyLancamentoHoras body) {
-		return tarefasService.saveLancamentoHoras(body.idUsuario, body.idTarefa, body.dataLancamento, body.descricao, body.tempoGasto);
+	public List<ConsultaHorasTarefa> saveLancamentoHoras(@RequestBody BodyLancamentoHoras body) {
+		tarefasService.saveLancamentoHoras(body.idUsuario, body.idTarefa, body.dataLancamento, body.descricao, body.tempoGasto);
+		return tarefasCustom.findAllLancamentosTarefa(body.idTarefa);
 	}
 	
 	@RequestMapping(value = "/lancamento-horas/{idLancamento}", method = RequestMethod.DELETE)

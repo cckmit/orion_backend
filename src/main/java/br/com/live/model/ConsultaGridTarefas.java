@@ -2,22 +2,18 @@ package br.com.live.model;
 
 import java.util.Date;
 
-public class ConsultaDadosLancHoras {
-
+public class ConsultaGridTarefas {
 
 	public int id;
 	public int tipo;
 	public int sistema;
-	public int origem;
-	public String usuarioAtribuido;
 	public String usuarioSolicitante;
+	public String usuarioAtribuido;
 	public String titulo;
-	public String assunto;
 	public int situacao;
 	public float tempoEstimado;
 	public Date dataPrevista;
-	public float tempoGasto;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -42,12 +38,12 @@ public class ConsultaDadosLancHoras {
 		this.sistema = sistema;
 	}
 
-	public int getOrigem() {
-		return origem;
+	public String getUsuarioSolicitante() {
+		return usuarioSolicitante;
 	}
 
-	public void setOrigem(int origem) {
-		this.origem = origem;
+	public void setUsuarioSolicitante(String usuarioSolicitante) {
+		this.usuarioSolicitante = usuarioSolicitante;
 	}
 
 	public String getUsuarioAtribuido() {
@@ -64,14 +60,6 @@ public class ConsultaDadosLancHoras {
 
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
-	}
-
-	public String getAssunto() {
-		return assunto;
-	}
-
-	public void setAssunto(String assunto) {
-		this.assunto = assunto;
 	}
 
 	public int getSituacao() {
@@ -98,37 +86,20 @@ public class ConsultaDadosLancHoras {
 		this.dataPrevista = dataPrevista;
 	}
 
-	public float getTempoGasto() {
-		return tempoGasto;
+	public ConsultaGridTarefas() {
+
 	}
 
-	public void setTempoGasto(float tempoGasto) {
-		this.tempoGasto = tempoGasto;
-	}
-
-	public String getUsuarioSolicitante() {
-		return usuarioSolicitante;
-	}
-
-	public void setUsuarioSolicitante(String usuarioSolicitante) {
-		this.usuarioSolicitante = usuarioSolicitante;
-	}
-
-	public ConsultaDadosLancHoras() {
-	}
-
-	public ConsultaDadosLancHoras(int id, int tipo, int sistema, int origem, String usuarioAtribuido, String titulo, String assunto, int situacao, float tempoEstimado, Date dataPrevista, float tempoGasto, String usuarioSolicitante) {
+	public ConsultaGridTarefas(int id, String titulo, int sistema, float tempoEstimado, Date dataPrevista, int situacao, String usuarioAtribuido, String usuarioSolicitante, int tipo) {
+		this.dataPrevista = dataPrevista;
 		this.id = id;
-		this.tipo = tipo;
 		this.sistema = sistema;
-		this.origem = origem;
-		this.usuarioAtribuido = usuarioAtribuido;
-		this.titulo = titulo;
-		this.assunto = assunto;
 		this.situacao = situacao;
 		this.tempoEstimado = tempoEstimado;
-		this.dataPrevista = dataPrevista;
-		this.tempoGasto =tempoGasto;
+		this.tipo = tipo;
+		this.titulo = titulo;
+		this.usuarioAtribuido = usuarioAtribuido;
 		this.usuarioSolicitante = usuarioSolicitante;
 	}
+
 }

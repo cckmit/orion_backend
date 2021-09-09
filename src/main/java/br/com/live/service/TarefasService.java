@@ -65,7 +65,7 @@ public class TarefasService {
 		return dadosTarefa;
 	}
 
-	public List<LancamentoHoras> saveLancamentoHoras(int idUsuario, int idTarefa, String dataLancamento,
+	public void saveLancamentoHoras(int idUsuario, int idTarefa, String dataLancamento,
 			String descricao, float tempoGasto) {
 
 		LancamentoHoras dadosLancamento = null;
@@ -77,8 +77,6 @@ public class TarefasService {
 				FormataData.parseStringToDate(dataLancamento), sequencia);
 		
 		lancamentoHorasRepository.save(dadosLancamento);
-
-		return lancamentoHorasRepository.findByIdTarefaAndIdUsuario(idTarefa, idUsuario);
 	}
 
 	public List<LancamentoHoras> deleteLancamento(String idLancamento) {
