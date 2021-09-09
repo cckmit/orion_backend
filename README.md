@@ -1,3 +1,13 @@
+# Ferramentas do Ambiente de Desenvolvimento (Orion)
+
+- [Git](https://git-scm.com/)
+- [JDK 8 ou superior](https://adoptopenjdk.net/)
+- [Maven](https://maven.apache.org/)
+- [Node LTS](https://nodejs.org/en/)
+- [Eclipse](https://www.eclipse.org/downloads/)
+- [ConEmu](https://conemu.github.io/en/Downloads.html)
+
+
 # Gerar build do spring boot (backend)
 
 Acessar o diretório do projeto:
