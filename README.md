@@ -17,6 +17,8 @@ Exemplo: C:\live\workspace\orion-backend
 
 ## Revisar configurações antes de gerar o executável
 
+### Alterar arquivo application.properties
+
 Apontar aplicação para a base de produção e porta 8081 (essa é a porta que está disponível para o Orion-Backend no servidor micro 23).
 
 BASE DE TESTE
