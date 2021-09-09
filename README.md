@@ -6,7 +6,7 @@ Exemplo: C:\live\workspace\orion-backend
 
 ## Revisar configurações antes de gerar o executável
 
-Apontar aplicação para a base de produção e porta 8081 (ainda não foi definido a porta no servidor oficial).
+Apontar aplicação para a base de produção e porta 8081 (essa é a porta que está disponível para o Orion-Backend no servidor micro 23).
 
 BASE DE TESTE
 spring.jpa.show-sql=false
@@ -56,6 +56,8 @@ Apontar o caminho do servidor backend no arquivo:
 
 /services/api.js
 
+-> baseURL: "http://172.16.1.23:8081"  // Produção - Micro 23
+
 Após isso rodar os comandos:
 
 ### `npm run build`
@@ -70,4 +72,8 @@ Depois bastará executar o comando abaixo:
 
 ### `serve -s build -l 4000`
 
-Inicia a aplicação frontend na porta 4000 (ainda não foi definido a porta no servidor oficial). 
+Inicia a aplicação frontend na porta 4000. 
+
+## Acesso ao Sistema (Produção):
+
+http://172.16.1.23:4000
