@@ -6,7 +6,14 @@ public class OrdemProducao {
 	public String referencia;
 	public int periodo;
 	public int qtdePecasProgramada;
+	public int nrAlternativa;
 
+	public int getNrAlternativa() {
+		return nrAlternativa;
+	}
+	public void setNrAlternativa(int nrAlternativa) {
+		this.nrAlternativa = nrAlternativa;
+	}
 	public void setPeriodo(int periodo) {
 		this.periodo = periodo;
 	}

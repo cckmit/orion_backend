@@ -34,6 +34,9 @@ public class InspecaoQualidade {
 	@Column(name = "perc_inspecionar_pcs")
 	public int percInspecionarPcs;
 	
+	@Column(name = "tipo_inspecao")
+	public int tipoInspecao;
+	
 	@Column(name = "qtde_inspecionar_pcs")
 	public int qtdeInspecionarPcs;
 
@@ -164,4 +167,11 @@ public class InspecaoQualidade {
 		this.percRejeitadaPcs = percRejeitadaPcs;
 	}
 
+	public int getTipoInspecao() {
+		return tipoInspecao;
+	}
+
+	public void setTipoInspecao(int tipoInspecao) {
+		this.tipoInspecao = tipoInspecao;
+	}
 }

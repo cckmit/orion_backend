@@ -47,6 +47,7 @@ public class InspecaoQualidadeCustom {
 		+ " from efic_040, mqop_005 "
 		+ " where efic_040.nivel = '1' "     
 		+ " and efic_040.area_producao = 1 "       
+		+ " and efic_040.cod_defeito_agrup not in (0,1) "
 		+ " and mqop_005.codigo_estagio = efic_040.codigo_estagio "
 		+ " group by efic_040.codigo_motivo, efic_040.descricao, efic_040.codigo_estagio, mqop_005.descricao) motivos "
 		+ " order by motivos.codigo_motivo, motivos.desc_motivo, motivos.codigo_estagio, motivos.desc_estagio " ;     
@@ -210,5 +211,27 @@ public class InspecaoQualidadeCustom {
 		
 		return lancamentos;
 	}
+	
+	public String findTerceiroByOrdemPacoteEstagio(int ordemProducao, int ordemConfeccao, int estagio) {
+		
+		String terceiro;
+		
+		String query = " select lpad(b.cgcterc_forne9,8,0) || lpad(b.cgcterc_forne4,4,0) || lpad(b.cgcterc_forne2,2,0) || ' - ' || c.nome_fornecedor terceiro " 
+		+ " from pcpc_040 a, obrf_080 b, supr_010 c "
+		+ "	where a.ordem_producao = " + ordemProducao
+		+ "	and a.ordem_confeccao = " + ordemConfeccao
+		+ " and a.codigo_estagio = " + estagio
+		+ "	and b.numero_ordem = a.numero_ordem "
+		+ "	and c.fornecedor9 = b.cgcterc_forne9 "
+		+ "	and c.fornecedor4 = b.cgcterc_forne4 "
+		+ "	and c.fornecedor2 = b.cgcterc_forne2 " ; 
 
+		try {
+			terceiro = jdbcTemplate.queryForObject(query, String.class);			
+		} catch (Exception e) {			
+			terceiro = "";
+		}		
+		
+		return terceiro;
+	}		
 }

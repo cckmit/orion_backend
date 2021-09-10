@@ -37,6 +37,14 @@ public class InspecaoQualidadeController {
 		return inspecaoQualidadeService.findAllMotivos();
 	}
 	
+	@RequestMapping(value = "/terceiro-estagio-motivo/{ordemProducao}/{ordemConfeccao}/{estagio}", method = RequestMethod.GET)
+	public String findTerceiroByOrdemPacoteEstagio(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("estagio") int estagio) {
+		
+		System.out.println(ordemProducao);
+		
+		return inspecaoQualidadeService.findTerceiroByOrdemPacoteEstagio(ordemProducao, ordemConfeccao, estagio);
+	}
+	
 	@RequestMapping(value = "/inspecao/{id}", method = RequestMethod.GET)
 	public InspecaoQualidade findInspecaoQualidadeById(@PathVariable("id") int id) {
 		return inspecaoQualidadeService.findInspecaoQualidadeById(id);

@@ -97,6 +97,10 @@ public class InspecaoQualidadeService {
 		return inspecaoQualidadeCustom.findAllMotivos();		
 	}
 	
+	public String findTerceiroByOrdemPacoteEstagio(int ordemProducao, int ordemConfeccao, int estagio) {
+		return inspecaoQualidadeCustom.findTerceiroByOrdemPacoteEstagio(ordemProducao, ordemConfeccao, estagio);
+	}
+	
 	public List<InspecaoQualidade> findInspecoesQualidadeByOrdemEstagioTipo(int ordemProducao, int ordemConfeccao, int codEstagio, int tipo) {
 		return inspecaoQualidadeRepository.findAllByOrdemProdConfecEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);		
 	}
@@ -129,7 +133,8 @@ public class InspecaoQualidadeService {
 			inspecao.ordemConfeccao = inspecaoQualidadePeca.ordemConfeccao;
 			inspecao.periodo = inspecaoQualidadePeca.periodo;
 			inspecao.percInspecionarPcs = inspecaoQualidadePeca.percInspecionarPcs;
-			inspecao.qtdeInspecionarPcs = inspecaoQualidadePeca.qtdeInspecionarPcs;			
+			inspecao.qtdeInspecionarPcs = inspecaoQualidadePeca.qtdeInspecionarPcs;
+			inspecao.tipoInspecao = inspecaoQualidadePeca.tipoInspecao;
 			inspecao = inspecaoQualidadeRepository.saveAndFlush(inspecao);
 		}
 				

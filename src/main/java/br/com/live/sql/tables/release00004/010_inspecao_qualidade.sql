@@ -51,3 +51,9 @@ comment on table orion_052 is 'Tabela inspeção de qualidade - medidas - lança
 
 ---------------------------------------------------------------------------------------------------------
 insert into orion_002 values (10, 'Inspeção de Qualidade', 'Confecção', '/inspecao-qualidade', '');
+
+---------------------------------------------------------------------------------------------------------
+
+alter table orion_050
+add tipo_inspecao number(1) default 0;
+

@@ -302,7 +302,8 @@ public class OrdemProducaoCustom {
 		if ((ordemProducao == 0) && (periodo == 0) && (ordemConfeccao == 0)) return dadosOrdemConfeccao; 
 		
 		String query = " select a.ordem_producao ordemProducao, a.referencia_peca || ' - ' || c.descr_referencia referencia, a.periodo_producao periodo, a.qtde_programada qtdePecasProgramada, "
-	    + " b.ordem_confeccao ordemConfeccao, b.proconf_subgrupo tamanho, b.proconf_item || ' - ' || d.descricao_15 cor, b.qtde_pecas_prog qtdePecas" 
+	    + " b.ordem_confeccao ordemConfeccao, b.proconf_subgrupo tamanho, b.proconf_item || ' - ' || d.descricao_15 cor, b.qtde_pecas_prog qtdePecas, "
+        + " a.alternativa_peca nrAlternativa "				
 	    + " from pcpc_020 a, pcpc_040 b, basi_030 c, basi_010 d "
 	    + " where a.cod_cancelamento = 0 "
 	    + " and b.ordem_producao   = a.ordem_producao ";
@@ -322,7 +323,7 @@ public class OrdemProducaoCustom {
 		+ " and d.grupo_estrutura  = b.proconf_grupo "
 		+ " and d.subgru_estrutura = b.proconf_subgrupo "
 		+ " and d.item_estrutura   = b.proconf_item "
-	    + " group by a.ordem_producao, a.referencia_peca, c.descr_referencia, a.periodo_producao, a.qtde_programada, "	    
+	    + " group by a.ordem_producao, a.referencia_peca, a.alternativa_peca, c.descr_referencia, a.periodo_producao, a.qtde_programada, "	    
 	    + " b.ordem_confeccao, b.proconf_subgrupo, b.proconf_item, d.descricao_15, b.qtde_pecas_prog ";
 		
 		try {

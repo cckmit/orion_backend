@@ -26,5 +26,6 @@ public class InspecaoQualidadeLanctoPeca {
 	public String usuario;
 	
 	@Column(name = "data_hora")
-	public Date dataHora; 
+	public Date dataHora;
+
 }
