@@ -6,7 +6,6 @@ public class ConsultaDadosLancHoras {
 
 
 	public int id;
-	public int tipo;
 	public int sistema;
 	public int origem;
 	public String usuarioAtribuido;
@@ -25,15 +24,7 @@ public class ConsultaDadosLancHoras {
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	public int getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(int tipo) {
-		this.tipo = tipo;
-	}
-
+	
 	public int getSistema() {
 		return sistema;
 	}
@@ -117,9 +108,8 @@ public class ConsultaDadosLancHoras {
 	public ConsultaDadosLancHoras() {
 	}
 
-	public ConsultaDadosLancHoras(int id, int tipo, int sistema, int origem, String usuarioAtribuido, String titulo, String assunto, int situacao, float tempoEstimado, Date dataPrevista, float tempoGasto, String usuarioSolicitante) {
+	public ConsultaDadosLancHoras(int id, int sistema, int origem, String usuarioAtribuido, String titulo, String assunto, int situacao, float tempoEstimado, Date dataPrevista, float tempoGasto, String usuarioSolicitante) {
 		this.id = id;
-		this.tipo = tipo;
 		this.sistema = sistema;
 		this.origem = origem;
 		this.usuarioAtribuido = usuarioAtribuido;

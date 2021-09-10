@@ -35,3 +35,9 @@ create table orion_adm_002
 );
 
 comment on table orion_adm_001 is 'Tabela de Lançamento de Horas - Administrativo';
+---------------------------------------------------------------------------------------------------------------------
+INSERT INTO orion_002 (id, descricao, modulo, path)
+VALUES (11,'Cadastro de Tarefas','TI','/tarefas');
+
+INSERT INTO orion_002 (id, descricao, modulo, path)
+VALUES (12,'Lançamento de Horas','TI','/lancamento-horas');

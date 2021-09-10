@@ -64,7 +64,7 @@ public class TarefasController {
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public Tarefas saveTarefas(@RequestBody BodyTarefas body) {
-		return tarefasService.saveTarefas(body.id, body.anexo, body.assunto, body.origem, body.sistema, body.situacao, body.tempoEstimado, body.tipo, body.titulo, body.usuarioAtribuido, body.usuarioSolicitante, body.dataPrevista);
+		return tarefasService.saveTarefas(body.id, body.anexo, body.assunto, body.origem, body.sistema, body.situacao, body.tempoEstimado, body.titulo, body.usuarioAtribuido, body.usuarioSolicitante, body.dataPrevista);
 	}
 	
 	@RequestMapping(value = "/lancamento-horas/{idTarefa}", method = RequestMethod.GET)

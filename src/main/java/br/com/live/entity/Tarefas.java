@@ -14,8 +14,6 @@ public class Tarefas {
 	
 	@Id
 	public int id;
-	
-	public int tipo;
 	public int sistema;
 	public int origem;
 	
@@ -40,9 +38,8 @@ public class Tarefas {
 		
 	}
 	
-	public Tarefas(int id, int tipo, int sistema, int origem, int usuarioSolicitante, int usuarioAtribuido, String titulo, String assunto, int situacao, long anexo, float tempoEstimado, Date dataPrevista) {
+	public Tarefas(int id, int sistema, int origem, int usuarioSolicitante, int usuarioAtribuido, String titulo, String assunto, int situacao, long anexo, float tempoEstimado, Date dataPrevista) {
 		this.id = id;
-		this.tipo = tipo;
 		this.sistema = sistema;
 		this.origem =origem;
 		this.usuarioAtribuido = usuarioAtribuido;

@@ -5,7 +5,7 @@ import java.util.Date;
 public class ConsultaGridTarefas {
 
 	public int id;
-	public int tipo;
+	public int origem;
 	public int sistema;
 	public String usuarioSolicitante;
 	public String usuarioAtribuido;
@@ -23,12 +23,12 @@ public class ConsultaGridTarefas {
 		this.id = id;
 	}
 
-	public int getTipo() {
-		return tipo;
+	public int getoOrigem() {
+		return origem;
 	}
 
-	public void setTipo(int tipo) {
-		this.tipo = tipo;
+	public void setOrigem(int origem) {
+		this.origem = origem;
 	}
 
 	public int getSistema() {
@@ -99,13 +99,13 @@ public class ConsultaGridTarefas {
 
 	}
 
-	public ConsultaGridTarefas(int id, String titulo, int sistema, float tempoEstimado, Date dataPrevista, int situacao, String usuarioAtribuido, String usuarioSolicitante, int tipo, float horasLancadas) {
+	public ConsultaGridTarefas(int id, String titulo, int sistema, float tempoEstimado, Date dataPrevista, int situacao, String usuarioAtribuido, String usuarioSolicitante, int origem, float horasLancadas) {
 		this.dataPrevista = dataPrevista;
 		this.id = id;
 		this.sistema = sistema;
 		this.situacao = situacao;
 		this.tempoEstimado = tempoEstimado;
-		this.tipo = tipo;
+		this.origem = origem;
 		this.titulo = titulo;
 		this.usuarioAtribuido = usuarioAtribuido;
 		this.usuarioSolicitante = usuarioSolicitante;
