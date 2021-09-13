@@ -12,6 +12,7 @@ import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.TipoMedida;
+import br.com.live.util.FormataCNPJ;
 
 @Repository
 public class InspecaoQualidadeCustom {
@@ -213,7 +214,7 @@ public class InspecaoQualidadeCustom {
 		
 		String terceiro;
 		
-		String query = " select lpad(b.cgcterc_forne9,8,0) || lpad(b.cgcterc_forne4,4,0) || lpad(b.cgcterc_forne2,2,0) || ' - ' || c.nome_fornecedor terceiro " 
+		String query = " select lpad(nvl(b.cgcterc_forne9,''),8,0) || lpad(nvl(b.cgcterc_forne4,''),4,0) || lpad(nvl(b.cgcterc_forne2,''),2,0) || ' - ' || nvl(c.nome_fornecedor,'') terceiro " 
 		+ " from pcpc_040 a, obrf_080 b, supr_010 c "
 		+ "	where a.ordem_producao = " + ordemProducao
 		+ "	and a.ordem_confeccao = " + ordemConfeccao
@@ -228,6 +229,14 @@ public class InspecaoQualidadeCustom {
 		} catch (Exception e) {			
 			terceiro = "";
 		}		
+		
+		if (terceiro.length() > 3) {
+			String[] separaCNPJdaDescricao = terceiro.split("-");
+			String cnpj = separaCNPJdaDescricao[0];
+			String descricao = separaCNPJdaDescricao[1];		
+			cnpj = FormataCNPJ.formatar(cnpj);		
+			terceiro = cnpj + " " + descricao;		
+		}
 		
 		return terceiro;
 	}		
