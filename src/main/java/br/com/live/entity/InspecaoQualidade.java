@@ -8,53 +8,65 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="orion_050")
+@Table(name = "orion_050")
 public class InspecaoQualidade {
-	
+
 	@Id
 	@Column(name = "id_inspecao")
 	public long id;
-			
+
 	public int tipo;
 	public Date data;
 	public int turno;
-	public String usuario;	
-	
+	public String usuario;
+
 	@Column(name = "cod_estagio")
 	public int codEstagio;
 
 	public int periodo;
-	
+
 	@Column(name = "ordem_producao")
 	public int ordemProducao;
-	
+
 	@Column(name = "ordem_confeccao")
 	public int ordemConfeccao;
-	
+
 	@Column(name = "perc_inspecionar_pcs")
 	public int percInspecionarPcs;
-	
+
 	@Column(name = "tipo_inspecao")
 	public int tipoInspecao;
-	
+
 	@Column(name = "qtde_inspecionar_pcs")
 	public int qtdeInspecionarPcs;
 
 	@Column(name = "qtde_inspecionada_pcs")
 	public int qtdeInspecionadaPcs;
-	
+
 	@Column(name = "qtde_rejeitada_pcs")
 	public int qtdeRejeitadaPcs;
-	
+
 	@Column(name = "perc_rejeitada_pcs")
 	public int percRejeitadaPcs;
+
+	public int status;
+	
+	@Column(name = "status_obs")
+	public String statusObservacao;
+	
+	@Column(name = "usuario_liberacao")
+	public String usuarioLiberacao;
 	
 	public void atualizaQuantidadesInpecionadas(int qtdeInspecionarPcs, int qtdeRejeitadaPcs) {
 		this.qtdeInspecionadaPcs = qtdeInspecionarPcs;
 		this.qtdeRejeitadaPcs = qtdeRejeitadaPcs;
 		this.percRejeitadaPcs = (int) (((float) qtdeRejeitadaPcs / (float) qtdeInspecionadaPcs) * 100);
-	}	
-	
+		if (this.status != 3) { // LIBERADO COM OBS
+			if (qtdeRejeitadaPcs > 0) this.status = 2; // PENDENTE LIBERAÇÃO
+			else this.status = 1; // LIBERADO
+		}
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -173,5 +185,29 @@ public class InspecaoQualidade {
 
 	public void setTipoInspecao(int tipoInspecao) {
 		this.tipoInspecao = tipoInspecao;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	
+	public String getStatusObservacao() {
+		return statusObservacao;
+	}
+
+	public void setStatusObservacao(String statusObservacao) {
+		this.statusObservacao = statusObservacao;
+	}
+	
+	public String getUsuarioLiberacao() {
+		return usuarioLiberacao;
+	}
+
+	public void setUsuarioLiberacao(String usuarioLiberacao) {
+		this.usuarioLiberacao = usuarioLiberacao;
 	}
 }

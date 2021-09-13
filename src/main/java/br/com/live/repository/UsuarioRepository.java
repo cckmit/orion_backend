@@ -11,6 +11,9 @@ import br.com.live.entity.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 	
 	List<Usuario> findAll();
+
+	@Query("SELECT u FROM Usuario u where u.liberaInspecaoQualidade = :liberaInspecaoQualidade")
+	List<Usuario> findByLiberaInspecaoQualidade(int liberaInspecaoQualidade);
 	
 	@Query("SELECT u FROM Usuario u where u.id = :idUsuario")
 	Usuario findByIdUsuario(long idUsuario);

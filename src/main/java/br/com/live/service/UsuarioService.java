@@ -31,7 +31,7 @@ public class UsuarioService {
 	public Usuario findUsuarios(long idUsuario) {
 		return usuarioRepository.findByIdUsuario(idUsuario);
 	}
-	public Usuario saveUsuario(long idUsuario, String nome, String usuario, String senha, List <Long> listaIdsProgramas, int situacao) {
+	public Usuario saveUsuario(long idUsuario, String nome, String usuario, String senha, List <Long> listaIdsProgramas, int situacao, int liberaInspecaoQualidade) {
 		
 		Usuario dadosUsuario = null;
 		
@@ -43,12 +43,13 @@ public class UsuarioService {
 			dadosUsuario.usuario = usuario.toLowerCase();
 			dadosUsuario.senha = Criptografia.criptografar(senha);
 			dadosUsuario.situacao = situacao;
+			dadosUsuario.liberaInspecaoQualidade = liberaInspecaoQualidade;
 			
 		// INSERÇÃO
 		} else {
 			idUsuario = usuarioCustom.findNextIdUsuario();
 			
-			dadosUsuario = new Usuario(idUsuario, nome, usuario.toLowerCase(), Criptografia.criptografar(senha), situacao);
+			dadosUsuario = new Usuario(idUsuario, nome, usuario.toLowerCase(), Criptografia.criptografar(senha), situacao, liberaInspecaoQualidade);
 		}
 		
 		usuarioRepository.save(dadosUsuario);
@@ -97,7 +98,7 @@ public class UsuarioService {
 	
 	public Usuario findByIdUsuario(long idUsuario) {		
 		Usuario usuario = usuarioRepository.findByIdUsuario(idUsuario);		
-		return new Usuario(usuario.id,usuario.nome,usuario.usuario,Criptografia.descriptografar(usuario.senha),usuario.situacao);
+		return new Usuario(usuario.id,usuario.nome,usuario.usuario,Criptografia.descriptografar(usuario.senha),usuario.situacao, usuario.liberaInspecaoQualidade);
 	}
 	
 	public Usuario findByUsuarioSenha(String usuario, String senha) {

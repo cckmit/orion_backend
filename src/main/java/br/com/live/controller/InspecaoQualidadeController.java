@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.entity.InspecaoQualidade;
 import br.com.live.entity.InspecaoQualidadeLanctoMedida;
+import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
@@ -39,9 +40,6 @@ public class InspecaoQualidadeController {
 	
 	@RequestMapping(value = "/terceiro-estagio-motivo/{ordemProducao}/{ordemConfeccao}/{estagio}", method = RequestMethod.GET)
 	public String findTerceiroByOrdemPacoteEstagio(@PathVariable("ordemProducao") int ordemProducao, @PathVariable("ordemConfeccao") int ordemConfeccao, @PathVariable("estagio") int estagio) {
-		
-		System.out.println(ordemProducao);
-		
 		return inspecaoQualidadeService.findTerceiroByOrdemPacoteEstagio(ordemProducao, ordemConfeccao, estagio);
 	}
 	
@@ -80,6 +78,11 @@ public class InspecaoQualidadeController {
 		return inspecaoQualidadeService.findLancamentoMedidasByIdInspecao(idInspecao);
 	}	
 	
+	@RequestMapping(value = "/usuarios-liberacao", method = RequestMethod.GET)
+	public List<Usuario> findUsuariosLiberaInspecao() {
+		return inspecaoQualidadeService.findUsuariosLiberaInspecao();
+	}
+	
 	@RequestMapping(value = "/salvar-inspecao-peca", method = RequestMethod.POST)	
 	public InspecaoQualidade saveInspecaoQualidadePeca(@RequestBody BodyInspecaoQualidade body) {
 		return inspecaoQualidadeService.saveInspecaoQualidadePeca(body.inspecaoQualidade, body.inspecaoQualidadeLanctoPeca, body.dataInspecao);		
@@ -88,6 +91,11 @@ public class InspecaoQualidadeController {
 	@RequestMapping(value = "/salvar-inspecao-medida", method = RequestMethod.POST)
 	public InspecaoQualidade saveInspecaoQualidadeMedida(@RequestBody BodyInspecaoQualidade body) {
 		return inspecaoQualidadeService.saveInspecaoQualidadeMedida(body.inspecaoQualidade, body.inspecaoQualidadeLanctoMedidas, body.dataInspecao);
+	}	
+	
+	@RequestMapping(value = "/liberar-inspecao", method = RequestMethod.POST)
+	public InspecaoQualidade liberarInspecaoQualidade(@RequestBody BodyInspecaoQualidade body) {		
+		return inspecaoQualidadeService.liberarInspecaoQualidade(body.idInspecaoLiberar, body.usuarioLiberador, body.observacaoLiberacao);
 	}	
 	
 	@RequestMapping(value = "lancto-peca/{idInspecao}/{idLancamento}", method = RequestMethod.DELETE)	

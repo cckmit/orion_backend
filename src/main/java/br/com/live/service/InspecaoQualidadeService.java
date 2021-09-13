@@ -11,6 +11,7 @@ import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.entity.InspecaoQualidade;
 import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.entity.InspecaoQualidadeLanctoPeca;
+import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
@@ -19,6 +20,7 @@ import br.com.live.model.TipoMedida;
 import br.com.live.repository.InspecaoQualidadeLanctoMedidaRepository;
 import br.com.live.repository.InspecaoQualidadeLanctoPecaRepository;
 import br.com.live.repository.InspecaoQualidadeRepository;
+import br.com.live.repository.UsuarioRepository;
 import br.com.live.util.BodyInspecaoQualidade;
 import br.com.live.util.FormataData;
 
@@ -31,17 +33,20 @@ public class InspecaoQualidadeService {
 	private final InspecaoQualidadeLanctoMedidaRepository inspecaoQualidadeLanctoMedidaRepository;
 	private final InspecaoQualidadeCustom inspecaoQualidadeCustom;
 	private final OrdemProducaoCustom ordemProducaoCustom;
+	private final UsuarioRepository usuarioRepository;
 
 	public InspecaoQualidadeService(InspecaoQualidadeRepository inspecaoQualidadeRepository,
 			InspecaoQualidadeLanctoPecaRepository inspecaoQualidadeLanctoPecaRepository,
 			InspecaoQualidadeLanctoMedidaRepository inspecaoQualidadeLanctoMedidaRepository,
 			InspecaoQualidadeCustom inspecaoQualidadeCustom,
-			OrdemProducaoCustom ordemProducaoCustom) {
+			OrdemProducaoCustom ordemProducaoCustom,
+			UsuarioRepository usuarioRepository) {
 		this.inspecaoQualidadeRepository = inspecaoQualidadeRepository;
 		this.inspecaoQualidadeLanctoPecaRepository = inspecaoQualidadeLanctoPecaRepository;
 		this.inspecaoQualidadeLanctoMedidaRepository = inspecaoQualidadeLanctoMedidaRepository;
 		this.inspecaoQualidadeCustom = inspecaoQualidadeCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;
+		this.usuarioRepository = usuarioRepository;
 	}
 
 	private int[] parseTalaoToArrayDados(String talao) {
@@ -117,6 +122,10 @@ public class InspecaoQualidadeService {
 		return inspecaoQualidadeRepository.findById(id);
 	}
 	
+	public List<Usuario> findUsuariosLiberaInspecao() {		
+		return usuarioRepository.findByLiberaInspecaoQualidade(1);
+	}	
+	
 	public InspecaoQualidade gravaInspecaoQualidade(InspecaoQualidade inspecaoQualidadePeca, String data) {
 		
 		InspecaoQualidade inspecao = inspecaoQualidadeRepository.findById(inspecaoQualidadePeca.id);
@@ -135,6 +144,7 @@ public class InspecaoQualidadeService {
 			inspecao.percInspecionarPcs = inspecaoQualidadePeca.percInspecionarPcs;
 			inspecao.qtdeInspecionarPcs = inspecaoQualidadePeca.qtdeInspecionarPcs;
 			inspecao.tipoInspecao = inspecaoQualidadePeca.tipoInspecao;
+			inspecao.status = 1; // LIBERADO
 			inspecao = inspecaoQualidadeRepository.saveAndFlush(inspecao);
 		}
 				
@@ -242,5 +252,13 @@ public class InspecaoQualidadeService {
 		inspecaoQualidadeLanctoMedidaRepository.flush();
 		inspecaoQualidadeRepository.flush();
 		return findInspecoesQualidadeByOrdemEstagioTipo(ordemProducao, ordemConfeccao, codEstagio, tipo);
+	}
+	
+	public InspecaoQualidade liberarInspecaoQualidade(long idInspecao, String usuario, String observacao) {
+		InspecaoQualidade inspecao = findInspecaoQualidadeById(idInspecao);
+		inspecao.status = 3; // Liberado com observação
+		inspecao.usuarioLiberacao = usuario;
+		inspecao.statusObservacao = observacao;		
+		return inspecao; 
 	}
 }

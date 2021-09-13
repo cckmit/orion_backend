@@ -15,6 +15,9 @@ public class BodyInspecaoQualidade {
 	public InspecaoQualidade inspecaoQualidade;
 	public InspecaoQualidadeLanctoPeca inspecaoQualidadeLanctoPeca;
 	public List<InspecaoQualidadeLanctoMedida> inspecaoQualidadeLanctoMedidas;
+	public long idInspecaoLiberar;
+	public String usuarioLiberador;
+	public String observacaoLiberacao;
 	
 	public BodyInspecaoQualidade() {}
 	

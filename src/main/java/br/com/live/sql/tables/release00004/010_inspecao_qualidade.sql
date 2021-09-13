@@ -57,3 +57,15 @@ insert into orion_002 values (10, 'Inspeção de Qualidade', 'Confecção', '/in
 alter table orion_050
 add tipo_inspecao number(1) default 0;
 
+---------------------------------------------------------------------------------------------------------
+
+-- Atualizar ambiente oficial
+alter table orion_050
+add status number(1) default 0;
+
+alter table orion_050
+add (status_obs varchar2(1000) default '',
+     usuario_liberacao varchar2(50) default '');
+
+alter table orion_001 
+add libera_inspecao_qualid number(1) default 0;

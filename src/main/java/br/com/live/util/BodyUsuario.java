@@ -10,5 +10,6 @@ public class BodyUsuario {
 	public String senha;
 	public List<Long> listaIdsProgramas;
 	public int situacao;
+	public int liberaInspecaoQualidade;
 	
 }
