@@ -8,10 +8,14 @@ import br.com.live.custom.PlanoMestreCustom;
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
+import br.com.live.model.OrdemConfeccao;
+import br.com.live.model.OrdemProducao;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
 import br.com.live.util.BodyOrdemProducao;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Service
 public class OrdemProducaoService {
@@ -70,6 +74,18 @@ public class OrdemProducaoService {
 		
 		planoMestreRepository.save(planoMestre);
 		
+	}
+	
+	public List<OrdemProducao> findAllTagsExportacaoChina() {
+		return ordemProducaoCustom.findAllTagsExportacaoChina();
+	}
+	
+	public List<OrdemConfeccao> findAllPacotes(int ordemProducao) {
+		return ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);
+	}
+	
+	public List<DadosTagChina> findDadosTag(int ordemProducao, List<ConteudoChaveNumerica> ordemConfeccao) {
+		return ordemProducaoCustom.findDadosTagChina(ordemProducao, ConteudoChaveNumerica.parseValueToString(ordemConfeccao));
 	}
 	
 }

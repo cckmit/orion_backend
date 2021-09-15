@@ -7,7 +7,9 @@ import br.com.live.model.ConsultaPreOrdemProducao;
 public class BodyOrdemProducao {
 
 	public Long idPlanoMestre;
-	public List<Long> listaPreOrdens;	 
+	public List<Long> listaPreOrdens;
+	public List<ConteudoChaveNumerica> ordensConfeccao;
+	public int ordemProducao;
 	
 	// Retorno 
 	public int sitPlanoMestre;

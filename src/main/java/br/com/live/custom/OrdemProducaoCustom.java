@@ -8,8 +8,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
+import br.com.live.model.OrdemProducao;
 
 @Repository
 public class OrdemProducaoCustom {
@@ -25,9 +27,6 @@ public class OrdemProducaoCustom {
 		Integer idOrdemProducaoParam = 0;
 		Integer idUltimaOrdemProducao = 0;
 		String query = "";
-
-		
-		System.out.println("findNextIdOrdem");
 		
 		query = " select nvl(empr_001.ordem_confeccao,0) from empr_001 ";
 
@@ -48,8 +47,6 @@ public class OrdemProducaoCustom {
 
 		query = " update empr_001 set empr_001.ordem_confeccao = " + idUltimaOrdemProducao;
 		jdbcTemplate.update(query);
-		
-		System.out.println("findNextIdOrdem: " + idUltimaOrdemProducao);
 		
 		return idUltimaOrdemProducao;
 	}
@@ -355,5 +352,201 @@ public class OrdemProducaoCustom {
 		}
 		
 		return dadosOrdemConfeccao;		
-	}	
+	}
+	
+	public List<OrdemProducao> findAllTagsExportacaoChina()	{
+		
+		List<OrdemProducao> ordensProducao = null;
+		
+		String query = " select a.ordem_producao ordemProducao "
+				+ " from pcpc_040 a, pcpc_020 b"
+				+ " where b.ordem_producao = a.ordem_producao "
+				+ " and b.cod_cancelamento = 0 "
+				+ " and a.qtde_a_produzir_pacote > 0 "
+				+ " and a.codigo_estagio = 93"
+				+ " group by a.ordem_producao ";
+		
+		try {
+			ordensProducao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class));
+		} catch (Exception e) {
+			ordensProducao = new ArrayList<OrdemProducao> ();			
+		}
+		
+		return ordensProducao;		
+	}
+	
+	public List<OrdemConfeccao> findAllOrdensConfeccao(int ordemProducao) {
+		
+		List<OrdemConfeccao> ordensConfeccao = null;
+		
+		String query = " select a.ordem_confeccao ordemConfeccao "
+				+ " from pcpc_040 a, pcpc_020 b "
+				+ " where b.ordem_producao = a.ordem_producao "
+				+ " and a.ordem_producao = " + ordemProducao
+				+ " group by a.ordem_confeccao ";
+		
+		try {
+			ordensConfeccao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemConfeccao.class));
+		} catch (Exception e) {
+			ordensConfeccao = new ArrayList<OrdemConfeccao> ();			
+		}
+		
+		return ordensConfeccao;	
+		
+	}
+	
+	public List<DadosTagChina> findDadosTagChina(int ordemProducao, String ordensConfeccao) {
+		
+		List<DadosTagChina> dadosTagsChina = null;
+		
+		String query = " select a.referencia_peca referencia, y.descr_tamanho tamanho, b.proconf_item || '-' || d.descricao_15 descCor, "
+				+ " c.descr_referencia descReferencia, "
+				+ " 'https://produto.liveoficial.com.br/' || b.proconf_grupo || '.' || b.proconf_item qrcode, "
+				+ " d.codigo_barras codBarrasEan, "
+				+ " b.proconf_item cor, "
+				+ " nvl(c.descricao_tag2, ' ') tamanhoMedida, "
+				+ " b.qtde_programada quantidade, "
+				+ " inter_fn_get_val_unit_tab(27, 14, 14, b.proconf_nivel99, b.proconf_grupo, b.proconf_subgrupo, b.proconf_item) preco, "
+				+ " lpad(b.periodo_producao,4,'0')||lpad(b.ordem_producao,9,'0')||lpad(b.ordem_confeccao,5,'0') codBarrasProd "
+				+ " from pcpc_020 a, pcpc_040 b, basi_030 c, basi_010 d, basi_220 y "
+				+ " where a.cod_cancelamento = 0 "
+				+ " and b.ordem_producao = a.ordem_producao "
+				+ " and b.ordem_producao = " + ordemProducao;
+				
+				if (!ordensConfeccao.equals("")) query += " and b.ordem_confeccao in (" + ordensConfeccao + ") ";
+				
+				query += " and b.codigo_estagio = a.ultimo_estagio "
+				+ " and c.nivel_estrutura = b.proconf_nivel99 "
+				+ " and c.referencia = b.proconf_grupo "
+				+ " and d.nivel_estrutura = b.proconf_nivel99 "
+				+ " and d.grupo_estrutura = b.proconf_grupo "
+				+ " and d.subgru_estrutura = b.proconf_subgrupo "
+				+ " and d.item_estrutura = b.proconf_item "
+				+ " and y.tamanho_ref = b.proconf_subgrupo "
+				+ " order by a.referencia_peca, b.proconf_subgrupo, b.proconf_item";
+				
+		try {
+			dadosTagsChina = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosTagChina.class));
+		} catch (Exception e) {
+			dadosTagsChina = new ArrayList<DadosTagChina> ();
+		}
+		
+		List<DadosTagChina> dadosTagsChinaFormatados = new ArrayList<DadosTagChina> ();	
+		
+		DadosTagChina construtorFormatado; 
+		
+		for (DadosTagChina tagAtual : dadosTagsChina) {
+			
+			int seqTag = 0;
+			String atributo = "";
+			
+			atributo = findAtributo(tagAtual.getReferencia(), tagAtual.getTamanho(), tagAtual.getCor());
+			
+			while (seqTag < tagAtual.getQuantidade()) {
+				seqTag++;
+				
+				String tamanhoAtual = tagAtual.getTamanho();
+				String tamanhoMedida = tagAtual.getTamanho();
+				
+				if (!tagAtual.getTamanhoMedida().equals(" ")) {
+					tamanhoAtual = tagAtual.getTamanhoMedida();
+					tamanhoMedida = " ";
+				}
+				
+				construtorFormatado = new DadosTagChina(tagAtual.getReferencia(), tamanhoAtual, tagAtual.getCor(), tagAtual.getDescCor(), tagAtual.getDescReferencia(), tagAtual.getQrCode(), tagAtual.getCodBarrasEan(), 
+						tagAtual.getQuantidade(), tagAtual.getPreco(), atributo, tagAtual.getCodBarrasProd(), seqTag, tamanhoMedida);
+				
+				dadosTagsChinaFormatados.add(construtorFormatado);
+			} 	
+		}
+		return dadosTagsChinaFormatados;
+	}
+	
+	public String findAtributo(String referencia, String tamanho, String cor) {
+		
+		String atributo = "";
+		int colecao = 0;
+		String descPermanente = "";
+		String descAtributo = "";
+		String descCategoria = "";
+		
+		String query = " select basi_030.colecao "
+				+ " from basi_030 "
+				+ " where basi_030.nivel_estrutura = 1 "
+				+ " and basi_030.referencia = '" + referencia + "'";
+		
+		try {
+			colecao = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			colecao = 0;
+		}
+		
+		String queryBasi = " select basi_140.descricao_espanhol "
+				+ " from basi_140 "
+				+ " where basi_140.colecao = " + colecao;
+	
+		try {
+			descPermanente = jdbcTemplate.queryForObject(queryBasi, String.class);
+		} catch (Exception e) {
+			descPermanente = "";
+		}
+		
+		if ("COLECAO PERMANENTE".equals(descPermanente)) {
+			
+			String queryPermanente = "select basi_140.descricao_ingles"
+                    + " from basi_140 "
+                    + " where basi_140.colecao > 0 "
+                    + " and basi_140.colecao = (select nvl(max(basi_632.cd_agrupador),0) "
+                    + " from basi_632 "
+                    + " where basi_632.grupo_ref = '" + referencia + "'"
+                    + " and basi_632.subgrupo_ref = '" + tamanho + "'"
+                    + " and basi_632.item_ref = '" + cor + "') ";
+			
+			try {
+				descAtributo = jdbcTemplate.queryForObject(queryPermanente, String.class);
+			} catch (Exception e) {
+				descAtributo = "";
+			}
+					
+		} else {
+			
+			String queryAtributo = " select basi_140.descricao_ingles "
+					+ " from basi_140 "
+					+ " where basi_140.colecao = " + colecao;
+			
+			try {
+				descAtributo = jdbcTemplate.queryForObject(queryAtributo, String.class);
+			} catch (Exception e) {
+				descAtributo = "";
+			}
+		}
+		
+		try {
+			atributo = descAtributo.substring(0, 4);
+		} catch (Exception e) {
+			atributo = descAtributo;
+		}
+		
+		String sqlCategoria = " select a.conteudo_atributo from basi_544 a, basi_541 b "
+                + " where b.codigo_atributo = a.codigo_atributo "
+                + " and a.familia_atributo = '000001' "
+                + " and a.codigo_grupo_atrib = 1 "
+                + " and a.codigo_subgrupo_atrib = 1 "
+                + " and SUBSTR(a.chave_acesso,2,5) = '" + referencia + "'"
+                + " and a.codigo_atributo = 6 ";
+		
+		try {
+			descCategoria = jdbcTemplate.queryForObject(sqlCategoria, String.class);
+			
+			descCategoria = descCategoria.substring(0, 8);
+			atributo = atributo + " - " + descCategoria;
+			
+		} catch (Exception e) {
+			descCategoria = "";
+		}
+		
+		return atributo;
+	}
+	
+	
 }
