@@ -34,7 +34,7 @@ public class TarefasService {
 
 	public Tarefas saveTarefas(int idTarefa, long anexo, String assunto, int origem, int sistema, int situacao,
 			float tempoEstimado, String titulo, int usuarioAtribuido, int usuarioSolicitante,
-			String dataPrevista) {
+			String dataPrevista, int numDocInterno, int numDocFornecedor) {
 
 		Tarefas dadosTarefa = null;
 
@@ -51,13 +51,15 @@ public class TarefasService {
 			dadosTarefa.titulo = titulo;
 			dadosTarefa.usuarioAtribuido = usuarioAtribuido;
 			dadosTarefa.dataPrevista = FormataData.parseStringToDate(dataPrevista);
+			dadosTarefa.numDocInterno = numDocInterno;
+			dadosTarefa.numDocFornecedor = numDocFornecedor;
 
 			// INSERÇÃO
 		} else {
 			idTarefa = tarefasCustom.findNextIdTarefa();
 
 			dadosTarefa = new Tarefas(idTarefa, sistema, origem, usuarioSolicitante, usuarioAtribuido, titulo,
-					assunto, situacao, anexo, tempoEstimado, FormataData.parseStringToDate(dataPrevista));
+					assunto, situacao, anexo, tempoEstimado, FormataData.parseStringToDate(dataPrevista),numDocInterno, numDocFornecedor);
 		}
 
 		tarefasRepository.save(dadosTarefa);

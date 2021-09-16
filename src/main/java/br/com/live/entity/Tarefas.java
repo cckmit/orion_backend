@@ -34,11 +34,17 @@ public class Tarefas {
 	@Column(name="data_prevista")
 	public Date dataPrevista;
 	
+	@Column(name="num_doc_interno")
+	public int numDocInterno;
+	
+	@Column(name="num_doc_fornecedor")
+	public int numDocFornecedor;
+	
 	public Tarefas() {
 		
 	}
 	
-	public Tarefas(int id, int sistema, int origem, int usuarioSolicitante, int usuarioAtribuido, String titulo, String assunto, int situacao, long anexo, float tempoEstimado, Date dataPrevista) {
+	public Tarefas(int id, int sistema, int origem, int usuarioSolicitante, int usuarioAtribuido, String titulo, String assunto, int situacao, long anexo, float tempoEstimado, Date dataPrevista, int numDocInterno, int numDocFornecedor) {
 		this.id = id;
 		this.sistema = sistema;
 		this.origem =origem;
@@ -47,9 +53,11 @@ public class Tarefas {
 		this.titulo = titulo;
 		this.assunto = assunto;
 		this.situacao = situacao;
-		this.anexo =anexo;
+		this.anexo = anexo;
 		this.tempoEstimado = tempoEstimado;
 		this.dataPrevista = dataPrevista;
+		this.numDocInterno = numDocInterno;
+		this.numDocFornecedor = numDocFornecedor;
 		
 	}
 }

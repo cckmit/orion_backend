@@ -15,5 +15,7 @@ public class BodyTarefas {
 	public long anexo;
 	public float tempoEstimado;	
 	public String dataPrevista;
+	public int numDocInterno;
+	public int numDocFornecedor;
 
 }
