@@ -92,5 +92,5 @@ public class TarefasController {
 	@RequestMapping(value = "/consultar-atribuidas/{idUsuario}/{listarAbertos}", method = RequestMethod.GET)
 	public List<ConsultaDadosLancHoras> consultarAtribuidas(@PathVariable("idUsuario") int idUsuario, @PathVariable("listarAbertos") boolean listarAbertos) {
 		return tarefasCustom.findAllTarefas(idUsuario, listarAbertos); 
-	}
+	}	
 }
