@@ -141,12 +141,12 @@ public class InspecaoQualidadeCustom {
 		
 		String query = " select count(*) from (select a.id_lancamento from orion_052 a " 
 		+ " where a.id_inspecao = " + idInspecao
-		+ "	and (a.variacao > 0 and a.variacao > a.toler_maxima) "
+		+ "	and (a.variacao > 0 and a.variacao > a.toler_minima) "
 		+ "	group by a.id_lancamento "
 		+ "	union "
 		+ "	select a.id_lancamento from orion_052 a " 
 		+ "	where a.id_inspecao = " + idInspecao
-		+ "	and (a.variacao < 0 and (a.variacao * -1) > a.toler_minima) "
+		+ "	and (a.variacao < 0 and (a.variacao * -1) > a.toler_maxima) "
 		+ "	group by a.id_lancamento "
 		+ "	) lancamentos ";
 				  
@@ -187,11 +187,11 @@ public class InspecaoQualidadeCustom {
 	    + " agrup_lancamentos.id_lancamento, " 
 	    + " sum(agrup_lancamentos.qtde_fora_toler) qtde_fora_toler "
 	    + " from (select a.id_inspecao, a.id_lancamento, count(*) qtde_fora_toler from orion_052 a " 
-	    + " where (a.variacao > 0 and a.variacao > a.toler_maxima) "
+	    + " where (a.variacao > 0 and a.variacao > a.toler_minima) "
 	    + " group by a.id_inspecao, a.id_lancamento "
 	    + " union all "
 	    + " select a.id_inspecao, a.id_lancamento, count(*) qtde_fora_toler from orion_052 a " 
-	    + " where (a.variacao < 0 and (a.variacao * -1) > a.toler_minima) "
+	    + " where (a.variacao < 0 and (a.variacao * -1) > a.toler_maxima) "
 	    + " group by a.id_inspecao, a.id_lancamento) agrup_lancamentos "
 	    + " group by agrup_lancamentos.id_inspecao, agrup_lancamentos.id_lancamento "
 	    + " ) lancamentos "
