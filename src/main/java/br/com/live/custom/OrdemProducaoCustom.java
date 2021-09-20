@@ -446,7 +446,7 @@ public class OrdemProducaoCustom {
 				seqTag++;
 				
 				String tamanhoAtual = tagAtual.getTamanho();
-				String tamanhoMedida = "Tam:" + tagAtual.getTamanho();
+				String tamanhoMedida = "Tam: " + tagAtual.getTamanho();
 				
 				if (!tagAtual.getTamanhoMedida().equals(" ")) {
 					tamanhoAtual = tagAtual.getTamanhoMedida();
