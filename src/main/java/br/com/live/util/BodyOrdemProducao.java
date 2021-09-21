@@ -8,8 +8,8 @@ public class BodyOrdemProducao {
 
 	public Long idPlanoMestre;
 	public List<Long> listaPreOrdens;
-	public List<ConteudoChaveNumerica> ordensConfeccao;
-	public int ordemProducao;
+	
+	public List<ConteudoChaveNumerica> ordemProducao;
 	
 	// Retorno 
 	public int sitPlanoMestre;

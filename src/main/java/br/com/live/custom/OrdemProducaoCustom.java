@@ -395,7 +395,7 @@ public class OrdemProducaoCustom {
 		
 	}
 	
-	public List<DadosTagChina> findDadosTagChina(int ordemProducao, String ordensConfeccao) {
+	public List<DadosTagChina> findDadosTagChina(String ordemProducao) {
 		
 		List<DadosTagChina> dadosTagsChina = null;
 		
@@ -411,11 +411,8 @@ public class OrdemProducaoCustom {
 				+ " from pcpc_020 a, pcpc_040 b, basi_030 c, basi_010 d, basi_220 y "
 				+ " where a.cod_cancelamento = 0 "
 				+ " and b.ordem_producao = a.ordem_producao "
-				+ " and b.ordem_producao = " + ordemProducao;
-				
-				if (!ordensConfeccao.equals("")) query += " and b.ordem_confeccao in (" + ordensConfeccao + ") ";
-				
-				query += " and b.codigo_estagio = a.ultimo_estagio "
+				+ " and b.ordem_producao in (" + ordemProducao + ")"
+				+ " and b.codigo_estagio = a.ultimo_estagio "
 				+ " and c.nivel_estrutura = b.proconf_nivel99 "
 				+ " and c.referencia = b.proconf_grupo "
 				+ " and d.nivel_estrutura = b.proconf_nivel99 "

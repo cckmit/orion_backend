@@ -43,7 +43,7 @@ public class OrdemProducaoController {
     
 	@RequestMapping(value = "/find-dados-tag", method = RequestMethod.POST)
 	public List<DadosTagChina> findDadosTag(@RequestBody BodyOrdemProducao body) {
-		return ordemProducaoService.findDadosTag(body.ordemProducao, body.ordensConfeccao);		
+		return ordemProducaoService.findDadosTag(body.ordemProducao);		
 	}
 	
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)

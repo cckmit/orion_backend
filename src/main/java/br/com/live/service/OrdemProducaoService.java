@@ -84,8 +84,8 @@ public class OrdemProducaoService {
 		return ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);
 	}
 	
-	public List<DadosTagChina> findDadosTag(int ordemProducao, List<ConteudoChaveNumerica> ordemConfeccao) {
-		return ordemProducaoCustom.findDadosTagChina(ordemProducao, ConteudoChaveNumerica.parseValueToString(ordemConfeccao));
+	public List<DadosTagChina> findDadosTag(List<ConteudoChaveNumerica> ordemProducao) {
+		return ordemProducaoCustom.findDadosTagChina(ConteudoChaveNumerica.parseValueToString(ordemProducao));
 	}
 	
 }
