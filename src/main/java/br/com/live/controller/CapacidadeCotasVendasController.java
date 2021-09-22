@@ -35,7 +35,12 @@ public class CapacidadeCotasVendasController {
 	public List<CapacidadesCotasVendas> findAllCapacidadesCotasVendas() {
 		return capacidadeCotasVendasService.findAllCapacidadesCotasVendas();
 	}
-		
+	
+	@RequestMapping(value = "/id-cotas/capa/{idCapacidadeCotas}", method = RequestMethod.GET)
+	public CapacidadeCotasVendasCapa findCapacidadesCotasVendasById(@PathVariable("idCapacidadeCotas") String idCapacidadeCotas) {
+		return capacidadeCotasVendasRepository.findByIdCapacidadeCotasVendas(idCapacidadeCotas);
+	}
+	
 	@RequestMapping(value = "/categorias", method = RequestMethod.GET)
 	public List<Categoria> findCategoriasProd() {
 		return capacidadeCotasVendasService.findCategoriasProd();

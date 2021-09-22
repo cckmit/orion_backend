@@ -19,6 +19,24 @@ public class CapacidadesCotasVendas {
 	private String depositos;
 	private List<ConteudoChaveNumerica> listaDepositos;
 	
+	private void parseListaDepositos(String depositos) {
+		
+		
+	}
+	
+	public String getDepositos() {
+		return depositos;
+	}
+	public void setDepositos(String depositos) {
+		this.depositos = depositos;
+	}
+	public List<ConteudoChaveNumerica> getListaDepositos() {
+		return listaDepositos;
+	}
+	public void setListaDepositos(List<ConteudoChaveNumerica> listaDepositos) {
+		this.listaDepositos = listaDepositos;
+	}
+	
 	public int getPeriodo() {
 		return periodo;
 	}
