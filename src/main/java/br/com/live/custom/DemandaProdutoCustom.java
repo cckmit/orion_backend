@@ -151,6 +151,33 @@ public class DemandaProdutoCustom {
 		return parseDemandaProdutoPlano(q.getResultList(), parametrosFormatados);
 	}
 
+	public int findQtdeDemandaByProdutoAndPeriodos(String nivel, String grupo, String sub, String item, int periodoInicial, int periodoFinal) {
+		
+		String query = " select nvl(sum(demanda.quantidade),0) quantidade "
+		+ " from ( "
+		+ " select p.num_periodo_prod periodo, a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item, (a.qtde_pedida - a.qtde_faturada) quantidade "
+        + "	from pedi_100 p, pedi_110 a "
+		+ " where p.situacao_venda  <> 10 "
+		+ " and p.cod_cancelamento = 0 "
+		+ " and p.tecido_peca = '1' "
+		+ " and a.pedido_venda = p.pedido_venda "
+		+ " and a.cod_cancelamento = 0 "
+		+ " UNION "
+		+ " select c.periodo_producao periodo, a.item_nivel99 nivel, a.item_grupo grupo, a.item_sub sub, a.item_item item, a.qtde_pedida quantidade "
+		+ " from inte_100 i, inte_110 a, pcpc_010 c "
+		+ " where i.tecido_peca = '1' "
+		+ " and i.tipo_registro = 1 "
+		+ " and a.pedido_venda = i.pedido_venda "
+		+ " ) demanda "
+		+ " where demanda.nivel = '" + nivel + "'" 
+		+ " and demanda.grupo = '" + grupo + "'"
+		+ " and demanda.sub = '" + sub + "'" 
+		+ " and demanda.item = '" + item + "'"
+		+ " and demanda.periodo between " + periodoInicial + " and " + periodoFinal;
+
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
 	public List<PedidoVenda> findPedidosByPeriodo(int periodoInicio, int periodoFim) {
 			
 		String query = " select p.pedido_venda pedidoVenda, p.num_periodo_prod periodo from pedi_100 p "

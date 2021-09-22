@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.ProcessoProduto;
@@ -16,9 +17,11 @@ import br.com.live.util.ParametrosPlanoMestre;
 public class ProcessoProdutoCustom {
 
 	private final EntityManager manager;
+	private JdbcTemplate jdbcTemplate;
 
-	public ProcessoProdutoCustom(EntityManager manager) {
+	public ProcessoProdutoCustom(EntityManager manager, JdbcTemplate jdbcTemplate) {
 		this.manager = manager;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	private List<ProcessoProdutoPlano> parseProcessoProdutoPlano(List<ProcessoProduto> listProcessoProduto,
@@ -124,5 +127,20 @@ public class ProcessoProdutoCustom {
 
 		return parseProcessoProdutoPlano(q.getResultList(), parametrosFormatados);
 	}
+	
+	public int findQtdeProcessoByProdutoAndPeriodos(String nivel, String grupo, String sub, String item, int periodoInicial, int periodoFinal) {
+		
+		String query = " select nvl(sum(a.qtde_a_produzir_pacote),0) quantidade "
+		+ " from pcpc_040 a, pcpc_020 b "
+		+ " where b.ordem_producao = a.ordem_producao "
+		+ " and b.ultimo_estagio = a.codigo_estagio "
+		+ " and b.cod_cancelamento = 0 "
+		+ " and b.periodo_producao between " + periodoInicial + " and " + periodoFinal
+		+ " and a.proconf_nivel99  = '" + nivel + "'"
+		+ " and a.proconf_grupo = '" + grupo + "'" 
+		+ " and a.proconf_subgrupo = '" + sub + "'"
+		+ " and a.proconf_item = '" + item + "'";		
 
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
 }

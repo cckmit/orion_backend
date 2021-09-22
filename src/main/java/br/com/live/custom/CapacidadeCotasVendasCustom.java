@@ -42,62 +42,82 @@ public class CapacidadeCotasVendasCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Categoria.class));
 	}
-	
-	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde, boolean listarTempUnit){
 		
-		String query = " select ordenacao.modelo, ordenacao.descricao, nvl(categorias.des_categoria,' ') categoria, ordenacao.tempo_unit tempoUnitario, ordenacao.minutos, ordenacao.pecas " 
-		  + " from (select capac_cotas.modelo, capac_cotas.descricao, sum(capac_cotas.tempo_unit) tempo_unit, sum(capac_cotas.minutos) minutos, sum(capac_cotas.pecas) pecas " 
-		  + " from (select orion_046.modelo, basi_030.descr_referencia descricao, orion_046.tempo_unitario tempo_unit, orion_046.qtde_minutos minutos, orion_046.qtde_pecas pecas " 
-		  + " from orion_045, orion_046, basi_030 " 
-		  + " where orion_045.periodo = " + periodo
-		  + " and orion_045.colecao = " + colecao
-		  + " and orion_045.linha = " + linha                                     
-		  + " and orion_046.id_capacidade_cotas = orion_045.id " 
-		  + " and basi_030.nivel_estrutura (+) = '1' "
-		  + " and basi_030.referencia (+) = orion_046.modelo " 		                   
-		  + " union all "
-		  + " select basi_030.referencia modelo, basi_030.descr_referencia descricao, 0 tempo_unit, 0 minutos, 0 pecas " 
-		  + " from basi_030 "
-		  + " where basi_030.nivel_estrutura = '1' " 
-		  + " and basi_030.colecao = " + colecao
-		  + " and basi_030.linha_produto = " + linha		                    
-		  + " union all "	                  
-		  + " select a.referencia modelo , a.descr_referencia descricao, 0 tempo_unit, 0 minutos, 0 pecas "
-		  + " from basi_030 a "
-		  + " where a.linha_produto = " + linha
-		  + " and a.colecao in (select 1 from basi_140 " 
-          + " where basi_140.descricao_espanhol like '%PERMANENTE%') "
-		  + " and exists (select 1 from basi_631 b "
-		  + " where b.cd_agrupador = " + colecao
-		  + " and b.grupo_ref = a.referencia)) capac_cotas " 
-		  + " group by capac_cotas.modelo, capac_cotas.descricao "		  
-		  + " order by capac_cotas.modelo, capac_cotas.descricao "
-		  + " ) ordenacao, " 
-		  + " (select SUBSTR(a.chave_acesso,2,5) AS COD_REFERE, " 
-		  + " b.descr_atributo           AS DES_ATRIBUTO,  " 
-		  + " a.codigo_atributo          AS COD_CATEGORIA, " 
-		  + " a.conteudo_atributo        AS DES_CATEGORIA, " 
-		  + " (select f.seq_escolha from basi_542 f "
-		  + " where f.familia_atributo = a.familia_atributo " 
-		  + " and f.codigo_atributo  = a.codigo_atributo "
-		  + " and f.conteudo_escolha = a.conteudo_atributo) COD_OPCAO_CATEGORIA " 
-		  + " from basi_544 a, " 
-		  + " basi_541 b "
-		  + " where b.codigo_atributo = a.codigo_atributo " 
-		  + " and a.familia_atributo = '000001' "
-		  + " and a.codigo_grupo_atrib = 1 "
-		  + " and a.codigo_subgrupo_atrib = 1 " 
-		  + " and a.codigo_atributo = 5) categorias "
-		  + " where categorias.cod_refere (+) = ordenacao.modelo "		
-		  + " and exists (select 1 from basi_010 " 
-	      + " where basi_010.nivel_estrutura = '1' "
-	      + " and basi_010.grupo_estrutura = categorias.cod_refere "
-	      + " and basi_010.item_ativo = 0) " ;
+	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarTempUnit){
 		
-        if (listarComQtde) {
-        	query += " and (ordenacao.pecas > 0) ";
-        }
-        
+		String query = " select ordenacao.referencia, ordenacao.tamanho, ordenacao.cor, ordenacao.descricao, nvl(categorias.des_categoria,' ') categoria, " 
+		+ " ordenacao.tempo_unitario tempoUnitario, " 
+		+ " ordenacao.qtde_estoque qtdeEstoque, ordenacao.qtde_demanda qtdeDemanda, ordenacao.qtde_processo qtdeProcesso, " 
+		+ " ordenacao.qtde_saldo qtdeSaldo, ordenacao.qtde_minutos qtdeMinutos, ordenacao.qtde_pecas qtdePecas, " 
+		+ " ordenacao.bloqueio_venda bloqueioVenda "
+		+ " from ( "
+		+ " select capac_cotas.referencia, capac_cotas.tamanho, capac_cotas.cor, capac_cotas.descricao, sum(capac_cotas.tempo_unitario) tempo_unitario, "   
+		+ " sum(capac_cotas.qtde_estoque) qtde_estoque, sum(capac_cotas.qtde_demanda) qtde_demanda, sum(capac_cotas.qtde_processo) qtde_processo, "
+		+ " sum(capac_cotas.qtde_saldo) qtde_saldo, sum(capac_cotas.qtde_minutos) qtde_minutos, sum(capac_cotas.qtde_pecas) qtde_pecas, "
+		+ " sum(capac_cotas.bloqueio_venda) bloqueio_venda "
+		+ " from ( "
+		+ " select orion_046.referencia, orion_046.tamanho, orion_046.cor , basi_010.narrativa descricao, orion_046.tempo_unitario, " 
+		+ " orion_046.qtde_estoque, orion_046.qtde_demanda, orion_046.qtde_processo, orion_046.qtde_saldo, "        
+		+ " orion_046.qtde_minutos, orion_046.qtde_pecas, "
+		+ " orion_046.bloqueio_venda "
+		+ " from orion_045, orion_046, basi_010 "  
+		+ " where orion_045.periodo = " + periodo
+		+ " and orion_045.colecao = " + colecao
+		+ " and orion_045.linha = " + linha                                    
+		+ " and orion_046.id_capacidade_cotas = orion_045.id "  
+		+ " and basi_010.nivel_estrutura (+) = '1' "
+		+ " and basi_010.grupo_estrutura (+) = orion_046.referencia " 
+		+ " and basi_010.subgru_estrutura (+) = orion_046.tamanho "
+		+ " and basi_010.item_estrutura (+) = orion_046.cor "
+		+ " union all " 
+		+ " select basi_030.referencia, basi_010.subgru_estrutura tamanho, basi_010.item_estrutura cor, basi_010.narrativa descricao, 0 tempo_unitario, "   
+		+ " 0 qtde_estoque, 0 qtde_demanda, 0 qtde_processo, 0 qtde_saldo, 0 qtde_minutos, 0 qtde_pecas, 0 bloqueio_venda "
+		+ " from basi_030, basi_010 "
+		+ " where basi_030.nivel_estrutura = '1' "  
+		+ " and basi_030.colecao = " + colecao
+		+ " and basi_030.linha_produto = " + linha                      
+		+ " and basi_010.nivel_estrutura = basi_030.nivel_estrutura " 
+		+ " and basi_010.grupo_estrutura = basi_030.referencia "
+		+ " and basi_010.item_ativo = 0 "
+		+ " union all "
+		+ " select a.referencia, b.subgru_estrutura tamanho, b.item_estrutura cor, b.narrativa descricao, 0 tempo_unitario, "   
+		+ " 0 qtde_estoque, 0 qtde_demanda, 0 qtde_processo, 0 qtde_saldo, 0 qtde_minutos, 0 qtde_pecas, 0 bloqueio_venda " 
+		+ " from basi_030 a, basi_010 b "
+		+ " where a.linha_produto = " + linha
+		+ " and a.colecao in (select 1 from basi_140 "  
+		+ " where basi_140.descricao_espanhol like '%PERMANENTE%') " 
+		+ " and exists (select 1 from basi_632 c "
+		+ " where c.cd_agrupador = " + colecao
+	    + "	and c.grupo_ref = a.referencia " 
+		+ " and c.subgrupo_ref = b.subgru_estrutura "
+		+ " and c.item_ref = b.item_estrutura ) "
+		+ " and b.nivel_estrutura = a.nivel_estrutura " 
+		+ " and b.grupo_estrutura = a.referencia "
+		+ " and b.item_ativo = 0 "                           
+		+ " ) capac_cotas " 
+		+ " group by capac_cotas.referencia, capac_cotas.tamanho, capac_cotas.cor, capac_cotas.descricao "       
+		+ " order by capac_cotas.referencia, capac_cotas.tamanho, capac_cotas.cor, capac_cotas.descricao "
+		+ " ) ordenacao, " 
+		+ " (select SUBSTR(a.chave_acesso,2,5) AS COD_REFERE, "  
+		+ " b.descr_atributo           AS DES_ATRIBUTO, "  
+		+ " a.codigo_atributo          AS COD_CATEGORIA, " 
+		+ " a.conteudo_atributo        AS DES_CATEGORIA, " 
+		+ " (select f.seq_escolha from basi_542 f "
+		+ " where f.familia_atributo = a.familia_atributo "  
+		+ " and f.codigo_atributo  = a.codigo_atributo "
+		+ " and f.conteudo_escolha = a.conteudo_atributo) COD_OPCAO_CATEGORIA "  
+		+ " from basi_544 a, basi_541 b "
+		+ " where b.codigo_atributo = a.codigo_atributo "  
+		+ " and a.familia_atributo = '000001' "
+		+ " and a.codigo_grupo_atrib = 1 "
+		+ " and a.codigo_subgrupo_atrib = 1 "  
+		+ " and a.codigo_atributo = 5) categorias " 
+		+ " where categorias.cod_refere (+) = ordenacao.referencia "     
+		+ " and exists (select 1 from basi_010 " 
+		+ " where basi_010.nivel_estrutura = '1' " 
+		+ " and basi_010.grupo_estrutura = categorias.cod_refere " 
+		+ " and basi_010.item_ativo = 0) ";
+				
         if (listarTempUnit) {
         	query += " and (ordenacao.tempo_unit > 0) ";
         }
@@ -105,15 +125,6 @@ public class CapacidadeCotasVendasCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutosCapacidadeProd.class));
 	}
 	
-	public List<ProdutosCapacidadeProd> findModelosByidCapacidadeCotas(String idCapacidadeCotas){
-		
-		String query = " select a.modelo modelo, b.descr_referencia descricao, a.qtde_minutos minutos, a.qtde_pecas pecas from orion_046 a, basi_030 b "
-				+ "	where a.id_capacidade_cotas = '" + idCapacidadeCotas + "'"
-				+ "	and b.referencia = a.modelo ";
-		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutosCapacidadeProd.class));
-	}
-
 	public float findTempoUnitarioByReferenciaColecao(String referencia, int colecao) {
 		
 		float minutosUnitario;

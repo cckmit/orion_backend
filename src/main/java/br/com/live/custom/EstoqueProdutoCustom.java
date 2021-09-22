@@ -114,6 +114,19 @@ public class EstoqueProdutoCustom {
 		return q.getResultList();
 	}
 
+	public int findQtdeEstoqueByProdutoAndDepositos(String nivel, String grupo, String sub, String item, String depositos) {
+		
+		String query = " select nvl(sum(a.qtde_estoque_atu),0) quantidade "
+		+ " from estq_040 a "
+		+ " where a.cditem_nivel99  = '" + nivel + "'"
+		+ " and a.cditem_grupo = '" + grupo + "'"
+		+ " and a.cditem_subgrupo = '" + sub + "'"
+		+ " and a.cditem_item = '" + item + "'"
+		+ " and a.deposito in (" + depositos + ")" ;
+				
+		return jdbcTemplate.queryForObject(query, Integer.class);		
+	}	
+	
 	public List<Deposito> findAllDepositos() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
@@ -125,4 +138,11 @@ public class EstoqueProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		
 	}
 	
+	public List<Deposito> findDepositosByCodigos(String depositos) {		
+
+		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
+		+ " where b.codigo_deposito in (" + depositos + ")";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		
+	}	
 }

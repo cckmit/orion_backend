@@ -314,10 +314,10 @@ public class OrdemProducaoServiceTransaction {
 				preOrdem.status = "ORDEM GERADA COM SUCESSO!";
 				listaPreOrdensConcluidas.add(preOrdem);
 
-			} catch (Exception e) {
-				System.out.println("EXCEPTION - ERRO GRAVACAO ORDEM - ID: " + idOrdemProducao);							
+			} catch (Exception e) {				
 				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível concluir a geração dessa ordem!"));
 				if (idOrdemProducao > 0) ordemProducaoCustom.excluirOrdemProducao(idOrdemProducao);
+				System.out.println(e);
 			}						
 		}
 								
@@ -363,30 +363,5 @@ public class OrdemProducaoServiceTransaction {
 		atualizarErrosPreOrdens(mapPreOrdensComErro);
 		
 		return true;
-	}	
-	
-	
-	/*
-	public List<ConsultaPreOrdemProducao> excluirOrdens(long idPlanoMestre, List<Long> preOrdens) {
-		
-		Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao> ();
-		List<PlanoMestrePreOrdem> listaPreOrdensConcluidas = new ArrayList<PlanoMestrePreOrdem> ();
-		
-		for (long idPreOrdem : preOrdens) {
-			PlanoMestrePreOrdem preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
-			
-			if (preOrdem.ordemGerada == 0) continue;
-			
-			if (!validarExclusaoOrdem(preOrdem, mapPreOrdensComErro)) continue;
-			ordemProducaoCustom.excluirOrdemProducao(preOrdem.ordemGerada);
-			
-			preOrdem.status = "ORDEM EXCLUÍDA COM SUCESSO!";		
-			listaPreOrdensConcluidas.add(preOrdem);
-		}
-		
-		atualizarPreOrdens(listaPreOrdensConcluidas);
-		atualizarErrosPreOrdens(mapPreOrdensComErro);
-		
-		return planoMestreCustom.findPreOrdensByIdPlanoMestre(idPlanoMestre);
-	}*/	
+	}			
 }

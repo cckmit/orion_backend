@@ -1,6 +1,9 @@
 package br.com.live.model;
 
 import java.util.Date;
+import java.util.List;
+
+import br.com.live.util.ConteudoChaveNumerica;
 
 public class CapacidadesCotasVendas {
 	private int periodo;
@@ -13,6 +16,8 @@ public class CapacidadesCotasVendas {
 	private int minutos;
 	private int pecas;
 	private String id;
+	private String depositos;
+	private List<ConteudoChaveNumerica> listaDepositos;
 	
 	public int getPeriodo() {
 		return periodo;

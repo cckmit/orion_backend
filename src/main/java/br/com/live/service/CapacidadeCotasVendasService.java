@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.CapacidadeCotasVendasCustom;
+import br.com.live.custom.DemandaProdutoCustom;
+import br.com.live.custom.EstoqueProdutoCustom;
+import br.com.live.custom.ProcessoProdutoCustom;
 import br.com.live.entity.CapacidadeCotasVendasCapa;
 import br.com.live.entity.CapacidadeCotasVendasItens;
 import br.com.live.model.CapacidadesCotasVendas;
@@ -13,6 +16,7 @@ import br.com.live.model.Categoria;
 import br.com.live.model.ProdutosCapacidadeProd;
 import br.com.live.repository.CapacidadeCotasVendasItensRepository;
 import br.com.live.repository.CapacidadeCotasVendasRepository;
+import br.com.live.util.ConvertePeriodo;
 
 @Service
 @Transactional
@@ -21,13 +25,21 @@ public class CapacidadeCotasVendasService {
 	private final CapacidadeCotasVendasCustom capacidadeCotasVendasCustom;
 	private final CapacidadeCotasVendasRepository capacidadeCotasVendasRepository;
 	private final CapacidadeCotasVendasItensRepository capacidadeCotasVendasItensRepository;
+	private final EstoqueProdutoCustom estoqueProdutoCustom; 
+	private final DemandaProdutoCustom demandaProdutoCustom; 
+	private final ProcessoProdutoCustom processoProdutoCustom;
 
 	public CapacidadeCotasVendasService(CapacidadeCotasVendasCustom capacidadeCotasVendasCustom,
 			CapacidadeCotasVendasRepository capacidadeCotasVendasRepository,
-			CapacidadeCotasVendasItensRepository capacidadeCotasVendasItensRepository) {
+			CapacidadeCotasVendasItensRepository capacidadeCotasVendasItensRepository,
+			EstoqueProdutoCustom estoqueProdutoCustom, DemandaProdutoCustom demandaProdutoCustom,
+			ProcessoProdutoCustom processoProdutoCustom) {
 		this.capacidadeCotasVendasCustom = capacidadeCotasVendasCustom;
 		this.capacidadeCotasVendasRepository = capacidadeCotasVendasRepository;
 		this.capacidadeCotasVendasItensRepository = capacidadeCotasVendasItensRepository;
+		this.estoqueProdutoCustom = estoqueProdutoCustom;
+		this.demandaProdutoCustom = demandaProdutoCustom;
+		this.processoProdutoCustom = processoProdutoCustom;
 	}
 
 	public List<CapacidadesCotasVendas> findAllCapacidadesCotasVendas() {
@@ -38,20 +50,16 @@ public class CapacidadeCotasVendasService {
 		return capacidadeCotasVendasCustom.findCategoriasProd();
 	}
 
-	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarComQtde, boolean listarTempUnit) {
-		return capacidadeCotasVendasCustom.findProdutosByCategoriaLinha(colecao, linha, periodo, listarComQtde, listarTempUnit);
+	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(int colecao, int linha, int periodo, boolean listarTempUnit) {
+		return capacidadeCotasVendasCustom.findProdutosByCategoriaLinha(colecao, linha, periodo, listarTempUnit);
 	}
 	
-	public List<ProdutosCapacidadeProd> findProdutosByIdCapacidadeCotas(String idCapacidadeCotas) {
-		return capacidadeCotasVendasCustom.findModelosByidCapacidadeCotas(idCapacidadeCotas);
-	}
-
 	public void deleteById(String idCapacidadeCotas) {
 		capacidadeCotasVendasRepository.deleteById(idCapacidadeCotas);
 		capacidadeCotasVendasItensRepository.deleteByIdCapa(idCapacidadeCotas);
 	}
 
-	public void saveCapacidadeCotasVendas(int periodo, int colecao, int linha, List<ProdutosCapacidadeProd> modelos, int minDistribuir) {
+	public void saveCapacidadeCotasVendas(int periodo, int colecao, int linha, int minDistribuir, int periodoInicial, int periodoFinal, String depositos) {
 		
 		boolean distribuirMinutosCapac = true;
 		
@@ -61,72 +69,70 @@ public class CapacidadeCotasVendasService {
 
 		// EDIÇÃO
 		if (dadosCapacidadeCapa != null) {
-
-			if (dadosCapacidadeCapa.minDistribuir == minDistribuir) distribuirMinutosCapac = false;
-			
-			dadosCapacidadeCapa.periodo = periodo;
-			dadosCapacidadeCapa.colecao = colecao;
-			dadosCapacidadeCapa.linha = linha;
+			if (dadosCapacidadeCapa.minDistribuir == minDistribuir) distribuirMinutosCapac = false;						
 			dadosCapacidadeCapa.minDistribuir = minDistribuir;
-
-			// INSERÇÃO
-		} else {
-			dadosCapacidadeCapa = new CapacidadeCotasVendasCapa(periodo, linha, colecao, minDistribuir);
+			dadosCapacidadeCapa.periodoInicial = periodoInicial;
+			dadosCapacidadeCapa.periodoFinal = periodoFinal;
+			dadosCapacidadeCapa.depositos = depositos;
+		// INSERÇÃO
+		} else {					
+			dadosCapacidadeCapa = new CapacidadeCotasVendasCapa(periodo, linha, colecao, minDistribuir, periodoInicial, periodoFinal, depositos);
 		}
 
 		capacidadeCotasVendasRepository.save(dadosCapacidadeCapa);
 
+		List<ProdutosCapacidadeProd> itens = capacidadeCotasVendasCustom.findProdutosByCategoriaLinha(colecao, linha, periodo, true);
+		atualizarDadosItens(colecao, periodoInicial, periodoFinal, depositos, itens);
+				
 		// Se alterou os minutos a distribuir, o sistema deve distribuir novamente
-		if (distribuirMinutosCapac) distribuirMinutos(colecao, minDistribuir, modelos);
+		if (distribuirMinutosCapac) distribuirMinutos(colecao, minDistribuir, itens);
 		
-		saveModelos(dadosCapacidadeCapa.id, modelos);
+		saveReferencias(dadosCapacidadeCapa.id, itens);
 	}
 
-	private void saveModelos(String idCapacidade, List<ProdutosCapacidadeProd> modelos) {
-		
-		capacidadeCotasVendasItensRepository.deleteByIdCapa(idCapacidade);
-		
-		for (ProdutosCapacidadeProd modelo : modelos) {			
-			CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, modelo.getModelo(), modelo.getTempoUnitario(),modelo.getMinutos(),modelo.getPecas());
-			capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);			
+	private void saveReferencias(String idCapacidade, List<ProdutosCapacidadeProd> itens) {			
+		capacidadeCotasVendasItensRepository.deleteByIdCapa(idCapacidade);		
+		for (ProdutosCapacidadeProd item : itens) {
+			CapacidadeCotasVendasItens capacidadeCotasItens = new CapacidadeCotasVendasItens(idCapacidade, item.getReferencia(), item.getTamanho(), item.getCor(), item.getTempoUnitario(), item.getQtdeEstoque(), item.getQtdeDemanda(), item.getQtdeProcesso(), item.getQtdeMinutos(), item.getQtdePecas(), item.getBloqueioVenda());
+			capacidadeCotasVendasItensRepository.save(capacidadeCotasItens);
 		}
 	}
 	
-	private void distribuirMinutos(int colecao, int minDistribuir, List<ProdutosCapacidadeProd> modelos) {
+	private void atualizarDadosItens(int colecao, int periodoInicial, int periodoFinal, String depositos, List<ProdutosCapacidadeProd> itens) { 
+		for (ProdutosCapacidadeProd item : itens) {
+			item.setTempoUnitario(capacidadeCotasVendasCustom.findTempoUnitarioByReferenciaColecao(item.getReferencia(), colecao));
+			item.setQtdeEstoque(estoqueProdutoCustom.findQtdeEstoqueByProdutoAndDepositos("1", item.getReferencia(), item.getTamanho(), item.getCor(), depositos));
+			item.setQtdeDemanda(demandaProdutoCustom.findQtdeDemandaByProdutoAndPeriodos("1", item.getReferencia(), item.getTamanho(), item.getCor(), periodoInicial, periodoFinal));
+			item.setQtdeProcesso(processoProdutoCustom.findQtdeProcessoByProdutoAndPeriodos("1", item.getReferencia(), item.getTamanho(), item.getCor(), ConvertePeriodo.parse(periodoInicial,500), ConvertePeriodo.parse(periodoFinal,500)));
+			item.setQtdeSaldo(item.getQtdeEstoque() + item.getQtdeProcesso() - item.getQtdeDemanda());			
+		}
+	}	
+	
+	private void distribuirMinutos(int colecao, int minDistribuir, List<ProdutosCapacidadeProd> itens) {
 		
 		int qtdePecas;
 		float minutosUnitario;
 		float minutosPadrao = 0;
-		int totalModelos;
+		int qtdeItensTempoUnitario;
 		
-		totalModelos = salvarTempoUnitario(modelos, colecao);
+		qtdeItensTempoUnitario = getQtdeItensComTempoUnitario(itens);
 		
-		if (totalModelos > 0) minutosPadrao = (float) ((float) minDistribuir / (float) totalModelos);
+		if (qtdeItensTempoUnitario > 0) minutosPadrao = (float) ((float) minDistribuir / (float) qtdeItensTempoUnitario);
 		
-		for (ProdutosCapacidadeProd modelo : modelos) {
-			
-			minutosUnitario = modelo.getTempoUnitario();
-			
-			qtdePecas = 0;
-			
-			if (minutosUnitario > 0.0000) qtdePecas = (int )(minutosPadrao / minutosUnitario);							
-
-			modelo.setPecas(qtdePecas);
-			if (minutosUnitario > 0) modelo.setMinutos(minutosPadrao);			
+		for (ProdutosCapacidadeProd item : itens) {			
+			minutosUnitario = item.getTempoUnitario();			
+			qtdePecas = 0;			
+			if (minutosUnitario > 0.0000) qtdePecas = (int ) (minutosPadrao / minutosUnitario);							
+			item.setQtdePecas(qtdePecas);
+			if (minutosUnitario > 0) item.setQtdeMinutos(minutosPadrao);			
 		}	
 	}
 	
-	private int salvarTempoUnitario(List<ProdutosCapacidadeProd> modelos, int colecao) {
-		float minutosUnitario;
-		int sequencia = 0;
-		
-		for (ProdutosCapacidadeProd modelo : modelos) {
-			minutosUnitario = capacidadeCotasVendasCustom.findTempoUnitarioByReferenciaColecao(modelo.getModelo(), colecao);
-			
-			if (minutosUnitario > 0) sequencia++;
-			
-			modelo.setTempoUnitario(minutosUnitario);
-		}
-		return sequencia;
+	private int getQtdeItensComTempoUnitario(List<ProdutosCapacidadeProd> itens) {
+		int qtde = 0;		
+		for (ProdutosCapacidadeProd item : itens) {			
+			if (item.getTempoUnitario() > 0) qtde++;			
+		}		
+		return qtde;
 	}
 }
