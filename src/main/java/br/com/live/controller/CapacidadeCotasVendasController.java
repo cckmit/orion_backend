@@ -22,45 +22,50 @@ import br.com.live.util.ConteudoChaveNumerica;
 @CrossOrigin
 @RequestMapping("/cotas-vendas")
 public class CapacidadeCotasVendasController {
-	
+
 	private CapacidadeCotasVendasService capacidadeCotasVendasService;
 	private CapacidadeCotasVendasRepository capacidadeCotasVendasRepository;
-	
-	public CapacidadeCotasVendasController(CapacidadeCotasVendasService capacidadeCotasVendasService, CapacidadeCotasVendasRepository capacidadeCotasVendasRepository) {
+
+	public CapacidadeCotasVendasController(CapacidadeCotasVendasService capacidadeCotasVendasService,
+			CapacidadeCotasVendasRepository capacidadeCotasVendasRepository) {
 		this.capacidadeCotasVendasService = capacidadeCotasVendasService;
 		this.capacidadeCotasVendasRepository = capacidadeCotasVendasRepository;
 	}
-	
+
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public List<CapacidadesCotasVendas> findAllCapacidadesCotasVendas() {
 		return capacidadeCotasVendasService.findAllCapacidadesCotasVendas();
 	}
-	
+
 	@RequestMapping(value = "/id-cotas/capa/{idCapacidadeCotas}", method = RequestMethod.GET)
-	public CapacidadeCotasVendasCapa findCapacidadesCotasVendasById(@PathVariable("idCapacidadeCotas") String idCapacidadeCotas) {
+	public CapacidadeCotasVendasCapa findCapacidadesCotasVendasById(
+			@PathVariable("idCapacidadeCotas") String idCapacidadeCotas) {
 		return capacidadeCotasVendasRepository.findByIdCapacidadeCotasVendas(idCapacidadeCotas);
 	}
-	
+
 	@RequestMapping(value = "/categorias", method = RequestMethod.GET)
 	public List<Categoria> findCategoriasProd() {
 		return capacidadeCotasVendasService.findCategoriasProd();
 	}
-	
+
 	@RequestMapping(value = "/itens/{colecao}/{linha}/{periodo}/{listarTempUnit}", method = RequestMethod.GET)
 	public List<ProdutosCapacidadeProd> findProdutosByCategoriaLinha(@PathVariable("colecao") int colecao, @PathVariable("linha") int linha, @PathVariable("periodo") int periodo, @PathVariable("listarTempUnit") boolean listarTempUnit) {
 		return capacidadeCotasVendasService.findProdutosByCategoriaLinha(colecao, linha, periodo, listarTempUnit);
 	}
-		
+
 	@RequestMapping(value = "/{idCapacidadeCotas}", method = RequestMethod.DELETE)
 	public List<CapacidadesCotasVendas> deleteById(@PathVariable("idCapacidadeCotas") String idCapacidadeCotas) {
 		capacidadeCotasVendasService.deleteById(idCapacidadeCotas);
 		return capacidadeCotasVendasService.findAllCapacidadesCotasVendas();
 	}
-	
+
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public List<ProdutosCapacidadeProd> saveCapacidadeCotasVendas(@RequestBody BodyCapacidadeCotasVendas body) {
-		capacidadeCotasVendasService.saveCapacidadeCotasVendas(body.periodo, body.colecao, body.linha, body.minDistribuir, body.periodoFinal, body.periodoInicial, ConteudoChaveNumerica.parseValueToString(body.depositos));
-		return capacidadeCotasVendasService.findProdutosByCategoriaLinha(body.colecao, body.linha, body.periodo, body.listarTempUnit);
+		capacidadeCotasVendasService.saveCapacidadeCotasVendas(body.periodo, body.colecao, body.linha,
+				body.minDistribuir, body.periodoInicial, body.periodoFinal,
+				ConteudoChaveNumerica.parseValueToString(body.depositos), body.itens);
+		return capacidadeCotasVendasService.findProdutosByCategoriaLinha(body.colecao, body.linha, body.periodo,
+				body.listarTempUnit);
 	}
 
 }

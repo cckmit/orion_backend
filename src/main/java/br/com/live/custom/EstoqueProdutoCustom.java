@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.EstoqueProduto;
 import br.com.live.model.Deposito;
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.FormataParametrosPlanoMestre;
 import br.com.live.util.ParametrosPlanoMestre;
 

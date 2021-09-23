@@ -16,12 +16,43 @@ public class CapacidadesCotasVendas {
 	private int minutos;
 	private int pecas;
 	private String id;
-	private String depositos;
-	private List<ConteudoChaveNumerica> listaDepositos;
+	private String depositos;	
+	private int periodoInicial;
+	private int periodoFinal;
+	private int minutosDistribuir;
+	private List<Deposito> listaDepositos;
+	private List<ConteudoChaveNumerica> listaContChaveNumDepositos;
 	
-	private void parseListaDepositos(String depositos) {
-		
-		
+	public List<Deposito> getListaDepositos() {
+		return listaDepositos;
+	}
+	public void setListaDepositos(List<Deposito> listaDepositos) {						
+		this.listaDepositos = listaDepositos;
+		this.listaContChaveNumDepositos = Deposito.parseToConteudoChaveNumerica(listaDepositos);
+	}
+	public List<ConteudoChaveNumerica> getListaContChaveNumDepositos() {
+		return listaContChaveNumDepositos;
+	}
+	public void setListaContChaveNumDepositos(List<ConteudoChaveNumerica> listaContChaveNumDepositos) {
+		this.listaContChaveNumDepositos = listaContChaveNumDepositos;
+	}
+	public int getPeriodoInicial() {
+		return periodoInicial;
+	}
+	public void setPeriodoInicial(int periodoInicial) {
+		this.periodoInicial = periodoInicial;
+	}
+	public int getPeriodoFinal() {
+		return periodoFinal;
+	}
+	public void setPeriodoFinal(int periodoFinal) {
+		this.periodoFinal = periodoFinal;
+	}
+	public int getMinutosDistribuir() {
+		return minutosDistribuir;
+	}
+	public void setMinutosDistribuir(int minutosDistribuir) {
+		this.minutosDistribuir = minutosDistribuir;
 	}
 	
 	public String getDepositos() {
@@ -29,14 +60,7 @@ public class CapacidadesCotasVendas {
 	}
 	public void setDepositos(String depositos) {
 		this.depositos = depositos;
-	}
-	public List<ConteudoChaveNumerica> getListaDepositos() {
-		return listaDepositos;
-	}
-	public void setListaDepositos(List<ConteudoChaveNumerica> listaDepositos) {
-		this.listaDepositos = listaDepositos;
-	}
-	
+	}	
 	public int getPeriodo() {
 		return periodo;
 	}

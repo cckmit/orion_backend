@@ -20,15 +20,20 @@ public class CapacidadeCotasVendasCustom {
 	}
 	
 	public List<CapacidadesCotasVendas> findAllCapacidadesCotasVendas() {
-		
-		String query = " select a.periodo, b.data_ini_periodo dataInicial, b.data_fim_periodo dataFinal, a.id, a.linha, c.descricao_linha descLinha, a.colecao, d.descr_colecao descColecao, nvl(sum(e.qtde_minutos),0) minutos, nvl(sum(e.qtde_pecas),0) pecas from orion_045 a, pcpc_010 b, basi_120 c, basi_140 d, orion_046 e "
-				+ " where b.periodo_producao = a.periodo "
-				+ " and b.area_periodo = 1 "
-				+ " and c.linha_produto = a.linha "
-				+ " and d.colecao = a.colecao"
-				+ " and e.id_capacidade_cotas (+) = a.id "
-				+ " group by a.periodo, b.data_ini_periodo, b.data_fim_periodo, a.linha, c.descricao_linha, a.colecao, d.descr_colecao, a.id "
-				+ " order by a.periodo, a.linha, a.colecao ";
+
+		String query = " select a.periodo, b.data_ini_periodo dataInicial, b.data_fim_periodo dataFinal, a.id, a.linha, c.descricao_linha descLinha, "		
+		 + " a.colecao, d.descr_colecao descColecao, "				
+ 		 + " a.periodo_inicial periodoInicial, a.periodo_final periodoFinal, a.depositos depositos, a.tempo_total minutosDistribuir, "
+		 + " nvl(sum(e.qtde_minutos),0) minutos, nvl(sum(e.qtde_pecas),0) pecas "
+		 + " from orion_045 a, pcpc_010 b, basi_120 c, basi_140 d, orion_046 e "
+		 + " where b.periodo_producao = a.periodo "
+		 + " and b.area_periodo = 1 "
+		 + " and c.linha_produto = a.linha "
+		 + " and d.colecao = a.colecao "
+		 + " and e.id_capacidade_cotas (+) = a.id "
+		 + " group by a.periodo, b.data_ini_periodo, b.data_fim_periodo, a.linha, c.descricao_linha, a.colecao, d.descr_colecao, a.id, "
+		 + " a.periodo_inicial, a.periodo_final, a.depositos, a.tempo_total "
+		 + " order by a.periodo, a.linha, a.colecao ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadesCotasVendas.class));
 	}
@@ -117,11 +122,11 @@ public class CapacidadeCotasVendasCustom {
 		+ " where basi_010.nivel_estrutura = '1' " 
 		+ " and basi_010.grupo_estrutura = categorias.cod_refere " 
 		+ " and basi_010.item_ativo = 0) ";
-				
-        if (listarTempUnit) {
-        	query += " and (ordenacao.tempo_unit > 0) ";
-        }
 		
+        if (listarTempUnit) {
+        	query += " and ordenacao.tempo_unitario > 0 ";
+        }
+        
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutosCapacidadeProd.class));
 	}
 	
