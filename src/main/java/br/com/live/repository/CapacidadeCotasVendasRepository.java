@@ -8,11 +8,6 @@ import br.com.live.entity.CapacidadeCotasVendasCapa;
 
 @Repository
 public interface CapacidadeCotasVendasRepository extends JpaRepository<CapacidadeCotasVendasCapa, String> {
-	
-	
-	@Query("SELECT u FROM CapacidadeCotasVendasCapa u where u.id = :idCotasVendas")
-	CapacidadeCotasVendasCapa findByIdCapacidadeCotasVendas(String idCotasVendas);
-	
-	@Query("SELECT u FROM CapacidadeCotasVendasCapa u where u.periodo = :periodo and u.colecao = :colecao and u.linha = :linha")
-	CapacidadeCotasVendasCapa findByPeriodoColecaoLinha(int periodo, int colecao, int linha);
+	CapacidadeCotasVendasCapa findById(long idCotasVendas);
+	void deleteById(long idCapacidadeCotas);
 }

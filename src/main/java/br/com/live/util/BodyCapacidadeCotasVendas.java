@@ -2,16 +2,18 @@ package br.com.live.util;
 
 import java.util.List;
 
-import br.com.live.model.ProdutosCapacidadeProd;
+import br.com.live.model.CapacidadeCotasVendasDadosItem;
 
-public class BodyCapacidadeCotasVendas {
-	public int periodo;
-	public int colecao;
-	public int linha;
-	public int minDistribuir;
-	public int periodoInicial;
-	public int periodoFinal;	
+public class BodyCapacidadeCotasVendas {	
+	public long idCapacidadeCotas;
+	public String descricao;
+	public int minutosPeriodo;
+	public int periodoAtualInicio;
+	public int periodoAtualFinal;
+	public int periodoAnaliseInicio;
+	public int periodoAnaliseFinal;	
+	public List<ConteudoChaveNumerica> colecoes;
 	public List<ConteudoChaveNumerica> depositos;	
 	public boolean listarTempUnit;	
-	public List<ProdutosCapacidadeProd> itens;
+	public List<CapacidadeCotasVendasDadosItem> itens;
 }

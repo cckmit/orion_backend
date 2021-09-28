@@ -1,28 +1,38 @@
 package br.com.live.model;
 
-import java.util.Date;
 import java.util.List;
 
 import br.com.live.util.ConteudoChaveNumerica;
 
 public class CapacidadesCotasVendas {
-	private int periodo;
-	private Date dataInicial;
-	private Date dataFinal;
-	private int linha;
-	private String descLinha;
-	private int colecao;
-	private String descColecao;
-	private int minutos;
-	private int pecas;
-	private String id;
-	private String depositos;	
-	private int periodoInicial;
-	private int periodoFinal;
-	private int minutosDistribuir;
+	
+	private long id;
+	private String descricao;
+	private String colecoes;
+	private String depositos;
+	private int periodoAtualInicio;
+	private int periodoAtualFinal;	
+	private int periodoAnaliseInicio;
+	private int periodoAnaliseFinal;
+	private int minutosPeriodo;	
+	private List<Colecao> listaColecoes;
+	private List<ConteudoChaveNumerica> listaContChaveNumColecoes;	
 	private List<Deposito> listaDepositos;
 	private List<ConteudoChaveNumerica> listaContChaveNumDepositos;
 	
+	public List<Colecao> getListaColecoes() {
+		return listaColecoes;
+	}	
+	public void setListaColecoes(List<Colecao> listaColecoes) {		
+		this.listaColecoes = listaColecoes;
+		this.listaContChaveNumColecoes = Colecao.parseToConteudoChaveNumerica(listaColecoes);
+	}
+	public List<ConteudoChaveNumerica> getListaContChaveNumColecoes() {
+		return listaContChaveNumColecoes;
+	}
+	public void setListaContChaveNumColecoes(List<ConteudoChaveNumerica> listaContChaveNumColecoes) {
+		this.listaContChaveNumColecoes = listaContChaveNumColecoes;
+	}	
 	public List<Deposito> getListaDepositos() {
 		return listaDepositos;
 	}
@@ -36,91 +46,58 @@ public class CapacidadesCotasVendas {
 	public void setListaContChaveNumDepositos(List<ConteudoChaveNumerica> listaContChaveNumDepositos) {
 		this.listaContChaveNumDepositos = listaContChaveNumDepositos;
 	}
-	public int getPeriodoInicial() {
-		return periodoInicial;
-	}
-	public void setPeriodoInicial(int periodoInicial) {
-		this.periodoInicial = periodoInicial;
-	}
-	public int getPeriodoFinal() {
-		return periodoFinal;
-	}
-	public void setPeriodoFinal(int periodoFinal) {
-		this.periodoFinal = periodoFinal;
-	}
-	public int getMinutosDistribuir() {
-		return minutosDistribuir;
-	}
-	public void setMinutosDistribuir(int minutosDistribuir) {
-		this.minutosDistribuir = minutosDistribuir;
-	}
-	
 	public String getDepositos() {
 		return depositos;
 	}
 	public void setDepositos(String depositos) {
 		this.depositos = depositos;
 	}	
-	public int getPeriodo() {
-		return periodo;
-	}
-	public void setPeriodo(int periodo) {
-		this.periodo = periodo;
-	}
-	public Date getDataInicial() {
-		return dataInicial;
-	}
-	public void setDataInicial(Date dataInicial) {
-		this.dataInicial = dataInicial;
-	}
-	public Date getDataFinal() {
-		return dataFinal;
-	}
-	public void setDataFinal(Date dataFinal) {
-		this.dataFinal = dataFinal;
-	}
-	public int getLinha() {
-		return linha;
-	}
-	public void setLinha(int linha) {
-		this.linha = linha;
-	}
-	public String getDescLinha() {
-		return descLinha;
-	}
-	public void setDescLinha(String descLinha) {
-		this.descLinha = descLinha;
-	}
-	public int getColecao() {
-		return colecao;
-	}
-	public void setColecao(int colecao) {
-		this.colecao= colecao;
-	}
-	public String getDescColecao() {
-		return descColecao;
-	}
-	public void setDescColecao(String descColecao) {
-		this.descColecao = descColecao;
-	}
-	public int getMinutos() {
-		return minutos;
-	}
-	public void setMinutos(int minutos) {
-		this.minutos = minutos;
-	}
-	public int getPecas() {
-		return pecas;
-	}
-	public void setPecas(int pecas) {
-		this.pecas = pecas;
-	}
-	
-	public String getId() {
+	public long getId() {
 		return id;
 	}
-	
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
+	}
+	public String getDescricao() {
+		return descricao;
+	}
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+	public String getColecoes() {
+		return colecoes;
+	}
+	public void setColecoes(String colecoes) {
+		this.colecoes = colecoes;
+	}
+	public int getPeriodoAtualInicio() {
+		return periodoAtualInicio;
+	}
+	public void setPeriodoAtualInicio(int periodoAtualInicio) {
+		this.periodoAtualInicio = periodoAtualInicio;
+	}
+	public int getPeriodoAtualFinal() {
+		return periodoAtualFinal;
+	}
+	public void setPeriodoAtualFinal(int periodoAtualFinal) {
+		this.periodoAtualFinal = periodoAtualFinal;
+	}
+	public int getPeriodoAnaliseInicio() {
+		return periodoAnaliseInicio;
+	}
+	public void setPeriodoAnaliseInicio(int periodoAnaliseInicio) {
+		this.periodoAnaliseInicio = periodoAnaliseInicio;
+	}
+	public int getPeriodoAnaliseFinal() {
+		return periodoAnaliseFinal;
+	}
+	public void setPeriodoAnaliseFinal(int periodoAnaliseFinal) {
+		this.periodoAnaliseFinal = periodoAnaliseFinal;
+	}
+	public int getMinutosPeriodo() {
+		return minutosPeriodo;
+	}
+	public void setMinutosPeriodo(int minutosPeriodo) {
+		this.minutosPeriodo = minutosPeriodo;
 	}
 }

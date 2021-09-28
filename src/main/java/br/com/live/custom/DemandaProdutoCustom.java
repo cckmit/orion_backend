@@ -151,7 +151,7 @@ public class DemandaProdutoCustom {
 		return parseDemandaProdutoPlano(q.getResultList(), parametrosFormatados);
 	}
 
-	public int findQtdeDemandaByProdutoAndPeriodos(String nivel, String grupo, String sub, String item, int periodoInicial, int periodoFinal) {
+	public int findQtdeDemandaByProdutoAndPeriodos(String nivel, String grupo, String sub, String item, int periodoInicial, int periodoFinal, int periodoInicialIgnorar, int periodoFinalIgnorar) {
 		
 		String query = " select nvl(sum(demanda.quantidade),0) quantidade "
 		+ " from ( "
@@ -173,7 +173,8 @@ public class DemandaProdutoCustom {
 		+ " and demanda.grupo = '" + grupo + "'"
 		+ " and demanda.sub = '" + sub + "'" 
 		+ " and demanda.item = '" + item + "'"
-		+ " and demanda.periodo between " + periodoInicial + " and " + periodoFinal;
+		+ " and demanda.periodo between " + periodoInicial + " and " + periodoFinal
+		+ " and not demanda.periodo between " + periodoInicialIgnorar + " and " + periodoFinalIgnorar;
 
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
