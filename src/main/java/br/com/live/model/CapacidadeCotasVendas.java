@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class CapacidadeCotasVendasDadosItem {
+public class CapacidadeCotasVendas {
 
 	private String referencia;
 	private String tamanho;
@@ -14,7 +14,6 @@ public class CapacidadeCotasVendasDadosItem {
 	private int qtdeDemanda; 
 	private int qtdeProcesso;  
 	private int qtdeSaldo; 
-	private int bloqueioVenda; 
 	
 	public String getReferencia() {
 		return referencia;
@@ -75,12 +74,6 @@ public class CapacidadeCotasVendasDadosItem {
 	}
 	public void setQtdeSaldo(int qtdeSaldo) {
 		this.qtdeSaldo = qtdeSaldo;
-	}
-	public int getBloqueioVenda() {
-		return bloqueioVenda;
-	}
-	public void setBloqueioVenda(int bloqueioVenda) {
-		this.bloqueioVenda = bloqueioVenda;
 	}
 	public int getQtdeDemandaAtual() {
 		return qtdeDemandaAtual;

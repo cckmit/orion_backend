@@ -1,6 +1,8 @@
-DROP TABLE orion_045;
+DROP TABLE orion_047;
 DROP TABLE orion_046;
+DROP TABLE orion_045;
 
+/*
 CREATE TABLE orion_045 (
 	id number(9),
 	descricao varchar2(100) default '',
@@ -15,9 +17,9 @@ CREATE TABLE orion_045 (
 );
 
 comment on table orion_045 is 'Cotas de Vendas - Capa';
-
+*/
 ------------
-
+/*
 CREATE TABLE orion_046 (
     id varchar2(50), -- id_cotas + referencia + tamanho + cor
     id_capacidade_cotas number(9) default 0,    
@@ -30,9 +32,9 @@ CREATE TABLE orion_046 (
 );
 
 comment on table orion_046 is 'Cotas de Vendas - Itens';
-
+*/
 ------------
-
+/*
 CREATE TABLE orion_047 (
     id varchar2(50), -- referencia + tamanho + cor + periodo
     referencia varchar2(5) default '',
@@ -44,3 +46,4 @@ CREATE TABLE orion_047 (
 );
 
 comment on table orion_047 is 'Cota de Venda por Produto';
+*/
