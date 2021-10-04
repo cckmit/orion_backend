@@ -170,16 +170,5 @@ public class CalculoDistribuicaoPecas {
 		}
 			
 		return qtdeProgramar;
-	}	
-	
-	private int somaQtdeSugestaoProdutos(List<ProdutoPlanoMestre> produtos) {
-		
-		int qtdeSugestao = 0;
-		
-		for (ProdutoPlanoMestre produto : produtos) {
-			qtdeSugestao += produto.qtdeSugestao;
-		}
-		
-		return qtdeSugestao;
-	}
+	}		
 }

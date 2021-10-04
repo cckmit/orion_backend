@@ -152,16 +152,11 @@ public class OrdemProducaoServiceTransaction {
 			
 			dadosFileteEstrutura = produtoCustom.findDadosFileteEstrutura(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, dadosEstrutura.sequencia, preOrdem.alternativa);
 									 
-			System.out.println("seq: " + dadosEstrutura.sequencia + " - tipo corte: " + dadosFileteEstrutura.tipoCorte);
-			
 			if (dadosFileteEstrutura.tipoCorte == 2) {				
 				dadosFileteRisco = produtoCustom.findDadosFileteRisco(preOrdem.grupo, riscoPadrao, dadosEstrutura.sequencia, preOrdem.alternativa);
 				
 				larguraFilete = dadosFileteEstrutura.larguraFilete; 
 				larguraRisco = dadosFileteRisco.larguraRisco;
-				
-				System.out.println("larguraRisco: " + larguraRisco);
-				System.out.println("larguraFilete: " + larguraFilete);				
 				
 				if (larguraRisco == 0.000) {				
 					dadosFileteTecido = produtoCustom.findDadosFileteTecidos(dadosEstrutura.grupoComp, subTecido);
@@ -172,30 +167,18 @@ public class OrdemProducaoServiceTransaction {
 				if (larguraRisco == 0.000) larguraRisco = 1.000;
 				if (larguraFilete == 0.000) larguraFilete = 1.000;
 				
-				System.out.println("larguraRisco: " + larguraRisco);
-				System.out.println("larguraFilete: " + larguraFilete);
-				System.out.println("qtde: " + preOrdemItem.quantidade + " comprimento: " + dadosFileteEstrutura.comprimentoFilete);
-				
 				metrosOrdem = ((double) preOrdemItem.quantidade * dadosFileteEstrutura.comprimentoFilete);					
-				
-				System.out.println("metrosOrdem: " + metrosOrdem);
 				
 				tirasLargura = larguraRisco / larguraFilete;
 				
 				if (tirasLargura == 0.000) tirasLargura = 1.000; 
 				
-				System.out.println("tirasLargura: " + tirasLargura);
-				
 				metrosTecido = metrosOrdem / tirasLargura; 
-				
-				System.out.println("metrosTecido: " + metrosTecido);
 				
 				if (dadosEstrutura.percPerdas > 0.000) {						
 					qtdePerdas = (dadosEstrutura.percPerdas * metrosTecido) / 100;
 					metrosTecido += qtdePerdas;  
 				}
-				
-				System.out.println("metrosTecido: " + metrosTecido);					
 				
 				qtdeTotMetrosTecido += metrosTecido;		            								
 			}
@@ -282,9 +265,6 @@ public class OrdemProducaoServiceTransaction {
 	}	
 	
 	public boolean gerarOrdem(long idPreOrdem) {
-		
-		System.out.println("Pré ordens: " + idPreOrdem);
-		
 		boolean ordemValida = true;	
 		int idOrdemProducao=0;		
 		
@@ -303,8 +283,7 @@ public class OrdemProducaoServiceTransaction {
 			
 			try {														
 				idOrdemProducao = gravarCapa(preOrdem);
-				
-				System.out.println("TRY - GRAVACAO ORDEM - ID: " + idOrdemProducao);				
+								
 				for (PlanoMestrePreOrdemItem preOrdemItem : preOrdemItens) {																							
 					gravarDadosItem(idOrdemProducao, preOrdem, preOrdemItem);					
 				}
@@ -315,7 +294,7 @@ public class OrdemProducaoServiceTransaction {
 				listaPreOrdensConcluidas.add(preOrdem);
 
 			} catch (Exception e) {				
-				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível concluir a geração dessa ordem!"));
+				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Revise o limite de pacotes do periodo: 99999!"));
 				if (idOrdemProducao > 0) ordemProducaoCustom.excluirOrdemProducao(idOrdemProducao);
 				System.out.println(e);
 			}						
