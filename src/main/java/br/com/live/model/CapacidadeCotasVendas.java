@@ -1,20 +1,19 @@
 package br.com.live.model;
 
-public class ProdutosCapacidadeProd {
+public class CapacidadeCotasVendas {
 
 	private String referencia;
 	private String tamanho;
 	private String cor;	
 	private String descricao;
 	private String categoria;
-	private float tempoUnitario;	
+	private float tempoUnitario;
+	private int qtdeDemandaAtual;
+	private float qtdeMinutosDemandaAtual;	
 	private int qtdeEstoque; 
 	private int qtdeDemanda; 
 	private int qtdeProcesso;  
 	private int qtdeSaldo; 
-	private float qtdeMinutos; 
-	private int qtdePecas; 
-	private int bloqueioVenda; 
 	
 	public String getReferencia() {
 		return referencia;
@@ -76,22 +75,16 @@ public class ProdutosCapacidadeProd {
 	public void setQtdeSaldo(int qtdeSaldo) {
 		this.qtdeSaldo = qtdeSaldo;
 	}
-	public float getQtdeMinutos() {
-		return qtdeMinutos;
+	public int getQtdeDemandaAtual() {
+		return qtdeDemandaAtual;
 	}
-	public void setQtdeMinutos(float qtdeMinutos) {
-		this.qtdeMinutos = qtdeMinutos;
+	public void setQtdeDemandaAtual(int qtdeDemandaAtual) {
+		this.qtdeDemandaAtual = qtdeDemandaAtual;
 	}
-	public int getQtdePecas() {
-		return qtdePecas;
+	public float getQtdeMinutosDemandaAtual() {
+		return qtdeMinutosDemandaAtual;
 	}
-	public void setQtdePecas(int qtdePecas) {
-		this.qtdePecas = qtdePecas;
-	}
-	public int getBloqueioVenda() {
-		return bloqueioVenda;
-	}
-	public void setBloqueioVenda(int bloqueioVenda) {
-		this.bloqueioVenda = bloqueioVenda;
+	public void setQtdeMinutosDemandaAtual(float qtdeMinutosDemandaAtual) {
+		this.qtdeMinutosDemandaAtual = qtdeMinutosDemandaAtual;
 	}
 }

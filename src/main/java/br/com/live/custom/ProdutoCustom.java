@@ -296,6 +296,14 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
 	}
 
+	public List<Colecao> findColecoesByCodigos(String colecoes) {		
+
+		String query = " select b.colecao id, b.descr_colecao descricao from basi_140 b "
+		+ " where b.colecao in (" + colecoes + ")";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));		
+	}	
+	
 	public List<LinhaProduto> findAllLinhasProdutos() {
 
 		String query = " select b.linha_produto id, b.descricao_linha descricao from basi_120 b "

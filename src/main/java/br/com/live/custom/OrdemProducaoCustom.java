@@ -48,11 +48,60 @@ public class OrdemProducaoCustom {
 		query = " update empr_001 set empr_001.ordem_confeccao = " + idUltimaOrdemProducao;
 		jdbcTemplate.update(query);
 		
+		System.out.println("findNextIdOrdem: " + idUltimaOrdemProducao);
+		
 		return idUltimaOrdemProducao;
 	}
 	
+	private boolean verificaPacoteValido(int periodo, int idPacote) {
+		
+		if (idPacote == 0) return false;
+		
+		int encontrou;
+		
+        String query = " select 1 "
+        + " from pcpc_040 "                          
+        + " where pcpc_040.periodo_producao = " + periodo 
+        + " and pcpc_040.ordem_confeccao = " + idPacote;
+
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+		
+		System.out.println("verificaPacoteValido: " + (encontrou == 0));
+		
+		return (encontrou == 0);
+	}
+	
+	private int findIdPacoteVago(int periodo) {
+		
+		int id;
+		
+		String query = " select min(pcpc_040.ordem_confeccao) + 1 "
+		+ " from pcpc_040 "                          
+		+ " where pcpc_040.periodo_producao = " + periodo 
+		+ " and not exists (select 1 from pcpc_040 a "
+		+ " where a.periodo_producao = " + periodo                       
+		+ " and a.ordem_confeccao = (pcpc_040.ordem_confeccao + 1)) " ;
+		
+		try {
+			id = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			id = 0;
+		}
+	
+		if (!verificaPacoteValido(periodo, id)) id = 0;  
+		
+		System.out.println("findIdPacoteVago: " + id);
+		
+		return id;
+	}
+		
 	public int findNextIdPacote(int periodo) {
 		
+		boolean atualizaUltimoPacote = true;
 		Integer idPacoteParam = 0;		
 		String query = "";
 		
@@ -68,13 +117,21 @@ public class OrdemProducaoCustom {
 		
 		idPacoteParam++;
 		
-		query = " update pcpc_010 "
-        + " set pcpc_010.ultimo_numero = " + idPacoteParam 
-        + " where pcpc_010.area_periodo = 1 "
-        + " and pcpc_010.periodo_producao = " + periodo; 
-			
-		jdbcTemplate.update(query);
-			
+		if (idPacoteParam > 99999) atualizaUltimoPacote = false; 
+		
+		if (atualizaUltimoPacote) {		
+			query = " update pcpc_010 "
+	        + " set pcpc_010.ultimo_numero = " + idPacoteParam 
+	        + " where pcpc_010.area_periodo = 1 "
+	        + " and pcpc_010.periodo_producao = " + periodo; 
+				
+			jdbcTemplate.update(query);			
+		} else {
+			idPacoteParam = findIdPacoteVago(periodo);
+		}		
+		
+		if (idPacoteParam == 0) idPacoteParam = 999999; // Se não encontrou um pacote valido retorna com 6 digitos para forçar erro de inserção.
+		
 		System.out.println("findNextIdPacote: " + idPacoteParam);
 		
 		return idPacoteParam;
@@ -200,7 +257,7 @@ public class OrdemProducaoCustom {
 	public void gravarPacoteConfeccao(int periodo, int idPacote, int estagio, int idOrdemProducao, String grupo, String sub, String item, int quantidade, 
 			int estagioAnterior, int familia, int seqOperacao, int estagioDepende, int seqEstagio) {
 		
-		System.out.println("gravarTecidosEnfesto: " + idOrdemProducao + " -> idPacote: " + idPacote + " periodo:  " + periodo + " quantidade: " + quantidade);
+		System.out.println("gravarPacoteConfeccao: " + idOrdemProducao + " -> idPacote: " + idPacote + " periodo:  " + periodo + " estagio: " + estagio + " quantidade: " + quantidade);
 		
 		String query = " insert into pcpc_040 ( "                
 	    + " periodo_producao, ordem_confeccao, "
@@ -543,7 +600,5 @@ public class OrdemProducaoCustom {
 		}
 		
 		return atributo;
-	}
-	
-	
+	}	
 }
