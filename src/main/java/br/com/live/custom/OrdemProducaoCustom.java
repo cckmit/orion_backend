@@ -592,7 +592,8 @@ public class OrdemProducaoCustom {
 		try {
 			descCategoria = jdbcTemplate.queryForObject(sqlCategoria, String.class);
 			
-			descCategoria = descCategoria.substring(0, 8);
+			if (descCategoria.length() > 8) descCategoria = descCategoria.substring(0, 8);
+			
 			atributo = atributo + " - " + descCategoria;
 			
 		} catch (Exception e) {
