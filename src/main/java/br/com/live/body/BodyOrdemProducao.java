@@ -1,8 +1,9 @@
-package br.com.live.util;
+package br.com.live.body;
 
 import java.util.List;
 
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyOrdemProducao {
 

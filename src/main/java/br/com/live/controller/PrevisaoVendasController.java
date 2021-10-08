@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyPrevisaoVendas;
 import br.com.live.entity.PrevisaoVendas;
 import br.com.live.model.ConsultaPrevisaoVendas;
 import br.com.live.model.ConsultaPrevisaoVendasItem;
 import br.com.live.model.ConsultaPrevisaoVendasItemTam;
 import br.com.live.service.PrevisaoVendasService;
-import br.com.live.util.BodyPrevisaoVendas;
 import br.com.live.util.CodigoGrupoItem;
 
 @RestController

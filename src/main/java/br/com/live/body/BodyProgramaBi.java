@@ -1,8 +1,10 @@
-package br.com.live.util;
+package br.com.live.body;
 
 import java.util.List;
 
 import br.com.live.model.SalvarTipoEmailBi;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyProgramaBi {
 	public String id;

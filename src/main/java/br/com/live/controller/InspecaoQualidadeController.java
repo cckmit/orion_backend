@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyInspecaoQualidade;
 import br.com.live.entity.InspecaoQualidade;
 import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.entity.Usuario;
@@ -18,7 +19,6 @@ import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.TipoMedida;
 import br.com.live.service.InspecaoQualidadeService;
-import br.com.live.util.BodyInspecaoQualidade;
 
 @RestController
 @CrossOrigin

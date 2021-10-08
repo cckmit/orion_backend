@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyProgramaBi;
 import br.com.live.entity.ProgramaBi;
 import br.com.live.entity.TiposEmailBi;
 import br.com.live.repository.ProgramaBiRepository;
 import br.com.live.repository.TiposEmailBiRepository;
 import br.com.live.service.ProgramaBiService;
-import br.com.live.util.BodyProgramaBi;
 
 @RestController
 @CrossOrigin

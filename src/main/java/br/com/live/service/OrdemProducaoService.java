@@ -3,6 +3,7 @@ package br.com.live.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import br.com.live.body.BodyOrdemProducao;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.PlanoMestreCustom;
 import br.com.live.entity.PlanoMestre;
@@ -14,7 +15,6 @@ import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
-import br.com.live.util.BodyOrdemProducao;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Service

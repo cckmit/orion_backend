@@ -1,4 +1,4 @@
-package br.com.live.util;
+package br.com.live.model;
 
 public class LayoutCorpoCalendProd {
 	

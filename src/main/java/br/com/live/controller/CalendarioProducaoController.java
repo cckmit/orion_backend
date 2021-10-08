@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyConfigEstagios;
 import br.com.live.custom.CalendarioProducaoCustom;
 import br.com.live.custom.EmpresaCustom;
 import br.com.live.entity.ParametrosCalendario;
 import br.com.live.model.Empresa;
 import br.com.live.model.EstagiosConfigurados;
+import br.com.live.model.LayoutCalendarioProducao;
 import br.com.live.repository.ParametrosCalendarioRepository;
 import br.com.live.service.CalendarioProducaoService;
-import br.com.live.util.BodyConfigEstagios;
-import br.com.live.util.LayoutCalendarioProducao;
 
 @RestController
 @CrossOrigin

@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyUsuario;
 import br.com.live.entity.Usuario;
 import br.com.live.model.DadosUsuario;
 import br.com.live.repository.UsuarioRepository;
 import br.com.live.service.UsuarioService;
-import br.com.live.util.BodyUsuario;
 
 @RestController
 @CrossOrigin

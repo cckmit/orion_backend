@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyCapacidadeProducao;
 import br.com.live.model.ArtigoCapacidadeProducao;
 import br.com.live.model.EstagioCapacidadeProducao;
 import br.com.live.service.CapacidadeProducaoService;
-import br.com.live.util.BodyCapacidadeProducao;
 
 @RestController
 @CrossOrigin

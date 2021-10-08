@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.repository.UsuarioBiRepository;
 import br.com.live.service.UsuarioBiService;
-import br.com.live.util.BodyUsuarioBi;
+import br.com.live.body.BodyUsuarioBi;
 import br.com.live.custom.UsuarioBiCustom;
 import br.com.live.entity.ProgramaBi;
 import br.com.live.entity.UsuarioBi;

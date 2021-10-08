@@ -13,16 +13,16 @@ import br.com.live.entity.EstagiosParametros;
 import br.com.live.entity.ParametrosCalendario;
 import br.com.live.model.EstagiosConfigCalend;
 import br.com.live.model.EstagiosConfigurados;
-import br.com.live.model.GeracaoCalendarioEstagios;
-import br.com.live.model.GeracaoCalendarioPeriodos;
+import br.com.live.model.CalendarioEstagiosProducao;
+import br.com.live.model.CalendarioPeriodoProducao;
+import br.com.live.model.LayoutCabecalhoCalendProd;
+import br.com.live.model.LayoutCalendarioProducao;
+import br.com.live.model.LayoutCorpoCalendProd;
 import br.com.live.model.PeriodoProducao;
 import br.com.live.repository.ConfigEstagiosRepository;
 import br.com.live.repository.EstagiosParametrosRepository;
 import br.com.live.repository.ParametrosCalendarioRepository;
 import br.com.live.util.FormataData;
-import br.com.live.util.LayoutCabecalhoCalendProd;
-import br.com.live.util.LayoutCalendarioProducao;
-import br.com.live.util.LayoutCorpoCalendProd;
 
 @Service
 @Transactional
@@ -126,12 +126,12 @@ public class CalendarioProducaoService {
 		ParametrosCalendario parametrosCalendario = parametrosCalendarioRepository.findByAnoCalendario(anoCalendario);
 		List<EstagiosConfigCalend> estagios = calendarioProducaoCustom.findEstagiosByAnoCalendario(anoCalendario);
 
-		List<GeracaoCalendarioPeriodos> periodosGeracao = CalculoCalendarioProducao.geracaoCalendario(anoCalendario, parametrosCalendario, estagios);
+		List<CalendarioPeriodoProducao> periodosGeracao = CalculoCalendarioProducao.geracaoCalendario(anoCalendario, parametrosCalendario, estagios);
 
 		return parseLayout(periodosGeracao);
 	}
 
-	public LayoutCalendarioProducao parseLayout(List<GeracaoCalendarioPeriodos> geracaoCalendario) {
+	private LayoutCalendarioProducao parseLayout(List<CalendarioPeriodoProducao> geracaoCalendario) {
 
 		List<PeriodoProducao> periodos = new ArrayList<PeriodoProducao>();
 		List<LayoutCabecalhoCalendProd> cabecalho = new ArrayList<LayoutCabecalhoCalendProd>();
@@ -139,11 +139,11 @@ public class CalendarioProducaoService {
 
 		int contador = 0;
 
-		for (GeracaoCalendarioPeriodos dadosNaoConvert : geracaoCalendario) {
+		for (CalendarioPeriodoProducao dadosNaoConvert : geracaoCalendario) {
 			
 			contador++;
 			
-			for (GeracaoCalendarioEstagios estagiosNaoConvert : dadosNaoConvert.estagios) {
+			for (CalendarioEstagiosProducao estagiosNaoConvert : dadosNaoConvert.estagios) {
 
 				if (contador <= 1) {
 					cabecalho.add(new LayoutCabecalhoCalendProd(
@@ -187,5 +187,12 @@ public class CalendarioProducaoService {
 		return descDia;
 	}
 
+	public void calcularPeriodoAreas(List<CalendarioPeriodoProducao> periodos) {		
+		for (CalendarioPeriodoProducao periodo : periodos) {
 
+			
+			
+			
+		}
+	}
 }

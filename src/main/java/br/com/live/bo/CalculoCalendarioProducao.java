@@ -9,12 +9,12 @@ import java.util.Map;
 
 import br.com.live.entity.ParametrosCalendario;
 import br.com.live.model.EstagiosConfigCalend;
-import br.com.live.model.GeracaoCalendarioEstagios;
-import br.com.live.model.GeracaoCalendarioPeriodos;
+import br.com.live.model.CalendarioEstagiosProducao;
+import br.com.live.model.CalendarioPeriodoProducao;
 
 public class CalculoCalendarioProducao {
 	
-	public static List<GeracaoCalendarioPeriodos> geracaoCalendario(int anoCalendario, ParametrosCalendario parametrosCalendario, List<EstagiosConfigCalend> estagios) {
+	public static List<CalendarioPeriodoProducao> geracaoCalendario(int anoCalendario, ParametrosCalendario parametrosCalendario, List<EstagiosConfigCalend> estagios) {
 
 		int estagioSet = 0;
 		Date dataInicioSet = null;
@@ -23,13 +23,13 @@ public class CalculoCalendarioProducao {
 
 		Map<Integer, EstagiosConfigCalend> estagiosAnteriores = new HashMap<Integer, EstagiosConfigCalend> ();
 		
-		List<GeracaoCalendarioPeriodos> periodosGeracao = new ArrayList<GeracaoCalendarioPeriodos>();
+		List<CalendarioPeriodoProducao> periodosGeracao = new ArrayList<CalendarioPeriodoProducao>();
 
 		int contador = parametrosCalendario.periodoInicio;
 
 		while (contador <= parametrosCalendario.periodoFim) {
 
-			List<GeracaoCalendarioEstagios> estagiosGeracao = new ArrayList<GeracaoCalendarioEstagios>();
+			List<CalendarioEstagiosProducao> estagiosGeracao = new ArrayList<CalendarioEstagiosProducao>();
 
 			for (EstagiosConfigCalend estagio : estagios) {
 				
@@ -53,14 +53,14 @@ public class CalculoCalendarioProducao {
 					estagio.setDataInicioDate(dataInicioSet);
 				}
 
-				GeracaoCalendarioEstagios dadosGeracao = new GeracaoCalendarioEstagios(estagioSet, dataInicioSet,
+				CalendarioEstagiosProducao dadosGeracao = new CalendarioEstagiosProducao(estagioSet, dataInicioSet,
 						dataFimSet, retornaDiaSemana(dataInicioSet), leadSet, retornaDiaSemana(dataFimSet));
 
 				estagiosGeracao.add(dadosGeracao);
 				estagiosAnteriores.put(estagio.getEstagio(), estagio);
 			}
 
-			GeracaoCalendarioPeriodos dadosPeriodos = new GeracaoCalendarioPeriodos(contador, estagiosGeracao);
+			CalendarioPeriodoProducao dadosPeriodos = new CalendarioPeriodoProducao(contador, estagiosGeracao);
 
 			periodosGeracao.add(dadosPeriodos);
 

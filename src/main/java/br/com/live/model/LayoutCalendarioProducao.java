@@ -1,8 +1,6 @@
-package br.com.live.util;
+package br.com.live.model;
 
 import java.util.List;
-
-import br.com.live.model.PeriodoProducao;
 
 public class LayoutCalendarioProducao {
 

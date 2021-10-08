@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.live.body.BodyInspecaoQualidade;
 import br.com.live.custom.InspecaoQualidadeCustom;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.entity.InspecaoQualidade;
@@ -21,7 +22,6 @@ import br.com.live.repository.InspecaoQualidadeLanctoMedidaRepository;
 import br.com.live.repository.InspecaoQualidadeLanctoPecaRepository;
 import br.com.live.repository.InspecaoQualidadeRepository;
 import br.com.live.repository.UsuarioRepository;
-import br.com.live.util.BodyInspecaoQualidade;
 import br.com.live.util.FormataData;
 
 @Service

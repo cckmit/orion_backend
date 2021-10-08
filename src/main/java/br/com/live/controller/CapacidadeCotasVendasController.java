@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyCapacidadeCotasVendas;
 import br.com.live.model.CapacidadeCotasVendas;
 import br.com.live.service.CapacidadeCotasVendasService;
-import br.com.live.util.BodyCapacidadeCotasVendas;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController

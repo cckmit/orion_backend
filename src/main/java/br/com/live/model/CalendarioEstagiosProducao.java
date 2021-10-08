@@ -2,7 +2,7 @@ package br.com.live.model;
 
 import java.util.Date;
 
-public class GeracaoCalendarioEstagios {
+public class CalendarioEstagiosProducao {
 	
 	public int codigoEstagio;
 	public Date dataInicio;
@@ -11,11 +11,11 @@ public class GeracaoCalendarioEstagios {
 	public int diaSemanaFim;
 	public int lead;
 	
-	public GeracaoCalendarioEstagios() {
+	public CalendarioEstagiosProducao() {
 		
 	}
 
-	public GeracaoCalendarioEstagios(int codigoEstagio, Date dataInicio, Date dataFim, int diaSemanaInicio, int lead, int diaSemanaFim) {
+	public CalendarioEstagiosProducao(int codigoEstagio, Date dataInicio, Date dataFim, int diaSemanaInicio, int lead, int diaSemanaFim) {
 		this.codigoEstagio = codigoEstagio;
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;

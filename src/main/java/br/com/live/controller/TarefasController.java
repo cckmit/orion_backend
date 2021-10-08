@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyLancamentoHoras;
+import br.com.live.body.BodyTarefas;
 import br.com.live.custom.TarefasCustom;
 import br.com.live.entity.Tarefas;
 import br.com.live.model.ConsultaDadosLancHoras;
@@ -17,8 +19,6 @@ import br.com.live.model.ConsultaGridTarefas;
 import br.com.live.model.ConsultaHorasTarefa;
 import br.com.live.repository.TarefasRepository;
 import br.com.live.service.TarefasService;
-import br.com.live.util.BodyLancamentoHoras;
-import br.com.live.util.BodyTarefas;
 
 @RestController
 @CrossOrigin

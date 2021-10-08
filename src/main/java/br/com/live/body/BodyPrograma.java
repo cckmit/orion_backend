@@ -1,4 +1,4 @@
-package br.com.live.util;
+package br.com.live.body;
 
 public class BodyPrograma {
 	public long id;

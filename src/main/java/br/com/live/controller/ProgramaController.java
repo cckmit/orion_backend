@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyPrograma;
 import br.com.live.entity.Programa;
 import br.com.live.repository.ProgramaRepository;
 import br.com.live.service.ProgramaService;
-import br.com.live.util.BodyPrograma;
 
 @RestController
 @CrossOrigin
