@@ -1,7 +1,6 @@
 package br.com.live.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -170,13 +169,14 @@ public class CalendarioProducaoService {
 		return new LayoutCalendarioProducao(periodos, cabecalho, corpo);
 	}	
 	
+	@SuppressWarnings("rawtypes")
 	public List<LayoutCalendarioPorArea> geracaoCalendarioPorArea(int anoCalendario, int empresa) {
 		List<CalendarioPeriodoProducao> periodos = geracaoCalendarioProducao(anoCalendario);
 		Map<Integer, Map> mapPeriodos = CalculoCalendarioProducao.calcularPeriodoAreas(empresa, periodos);
 		return parseLayout(mapPeriodos);
 	}	
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private List<LayoutCalendarioPorArea> parseLayout (Map<Integer, Map> mapPeriodos) {		
 
 		LayoutCalendarioPorArea periodoArea;
