@@ -6,8 +6,7 @@ public class LayoutCorpoCalendProd {
 	public String dataInicio;
 	public String dataFim;
 	
-	public LayoutCorpoCalendProd() {
-		
+	public LayoutCorpoCalendProd() {		
 	}
 
 	public LayoutCorpoCalendProd(int periodo, String dataInicio, String dataFim) {

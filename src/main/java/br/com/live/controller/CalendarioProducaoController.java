@@ -16,6 +16,7 @@ import br.com.live.custom.EmpresaCustom;
 import br.com.live.entity.ParametrosCalendario;
 import br.com.live.model.Empresa;
 import br.com.live.model.EstagiosConfigurados;
+import br.com.live.model.LayoutCalendarioPorArea;
 import br.com.live.model.LayoutCalendarioProducao;
 import br.com.live.repository.ParametrosCalendarioRepository;
 import br.com.live.service.CalendarioProducaoService;
@@ -85,6 +86,11 @@ public class CalendarioProducaoController {
 	
 	@RequestMapping(value = "/gerar-calendario/{anoCalendario}", method = RequestMethod.GET)
     public LayoutCalendarioProducao gerarCalendario(@PathVariable("anoCalendario") int anoCalendario) {
-        return  calendarioProducaoService.geracaoCalendario(anoCalendario);
+        return calendarioProducaoService.geracaoCalendario(anoCalendario);
+    }
+	
+	@RequestMapping(value = "/gerar-calendario-area/{anoCalendario}/{empresa}", method = RequestMethod.GET)
+    public List<LayoutCalendarioPorArea> gerarCalendarioArea(@PathVariable("anoCalendario") int anoCalendario, int empresa) {
+        return calendarioProducaoService.geracaoCalendarioPorArea(anoCalendario, empresa);
     }
 }

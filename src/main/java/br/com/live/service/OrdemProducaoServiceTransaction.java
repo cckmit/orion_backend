@@ -294,9 +294,9 @@ public class OrdemProducaoServiceTransaction {
 				listaPreOrdensConcluidas.add(preOrdem);
 
 			} catch (Exception e) {				
-				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Revise o limite de pacotes do periodo: 99999!"));
+				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível gerar a ordem de produção!"));
 				if (idOrdemProducao > 0) ordemProducaoCustom.excluirOrdemProducao(idOrdemProducao);
-				System.out.println(e);
+				System.out.println(e.getMessage());
 			}						
 		}
 								

@@ -1,7 +1,9 @@
 package br.com.live.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +18,11 @@ import br.com.live.model.EstagiosConfigurados;
 import br.com.live.model.CalendarioEstagiosProducao;
 import br.com.live.model.CalendarioPeriodoProducao;
 import br.com.live.model.LayoutCabecalhoCalendProd;
+import br.com.live.model.LayoutCalendarioPorArea;
 import br.com.live.model.LayoutCalendarioProducao;
 import br.com.live.model.LayoutCorpoCalendProd;
 import br.com.live.model.PeriodoProducao;
+import br.com.live.model.PeriodoProducaoArea;
 import br.com.live.repository.ConfigEstagiosRepository;
 import br.com.live.repository.EstagiosParametrosRepository;
 import br.com.live.repository.ParametrosCalendarioRepository;
@@ -121,14 +125,15 @@ public class CalendarioProducaoService {
 		parametrosCalendarioRepository.saveAndFlush(parametrosCalendario);
 	}
 
-	public LayoutCalendarioProducao geracaoCalendario(int anoCalendario) {
-
+	private List<CalendarioPeriodoProducao> geracaoCalendarioProducao(int anoCalendario) {
 		ParametrosCalendario parametrosCalendario = parametrosCalendarioRepository.findByAnoCalendario(anoCalendario);
 		List<EstagiosConfigCalend> estagios = calendarioProducaoCustom.findEstagiosByAnoCalendario(anoCalendario);
-
-		List<CalendarioPeriodoProducao> periodosGeracao = CalculoCalendarioProducao.geracaoCalendario(anoCalendario, parametrosCalendario, estagios);
-
-		return parseLayout(periodosGeracao);
+		return CalculoCalendarioProducao.geracaoCalendario(anoCalendario, parametrosCalendario, estagios);		
+	}
+	
+	public LayoutCalendarioProducao geracaoCalendario(int anoCalendario) {
+		List<CalendarioPeriodoProducao> periodos = geracaoCalendarioProducao(anoCalendario);
+		return parseLayout(periodos);
 	}
 
 	private LayoutCalendarioProducao parseLayout(List<CalendarioPeriodoProducao> geracaoCalendario) {
@@ -148,8 +153,8 @@ public class CalendarioProducaoService {
 				if (contador <= 1) {
 					cabecalho.add(new LayoutCabecalhoCalendProd(
 							calendarioProducaoCustom.getDescricaoEstagio(estagiosNaoConvert.codigoEstagio),
-							retornaDescricaoDia(estagiosNaoConvert.diaSemanaInicio),
-							retornaDescricaoDia(estagiosNaoConvert.diaSemanaFim)));
+							FormataData.getDescDayOfWeek(estagiosNaoConvert.diaSemanaInicio),
+							FormataData.getDescDayOfWeek(estagiosNaoConvert.diaSemanaFim)));
 				}
 				corpo.add(new LayoutCorpoCalendProd(dadosNaoConvert.codigoPeriodo,
 						FormataData.parseDateToString(estagiosNaoConvert.dataInicio),
@@ -163,36 +168,72 @@ public class CalendarioProducaoService {
 		}
 
 		return new LayoutCalendarioProducao(periodos, cabecalho, corpo);
-	}
+	}	
 	
-	public String retornaDescricaoDia(int diaDaSemana) {
+	public List<LayoutCalendarioPorArea> geracaoCalendarioPorArea(int anoCalendario, int empresa) {
+		List<CalendarioPeriodoProducao> periodos = geracaoCalendarioProducao(anoCalendario);
+		Map<Integer, Map> mapPeriodos = CalculoCalendarioProducao.calcularPeriodoAreas(empresa, periodos);
+		return parseLayout(mapPeriodos);
+	}	
 
-		String descDia = "";
+	@SuppressWarnings("unchecked")
+	private List<LayoutCalendarioPorArea> parseLayout (Map<Integer, Map> mapPeriodos) {		
 
-		if (diaDaSemana == 1)
-			descDia = "DOMINGO";
-		if (diaDaSemana == 2)
-			descDia = "SEGUNDA";
-		if (diaDaSemana == 3)
-			descDia = "TERCA";
-		if (diaDaSemana == 4)
-			descDia = "QUARTA";
-		if (diaDaSemana == 5)
-			descDia = "QUINTA";
-		if (diaDaSemana == 6)
-			descDia = "SEXTA";
-		if (diaDaSemana == 7)
-			descDia = "SABADO";
+		LayoutCalendarioPorArea periodoArea;
+		PeriodoProducaoArea area01;
+		PeriodoProducaoArea area06;
+		PeriodoProducaoArea area09;
+		PeriodoProducaoArea area02;
+		PeriodoProducaoArea area04;
+		PeriodoProducaoArea area07;
+		Map<Integer, PeriodoProducaoArea> mapAreaPeriodo;
+		List<LayoutCalendarioPorArea> calendariosPorArea = new ArrayList<LayoutCalendarioPorArea>();
+		
+		for (Integer periodo : mapPeriodos.keySet()) {
+			mapAreaPeriodo = mapPeriodos.get(periodo);
 
-		return descDia;
-	}
-
-	public void calcularPeriodoAreas(List<CalendarioPeriodoProducao> periodos) {		
-		for (CalendarioPeriodoProducao periodo : periodos) {
-
+			area01 = mapAreaPeriodo.get(1);
+			area06 = mapAreaPeriodo.get(6);
+			area09 = mapAreaPeriodo.get(9);
+			area02 = mapAreaPeriodo.get(2);
+			area04 = mapAreaPeriodo.get(4);
+			area07 = mapAreaPeriodo.get(7);
 			
+			periodoArea = new LayoutCalendarioPorArea();
+			periodoArea.periodo = periodo;
+
+			periodoArea.dataInicioProducaoArea01 = FormataData.parseDateToString(area01.getDataProdInicio());
+			periodoArea.dataFimProducaoArea01 = FormataData.parseDateToString(area01.getDataProdFim());
+			periodoArea.dataInicioFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatInicio());
+			periodoArea.dataFimFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatFim());
+
+			periodoArea.dataInicioProducaoArea06 = FormataData.parseDateToString(area06.getDataProdInicio());
+			periodoArea.dataFimProducaoArea06 = FormataData.parseDateToString(area06.getDataProdFim());
+			periodoArea.dataInicioFaturamentoArea06 = FormataData.parseDateToString(area06.getDataFatInicio());
+			periodoArea.dataFimFaturamentoArea06 = FormataData.parseDateToString(area06.getDataFatFim());
+
+			periodoArea.dataInicioProducaoArea09 = FormataData.parseDateToString(area09.getDataProdInicio());
+			periodoArea.dataFimProducaoArea09 = FormataData.parseDateToString(area09.getDataProdFim());
+			periodoArea.dataInicioFaturamentoArea09 = FormataData.parseDateToString(area09.getDataFatInicio());
+			periodoArea.dataFimFaturamentoArea09 = FormataData.parseDateToString(area09.getDataFatFim());
+
+			periodoArea.dataInicioProducaoArea02 = FormataData.parseDateToString(area02.getDataProdInicio());
+			periodoArea.dataFimProducaoArea02 = FormataData.parseDateToString(area02.getDataProdFim());
+			periodoArea.dataInicioFaturamentoArea02 = FormataData.parseDateToString(area02.getDataFatInicio());
+			periodoArea.dataFimFaturamentoArea02 = FormataData.parseDateToString(area02.getDataFatFim());
+
+			periodoArea.dataInicioProducaoArea04 = FormataData.parseDateToString(area04.getDataProdInicio());
+			periodoArea.dataFimProducaoArea04 = FormataData.parseDateToString(area04.getDataProdFim());
+			periodoArea.dataInicioFaturamentoArea04 = FormataData.parseDateToString(area04.getDataFatInicio());
+			periodoArea.dataFimFaturamentoArea04 = FormataData.parseDateToString(area04.getDataFatFim());
+
+			periodoArea.dataInicioProducaoArea07 = FormataData.parseDateToString(area07.getDataProdInicio());
+			periodoArea.dataFimProducaoArea07 = FormataData.parseDateToString(area07.getDataProdFim());
+			periodoArea.dataInicioFaturamentoArea07 = FormataData.parseDateToString(area07.getDataFatInicio());
+			periodoArea.dataFimFaturamentoArea07 = FormataData.parseDateToString(area07.getDataFatFim());
 			
-			
+			calendariosPorArea.add(periodoArea);			
 		}
-	}
+		return calendariosPorArea;
+	}	
 }

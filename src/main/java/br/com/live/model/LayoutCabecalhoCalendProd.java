@@ -6,11 +6,11 @@ public class LayoutCabecalhoCalendProd {
 	public String diaSemanaFim;
 	
 	
-	public LayoutCabecalhoCalendProd() {
-		
+	public LayoutCabecalhoCalendProd() {		
 	}
 
 	public LayoutCabecalhoCalendProd(String estagio, String diaSemanaInicio, String diaSemanaFim) {
+		super();
 		this.estagio = estagio;
 		this.diaSemanaInicio = diaSemanaInicio;
 		this.diaSemanaFim = diaSemanaFim;
