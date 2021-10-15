@@ -133,4 +133,16 @@ public class CalendarioProducaoCustom {
 		}
 		return estagiosParam;
 	}
+	
+	public boolean todasDatasEstagiosInformadas(int anoCalendario) {
+		
+		String query = " select nvl(min(1),0) encontrou from orion_062 o "
+		+ " where o.ano_calendario = " + anoCalendario 
+		+ " and (o.data_inicio is null or o.data_fim is null) " ;
+		
+		int encontrou = jdbcTemplate.queryForObject(query, Integer.class);
+		
+		return !(encontrou == 1);
+	}
+	
 }

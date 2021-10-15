@@ -98,4 +98,9 @@ public class CalendarioProducaoController {
 	public ParametrosCalendario gravarPeriodosCalculados(@PathVariable("anoCalendario") int anoCalendario) {
 		return calendarioProducaoService.gravarPeriodoProducaoCalculado(anoCalendario);
 	}	
+	
+	@RequestMapping(value = "/ver-todas-datas-info/{anoCalendario}", method = RequestMethod.GET)
+	public boolean verificaTodasDatasInformadas(@PathVariable("anoCalendario") int anoCalendario) {
+		return calendarioProducaoCustom.todasDatasEstagiosInformadas(anoCalendario);
+	}	
 }
