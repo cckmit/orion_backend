@@ -170,7 +170,7 @@ public class CalendarioProducaoService {
 	}	
 	
 	@SuppressWarnings("rawtypes")
-	public List<LayoutCalendarioPorArea> geracaoCalendarioPorArea(int anoCalendario, int empresa) {
+	public List<LayoutCalendarioPorArea> geracaoCalendarioPorArea(int empresa, int anoCalendario) {
 		List<CalendarioPeriodoProducao> periodos = geracaoCalendarioProducao(anoCalendario);
 		Map<Integer, Map> mapPeriodos = CalculoCalendarioProducao.calcularPeriodoAreas(empresa, periodos);
 		return parseLayout(mapPeriodos);
@@ -207,6 +207,17 @@ public class CalendarioProducaoService {
 			periodoArea.dataInicioFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatInicio());
 			periodoArea.dataFimFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatFim());
 
+			/*
+			System.out.println("*** PARSE ***");			
+			if ((periodo == 2200)||(periodo == 2201)) {
+				System.out.println(periodo);
+				System.out.println("periodoArea.dataInicioProducaoArea01: " + periodoArea.dataInicioProducaoArea01);
+				System.out.println("periodoArea.dataFimProducaoArea01: " + periodoArea.dataFimProducaoArea01);
+				System.out.println("periodoArea.dataInicioFaturamentoArea01: " + periodoArea.dataInicioFaturamentoArea01);
+				System.out.println("periodoArea.dataFimFaturamentoArea01: " + periodoArea.dataFimFaturamentoArea01);
+			}
+			*/			
+			
 			periodoArea.dataInicioProducaoArea06 = FormataData.parseDateToString(area06.getDataProdInicio());
 			periodoArea.dataFimProducaoArea06 = FormataData.parseDateToString(area06.getDataProdFim());
 			periodoArea.dataInicioFaturamentoArea06 = FormataData.parseDateToString(area06.getDataFatInicio());

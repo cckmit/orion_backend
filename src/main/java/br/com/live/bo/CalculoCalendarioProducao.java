@@ -105,6 +105,16 @@ public class CalculoCalendarioProducao {
 		Date dataFimProducao = estagioFinal.dataFim;		
 		Date dataInicioFaturamento = FormataData.getNextDay(FormataData.SEGUNDA, dataFimProducao);
 		Date dataFimFaturamento = FormataData.getNextDay(FormataData.SEXTA, dataInicioFaturamento);
+		
+		/*
+		if ((periodo.codigoPeriodo == 2200)||(periodo.codigoPeriodo == 2201)) {
+			System.out.println(periodo.codigoPeriodo);
+			System.out.println("dataInicioProducao: " + dataInicioProducao);
+			System.out.println("dataFimProducao: " + dataFimProducao);
+			System.out.println("dataInicioFaturamento: " + dataInicioFaturamento);
+			System.out.println("dataFimFaturamento: " + dataFimFaturamento);
+		}
+		*/
 				
 		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodo.codigoPeriodo, empresa), 1, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
 	}
@@ -161,7 +171,7 @@ public class CalculoCalendarioProducao {
 	
 	@SuppressWarnings("rawtypes")
 	public static Map<Integer, Map> calcularPeriodoAreas(int empresa, List<CalendarioPeriodoProducao> periodos) {		
-		Map<Integer, PeriodoProducaoArea> mapAreaPeriodo = new HashMap<Integer, PeriodoProducaoArea>();	
+		Map<Integer, PeriodoProducaoArea> mapAreaPeriodo;	
 		Map<Integer, Map> mapPeriodos = new HashMap<Integer, Map>();
 		
 		PeriodoProducaoArea periodoArea01Confeccao;
@@ -181,6 +191,7 @@ public class CalculoCalendarioProducao {
 			periodoArea04Tecelagem = calcularArea04Tecelagem(empresa, periodoArea02Beneficiamento, quinzena);
 			periodoArea07Fios = calcularArea07Fios(empresa, periodoArea04Tecelagem, quinzena);		
 			
+			mapAreaPeriodo = new HashMap<Integer, PeriodoProducaoArea>();
 			mapAreaPeriodo.put(1, periodoArea01Confeccao);
 			mapAreaPeriodo.put(6, periodoArea06Vendas);
 			mapAreaPeriodo.put(9, periodoArea09Compras);

@@ -89,8 +89,8 @@ public class CalendarioProducaoController {
         return calendarioProducaoService.geracaoCalendario(anoCalendario);
     }
 	
-	@RequestMapping(value = "/gerar-calendario-area/{anoCalendario}/{empresa}", method = RequestMethod.GET)
-    public List<LayoutCalendarioPorArea> gerarCalendarioArea(@PathVariable("anoCalendario") int anoCalendario, int empresa) {
-        return calendarioProducaoService.geracaoCalendarioPorArea(anoCalendario, empresa);
+	@RequestMapping(value = "/gerar-calendario-area/{empresa}/{anoCalendario}", method = RequestMethod.GET)
+    public List<LayoutCalendarioPorArea> gerarCalendarioArea(@PathVariable("empresa") int empresa, @PathVariable("anoCalendario") int anoCalendario) {
+        return calendarioProducaoService.geracaoCalendarioPorArea(empresa, anoCalendario);
     }
 }
