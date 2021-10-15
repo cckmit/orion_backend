@@ -28,6 +28,8 @@ public class ParametrosCalendario {
 	@Column(name="considera_feriado")
 	public boolean consideraFeriado;
 	
+	public int situacao;
+	
 	public ParametrosCalendario() {
 		
 	}
@@ -39,6 +41,7 @@ public class ParametrosCalendario {
 		this.consideraSabado = consideraSabado;
 		this.consideraDomingo = consideraDomingo;
 		this.consideraFeriado = consideraFeriado;
+		this.situacao = 0;
 	}
 
 }

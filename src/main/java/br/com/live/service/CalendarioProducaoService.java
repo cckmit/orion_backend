@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.bo.CalculoCalendarioProducao;
 import br.com.live.custom.CalendarioProducaoCustom;
+import br.com.live.custom.PeriodoProducaoCustom;
 import br.com.live.entity.ConfiguracaoEstagios;
 import br.com.live.entity.EstagiosParametros;
 import br.com.live.entity.ParametrosCalendario;
@@ -35,15 +36,18 @@ public class CalendarioProducaoService {
 	private final CalendarioProducaoCustom calendarioProducaoCustom;
 	private final EstagiosParametrosRepository estagiosParametrosRepository;
 	private final ParametrosCalendarioRepository parametrosCalendarioRepository;
+	private final PeriodoProducaoCustom periodoProducaoCustom; 
 	
 	public CalendarioProducaoService(ConfigEstagiosRepository configEstagiosRepository,
 			CalendarioProducaoCustom calendarioProducaoCustom,
 			EstagiosParametrosRepository estagiosParametrosRepository,
-			ParametrosCalendarioRepository parametrosCalendarioRepository) {
+			ParametrosCalendarioRepository parametrosCalendarioRepository,
+			PeriodoProducaoCustom periodoProducaoCustom) {
 		this.configEstagiosRepository = configEstagiosRepository;
 		this.calendarioProducaoCustom = calendarioProducaoCustom;
 		this.estagiosParametrosRepository = estagiosParametrosRepository;
 		this.parametrosCalendarioRepository = parametrosCalendarioRepository;
+		this.periodoProducaoCustom = periodoProducaoCustom;
 	}
 
 	public void salvarConfiguracaoEstagios(List<ConfiguracaoEstagios> estagios) {
@@ -124,14 +128,14 @@ public class CalendarioProducaoService {
 		parametrosCalendarioRepository.saveAndFlush(parametrosCalendario);
 	}
 
-	private List<CalendarioPeriodoProducao> geracaoCalendarioProducao(int anoCalendario) {
+	private List<CalendarioPeriodoProducao> calcularCalendarioProducao(int anoCalendario) {
 		ParametrosCalendario parametrosCalendario = parametrosCalendarioRepository.findByAnoCalendario(anoCalendario);
 		List<EstagiosConfigCalend> estagios = calendarioProducaoCustom.findEstagiosByAnoCalendario(anoCalendario);
 		return CalculoCalendarioProducao.geracaoCalendario(anoCalendario, parametrosCalendario, estagios);		
 	}
 	
 	public LayoutCalendarioProducao geracaoCalendario(int anoCalendario) {
-		List<CalendarioPeriodoProducao> periodos = geracaoCalendarioProducao(anoCalendario);
+		List<CalendarioPeriodoProducao> periodos = calcularCalendarioProducao(anoCalendario);
 		return parseLayout(periodos);
 	}
 
@@ -170,9 +174,14 @@ public class CalendarioProducaoService {
 	}	
 	
 	@SuppressWarnings("rawtypes")
+	private Map<Integer, Map> calcularCalendarioPorArea(int empresa, int anoCalendario) {
+		List<CalendarioPeriodoProducao> periodos = calcularCalendarioProducao(anoCalendario);
+		return CalculoCalendarioProducao.calcularPeriodoAreas(empresa, periodos);		
+	}
+	
+	@SuppressWarnings("rawtypes")
 	public List<LayoutCalendarioPorArea> geracaoCalendarioPorArea(int empresa, int anoCalendario) {
-		List<CalendarioPeriodoProducao> periodos = geracaoCalendarioProducao(anoCalendario);
-		Map<Integer, Map> mapPeriodos = CalculoCalendarioProducao.calcularPeriodoAreas(empresa, periodos);
+		Map<Integer, Map> mapPeriodos = calcularCalendarioPorArea(empresa, anoCalendario);
 		return parseLayout(mapPeriodos);
 	}	
 
@@ -247,4 +256,36 @@ public class CalendarioProducaoService {
 		}
 		return calendariosPorArea;
 	}	
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ParametrosCalendario gravarPeriodoProducaoCalculado(int anoCalendario) {
+		// Por padrão sempre gravará os períodos para as 3 empresas 1, 500 e 600.
+		int [] empresas = {1, 500, 600};
+		int [] areas = {1, 6, 9, 2, 4, 7};
+
+		System.out.println("gravarPeriodoProducaoCalculado"); 
+		
+		for (int i = 0; i < empresas.length; i++) {
+			Map<Integer, Map> mapPeriodos = calcularCalendarioPorArea(empresas[i], anoCalendario);	
+
+			for (Integer periodo : mapPeriodos.keySet()) {
+				Map<Integer, PeriodoProducaoArea> mapAreaPeriodo = mapPeriodos.get(periodo);
+
+				if (periodo != 2200) continue; // TODO - GRAVAR APENAS O PERIODO 2200 PARA TESTE
+
+				System.out.println("PERIODO: " + periodo + " - mapAreaPeriodo: " + mapAreaPeriodo.size());
+				
+				for (int j = 0; j < areas.length; j++) {				
+					PeriodoProducaoArea area = mapAreaPeriodo.get(areas[j]);
+					periodoProducaoCustom.savePeriodoProducao(area.getEmpresa(), area.getArea(), area.getPeriodo(), area.getDataProdInicio(), area.getDataProdFim(), area.getDataFatInicio(), area.getDataFatFim(), area.getDataLimite(), area.getQuinzena());
+				}				
+			}
+		}
+		
+		ParametrosCalendario parametrosCalendario = parametrosCalendarioRepository.findByAnoCalendario(anoCalendario);
+		parametrosCalendario.situacao = 1;
+		parametrosCalendarioRepository.save(parametrosCalendario);
+		
+		return parametrosCalendario;
+	}
 }

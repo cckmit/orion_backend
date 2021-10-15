@@ -33,3 +33,11 @@ CREATE TABLE orion_062 (
 );
 comment on table orion_062 is 'Estágios Geração Calendario';
 
+-----------------------------------------------------------------
+
+-- ATUALIZAR AMBIENTE DE PRODUCAO
+
+ALTER TABLE orion_061 
+ADD (situacao number(1) default 0);
+
+comment on column orion_061.situacao is '0-Prévia / 1-Períodos Gravados';

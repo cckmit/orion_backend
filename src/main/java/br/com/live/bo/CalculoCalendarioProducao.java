@@ -146,7 +146,7 @@ public class CalculoCalendarioProducao {
 		Date dataFimProducao = FormataData.getSumDate(dataInicioFaturamento, -3);
 		Date dataInicioProducao = FormataData.getSumDate(dataFimProducao, -31);
 		
-		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodoArea09.getPeriodo(), empresa), 9, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
+		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodoArea09.getPeriodo(), empresa), 2, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
 	}
 
 	private static PeriodoProducaoArea calcularArea04Tecelagem(int empresa, PeriodoProducaoArea periodoArea02, int quinzena) {
@@ -156,7 +156,7 @@ public class CalculoCalendarioProducao {
 		Date dataFimProducao = FormataData.getSumDate(dataInicioFaturamento, -7);
 		Date dataInicioProducao = FormataData.getSumDate(dataFimProducao, -7);
 		
-		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodoArea02.getPeriodo(), empresa), 9, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
+		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodoArea02.getPeriodo(), empresa), 4, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
 	}
 
 	private static PeriodoProducaoArea calcularArea07Fios(int empresa, PeriodoProducaoArea periodoArea04, int quinzena) {
@@ -166,7 +166,7 @@ public class CalculoCalendarioProducao {
 		Date dataFimProducao = FormataData.getSumDate(dataInicioFaturamento, -1);
 		Date dataInicioProducao = FormataData.getSumDate(dataFimProducao, -20);
 		
-		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodoArea04.getPeriodo(), empresa), 9, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
+		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodoArea04.getPeriodo(), empresa), 7, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
 	}
 	
 	@SuppressWarnings("rawtypes")

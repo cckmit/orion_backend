@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -15,6 +16,15 @@ public class PeriodoProducaoCustom {
 
 	public PeriodoProducaoCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
+	}
+	
+	public void savePeriodoProducao(int empresa, int area, int periodo, Date dataIniProd, Date dataFimProd, Date dataIniFat, Date dataFimFat, Date dataLimiteProg, int quinzena) {
+			
+		String query = " insert into pcpc_010 (codigo_empresa, area_periodo, periodo_producao, " 
+		+ " data_ini_periodo, data_fim_periodo, data_ini_fatu, data_fim_fatu, " 
+		+ " data_limite_programacao, cod_quinzena) values (?,?,?,?,?,?,?,?,?) " ;
+
+		jdbcTemplate.update(query, empresa, area, periodo, dataIniProd, dataFimProd, dataIniFat, dataFimFat, dataLimiteProg, quinzena);
 	}
 	
 	public List<PeriodoProducao> findPeriodosProducao() {

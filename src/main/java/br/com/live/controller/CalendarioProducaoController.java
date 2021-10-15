@@ -93,4 +93,9 @@ public class CalendarioProducaoController {
     public List<LayoutCalendarioPorArea> gerarCalendarioArea(@PathVariable("empresa") int empresa, @PathVariable("anoCalendario") int anoCalendario) {
         return calendarioProducaoService.geracaoCalendarioPorArea(empresa, anoCalendario);
     }
+	
+	@RequestMapping(value = "/gravar-periodos/{anoCalendario}", method = RequestMethod.GET) 
+	public ParametrosCalendario gravarPeriodosCalculados(@PathVariable("anoCalendario") int anoCalendario) {
+		return calendarioProducaoService.gravarPeriodoProducaoCalculado(anoCalendario);
+	}	
 }
