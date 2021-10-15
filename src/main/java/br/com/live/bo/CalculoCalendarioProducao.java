@@ -199,7 +199,7 @@ public class CalculoCalendarioProducao {
 			mapAreaPeriodo.put(4, periodoArea04Tecelagem);
 			mapAreaPeriodo.put(7, periodoArea07Fios);
 			
-			mapPeriodos.put(periodo.codigoPeriodo, mapAreaPeriodo);
+			mapPeriodos.put(ConvertePeriodo.parse(periodo.codigoPeriodo, empresa), mapAreaPeriodo);
 		}
 		
 		return mapPeriodos;
