@@ -106,16 +106,6 @@ public class CalculoCalendarioProducao {
 		Date dataInicioFaturamento = FormataData.getNextDay(FormataData.SEGUNDA, dataFimProducao);
 		Date dataFimFaturamento = FormataData.getNextDay(FormataData.SEXTA, dataInicioFaturamento);
 		
-		/*
-		if ((periodo.codigoPeriodo == 2200)||(periodo.codigoPeriodo == 2201)) {
-			System.out.println(periodo.codigoPeriodo);
-			System.out.println("dataInicioProducao: " + dataInicioProducao);
-			System.out.println("dataFimProducao: " + dataFimProducao);
-			System.out.println("dataInicioFaturamento: " + dataInicioFaturamento);
-			System.out.println("dataFimFaturamento: " + dataFimFaturamento);
-		}
-		*/
-				
 		return new PeriodoProducaoArea(ConvertePeriodo.parse(periodo.codigoPeriodo, empresa), 1, empresa, dataInicioProducao, dataFimProducao, dataInicioFaturamento, dataFimFaturamento, dataFimProducao, quinzena);
 	}
 	
@@ -180,10 +170,11 @@ public class CalculoCalendarioProducao {
 		PeriodoProducaoArea periodoArea02Beneficiamento;
 		PeriodoProducaoArea periodoArea04Tecelagem;
 		PeriodoProducaoArea periodoArea07Fios;
-		int quinzena = 0;
+		int contador = 0;
+		int quinzena = 1;
 		
 		for (CalendarioPeriodoProducao periodo : periodos) {
-			quinzena++;
+			contador++;						
 			periodoArea01Confeccao = calcularArea01Confeccao(empresa, periodo, quinzena);
 			periodoArea06Vendas = calcularArea06Vendas(empresa, periodoArea01Confeccao, quinzena);
 			periodoArea09Compras = calcularArea09Compras(empresa, periodoArea06Vendas, quinzena);
@@ -200,8 +191,17 @@ public class CalculoCalendarioProducao {
 			mapAreaPeriodo.put(7, periodoArea07Fios);
 			
 			mapPeriodos.put(ConvertePeriodo.parse(periodo.codigoPeriodo, empresa), mapAreaPeriodo);
+			if (contador % 2 == 0) quinzena++;
 		}
 		
 		return mapPeriodos;
+	}
+	
+	public static boolean existsAreaEmpresa(int empresa, int area) {		
+		if ((empresa == 1) && (area == 1 || area == 2 || area == 4 || area == 6 || area == 7 || area == 9)) return true; 
+		if ((empresa == 100) && (area == 1 || area == 6 || area == 9)) return true;
+		if ((empresa == 500) && (area == 1 || area == 2 || area == 7 || area == 9)) return true;
+		if ((empresa == 600) && (area == 2 || area == 4 || area == 7 || area == 9)) return true;		
+		return false;
 	}
 }

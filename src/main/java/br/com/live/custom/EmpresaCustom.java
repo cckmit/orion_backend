@@ -19,7 +19,7 @@ public class EmpresaCustom {
 	
 	public List<Empresa> findEmpresas() {
 		
-		String query = " select a.codigo_empresa codigo, a.nome_empresa nome from fatu_500 a where a.codigo_empresa in (1,500,600)";
+		String query = " select a.codigo_empresa codigo, a.nome_empresa nome from fatu_500 a where a.codigo_empresa in (1,100,500,600)";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Empresa.class));
 	}

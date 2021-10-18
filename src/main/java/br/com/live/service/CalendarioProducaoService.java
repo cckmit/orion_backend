@@ -211,46 +211,47 @@ public class CalendarioProducaoService {
 			periodoArea = new LayoutCalendarioPorArea();
 			periodoArea.periodo = periodo;
 
-			periodoArea.dataInicioProducaoArea01 = FormataData.parseDateToString(area01.getDataProdInicio());
-			periodoArea.dataFimProducaoArea01 = FormataData.parseDateToString(area01.getDataProdFim());
-			periodoArea.dataInicioFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatInicio());
-			periodoArea.dataFimFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatFim());
-
-			/*
-			System.out.println("*** PARSE ***");			
-			if ((periodo == 2200)||(periodo == 2201)) {
-				System.out.println(periodo);
-				System.out.println("periodoArea.dataInicioProducaoArea01: " + periodoArea.dataInicioProducaoArea01);
-				System.out.println("periodoArea.dataFimProducaoArea01: " + periodoArea.dataFimProducaoArea01);
-				System.out.println("periodoArea.dataInicioFaturamentoArea01: " + periodoArea.dataInicioFaturamentoArea01);
-				System.out.println("periodoArea.dataFimFaturamentoArea01: " + periodoArea.dataFimFaturamentoArea01);
+			if (CalculoCalendarioProducao.existsAreaEmpresa(area01.getEmpresa(), area01.getArea())) {			
+				periodoArea.dataInicioProducaoArea01 = FormataData.parseDateToString(area01.getDataProdInicio());
+				periodoArea.dataFimProducaoArea01 = FormataData.parseDateToString(area01.getDataProdFim());
+				periodoArea.dataInicioFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatInicio());
+				periodoArea.dataFimFaturamentoArea01 = FormataData.parseDateToString(area01.getDataFatFim());
 			}
-			*/			
-			
-			periodoArea.dataInicioProducaoArea06 = FormataData.parseDateToString(area06.getDataProdInicio());
-			periodoArea.dataFimProducaoArea06 = FormataData.parseDateToString(area06.getDataProdFim());
-			periodoArea.dataInicioFaturamentoArea06 = FormataData.parseDateToString(area06.getDataFatInicio());
-			periodoArea.dataFimFaturamentoArea06 = FormataData.parseDateToString(area06.getDataFatFim());
 
-			periodoArea.dataInicioProducaoArea09 = FormataData.parseDateToString(area09.getDataProdInicio());
-			periodoArea.dataFimProducaoArea09 = FormataData.parseDateToString(area09.getDataProdFim());
-			periodoArea.dataInicioFaturamentoArea09 = FormataData.parseDateToString(area09.getDataFatInicio());
-			periodoArea.dataFimFaturamentoArea09 = FormataData.parseDateToString(area09.getDataFatFim());
+			if (CalculoCalendarioProducao.existsAreaEmpresa(area06.getEmpresa(), area06.getArea())) {
+				periodoArea.dataInicioProducaoArea06 = FormataData.parseDateToString(area06.getDataProdInicio());
+				periodoArea.dataFimProducaoArea06 = FormataData.parseDateToString(area06.getDataProdFim());
+				periodoArea.dataInicioFaturamentoArea06 = FormataData.parseDateToString(area06.getDataFatInicio());
+				periodoArea.dataFimFaturamentoArea06 = FormataData.parseDateToString(area06.getDataFatFim());
+			}	
+				
+			if (CalculoCalendarioProducao.existsAreaEmpresa(area09.getEmpresa(), area09.getArea())) {
+				periodoArea.dataInicioProducaoArea09 = FormataData.parseDateToString(area09.getDataProdInicio());
+				periodoArea.dataFimProducaoArea09 = FormataData.parseDateToString(area09.getDataProdFim());
+				periodoArea.dataInicioFaturamentoArea09 = FormataData.parseDateToString(area09.getDataFatInicio());
+				periodoArea.dataFimFaturamentoArea09 = FormataData.parseDateToString(area09.getDataFatFim());
+			}
 
-			periodoArea.dataInicioProducaoArea02 = FormataData.parseDateToString(area02.getDataProdInicio());
-			periodoArea.dataFimProducaoArea02 = FormataData.parseDateToString(area02.getDataProdFim());
-			periodoArea.dataInicioFaturamentoArea02 = FormataData.parseDateToString(area02.getDataFatInicio());
-			periodoArea.dataFimFaturamentoArea02 = FormataData.parseDateToString(area02.getDataFatFim());
+			if (CalculoCalendarioProducao.existsAreaEmpresa(area02.getEmpresa(), area02.getArea())) {
+				periodoArea.dataInicioProducaoArea02 = FormataData.parseDateToString(area02.getDataProdInicio());
+				periodoArea.dataFimProducaoArea02 = FormataData.parseDateToString(area02.getDataProdFim());
+				periodoArea.dataInicioFaturamentoArea02 = FormataData.parseDateToString(area02.getDataFatInicio());
+				periodoArea.dataFimFaturamentoArea02 = FormataData.parseDateToString(area02.getDataFatFim());
+			}	
 
-			periodoArea.dataInicioProducaoArea04 = FormataData.parseDateToString(area04.getDataProdInicio());
-			periodoArea.dataFimProducaoArea04 = FormataData.parseDateToString(area04.getDataProdFim());
-			periodoArea.dataInicioFaturamentoArea04 = FormataData.parseDateToString(area04.getDataFatInicio());
-			periodoArea.dataFimFaturamentoArea04 = FormataData.parseDateToString(area04.getDataFatFim());
+			if (CalculoCalendarioProducao.existsAreaEmpresa(area04.getEmpresa(), area04.getArea())) {
+				periodoArea.dataInicioProducaoArea04 = FormataData.parseDateToString(area04.getDataProdInicio());
+				periodoArea.dataFimProducaoArea04 = FormataData.parseDateToString(area04.getDataProdFim());
+				periodoArea.dataInicioFaturamentoArea04 = FormataData.parseDateToString(area04.getDataFatInicio());
+				periodoArea.dataFimFaturamentoArea04 = FormataData.parseDateToString(area04.getDataFatFim());
+			}
 
-			periodoArea.dataInicioProducaoArea07 = FormataData.parseDateToString(area07.getDataProdInicio());
-			periodoArea.dataFimProducaoArea07 = FormataData.parseDateToString(area07.getDataProdFim());
-			periodoArea.dataInicioFaturamentoArea07 = FormataData.parseDateToString(area07.getDataFatInicio());
-			periodoArea.dataFimFaturamentoArea07 = FormataData.parseDateToString(area07.getDataFatFim());
+			if (CalculoCalendarioProducao.existsAreaEmpresa(area07.getEmpresa(), area07.getArea())) {
+				periodoArea.dataInicioProducaoArea07 = FormataData.parseDateToString(area07.getDataProdInicio());
+				periodoArea.dataFimProducaoArea07 = FormataData.parseDateToString(area07.getDataProdFim());
+				periodoArea.dataInicioFaturamentoArea07 = FormataData.parseDateToString(area07.getDataFatInicio());
+				periodoArea.dataFimFaturamentoArea07 = FormataData.parseDateToString(area07.getDataFatFim());
+			}	
 			
 			calendariosPorArea.add(periodoArea);			
 		}
@@ -259,22 +260,20 @@ public class CalendarioProducaoService {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ParametrosCalendario gravarPeriodoProducaoCalculado(int anoCalendario) {
-		// Por padrão sempre gravará os períodos para as 3 empresas 1, 500 e 600.
-		int [] empresas = {1, 500, 600};
+		System.out.println("gravarPeriodoProducaoCalculado");		
+		// Por padrão sempre gravará os períodos para as 4 empresas 1, 100, 500 e 600.
+		int [] empresas = {1, 100, 500, 600};
 		int [] areas = {1, 6, 9, 2, 4, 7};
-
-		System.out.println("gravarPeriodoProducaoCalculado"); 
-		
+ 		
 		for (int i = 0; i < empresas.length; i++) {
 			Map<Integer, Map> mapPeriodos = calcularCalendarioPorArea(empresas[i], anoCalendario);	
-
 			for (Integer periodo : mapPeriodos.keySet()) {
 				Map<Integer, PeriodoProducaoArea> mapAreaPeriodo = mapPeriodos.get(periodo);
-				//if (periodo != 2200) continue; // TODO - GRAVAR APENAS O PERIODO 2200 PARA TESTE
-				System.out.println("PERIODO: " + periodo + " - mapAreaPeriodo: " + mapAreaPeriodo.size());				
 				for (int j = 0; j < areas.length; j++) {				
-					PeriodoProducaoArea area = mapAreaPeriodo.get(areas[j]);
-					periodoProducaoCustom.savePeriodoProducao(area.getEmpresa(), area.getArea(), area.getPeriodo(), area.getDataProdInicio(), area.getDataProdFim(), area.getDataFatInicio(), area.getDataFatFim(), area.getDataLimite(), area.getQuinzena());
+					if (CalculoCalendarioProducao.existsAreaEmpresa(empresas[i], areas[j])) {
+						PeriodoProducaoArea area = mapAreaPeriodo.get(areas[j]);
+						periodoProducaoCustom.savePeriodoProducao(area.getEmpresa(), area.getArea(), area.getPeriodo(), area.getDataProdInicio(), area.getDataProdFim(), area.getDataFatInicio(), area.getDataFatFim(), area.getDataLimite(), area.getQuinzena());
+					}
 				}				
 			}
 		}
