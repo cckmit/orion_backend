@@ -270,11 +270,8 @@ public class CalendarioProducaoService {
 
 			for (Integer periodo : mapPeriodos.keySet()) {
 				Map<Integer, PeriodoProducaoArea> mapAreaPeriodo = mapPeriodos.get(periodo);
-
-				if (periodo != 2200) continue; // TODO - GRAVAR APENAS O PERIODO 2200 PARA TESTE
-
-				System.out.println("PERIODO: " + periodo + " - mapAreaPeriodo: " + mapAreaPeriodo.size());
-				
+				//if (periodo != 2200) continue; // TODO - GRAVAR APENAS O PERIODO 2200 PARA TESTE
+				System.out.println("PERIODO: " + periodo + " - mapAreaPeriodo: " + mapAreaPeriodo.size());				
 				for (int j = 0; j < areas.length; j++) {				
 					PeriodoProducaoArea area = mapAreaPeriodo.get(areas[j]);
 					periodoProducaoCustom.savePeriodoProducao(area.getEmpresa(), area.getArea(), area.getPeriodo(), area.getDataProdInicio(), area.getDataProdFim(), area.getDataFatInicio(), area.getDataFatFim(), area.getDataLimite(), area.getQuinzena());
