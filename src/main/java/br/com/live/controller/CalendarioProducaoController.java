@@ -107,5 +107,10 @@ public class CalendarioProducaoController {
 	@RequestMapping(value = "/ver-todas-datas-info/{anoCalendario}", method = RequestMethod.GET)
 	public boolean verificaTodasDatasInformadas(@PathVariable("anoCalendario") int anoCalendario) {
 		return calendarioProducaoCustom.todasDatasEstagiosInformadas(anoCalendario);
-	}	
+	}
+	
+	@RequestMapping(value = "/verfica-periodo/{periodo}", method = RequestMethod.GET)
+	public boolean verificaPeriodoInformado(@PathVariable("periodo") int periodo) {
+		return calendarioProducaoCustom.verificaPeriodoExistente(periodo);
+	}
 }
