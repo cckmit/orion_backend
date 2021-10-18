@@ -147,6 +147,6 @@ public class CalendarioProducaoCustom {
 
 		int encontrou = jdbcTemplate.queryForObject(query, Integer.class);
 
-		return !(encontrou == 1);
+		return (encontrou == 1);
 	}
 }
