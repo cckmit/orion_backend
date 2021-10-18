@@ -49,6 +49,11 @@ public class CalendarioProducaoController {
 		calendarioProducaoService.salvarConfiguracaoEstagios(body.estagios);
 	}
 	
+    @RequestMapping(value = "/{anoCalendario}", method = RequestMethod.DELETE)
+    public void deleteParametros(@PathVariable("anoCalendario") int anoCalendario) {
+          calendarioProducaoService.deleteAnoCalendario(anoCalendario);
+    }
+	
     @RequestMapping(value = "/get-configuracao", method = RequestMethod.GET)
     public List<EstagiosConfigurados> findAllConfig() {
           return calendarioProducaoService.findAllEstagiosConfig();

@@ -11,4 +11,6 @@ public interface ParametrosCalendarioRepository extends JpaRepository<Parametros
 	
 	@Query("SELECT u FROM ParametrosCalendario u where u.anoCalendario = :anoCalendario")
 	ParametrosCalendario findByAnoCalendario(int anoCalendario);
+	
+	void deleteByAnoCalendario(int anoCalendario);
 }

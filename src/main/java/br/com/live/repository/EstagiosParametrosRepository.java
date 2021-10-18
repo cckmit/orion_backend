@@ -16,4 +16,6 @@ public interface EstagiosParametrosRepository extends JpaRepository<EstagiosPara
 	
 	@Query("SELECT u FROM EstagiosParametros u where u.anoCalendario = :anoCalendario order by u.sequencia")
 	List<EstagiosParametros> findByAnoCalendario(int anoCalendario);
+	
+	void deleteByAnoCalendario(int anoCalendario);
 }

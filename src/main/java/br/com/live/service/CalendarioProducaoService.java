@@ -288,4 +288,10 @@ public class CalendarioProducaoService {
 		
 		return parametrosCalendario;
 	}
+	
+	public void deleteAnoCalendario(int anoCalendario) {
+		estagiosParametrosRepository.deleteByAnoCalendario(anoCalendario);
+		parametrosCalendarioRepository.deleteByAnoCalendario(anoCalendario);
+	}
+	
 }
