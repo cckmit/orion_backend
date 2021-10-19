@@ -127,29 +127,33 @@ public class PlanoMestreService {
 		return planoMestreCustom.findItensPorRefCorByIdPlanoMestre(idPlanoMestre);
 	}
 
-	private String findTodasColecoesPlanoMestre (long idPlanoMestre) {
+	private String findTodasColecoesPlanoMestre(long idPlanoMestre) {
 		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
-		
-		String colecoes = parametros.colecoes; 
+
+		String colecoes = parametros.colecoes;
 		String previsoes = parametros.previsoes;
-		
-		if (colecoes == null) colecoes = "";
-		if (previsoes == null) previsoes = "";
-		
-		if (!previsoes.equalsIgnoreCase("")) {		
+
+		if (colecoes == null)
+			colecoes = "";
+		if (previsoes == null)
+			previsoes = "";
+
+		if (!previsoes.equalsIgnoreCase("")) {
 			List<Integer> colecoesPrevisoes = previsaoVendasCustom.findColecoesByPrevisoes(previsoes);
-		
+
 			for (Integer colecaoPrev : colecoesPrevisoes) {
-				if (!colecoes.equalsIgnoreCase("")) colecoes += "," + colecaoPrev;
-				else colecoes += colecaoPrev;
+				if (!colecoes.equalsIgnoreCase(""))
+					colecoes += "," + colecaoPrev;
+				else
+					colecoes += colecaoPrev;
 			}
-		}	
+		}
 
 		return colecoes;
 	}
-		
-	public List<ConsultaItensTamPlanoMestre> findTamanhos(long idPlanoMestre, String grupo, String item) {		
-		String colecoes = findTodasColecoesPlanoMestre(idPlanoMestre);				
+
+	public List<ConsultaItensTamPlanoMestre> findTamanhos(long idPlanoMestre, String grupo, String item) {
+		String colecoes = findTodasColecoesPlanoMestre(idPlanoMestre);
 		return planoMestreCustom.findItensPorTamByIdPlanoMestreGrupoItem(idPlanoMestre, grupo, item, colecoes);
 	}
 
@@ -203,9 +207,10 @@ public class PlanoMestreService {
 			qtdeFaltaSobraPecas = 0;
 			qtdeFaltaSobraMinutos = 0.000;
 
-			// TODO - ALTERAR - CONSIDERAR PERIODO 
+			// TODO - ALTERAR - CONSIDERAR PERIODO
 			OcupacaoEstagioArtigo ocupacaoEstagioPlanoMestre = ocupacaoPlanoMestreCustom
-					.findOcupacaoPlanoMestreByPeriodoEstagio(idPlanoMestre, periodoInicio, periodoFim, capacidade.estagio);
+					.findOcupacaoPlanoMestreByPeriodoEstagio(idPlanoMestre, periodoInicio, periodoFim,
+							capacidade.estagio);
 
 			OcupacaoEstagioArtigo ocupacaoEstagioProgramada = ocupacaoPlanoMestreCustom
 					.findOcupacaoProgramadaByPeriodoEstagio(periodoInicio, periodoFim, capacidade.estagio);
@@ -244,8 +249,8 @@ public class PlanoMestreService {
 				qtdeFaltaSobraMinutos = 0.000;
 
 				OcupacaoEstagioArtigo ocupacaoArtigoPlanoMestre = ocupacaoPlanoMestreCustom
-						.findOcupacaoPlanoMestreArtigoByPeriodoEstagioArtigo(idPlanoMestre, periodoInicio, periodoFim, capacidade.estagio,
-								artigoCapacidade.artigo);
+						.findOcupacaoPlanoMestreArtigoByPeriodoEstagioArtigo(idPlanoMestre, periodoInicio, periodoFim,
+								capacidade.estagio, artigoCapacidade.artigo);
 				OcupacaoEstagioArtigo ocupacaoArtigoProgramado = ocupacaoPlanoMestreCustom
 						.findOcupacaoProgramadaArtigoByPeriodoEstagioArtigo(periodoInicio, periodoFim,
 								capacidade.estagio, artigoCapacidade.artigo);
@@ -280,15 +285,16 @@ public class PlanoMestreService {
 	}
 
 	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens(long idPlanoMestre, List<Integer> preOrdens) {
-		List<PlanoMestrePreOrdem> preOrdensComOpsGeradas = planoMestrePreOrdemRepository.findByIdPlanoMestreAndOrdemGerada(idPlanoMestre);
-				
+		List<PlanoMestrePreOrdem> preOrdensComOpsGeradas = planoMestrePreOrdemRepository
+				.findByIdPlanoMestreAndOrdemGerada(idPlanoMestre);
+
 		if (preOrdensComOpsGeradas.size() > 0) {
-			preOrdens.clear();			
+			preOrdens.clear();
 			for (PlanoMestrePreOrdem preOrdemComOp : preOrdensComOpsGeradas) {
-				preOrdens.add((int) preOrdemComOp.id);	
+				preOrdens.add((int) preOrdemComOp.id);
 			}
 		}
-		
+
 		long idMaiorOP = planoMestreCustom.findIDMaiorOrdemByPreOrdens(preOrdens);
 		long idMenorOP = planoMestreCustom.findIDMenorOrdemByPreOrdens(preOrdens);
 
@@ -319,10 +325,10 @@ public class PlanoMestreService {
 	}
 
 	public void salvarItem(ConsultaItensPlanoMestre itemAlterado) {
-		
+
 		ProdutoPlanoMestrePorCor produtoCor = produtoPlanoMestrePorCorRepository
 				.findByCodigo(itemAlterado.idPlanoMestre, itemAlterado.grupo, itemAlterado.item);
-		
+
 		if (produtoCor.qtdeProgramada != itemAlterado.qtdeProgramada) {
 
 			PlanoMestreParametros parametros = planoMestreParametrosRepository
@@ -340,7 +346,7 @@ public class PlanoMestreService {
 				produtos = calcularGradeVenda(produtoCor);
 
 			if (parametros.tipoDistribuicao == 3)
-				produtos = calcularGradeNegativa(produtoCor); 
+				produtos = calcularGradeNegativa(produtoCor);
 
 			if (parametros.tipoDistribuicao == 4)
 				produtos = calcularGradePrevisao(produtoCor, parametros.previsoes);
@@ -348,12 +354,12 @@ public class PlanoMestreService {
 			produtoPlanoMestreRepository.saveAll(produtos);
 
 			aplicarMultiplicador(produtoCor.idPlanoMestre, produtoCor.grupo, produtoCor.item);
-		}		
+		}
 	}
-	
+
 	public void salvarItens(List<ConsultaItensPlanoMestre> itensAlterados) {
 		for (ConsultaItensPlanoMestre itemAlterado : itensAlterados) {
-			salvarItem(itemAlterado);			
+			salvarItem(itemAlterado);
 		}
 	}
 
@@ -438,18 +444,19 @@ public class PlanoMestreService {
 		long idPlanoMestre = 0;
 
 		System.out.println("Inicio geração do plano mestre");
-			
-		// Carrega demanda apenas para o tipo de distribuição diferente de 4 - Previsão de Vendas.
+
+		// Carrega demanda apenas para o tipo de distribuição diferente de 4 - Previsão
+		// de Vendas.
 		List<EstoqueProduto> estoques = new ArrayList<EstoqueProduto>();
 		List<DemandaProdutoPlano> demandas = new ArrayList<DemandaProdutoPlano>();
 		List<ProcessoProdutoPlano> processos = new ArrayList<ProcessoProdutoPlano>();
-		
+
 		if (parametros.tipoDistribuicao != 4) {
 			estoques = estoqueProdutoCustom.findByParameters(parametros);
-			demandas = demandaProdutoCustom.findByParameters(parametros);		
+			demandas = demandaProdutoCustom.findByParameters(parametros);
 			processos = processoProdutoCustom.findByParameters(parametros);
 		}
-		
+
 		List<ProdutoCompleto> produtos = planoMestreCustom.findProdutosByParameters(parametros);
 
 		System.out.println("Criando o plano mestre");
@@ -480,8 +487,9 @@ public class PlanoMestreService {
 		planoMestreParametrosRepository.save(planoMestreParametros);
 
 		for (ProdutoPlanoMestre produtoPlanoMestre : produtos) {
-			produtoPlanoMestre.idPlanoMestre = planoMestre.id;			
-			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(planoMestreParametros.previsoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);			
+			produtoPlanoMestre.idPlanoMestre = planoMestre.id;
+			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(
+					planoMestreParametros.previsoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);
 			produtoPlanoMestreRepository.save(produtoPlanoMestre);
 		}
 
@@ -544,7 +552,7 @@ public class PlanoMestreService {
 
 		return CalculoDistribuicaoPecas.distribuirPelaGradePadrao(produtoCor.qtdeProgramada, produtos, marcacoesRisco);
 	}
-	
+
 	private void calcularGradeVendaParaPlano(long idPlanoMestre) {
 
 		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
@@ -589,7 +597,7 @@ public class PlanoMestreService {
 	}
 
 	private void calcularGradePrevisaoParaPlano(long idPlanoMestre) {
-		
+
 		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);
 
 		List<ProdutoPlanoMestrePorCor> produtosCor = produtoPlanoMestrePorCorRepository
@@ -604,23 +612,26 @@ public class PlanoMestreService {
 	}
 
 	private List<ProdutoPlanoMestre> calcularGradePrevisao(ProdutoPlanoMestrePorCor produtoCor, String idsPrevisoes) {
-		
-		List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos = previsaoVendasCustom.findPrevisaoVendasItemTamByIdsPrevisaoVendasGrupoItem(idsPrevisoes, produtoCor.grupo, produtoCor.item);
+
+		List<ConsultaPrevisaoVendasItemTam> previsaoTamanhos = previsaoVendasCustom
+				.findPrevisaoVendasItemTamByIdsPrevisaoVendasGrupoItem(idsPrevisoes, produtoCor.grupo, produtoCor.item);
 
 		int qtdePrevisao = 0;
-		
+
 		for (ConsultaPrevisaoVendasItemTam previsao : previsaoTamanhos) {
 			qtdePrevisao += previsao.qtdePrevisao;
 		}
-		
-		if (qtdePrevisao == 0) return calcularGradePadrao(produtoCor);
-		
+
+		if (qtdePrevisao == 0)
+			return calcularGradePadrao(produtoCor);
+
 		List<ProdutoPlanoMestre> produtos = produtoPlanoMestreRepository
 				.findByIdPlanoCodGrupoCor(produtoCor.idPlanoMestre, produtoCor.grupo, produtoCor.item);
-		
-		return CalculoDistribuicaoPecas.distribuirPelaGradePrevisao(produtoCor.qtdeProgramada, produtos, previsaoTamanhos);
-	}	
-	
+
+		return CalculoDistribuicaoPecas.distribuirPelaGradePrevisao(produtoCor.qtdeProgramada, produtos,
+				previsaoTamanhos);
+	}
+
 	private void aplicarMultiplicadorItem(long idPlanoMestre, int multiplicador, ProdutoPlanoMestrePorCor produtoCor) {
 
 		int qtdeProgramada = 0;
@@ -633,7 +644,8 @@ public class PlanoMestreService {
 			produto.qtdeDiferencaSugestao = produto.qtdeSugestao - produto.qtdeEqualizadoSugestao;
 			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;
 			produtoPlanoMestreRepository.save(produto);
-			qtdeProgramada += produto.qtdeProgramada;			
+			qtdeProgramada += produto.qtdeProgramada;
+
 		}
 
 		produtoCor.qtdeEqualizadoSugestao = qtdeProgramada;
@@ -660,49 +672,58 @@ public class PlanoMestreService {
 	}
 
 	public void equalizarQtdeMinimaReferencia(long idPlanoMestre, int tipoDistribuicao, int qtdeMinima) {
-		
+
 		if (qtdeMinima > 0) {
 
 			double proporcao = 0;
 			int qtdeProgramar = 0;
-			
-			List<GradeDistribuicaoGrupoItem> gradeCorProduto = null;			
-			List<ConsultaProgramadoReferencia> programados = planoMestreCustom.findProgramacaoPorReferenciaByIdPlanoMestre(idPlanoMestre);
-			
+
+			List<GradeDistribuicaoGrupoItem> gradeCorProduto = null;
+			List<ConsultaProgramadoReferencia> programados = planoMestreCustom
+					.findProgramacaoPorReferenciaByIdPlanoMestre(idPlanoMestre);
+
 			for (ConsultaProgramadoReferencia programado : programados) {
-				
-				if (programado.quantidade <= 0) continue;
-				
+
+				if (programado.quantidade <= 0)
+					continue;
+
 				if (programado.quantidade < qtdeMinima) {
 
-					if ((tipoDistribuicao == 1)||(tipoDistribuicao == 4)) gradeCorProduto = planoMestreCustom.findDistribuicaoPadraoCorByIdPlanoMestreGrupo(idPlanoMestre, programado.grupo);  
-					if (tipoDistribuicao == 2) gradeCorProduto = planoMestreCustom.findDemandaByIdPlanoMestreGrupo(idPlanoMestre, programado.grupo);				
-					if (tipoDistribuicao == 3) gradeCorProduto = planoMestreCustom.findSugestaoByIdPlanoMestreGrupo(idPlanoMestre, programado.grupo);
-					
+					if ((tipoDistribuicao == 1) || (tipoDistribuicao == 4))
+						gradeCorProduto = planoMestreCustom.findDistribuicaoPadraoCorByIdPlanoMestreGrupo(idPlanoMestre,
+								programado.grupo);
+					if (tipoDistribuicao == 2)
+						gradeCorProduto = planoMestreCustom.findDemandaByIdPlanoMestreGrupo(idPlanoMestre,
+								programado.grupo);
+					if (tipoDistribuicao == 3)
+						gradeCorProduto = planoMestreCustom.findSugestaoByIdPlanoMestreGrupo(idPlanoMestre,
+								programado.grupo);
+
 					for (GradeDistribuicaoGrupoItem grade : gradeCorProduto) {
 
 						qtdeProgramar = 0;
-						
+
 						proporcao = ((double) grade.qtdeItem / (double) grade.qtdeGrupo);
 						qtdeProgramar = (int) Math.ceil(((double) qtdeMinima * proporcao));
-						
-						ConsultaItensPlanoMestre item = planoMestreCustom.findItensPorRefCorByIdPlanoMestreGrupoItem(idPlanoMestre, grade.grupo, grade.item);
-						item.qtdeProgramada = qtdeProgramar;						
-						
-						salvarItem(item);						
+
+						ConsultaItensPlanoMestre item = planoMestreCustom
+								.findItensPorRefCorByIdPlanoMestreGrupoItem(idPlanoMestre, grade.grupo, grade.item);
+						item.qtdeProgramada = qtdeProgramar;
+
+						salvarItem(item);
 					}
 				}
-			}			
+			}
 		}
 	}
 
 	public void gerarPreOrdens(ParametrosPlanoMestre parametros) {
 
 		PlanoMestre planoMestre = planoMestreRepository.findById(parametros.idPlanoMestre);
-		
+
 		// Se tiver ordens geradas, não recria as pré-ordens
-		
-		if (planoMestre.situacao < 2) {		
+
+		if (planoMestre.situacao < 2) {
 			// Atualiza os parâmetros do plano mestre.
 			PlanoMestreParametros planoMestreParametros = planoMestreParametrosRepository
 					.findByIdPlanoMestre(parametros.idPlanoMestre);
@@ -713,44 +734,44 @@ public class PlanoMestreService {
 			planoMestreParametros.depositoOP = parametros.depositoOP;
 			planoMestreParametros.observacaoOP = parametros.observacaoOP;
 			planoMestreParametrosRepository.save(planoMestreParametros);
-	
+
 			// Elimina as pré-ordens geradas anteriormente para o plano mestre.
 			planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
 			planoMestrePreOrdemItemRepository.flush();
-			planoMestrePreOrdemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);			
+			planoMestrePreOrdemRepository.deleteByIdPlanoMestre(parametros.idPlanoMestre);
 			planoMestrePreOrdemRepository.flush();
-	
+
 			// Calcula e gera as pré-ordens
 			List<ProgramacaoPlanoMestre> programacao = planoMestreCustom
 					.findProgramacaoByIdPlanoMestre(parametros.idPlanoMestre);
-	
-			GeracaoPreOrdens geracaoPreOrdens = new GeracaoPreOrdens(parametros.idPlanoMestre, parametros.agrupaOpPorRefer,
-					parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP, parametros.depositoOP,
-					parametros.observacaoOP, programacao);
-	
+
+			GeracaoPreOrdens geracaoPreOrdens = new GeracaoPreOrdens(parametros.idPlanoMestre,
+					parametros.agrupaOpPorRefer, parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP,
+					parametros.depositoOP, parametros.observacaoOP, programacao);
+
 			Map<Integer, PlanoMestrePreOrdem> mapPreOrdens = geracaoPreOrdens.getMapPreOrdens();
 			List<PlanoMestrePreOrdemItem> listPreOrdemItens;
-	
+
 			PlanoMestrePreOrdem preOrdem;
-			Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao> ();
-			
+			Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao>();
+
 			for (Integer idMap : mapPreOrdens.keySet()) {
-	
+
 				preOrdem = mapPreOrdens.get(idMap);
 				preOrdem.id = planoMestreCustom.findNextIdPreOrdem();
-				preOrdem = planoMestrePreOrdemRepository.saveAndFlush(preOrdem);				
+				preOrdem = planoMestrePreOrdemRepository.saveAndFlush(preOrdem);
 				listPreOrdemItens = geracaoPreOrdens.getListPreOrdemItens(idMap);
 
 				for (PlanoMestrePreOrdemItem preOrdemItem : listPreOrdemItens) {
 					preOrdemItem.id = planoMestreCustom.findNextIdPreOrdemItem();
 					preOrdemItem.idOrdem = preOrdem.id;
-					planoMestrePreOrdemItemRepository.saveAndFlush(preOrdemItem);					
+					planoMestrePreOrdemItemRepository.saveAndFlush(preOrdemItem);
 				}
-				
+
 				ordemProducaoService.validarDadosOrdem(preOrdem, mapPreOrdensComErro);
 				ordemProducaoService.validarDadosItem(preOrdem, listPreOrdemItens, mapPreOrdensComErro);
 			}
-			
+
 			ordemProducaoService.atualizarErrosPreOrdens(mapPreOrdensComErro);
 		}
 	}
@@ -758,8 +779,8 @@ public class PlanoMestreService {
 	public List<PlanoMestre> delete(long idPlanoMestre) {
 
 		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
-		
-		if (planoMestre.situacao == 0) {  
+
+		if (planoMestre.situacao == 0) {
 			planoMestreOcupacaoEstagioRepository.deleteByIdPlanoMestre(idPlanoMestre);
 			planoMestreOcupacaoArtigoRepository.deleteByIdPlanoMestre(idPlanoMestre);
 			planoMestrePreOrdemItemRepository.deleteByIdPlanoMestre(idPlanoMestre);
@@ -770,8 +791,18 @@ public class PlanoMestreService {
 			planoMestreParametrosRepository.deleteById(idPlanoMestre);
 			planoMestreRepository.deleteById(idPlanoMestre);
 		}
-		
+
 		return findAll();
 	}
 
+	public void zerarQtdesSugestaoCancelamento(long idPlanoMestre) {
+		List<ConsultaItensPlanoMestre> itensConsulta = findProdutos(idPlanoMestre);
+
+		for (ConsultaItensPlanoMestre item : itensConsulta) {
+			if (item.sugCancelProducao.equals("S")) {
+				item.qtdeProgramada = 0;
+			}
+		}
+		salvarItens(itensConsulta);
+	}
 };

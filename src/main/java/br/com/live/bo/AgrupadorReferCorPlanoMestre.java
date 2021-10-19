@@ -14,28 +14,30 @@ public class AgrupadorReferCorPlanoMestre {
 
 	private boolean consideraPrevisaoVendas;
 	private List<ProdutoPlanoMestrePorCor> produtos;
+	public int tipoDistribuicao;
 
-	public AgrupadorReferCorPlanoMestre(boolean consideraPrevisaoVendas, List<ProdutoPlanoMestre> produtos) {
+	public AgrupadorReferCorPlanoMestre(boolean consideraPrevisaoVendas, List<ProdutoPlanoMestre> produtos,
+			int tipoDistribuicao) {
 		this.consideraPrevisaoVendas = consideraPrevisaoVendas;
-		this.produtos = agruparProdutos(produtos);
+		this.produtos = agruparProdutos(produtos, tipoDistribuicao);
 	}
 
 	public List<ProdutoPlanoMestrePorCor> getProdutos() {
 		return this.produtos;
 	}
 
-	private List<ProdutoPlanoMestrePorCor> agruparProdutos(List<ProdutoPlanoMestre> produtos) {
+	private List<ProdutoPlanoMestrePorCor> agruparProdutos(List<ProdutoPlanoMestre> produtos, int tipoDistribuicao) {
 
 		Map<String, ProdutoPlanoMestrePorCor> mapProdutos;
 
-		mapProdutos = agruparProdutosPorCor(produtos);
-		mapProdutos = calcularSugestao(mapProdutos);		
+		mapProdutos = agruparProdutosPorCor(produtos, tipoDistribuicao);
+		mapProdutos = calcularSugestao(mapProdutos, tipoDistribuicao);
 		mapProdutos = calcularRankMaisVendidos(mapProdutos);
 
 		List<ProdutoPlanoMestrePorCor> produtosPlanoMestrePorCor = new ArrayList<ProdutoPlanoMestrePorCor>(
 				mapProdutos.values());
-		
-		return produtosPlanoMestrePorCor; 
+
+		return produtosPlanoMestrePorCor;
 	}
 
 	private Map<String, ProdutoPlanoMestrePorCor> calcularRankMaisVendidos(
@@ -46,8 +48,8 @@ public class AgrupadorReferCorPlanoMestre {
 		Map<Integer, Integer> mapQuantidades = new HashMap<Integer, Integer>();
 
 		for (String chave : mapProdutos.keySet()) {
-			produto = mapProdutos.get(chave);			
-				mapQuantidades.put(produto.qtdeDemAcumulado, null);
+			produto = mapProdutos.get(chave);
+			mapQuantidades.put(produto.qtdeDemAcumulado, null);
 		}
 
 		int rank = 0;
@@ -57,7 +59,7 @@ public class AgrupadorReferCorPlanoMestre {
 
 		for (Integer quantidade : listQtdeChaves) {
 			rank++;
-			mapQuantidades.put(quantidade, rank);			
+			mapQuantidades.put(quantidade, rank);
 		}
 
 		for (String chave : mapProdutos.keySet()) {
@@ -73,7 +75,8 @@ public class AgrupadorReferCorPlanoMestre {
 		return mapProdutos;
 	}
 
-	private Map<String, ProdutoPlanoMestrePorCor> calcularSugestao(Map<String, ProdutoPlanoMestrePorCor> mapProdutos) {
+	private Map<String, ProdutoPlanoMestrePorCor> calcularSugestao(Map<String, ProdutoPlanoMestrePorCor> mapProdutos,
+			int tipoDistribuicao) {
 
 		ProdutoPlanoMestrePorCor produto;
 
@@ -84,20 +87,25 @@ public class AgrupadorReferCorPlanoMestre {
 			if (consideraPrevisaoVendas) {
 				produto.qtdeSaldoAcumulado = produto.qtdeSaldoAcumulado - produto.qtdePrevisao;
 				produto.qtdeSaldoAcumProg = produto.qtdeSaldoAcumProg - produto.qtdePrevisao;
-			}			
-			
-			if (produto.qtdeSaldoAcumProg < 0) produto.qtdeSugestao = (produto.qtdeSaldoAcumProg * -1);
-			else if (produto.qtdeProgramada > 0) produto.qtdeSugestao = produto.qtdeProgramada;
-			
-			produto.qtdeEqualizadoSugestao = produto.qtdeSugestao; 
+			}
+
+			if (produto.qtdeSaldoAcumProg < 0)
+				produto.qtdeSugestao = (produto.qtdeSaldoAcumProg * -1);
+			else if (produto.qtdeProgramada > 0)
+				produto.qtdeSugestao = produto.qtdeProgramada;
+
+			produto.qtdeEqualizadoSugestao = produto.qtdeSugestao;
 			produto.qtdeDiferencaSugestao = produto.qtdeEqualizadoSugestao - produto.qtdeSugestao;
-			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;			
+
+			if (tipoDistribuicao > 0)
+				produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;
 		}
 
 		return mapProdutos;
 	}
 
-	private Map<String, ProdutoPlanoMestrePorCor> agruparProdutosPorCor(List<ProdutoPlanoMestre> produtos) {
+	private Map<String, ProdutoPlanoMestrePorCor> agruparProdutosPorCor(List<ProdutoPlanoMestre> produtos,
+			int tipoDistribuicao) {
 
 		String codProduto = "";
 
@@ -151,16 +159,18 @@ public class AgrupadorReferCorPlanoMestre {
 			produtoCor.qtdeSaldoPlano8 += produto.qtdeSaldoPlano8;
 
 			produtoCor.qtdeDemAcumProg += produto.qtdeDemAcumProg;
-			produtoCor.qtdeProcAcumProg += produto.qtdeProcAcumProg;			
-		    produtoCor.qtdeSaldoAcumProg += produto.qtdeSaldoAcumProg;
-			
-			produtoCor.qtdeDemAcumulado += produto.qtdeDemAcumulado;
-			produtoCor.qtdeProcAcumulado += produto.qtdeProcAcumulado;			
-		    produtoCor.qtdeSaldoAcumulado += produto.qtdeSaldoAcumulado;
+			produtoCor.qtdeProcAcumProg += produto.qtdeProcAcumProg;
+			produtoCor.qtdeSaldoAcumProg += produto.qtdeSaldoAcumProg;
 
-		    if (produto.qtdeSaldoAcumProg < 0) 
-		    	produtoCor.qtdeProgramada += (produto.qtdeSaldoAcumProg * -1); 
-		    
+			produtoCor.qtdeDemAcumulado += produto.qtdeDemAcumulado;
+			produtoCor.qtdeProcAcumulado += produto.qtdeProcAcumulado;
+			produtoCor.qtdeSaldoAcumulado += produto.qtdeSaldoAcumulado;
+
+			if (tipoDistribuicao > 0) {
+				if (produto.qtdeSaldoAcumProg < 0)
+					produtoCor.qtdeProgramada += (produto.qtdeSaldoAcumProg * -1);
+			}
+			
 			mapProdutos.put(codProduto, produtoCor);
 		}
 

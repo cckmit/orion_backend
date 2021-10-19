@@ -132,5 +132,11 @@ public class PlanoMestreController {
 	public List<PlanoMestre> deletePlanoMestre(@PathVariable("id") long idPlanoMestre) {
 		return planoMestreService.delete(idPlanoMestre);
 	}
+	
+	@RequestMapping(value = "/zerar-quantidades/{idPlanoMestre}", method = RequestMethod.GET)
+	public List<ConsultaItensPlanoMestre> zerarQuantidades(@PathVariable("idPlanoMestre") long idPlanoMestre) {
+		planoMestreService.zerarQtdesSugestaoCancelamento(idPlanoMestre);
+		return planoMestreService.findProdutos(idPlanoMestre);
+	}
 
 }

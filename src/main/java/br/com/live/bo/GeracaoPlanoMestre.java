@@ -52,7 +52,7 @@ public class GeracaoPlanoMestre {
 		atualizarEstoque();
 		atualizarDemanda();
 		atualizarProcesso();
-		atualizarSaldos();
+		atualizarSaldos(parametros.tipoDistribuicao);
 	}
 
 	private void atualizarProduto(int tipo, int plano, String nivel, String grupo, String sub, String item,
@@ -168,10 +168,10 @@ public class GeracaoPlanoMestre {
 		}
 	}
 
-	private void atualizarSaldos() {
+	private void atualizarSaldos(int tipoDistribuicao) {
 
 		Set<String> chaves = mapProdutos.keySet();
-
+		
 		for (String chave : chaves) {
 			mapProdutos.get(chave).qtdeSaldoPlano1 = mapProdutos.get(chave).qtdeEstoque
 					+ mapProdutos.get(chave).qtdeProcPlano1 - mapProdutos.get(chave).qtdeDemPlano1;
@@ -193,14 +193,15 @@ public class GeracaoPlanoMestre {
 					+ mapProdutos.get(chave).qtdeProcAcumulado - mapProdutos.get(chave).qtdeDemAcumulado;
 			mapProdutos.get(chave).qtdeSaldoAcumProg = mapProdutos.get(chave).qtdeEstoque
 					+ mapProdutos.get(chave).qtdeProcAcumProg - mapProdutos.get(chave).qtdeDemAcumProg;
-
+			
 			if (mapProdutos.get(chave).qtdeSaldoAcumProg < 0)
 				mapProdutos.get(chave).qtdeSugestao = (mapProdutos.get(chave).qtdeSaldoAcumProg * -1);
-
+			
 			mapProdutos.get(chave).qtdeEqualizadoSugestao = mapProdutos.get(chave).qtdeSugestao;
 			mapProdutos.get(chave).qtdeDiferencaSugestao = mapProdutos.get(chave).qtdeEqualizadoSugestao
 					- mapProdutos.get(chave).qtdeSugestao;
-			mapProdutos.get(chave).qtdeProgramada = mapProdutos.get(chave).qtdeEqualizadoSugestao;
+			
+			if (tipoDistribuicao > 0) mapProdutos.get(chave).qtdeProgramada = mapProdutos.get(chave).qtdeEqualizadoSugestao;
 		}
 	}
 
@@ -210,14 +211,14 @@ public class GeracaoPlanoMestre {
 
 	public List<ProdutoPlanoMestrePorCor> getProdutosPorCorPlanoMestre() {
 		List<ProdutoPlanoMestre> itens = new ArrayList<ProdutoPlanoMestre>(mapProdutos.values());
-		return new AgrupadorReferCorPlanoMestre(false, itens).getProdutos();
+		return new AgrupadorReferCorPlanoMestre(false, itens, parametros.tipoDistribuicao).getProdutos();
 	}
 
 	public List<ProdutoPlanoMestrePorCor> getProdutosPorCorPlanoMestre(List<ProdutoPlanoMestre> itens) {
 		boolean consideraPrevisaoVendas = false;
 		if (parametros.tipoDistribuicao == 4)
 			consideraPrevisaoVendas = true;
-		return new AgrupadorReferCorPlanoMestre(consideraPrevisaoVendas, itens).getProdutos();
+		return new AgrupadorReferCorPlanoMestre(consideraPrevisaoVendas, itens, parametros.tipoDistribuicao).getProdutos();
 	}
 
 	public PlanoMestreParamProgItem getParametrosProgramacaoItem(long idPlanoMestre, long idItemPlanoMestre,
