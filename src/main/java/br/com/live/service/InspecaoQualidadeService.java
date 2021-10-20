@@ -7,14 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.body.BodyInspecaoQualidade;
+import br.com.live.custom.EmpresaCustom;
 import br.com.live.custom.InspecaoQualidadeCustom;
 import br.com.live.custom.OrdemProducaoCustom;
+import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.InspecaoQualidade;
 import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.entity.InspecaoQualidadeLanctoPeca;
 import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
+import br.com.live.model.Empregado;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.TipoMedida;
@@ -34,19 +37,25 @@ public class InspecaoQualidadeService {
 	private final InspecaoQualidadeCustom inspecaoQualidadeCustom;
 	private final OrdemProducaoCustom ordemProducaoCustom;
 	private final UsuarioRepository usuarioRepository;
+	private final ProdutoCustom produtoCustom; 
+	private final EmpresaCustom empresaCustom;
 
 	public InspecaoQualidadeService(InspecaoQualidadeRepository inspecaoQualidadeRepository,
 			InspecaoQualidadeLanctoPecaRepository inspecaoQualidadeLanctoPecaRepository,
 			InspecaoQualidadeLanctoMedidaRepository inspecaoQualidadeLanctoMedidaRepository,
 			InspecaoQualidadeCustom inspecaoQualidadeCustom,
 			OrdemProducaoCustom ordemProducaoCustom,
-			UsuarioRepository usuarioRepository) {
+			UsuarioRepository usuarioRepository,
+			ProdutoCustom produtoCustom,
+			EmpresaCustom empresaCustom) {
 		this.inspecaoQualidadeRepository = inspecaoQualidadeRepository;
 		this.inspecaoQualidadeLanctoPecaRepository = inspecaoQualidadeLanctoPecaRepository;
 		this.inspecaoQualidadeLanctoMedidaRepository = inspecaoQualidadeLanctoMedidaRepository;
 		this.inspecaoQualidadeCustom = inspecaoQualidadeCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;
 		this.usuarioRepository = usuarioRepository;
+		this.produtoCustom = produtoCustom;
+		this.empresaCustom = empresaCustom;
 	}
 
 	private int[] parseTalaoToArrayDados(String talao) {
@@ -76,13 +85,31 @@ public class InspecaoQualidadeService {
 		int ordemProducao = dadosTalao[2];
 				
 		OrdemConfeccao dadosOrdemConfeccao = ordemProducaoCustom.findOrdemConfeccaoByOrdProdPeriodoOrdConfec(ordemProducao, periodo, ordemConfeccao);		
-		BodyInspecaoQualidade bodyRetorno = new BodyInspecaoQualidade(dadosOrdemConfeccao);
-		
+		BodyInspecaoQualidade bodyRetorno = new BodyInspecaoQualidade(dadosOrdemConfeccao, produtoCustom.findObservacaoFichaTecnica(dadosOrdemConfeccao.getReferencia().substring(0,5)));
+
 		return bodyRetorno;
 	}
 	
+	public BodyInspecaoQualidade findDadosInspecionadosByDataRevisor(Date data, String usuario) {
+		
+		System.out.println("findDadosInspecionadosByDataRevisor");
+		System.out.println(data);
+		System.out.println(usuario);
+		
+		int qtdePacotesInspecionados = inspecaoQualidadeCustom.findQtdePacotesInspByDataUsuario(data, usuario);
+		int qtdeMotivosLancados = inspecaoQualidadeCustom.findQtdeMotivosLancByDataUsuario(data, usuario);
+		int qtdeMedidasLancadas = inspecaoQualidadeCustom.findQtdeMedidasLancByDataUsuario(data, usuario);
+		
+		return new BodyInspecaoQualidade(qtdePacotesInspecionados, qtdeMotivosLancados, qtdeMedidasLancadas);
+	}
+	
+	
 	public List<TipoMedida> findTiposMedidasByReferencia(String referencia) {
 		return inspecaoQualidadeCustom.findTiposMedidasByReferencia(referencia);
+	}
+	
+	public List<Empregado> findRevisoresOrigem() {
+		return empresaCustom.findEmpregados();
 	}
 	
  	public List<InspecaoQualidadeLanctoMedida> findMedidasByOrdemProducaoConfeccaoTipoMedida(int ordemProducao, int ordemConfeccao, int tipoMedida) {
@@ -125,7 +152,7 @@ public class InspecaoQualidadeService {
 	public List<Usuario> findUsuariosLiberaInspecao() {		
 		return usuarioRepository.findByLiberaInspecaoQualidade(1);
 	}	
-	
+		
 	public InspecaoQualidade gravaInspecaoQualidade(InspecaoQualidade inspecaoQualidadePeca, String data) {
 		
 		InspecaoQualidade inspecao = inspecaoQualidadeRepository.findById(inspecaoQualidadePeca.id);
@@ -137,6 +164,7 @@ public class InspecaoQualidadeService {
 			inspecao.codEstagio = inspecaoQualidadePeca.codEstagio;
 			inspecao.data = FormataData.parseStringToDate(data);
 			inspecao.usuario = inspecaoQualidadePeca.usuario;
+			inspecao.revisorOrigem = inspecaoQualidadePeca.revisorOrigem;
 			inspecao.turno = inspecaoQualidadePeca.turno;
 			inspecao.ordemProducao = inspecaoQualidadePeca.ordemProducao;
 			inspecao.ordemConfeccao = inspecaoQualidadePeca.ordemConfeccao;
@@ -161,6 +189,7 @@ public class InspecaoQualidadeService {
 		lancamento.codMotivo = inspecaoQualidadePecaLancto.codMotivo;
 		lancamento.quantidade = inspecaoQualidadePecaLancto.quantidade;
 		lancamento.usuario = inspecaoQualidadePecaLancto.usuario;
+		lancamento.revisorOrigem = inspecaoQualidadePecaLancto.revisorOrigem;
 		lancamento.dataHora = new Date();
 		inspecaoQualidadeLanctoPecaRepository.saveAndFlush(lancamento);
 		
@@ -200,16 +229,13 @@ public class InspecaoQualidadeService {
 				medida.descricao = lancamento.descricao;
 				medida.medidaPadrao = lancamento.medidaPadrao;
 				medida.toleranciaMaxima = lancamento.toleranciaMaxima;
-				medida.toleranciaMinima = lancamento.toleranciaMinima;
-				medida.medidaReal = lancamento.medidaReal;
-				medida.variacao = lancamento.variacao;
-				medida.usuario = lancamento.usuario;
-				medida.dataHora = new Date();
+				medida.toleranciaMinima = lancamento.toleranciaMinima;				
 			}
 			
 			medida.medidaReal = lancamento.medidaReal;
 			medida.variacao = lancamento.variacao;
 			medida.usuario = lancamento.usuario;
+			medida.revisorOrigem = lancamento.revisorOrigem;
 			medida.dataHora = new Date();
 			
 			inspecaoQualidadeLanctoMedidaRepository.saveAndFlush(medida);

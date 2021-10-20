@@ -25,6 +25,9 @@ public class InspecaoQualidadeLanctoPeca {
 	
 	public String usuario;
 	
+	@Column(name = "revisor_origem")
+	public String revisorOrigem;
+	
 	@Column(name = "data_hora")
 	public Date dataHora;
 

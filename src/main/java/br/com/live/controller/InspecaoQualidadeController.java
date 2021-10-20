@@ -1,5 +1,6 @@
 package br.com.live.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,11 @@ import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaInspecaoQualidLanctoMedidas;
 import br.com.live.model.ConsultaInspecaoQualidLanctoPecas;
+import br.com.live.model.Empregado;
 import br.com.live.model.MotivoRejeicao;
 import br.com.live.model.TipoMedida;
 import br.com.live.service.InspecaoQualidadeService;
+import br.com.live.util.FormataData;
 
 @RestController
 @CrossOrigin
@@ -36,6 +39,16 @@ public class InspecaoQualidadeController {
 	@RequestMapping(value = "/motivos", method = RequestMethod.GET)
 	public List<MotivoRejeicao> findAllMotivos() {
 		return inspecaoQualidadeService.findAllMotivos();
+	}
+	
+	@RequestMapping(value = "/revisores", method = RequestMethod.GET)
+	public List<Empregado> findAllRevisoresOrigem() {
+		return inspecaoQualidadeService.findRevisoresOrigem();
+	}	
+	
+	@RequestMapping(value = "/dados-inspecionados/{data}/{usuario}", method = RequestMethod.GET)
+	public BodyInspecaoQualidade findDadosInspecionadosByDataRevisor(@PathVariable("data") String data, @PathVariable("usuario") String usuario) {
+		return inspecaoQualidadeService.findDadosInspecionadosByDataRevisor(FormataData.parseStringToDate(data), usuario);
 	}
 	
 	@RequestMapping(value = "/terceiro-estagio-motivo/{ordemProducao}/{ordemConfeccao}/{estagio}", method = RequestMethod.GET)

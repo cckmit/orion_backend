@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class Empresa {
+public class Empregado {
 	public int codigo;
 	public String nome;
 
@@ -17,15 +17,6 @@ public class Empresa {
 	}
 
 	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	public Empresa() {
-
-	}
-
-	public Empresa(int codigo, String nome) {
-		this.codigo = codigo;
 		this.nome = nome;
 	}
 }

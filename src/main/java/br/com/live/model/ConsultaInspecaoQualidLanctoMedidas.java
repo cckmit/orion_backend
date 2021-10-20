@@ -9,6 +9,7 @@ public class ConsultaInspecaoQualidLanctoMedidas {
 	public int qtdeMedidaForaTolerancia;
 	public int tipoMedida;
 	public String usuario;
+	public String revisorOrigem;
 	public Date dataHora;
 	
 	public long getIdInspecao() {
@@ -17,6 +18,12 @@ public class ConsultaInspecaoQualidLanctoMedidas {
 	public void setIdInspecao(long idInspecao) {
 		this.idInspecao = idInspecao;
 	}
+	public String getRevisorOrigem() {
+		return revisorOrigem;
+	}
+	public void setRevisorOrigem(String revisorOrigem) {
+		this.revisorOrigem = revisorOrigem;
+	}	
 	public long getIdLancamento() {
 		return idLancamento;
 	}

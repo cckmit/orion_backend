@@ -707,4 +707,28 @@ public class ProdutoCustom {
 		return dadosFilete;
 	}
 	
+	public String findObservacaoFichaTecnica(String grupo) {
+		
+		String observacao;
+		
+		String query = " select a.descricao "
+		+ " from basi_095 a "
+		+ " where a.nivel_estrutura = '1' "
+		+ " and a.grupo_estrutura = '" + grupo + "' "
+		+ " and a.tipo_comentario = 1 "
+		+ " and a.data_historico = (select max(b.data_historico) "
+        + " from basi_095 b "
+        + " where b.nivel_estrutura = a.nivel_estrutura "
+        + " and b.grupo_estrutura = a.grupo_estrutura "
+        + " and b.tipo_comentario = 1) ";
+
+		try {
+			observacao = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			observacao = "";
+		}
+		
+		return observacao;
+	}
+		
 }

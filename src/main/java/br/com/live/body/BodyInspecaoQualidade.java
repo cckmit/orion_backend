@@ -18,12 +18,17 @@ public class BodyInspecaoQualidade {
 	public long idInspecaoLiberar;
 	public String usuarioLiberador;
 	public String observacaoLiberacao;
+	public String observacaoFichaTecnica;
+	public int qtdePacotesInspecionados;
+	public int qtdeMotivosLancados;
+	public int qtdeMedidasLancadas;
 	
 	public BodyInspecaoQualidade() {}
 	
-	public BodyInspecaoQualidade(OrdemConfeccao dadosOrdemConfeccao) {
+	public BodyInspecaoQualidade(OrdemConfeccao dadosOrdemConfeccao, String observacaoFichaTecnica) {
 		this.dadosOrdemConfeccao = dadosOrdemConfeccao;
-		this.ordemValida = (dadosOrdemConfeccao.ordemProducao > 0);
+		this.observacaoFichaTecnica = observacaoFichaTecnica;
+		this.ordemValida = (dadosOrdemConfeccao.ordemProducao > 0);		
 	}
 	
 	public BodyInspecaoQualidade(InspecaoQualidade inspecaoQualidade, InspecaoQualidadeLanctoPeca inspecaoQualidadeLanctoPeca) {
@@ -35,4 +40,10 @@ public class BodyInspecaoQualidade {
 		this.inspecaoQualidade = inspecaoQualidade;
 		this.inspecaoQualidadeLanctoMedidas = inspecaoQualidadeLanctoMedidas;
 	}	
+	
+	public BodyInspecaoQualidade(int qtdePacotesInspecionados, int qtdeMotivosLancados, int qtdeMedidasLancadas) {
+		this.qtdePacotesInspecionados = qtdePacotesInspecionados;
+		this.qtdeMotivosLancados = qtdeMotivosLancados;
+		this.qtdeMedidasLancadas = qtdeMedidasLancadas;		
+	}
 }

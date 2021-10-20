@@ -1,6 +1,7 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -159,7 +160,7 @@ public class InspecaoQualidadeCustom {
 		
 		String query = " select a.id_lancamento id, a.cod_motivo || ' - ' || nvl(b.descricao, 'SEM DEFEITO') motivo, " 
 	    + " b.codigo_estagio || ' - ' || c.descricao estagio, "  
-	    + " a.quantidade, a.usuario, a.data_hora " 
+	    + " a.quantidade, a.usuario, a.revisor_origem revisorOrigem, a.data_hora dataHora" 
 	    + " from orion_051 a, efic_040 b, mqop_005 c "
 	    + " where a.id_inspecao = " + idInspecao
 	    + " and b.codigo_motivo  (+) = a.cod_motivo "
@@ -182,6 +183,7 @@ public class InspecaoQualidadeCustom {
 		String query = " select orion_052.id_inspecao idInspecao, orion_052.id_lancamento idLancamento, max(orion_052.tipo_medida) tipoMedida, "      
 	    + " max(nvl(lancamentos.qtde_fora_toler,0)) qtdeMedidaForaTolerancia, " 
 	    + " max(orion_052.usuario) usuario, " 
+	    + " max(orion_052.revisor_origem) revisorOrigem, "
 	    + " max(orion_052.data_hora) dataHora "
 	    + " from orion_052, (select agrup_lancamentos.id_inspecao, " 
 	    + " agrup_lancamentos.id_lancamento, " 
@@ -239,5 +241,54 @@ public class InspecaoQualidadeCustom {
 		}
 		
 		return terceiro;
-	}		
+	}
+	
+	public int findQtdePacotesInspByDataUsuario(Date data, String usuario) {
+		
+		String query = " select count(*) qtde_pacotes "
+		+ " from ( "
+		+ " select a.ordem_producao, a.ordem_confeccao " 
+		+ " from orion_050 a " 
+		+ " where a.data = ? "
+		+ " and a.usuario = ? "		
+		+ " and (exists (select 1 from orion_051 b "
+	    + " where b.id_inspecao = a.id_inspecao) "
+	    + " or exists (select 1 from orion_052 b "
+	    + " where b.id_inspecao = a.id_inspecao)) "
+		+ " group by a.ordem_producao, a.ordem_confeccao "
+		+ " ) pacotes "; 
+		
+		return jdbcTemplate.queryForObject(query, Integer.class, data, usuario);
+	}
+	
+	public int findQtdeMotivosLancByDataUsuario(Date data, String usuario) {
+		
+		String query = " select count(*) qtde_motivos "
+		+ " from ( "
+		+ " select a.ordem_producao, a.ordem_confeccao, b.cod_motivo " 
+		+ " from orion_050 a, orion_051 b "
+		+ " where a.data = ? "
+		+ " and a.usuario = ? "
+		+ " and b.id_inspecao = a.id_inspecao "
+		+ " group by a.ordem_producao, a.ordem_confeccao, b.cod_motivo " 
+		+ " ) motivos";
+		
+		return jdbcTemplate.queryForObject(query, Integer.class, data, usuario);
+	}
+	
+	public int findQtdeMedidasLancByDataUsuario(Date data, String usuario) {
+		
+		String query = " select count(*) qtde_medidas "
+		+ " from ( "
+		+ " select a.ordem_producao, a.ordem_confeccao, b.id_lancamento " 
+		+ " from orion_050 a, orion_052 b "
+		+ " where a.data = ? "
+		+ " and a.usuario = ? " 
+		+ " and b.id_inspecao = a.id_inspecao "
+		+ " group by a.ordem_producao, a.ordem_confeccao, b.id_lancamento "  
+		+ " ) medidas ";
+				
+		return jdbcTemplate.queryForObject(query, Integer.class, data, usuario);
+	}
+	
 }

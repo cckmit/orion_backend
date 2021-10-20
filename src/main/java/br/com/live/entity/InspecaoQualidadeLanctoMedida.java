@@ -41,6 +41,9 @@ public class InspecaoQualidadeLanctoMedida {
 	
 	public String usuario;
 	
+	@Column(name = "revisor_origem")
+	public String revisorOrigem;
+	
 	@Column(name = "data_hora")
 	public Date dataHora;	
 	
@@ -52,6 +55,22 @@ public class InspecaoQualidadeLanctoMedida {
 		this.id = id;
 	}
 
+	public int getTipoMedida() {
+		return tipoMedida;
+	}
+
+	public void setTipoMedida(int tipoMedida) {
+		this.tipoMedida = tipoMedida;
+	}
+
+	public String getRevisorOrigem() {
+		return revisorOrigem;
+	}
+
+	public void setRevisorOrigem(String revisorOrigem) {
+		this.revisorOrigem = revisorOrigem;
+	}
+	
 	public long getIdLancamento() {
 		return idLancamento;
 	}

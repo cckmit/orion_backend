@@ -8,6 +8,7 @@ public class ConsultaInspecaoQualidLanctoPecas {
 	public String motivo;
 	public String estagio;
 	public String usuario;
+	public String revisorOrigem;
 	public Date dataHora;
 	public int quantidade;
 	
@@ -16,6 +17,12 @@ public class ConsultaInspecaoQualidLanctoPecas {
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	public String getRevisorOrigem() {
+		return revisorOrigem;
+	}
+	public void setRevisorOrigem(String revisorOrigem) {
+		this.revisorOrigem = revisorOrigem;
 	}
 	public String getMotivo() {
 		return motivo;

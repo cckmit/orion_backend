@@ -19,6 +19,9 @@ public class InspecaoQualidade {
 	public Date data;
 	public int turno;
 	public String usuario;
+	
+	@Column(name = "revisor_origem")
+	public String revisorOrigem;
 
 	@Column(name = "cod_estagio")
 	public int codEstagio;
@@ -209,5 +212,13 @@ public class InspecaoQualidade {
 
 	public void setUsuarioLiberacao(String usuarioLiberacao) {
 		this.usuarioLiberacao = usuarioLiberacao;
+	}
+	
+	public String getRevisorOrigem() {
+		return revisorOrigem;
+	}
+
+	public void setRevisorOrigem(String revisorOrigem) {
+		this.revisorOrigem = revisorOrigem;
 	}
 }
