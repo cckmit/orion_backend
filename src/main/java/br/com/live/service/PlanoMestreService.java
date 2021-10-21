@@ -364,7 +364,7 @@ public class PlanoMestreService {
 	}
 
 	public void salvarParametrosProgramacaoItem(long idPlanoMestre, String grupo, String item, int alternativa,
-			int roteiro, int periodo, int multiplicador) {
+			int roteiro, int periodo, int multiplicador, int planoInicio, int planoFim) {
 		ProdutoPlanoMestrePorCor produtoPlanoMestrePorCor = produtoPlanoMestrePorCorRepository
 				.findByCodigo(idPlanoMestre, grupo, item);
 		PlanoMestreParamProgItem planoMestreParamProgItem = planoMestreParamProgItemRepository
@@ -374,6 +374,8 @@ public class PlanoMestreService {
 		planoMestreParamProgItem.roteiro = roteiro;
 		planoMestreParamProgItem.periodo = periodo;
 		planoMestreParamProgItem.multiplicador = multiplicador;
+		planoMestreParamProgItem.planoInicio = planoInicio;
+		planoMestreParamProgItem.planoFim = planoFim;
 		planoMestreParamProgItemRepository.save(planoMestreParamProgItem);
 
 		aplicarMultiplicadorItem(idPlanoMestre, multiplicador, produtoPlanoMestrePorCor);
@@ -494,6 +496,8 @@ public class PlanoMestreService {
 		}
 
 		List<ProdutoPlanoMestrePorCor> produtosPorCor = geracao.getProdutosPorCorPlanoMestre(produtos);
+		
+		PlanoMestreParametros parametros = geracao.getParametrosPlanoMestre();
 
 		for (ProdutoPlanoMestrePorCor produtoPlanoMestrePorCor : produtosPorCor) {
 			produtoPlanoMestrePorCor.idPlanoMestre = planoMestre.id;
@@ -502,6 +506,10 @@ public class PlanoMestreService {
 					produtoPlanoMestrePorCor.grupo, produtoPlanoMestrePorCor.item);
 			PlanoMestreParamProgItem parametroProgramacaoItem = geracao.getParametrosProgramacaoItem(planoMestre.id,
 					produtoPlanoMestrePorCor.id, alternativaRoteiroPadrao);
+			
+			parametroProgramacaoItem.planoInicio = parametros.planoAcumProgInicio;
+			parametroProgramacaoItem.planoFim = parametros.planoAcumProgFim;
+			
 			planoMestreParamProgItemRepository.save(parametroProgramacaoItem);
 		}
 

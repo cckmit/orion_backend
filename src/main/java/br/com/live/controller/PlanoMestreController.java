@@ -107,7 +107,7 @@ public class PlanoMestreController {
 
 	@RequestMapping(value = "/salvar-param-programacao", method = RequestMethod.POST)
 	public List<ConsultaItensTamPlanoMestre> salvarParamProgramacao(@RequestBody ParametrosPlanoMestre parametros) {
-		planoMestreService.salvarParametrosProgramacaoItem(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg), parametros.alternativaProg, parametros.roteiroProg, parametros.periodoProg, parametros.multiplicadorProg);		
+		planoMestreService.salvarParametrosProgramacaoItem(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg), parametros.alternativaProg, parametros.roteiroProg, parametros.periodoProg, parametros.multiplicadorProg, parametros.planoInicio, parametros.planoFim);		
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg));
 	}
 	

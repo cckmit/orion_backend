@@ -86,7 +86,9 @@ public class ParametrosPlanoMestre {
 	public int alternativaProg;
 	public int roteiroProg;
 	public int periodoProg;
-	public int multiplicadorProg;	
+	public int multiplicadorProg;
+	public int planoInicio;
+	public int planoFim;
 	
 	// Pré-Ordens
     public int agrupaOpPorRefer;

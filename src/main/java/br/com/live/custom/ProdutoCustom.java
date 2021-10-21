@@ -231,7 +231,7 @@ public class ProdutoCustom {
 	}
 
 	public List<Alternativa> findAlternativasByCodigo(String grupo, String item) {
-
+		/*
 		String query = "select max(rownum) id, b.alternativa_item alternativa, nvl(c.descricao, ' ') descricao from basi_050 b, basi_070 c"
 				+ " where b.nivel_item       = '1' " + " and c.nivel (+) = b.nivel_item "
 				+ " and c.grupo (+) = b.grupo_item " + " and c.alternativa (+) = b.alternativa_item "
@@ -239,7 +239,16 @@ public class ProdutoCustom {
 				+ "' or b.item_item = '000000') "
 				+ " group by b.nivel_item, b.grupo_item, b.item_item, b.alternativa_item, c.descricao "
 				+ " order by b.alternativa_item, c.descricao ";
-
+		*/
+		
+		String query = " select a.alternativa_produto alternativa, nvl(b.descricao,'') descricao from basi_013 a, basi_070 b "
+				+ " where a.nivel_item = '1' "
+				+ "  and a.grupo_item = '" + grupo + "'"
+				+ "  and b.nivel (+) = a.nivel_item "
+				+ "  and b.grupo (+) = a.grupo_item "
+				+ "  and b.alternativa (+) = a.alternativa_produto "
+				+ " group by a.alternativa_produto, b.descricao ";
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Alternativa.class));
 	}
 
@@ -254,7 +263,7 @@ public class ProdutoCustom {
 
 	public AlternativaRoteiroPadrao findAlternativaRoteiroPadraoByCodigo(String grupo, String item) {
 
-		String query = "select b.grupo_estrutura grupo, b.item_estrutura item, max(b.numero_alternati) alternativa, max(b.numero_roteiro) roteiro from basi_010 b"
+		String query = "select b.grupo_estrutura grupo, b.item_estrutura item, max(b.alternativa_custos) alternativa, max(b.roteiro_custos) roteiro from basi_010 b"
 				+ " where b.nivel_estrutura = '1' " + " and b.grupo_estrutura = '" + grupo + "'"
 				+ " and b.item_estrutura = '" + item + "'" + " group by b.grupo_estrutura, b.item_estrutura ";
 

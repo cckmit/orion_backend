@@ -21,6 +21,12 @@ public class PlanoMestreParamProgItem {
 	public int periodo;
 	public int multiplicador;
 	
+	@Column(name="plano_inicio")
+	public int planoInicio;
+	
+	@Column(name="plano_fim")
+	public int planoFim;
+	
 	public long getIdItemPlanoMestre() {
 		return idItemPlanoMestre;
 	}
@@ -57,5 +63,16 @@ public class PlanoMestreParamProgItem {
 	public void setMultiplicador(int multiplicador) {
 		this.multiplicador = multiplicador;
 	}
-	
+	public int getPlanoInicio() {
+		return planoInicio;
+	}
+	public void setPlanoInicio(int planoInicio) {
+		this.planoInicio = planoInicio;
+	}
+	public int getPlanoFim() {
+		return planoFim;
+	}
+	public void setPlanoFim(int planoFim) {
+		this.planoFim = planoFim;
+	}
 }
