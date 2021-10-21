@@ -92,10 +92,6 @@ public class InspecaoQualidadeService {
 	
 	public BodyInspecaoQualidade findDadosInspecionadosByDataRevisor(Date data, String usuario) {
 		
-		System.out.println("findDadosInspecionadosByDataRevisor");
-		System.out.println(data);
-		System.out.println(usuario);
-		
 		int qtdePacotesInspecionados = inspecaoQualidadeCustom.findQtdePacotesInspByDataUsuario(data, usuario);
 		int qtdeMotivosLancados = inspecaoQualidadeCustom.findQtdeMotivosLancByDataUsuario(data, usuario);
 		int qtdeMedidasLancadas = inspecaoQualidadeCustom.findQtdeMedidasLancByDataUsuario(data, usuario);
