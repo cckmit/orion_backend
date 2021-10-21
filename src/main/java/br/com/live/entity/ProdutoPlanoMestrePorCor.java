@@ -2,19 +2,14 @@ package br.com.live.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "orion_016")
-@SequenceGenerator(name = "ID_ORION_016", sequenceName = "ID_ORION_016", initialValue = 1, allocationSize = 1)
 public class ProdutoPlanoMestrePorCor {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ID_ORION_016")
 	public long id;
 	
 	@Column(name = "num_plano_mestre")

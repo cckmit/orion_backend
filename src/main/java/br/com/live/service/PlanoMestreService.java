@@ -481,18 +481,21 @@ public class PlanoMestreService {
 
 		PlanoMestre planoMestre = geracao.getCapaPlanoMestre();
 		List<ProdutoPlanoMestre> produtos = geracao.getProdutosPlanoMestre();
-
-		planoMestreRepository.save(planoMestre);
+		
+		planoMestre.id = planoMestreCustom.findNextIdPlanoMestre();
+		
+		planoMestreRepository.saveAndFlush(planoMestre);
 
 		PlanoMestreParametros planoMestreParametros = geracao.getParametrosPlanoMestre();
 		planoMestreParametros.idPlanoMestre = planoMestre.id;
 		planoMestreParametrosRepository.save(planoMestreParametros);
 
 		for (ProdutoPlanoMestre produtoPlanoMestre : produtos) {
+			produtoPlanoMestre.id = planoMestreCustom.findNextIdPlanoMestreItens();
 			produtoPlanoMestre.idPlanoMestre = planoMestre.id;
 			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(
 					planoMestreParametros.previsoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);
-			produtoPlanoMestreRepository.save(produtoPlanoMestre);
+			produtoPlanoMestreRepository.saveAndFlush(produtoPlanoMestre);
 		}
 
 		List<ProdutoPlanoMestrePorCor> produtosPorCor = geracao.getProdutosPorCorPlanoMestre(produtos);
@@ -500,8 +503,9 @@ public class PlanoMestreService {
 		PlanoMestreParametros parametros = geracao.getParametrosPlanoMestre();
 
 		for (ProdutoPlanoMestrePorCor produtoPlanoMestrePorCor : produtosPorCor) {
+			produtoPlanoMestrePorCor.id = planoMestreCustom.findNextIdPlanoMestreItemCompleto();
 			produtoPlanoMestrePorCor.idPlanoMestre = planoMestre.id;
-			produtoPlanoMestrePorCorRepository.save(produtoPlanoMestrePorCor);
+			produtoPlanoMestrePorCorRepository.saveAndFlush(produtoPlanoMestrePorCor);
 			AlternativaRoteiroPadrao alternativaRoteiroPadrao = produtoRepository.findAlternativaRoteiroPadraoByCodigo(
 					produtoPlanoMestrePorCor.grupo, produtoPlanoMestrePorCor.item);
 			PlanoMestreParamProgItem parametroProgramacaoItem = geracao.getParametrosProgramacaoItem(planoMestre.id,
