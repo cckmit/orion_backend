@@ -231,6 +231,8 @@ public class GeracaoPlanoMestre {
 		paramProgramacaoItem.periodo = parametros.periodoPadrao;
 		paramProgramacaoItem.alternativa = alternativaRoteiroPadrao.alternativa;
 		paramProgramacaoItem.roteiro = alternativaRoteiroPadrao.roteiro;
+		paramProgramacaoItem.planoInicio = parametros.planoAcumProgInicio;
+		paramProgramacaoItem.planoFim = parametros.planoAcumProgFim;
 
 		return paramProgramacaoItem;
 	}
@@ -383,4 +385,60 @@ public class GeracaoPlanoMestre {
 		return texto;
 	}
 
+	public static void recalcularQtdesAcumuladasProdutos(int tipoDistribuicao, int planoInicio, int planoFim, List<ProdutoPlanoMestre> produtos) {	
+		int[][] qtdes;
+		int qtdeDemanda=0;
+		int qtdeProcesso=0;
+				
+		for (ProdutoPlanoMestre produto : produtos) {			
+			qtdeDemanda = 0; 	
+			qtdeProcesso = 0;
+
+			qtdes = parseQtdesDemProcToArray(produto);
+			
+			for (int i = planoInicio-1; i < planoFim; i++) {				
+				qtdeDemanda += qtdes[0][i]; 	
+				qtdeProcesso += qtdes[1][i];											
+			}
+		
+			produto.qtdeSugestao = 0;
+			produto.qtdeProgramada = 0;
+			produto.qtdeDemAcumProg = qtdeDemanda;
+			produto.qtdeProcAcumProg = qtdeProcesso;
+			produto.qtdeSaldoAcumProg = produto.qtdeEstoque + produto.qtdeProcAcumProg - produto.qtdeDemAcumProg;   
+			
+			if (produto.qtdeSaldoAcumProg < 0) 
+				produto.qtdeSugestao = (produto.qtdeSaldoAcumProg * -1);				 			
+			
+			produto.qtdeEqualizadoSugestao = produto.qtdeSugestao;
+			produto.qtdeDiferencaSugestao = produto.qtdeEqualizadoSugestao - produto.qtdeSugestao;
+
+			if (tipoDistribuicao > 0)
+				produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;	
+		}				
+	}			
+	 
+	private static int[][] parseQtdesDemProcToArray(ProdutoPlanoMestre produto) {		
+		int[][] qtdes = new int[2] [8];
+		
+		qtdes [0] [0] = produto.qtdeDemPlano1; 
+		qtdes [0] [1] = produto.qtdeDemPlano2;
+		qtdes [0] [2] = produto.qtdeDemPlano3;
+		qtdes [0] [3] = produto.qtdeDemPlano4;
+		qtdes [0] [4] = produto.qtdeDemPlano5;
+		qtdes [0] [5] = produto.qtdeDemPlano6;
+		qtdes [0] [6] = produto.qtdeDemPlano7;
+		qtdes [0] [7] = produto.qtdeDemPlano8;
+		
+		qtdes [1] [0] = produto.qtdeProcPlano1; 
+		qtdes [1] [1] = produto.qtdeProcPlano2;
+		qtdes [1] [2] = produto.qtdeProcPlano3;
+		qtdes [1] [3] = produto.qtdeProcPlano4;
+		qtdes [1] [4] = produto.qtdeProcPlano5;
+		qtdes [1] [5] = produto.qtdeProcPlano6;
+		qtdes [1] [6] = produto.qtdeProcPlano7;
+		qtdes [1] [7] = produto.qtdeProcPlano8;
+		
+		return qtdes;
+	}
 }

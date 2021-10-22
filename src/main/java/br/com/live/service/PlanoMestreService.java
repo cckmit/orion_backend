@@ -207,7 +207,6 @@ public class PlanoMestreService {
 			qtdeFaltaSobraPecas = 0;
 			qtdeFaltaSobraMinutos = 0.000;
 
-			// TODO - ALTERAR - CONSIDERAR PERIODO
 			OcupacaoEstagioArtigo ocupacaoEstagioPlanoMestre = ocupacaoPlanoMestreCustom
 					.findOcupacaoPlanoMestreByPeriodoEstagio(idPlanoMestre, periodoInicio, periodoFim,
 							capacidade.estagio);
@@ -363,8 +362,15 @@ public class PlanoMestreService {
 		}
 	}
 
+	// TODO - ALTERAR REGRA 
+	
 	public void salvarParametrosProgramacaoItem(long idPlanoMestre, String grupo, String item, int alternativa,
 			int roteiro, int periodo, int multiplicador, int planoInicio, int planoFim) {
+		
+		System.out.println("salvarParametrosProgramacaoItem");
+		
+		boolean atualizarQuantidades = false;
+		
 		ProdutoPlanoMestrePorCor produtoPlanoMestrePorCor = produtoPlanoMestrePorCorRepository
 				.findByCodigo(idPlanoMestre, grupo, item);
 		PlanoMestreParamProgItem planoMestreParamProgItem = planoMestreParamProgItemRepository
@@ -374,13 +380,28 @@ public class PlanoMestreService {
 		planoMestreParamProgItem.roteiro = roteiro;
 		planoMestreParamProgItem.periodo = periodo;
 		planoMestreParamProgItem.multiplicador = multiplicador;
-		planoMestreParamProgItem.planoInicio = planoInicio;
-		planoMestreParamProgItem.planoFim = planoFim;
+				
+		if ((planoInicio != planoMestreParamProgItem.planoInicio) || (planoFim != planoMestreParamProgItem.planoFim)) {		
+			planoMestreParamProgItem.planoInicio = planoInicio;
+			planoMestreParamProgItem.planoFim = planoFim;	
+			atualizarQuantidades = true;
+		}
+		
 		planoMestreParamProgItemRepository.save(planoMestreParamProgItem);
-
+		
+		System.out.println("atualizarQuantidades: " + atualizarQuantidades);
+		
+		if (atualizarQuantidades) atualizarQtdesConformePlanos(idPlanoMestre, planoInicio, planoFim, produtoPlanoMestrePorCor.grupo, produtoPlanoMestrePorCor.item);			
 		aplicarMultiplicadorItem(idPlanoMestre, multiplicador, produtoPlanoMestrePorCor);
 	}
 
+	private void atualizarQtdesConformePlanos(long idPlanoMestre, int planoInicio, int planoFim, String grupo, String item) {		
+		PlanoMestreParametros planoMestreParametros = planoMestreParametrosRepository.findByIdPlanoMestre(idPlanoMestre);		
+		List<ProdutoPlanoMestre> produtos = produtoPlanoMestreRepository.findByIdPlanoCodGrupoCor(idPlanoMestre, grupo, item);
+		GeracaoPlanoMestre.recalcularQtdesAcumuladasProdutos(planoMestreParametros.tipoDistribuicao, planoInicio, planoFim, produtos);
+		produtoPlanoMestreRepository.saveAll(produtos);
+	}	
+	
 	public void salvarGrade(long idPlanoMestre, String grupo, String item,
 			List<ConsultaItensTamPlanoMestre> gradeAlterada) {
 
@@ -490,32 +511,32 @@ public class PlanoMestreService {
 		planoMestreParametros.idPlanoMestre = planoMestre.id;
 		planoMestreParametrosRepository.save(planoMestreParametros);
 
+		System.out.println("gravar - 1");
+		
 		for (ProdutoPlanoMestre produtoPlanoMestre : produtos) {
 			produtoPlanoMestre.id = planoMestreCustom.findNextIdPlanoMestreItens();
 			produtoPlanoMestre.idPlanoMestre = planoMestre.id;
 			produtoPlanoMestre.qtdePrevisao = previsaoVendasCustom.findQtdePrevisaoByIdPrevisaoVendasGrupoItem(
-					planoMestreParametros.previsoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);
-			produtoPlanoMestreRepository.saveAndFlush(produtoPlanoMestre);
-		}
+					planoMestreParametros.previsoes, produtoPlanoMestre.grupo, produtoPlanoMestre.item);			
+		}	
+		produtoPlanoMestreRepository.saveAll(produtos);
 
+		System.out.println("gravar - 2");
+		
 		List<ProdutoPlanoMestrePorCor> produtosPorCor = geracao.getProdutosPorCorPlanoMestre(produtos);
 		
-		PlanoMestreParametros parametros = geracao.getParametrosPlanoMestre();
-
 		for (ProdutoPlanoMestrePorCor produtoPlanoMestrePorCor : produtosPorCor) {
 			produtoPlanoMestrePorCor.id = planoMestreCustom.findNextIdPlanoMestreItemCompleto();
-			produtoPlanoMestrePorCor.idPlanoMestre = planoMestre.id;
-			produtoPlanoMestrePorCorRepository.saveAndFlush(produtoPlanoMestrePorCor);
+			produtoPlanoMestrePorCor.idPlanoMestre = planoMestre.id;			
+			produtoPlanoMestrePorCorRepository.save(produtoPlanoMestrePorCor);
 			AlternativaRoteiroPadrao alternativaRoteiroPadrao = produtoRepository.findAlternativaRoteiroPadraoByCodigo(
 					produtoPlanoMestrePorCor.grupo, produtoPlanoMestrePorCor.item);
 			PlanoMestreParamProgItem parametroProgramacaoItem = geracao.getParametrosProgramacaoItem(planoMestre.id,
-					produtoPlanoMestrePorCor.id, alternativaRoteiroPadrao);
-			
-			parametroProgramacaoItem.planoInicio = parametros.planoAcumProgInicio;
-			parametroProgramacaoItem.planoFim = parametros.planoAcumProgFim;
-			
+					produtoPlanoMestrePorCor.id, alternativaRoteiroPadrao);			
 			planoMestreParamProgItemRepository.save(parametroProgramacaoItem);
-		}
+		}		
+		
+		System.out.println("gravar - 3");
 
 		return (planoMestre.id);
 	}
@@ -657,7 +678,6 @@ public class PlanoMestreService {
 			produto.qtdeProgramada = produto.qtdeEqualizadoSugestao;
 			produtoPlanoMestreRepository.save(produto);
 			qtdeProgramada += produto.qtdeProgramada;
-
 		}
 
 		produtoCor.qtdeEqualizadoSugestao = qtdeProgramada;

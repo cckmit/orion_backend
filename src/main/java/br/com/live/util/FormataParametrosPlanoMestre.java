@@ -328,6 +328,7 @@ public class FormataParametrosPlanoMestre {
 		
 		String descricao = "";
 
+		if (parametros.tipoDistribuicao == 0) descricao = "SEM DISTRIBUIÇÃO";
 		if (parametros.tipoDistribuicao == 1) descricao = "POR GRADE PADRÃO";  
 		if (parametros.tipoDistribuicao == 2) descricao = "POR GRADE DE VENDA";
 		if (parametros.tipoDistribuicao == 3) descricao = "POR GRADE NEGATIVA";
