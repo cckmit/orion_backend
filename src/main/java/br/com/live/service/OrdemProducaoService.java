@@ -66,14 +66,13 @@ public class OrdemProducaoService {
 		List<PlanoMestrePreOrdem> allPreOrdens = planoMestrePreOrdemRepository.findByIdPlanoMestre(idPlanoMestre);
 		
 		for (PlanoMestrePreOrdem preOrdem : allPreOrdens) {
-			if (preOrdem.situacao != 2) todasOrdensExcluidas = 0;
+			if ((preOrdem.situacao != 0)&&(preOrdem.situacao != 2)) todasOrdensExcluidas = 0;
 		}
 		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
 		
 		if (todasOrdensExcluidas == 1) planoMestre.situacao = 3; // 3 - Ordens Excluidas
 		
-		planoMestreRepository.save(planoMestre);
-		
+		planoMestreRepository.save(planoMestre);		
 	}
 	
 	public List<OrdemProducao> findAllTagsExportacaoChina() {

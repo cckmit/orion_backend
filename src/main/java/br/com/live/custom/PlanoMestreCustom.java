@@ -498,54 +498,18 @@ public class PlanoMestreCustom {
 	}
 
 	public int findNextIdPlanoMestre() {
-
-		Integer id;
-
-		String query = " select max(orion_010.num_plano_mestre) from orion_010 ";
-
-		try {
-			id = jdbcTemplate.queryForObject(query, Integer.class);
-		} catch (Exception e) {
-			id = 0;
-		}
-
-		id++;
-
-		return (int) id;
+		String query = " select id_orion_010.nextval from dual ";
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
 	public int findNextIdPlanoMestreItens() {
-
-		Integer id;
-
-		String query = " select max(orion_015.id) from orion_015 ";
-
-		try {
-			id = jdbcTemplate.queryForObject(query, Integer.class);
-		} catch (Exception e) {
-			id = 0;
-		}
-
-		id++;
-
-		return (int) id;
+		String query = " select id_orion_015.nextval from dual ";
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 	
 	public int findNextIdPlanoMestreItemCompleto() {
-
-		Integer id;
-
-		String query = " select max(orion_016.id) from orion_016 ";
-
-		try {
-			id = jdbcTemplate.queryForObject(query, Integer.class);
-		} catch (Exception e) {
-			id = 0;
-		}
-
-		id++;
-
-		return (int) id;
+		String query = " select id_orion_016.nextval from dual ";
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
 }

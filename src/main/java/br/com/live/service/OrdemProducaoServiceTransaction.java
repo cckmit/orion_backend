@@ -196,7 +196,7 @@ public class OrdemProducaoServiceTransaction {
 	public boolean validarDadosOrdem(PlanoMestrePreOrdem preOrdem, Map<Long, StatusGravacao> mapPreOrdensComErro) {
 		
 		boolean dadosOk = true;
-		
+
 		if (preOrdem.periodo == 0) {
 			dadosOk = false;
 			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Período de produção não informado!"));
@@ -239,13 +239,13 @@ public class OrdemProducaoServiceTransaction {
 		if (listaPreOrdensConcluidas.size() > 0) { 						
 			PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
 			planoMestre.situacao=2; // Ordens Geradas;
-			planoMestreRepository.saveAndFlush(planoMestre);
+			planoMestreRepository.save(planoMestre);
 		}				
 	}
 	
 	public void atualizarPreOrdens(List<PlanoMestrePreOrdem> preOrdens) {
 		for (PlanoMestrePreOrdem preOrdem : preOrdens) {			
-			planoMestrePreOrdemRepository.saveAndFlush(preOrdem);			
+			planoMestrePreOrdemRepository.save(preOrdem);			
 		}		
 	}
 	
@@ -259,7 +259,7 @@ public class OrdemProducaoServiceTransaction {
 			status = mapPreOrdensComErro.get(idPreOrdem);
 			if (!status.isConcluido()) {
 				preOrdem.status = status.getMensagem().toUpperCase();	
-				planoMestrePreOrdemRepository.saveAndFlush(preOrdem);
+				planoMestrePreOrdemRepository.save(preOrdem);
 			}			
 		}				
 	}	
