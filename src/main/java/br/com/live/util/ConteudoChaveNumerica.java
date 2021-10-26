@@ -6,10 +6,31 @@ public class ConteudoChaveNumerica {
 
 	public int value;
 	public String label;
+	
+	public int getValue() {
+		return value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
 
 	public ConteudoChaveNumerica (int value, String label) {
 		this.value = value;
 		this.label = label;
+	}
+	
+	public ConteudoChaveNumerica() {
+		
 	}
 	
 	public static String parseValueToString(List<ConteudoChaveNumerica> listaChaves) {
