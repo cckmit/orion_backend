@@ -235,20 +235,6 @@ public class OrdemProducaoServiceTransaction {
 		return dadosOk;
 	}	
 	
-	public void atualizarSituacaoPlano(long idPlanoMestre, List<PlanoMestrePreOrdem> listaPreOrdensConcluidas) {		
-		if (listaPreOrdensConcluidas.size() > 0) { 						
-			PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
-			planoMestre.situacao=2; // Ordens Geradas;
-			planoMestreRepository.save(planoMestre);
-		}				
-	}
-	
-	public void atualizarPreOrdens(List<PlanoMestrePreOrdem> preOrdens) {
-		for (PlanoMestrePreOrdem preOrdem : preOrdens) {			
-			planoMestrePreOrdemRepository.save(preOrdem);			
-		}		
-	}
-	
 	public void atualizarErrosPreOrdens(Map<Long, StatusGravacao> mapPreOrdensComErro) {
 		
 		StatusGravacao status;
@@ -289,7 +275,7 @@ public class OrdemProducaoServiceTransaction {
 				}
 				
 				preOrdem.ordemGerada = idOrdemProducao;
-				preOrdem.situacao = 1;
+				preOrdem.situacao = 1; // Ordem Gerada
 				preOrdem.status = "ORDEM GERADA COM SUCESSO!";
 				listaPreOrdensConcluidas.add(preOrdem);
 
@@ -299,11 +285,10 @@ public class OrdemProducaoServiceTransaction {
 				System.out.println(e.getMessage());
 			}						
 		}
-								
-		atualizarPreOrdens(listaPreOrdensConcluidas);
+							
+		planoMestrePreOrdemRepository.saveAll(listaPreOrdensConcluidas);		
 		atualizarErrosPreOrdens(mapPreOrdensComErro);
-		atualizarSituacaoPlano(preOrdem.idPlanoMestre, listaPreOrdensConcluidas);				
-
+		
 		return true;
 	}	
 		
@@ -331,16 +316,39 @@ public class OrdemProducaoServiceTransaction {
 			try {			
 				ordemProducaoCustom.excluirOrdemProducao(preOrdem.ordemGerada);				
 				preOrdem.status = "ORDEM EXCLUÍDA COM SUCESSO!";
-				preOrdem.situacao = 2; // Excluida
+				preOrdem.situacao = 2; // Ordem Excluída
 				listaPreOrdensConcluidas.add(preOrdem);
 			} catch (Exception e) {
 				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível excluir essa ordem!"));
 			}
 		}
 		
-		atualizarPreOrdens(listaPreOrdensConcluidas);
+		planoMestrePreOrdemRepository.saveAll(listaPreOrdensConcluidas);
 		atualizarErrosPreOrdens(mapPreOrdensComErro);
-		
+				
 		return true;
 	}			
+	
+	public int iniciarProcessoAtualizacaoOrdemPlanoMestre(long idPlanoMestre, int processo) {
+		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);		
+		int situacaoAtual = planoMestre.situacao; 		
+		planoMestre.situacao = processo;	
+		planoMestreRepository.save(planoMestre);		
+		return situacaoAtual;
+	}
+	
+	public void finalizarProcessoAtualizacaoOrdemPlanoMestre(long idPlanoMestre, int processo, int situacaoAnterior) {
+		PlanoMestre planoMestre = planoMestreRepository.findById(idPlanoMestre);
+		planoMestre.situacao = situacaoAnterior;
+		if (processo == OrdemProducaoService.GERACAO_EM_ANDAMENTO) {			
+			List<PlanoMestrePreOrdem> ordensGeradas = planoMestrePreOrdemRepository.findByIdPlanoMestreAndSituacaoOrdemGerada(idPlanoMestre);
+			if (ordensGeradas.size() > 0) planoMestre.situacao = OrdemProducaoService.ORDENS_GERADAS; 
+		} else if (processo == OrdemProducaoService.EXCLUSAO_EM_ANDAMENTO) {
+			List<PlanoMestrePreOrdem> ordensGeradas = planoMestrePreOrdemRepository.findByIdPlanoMestreAndSituacaoOrdemGerada(idPlanoMestre);
+			List<PlanoMestrePreOrdem> ordensExcluidas = planoMestrePreOrdemRepository.findByIdPlanoMestreAndSituacaoOrdemExcluida(idPlanoMestre);
+			if (ordensGeradas.size() > 0) planoMestre.situacao = OrdemProducaoService.ORDENS_GERADAS;
+			else if (ordensExcluidas.size() > 0) planoMestre.situacao = OrdemProducaoService.ORDENS_EXCLUIDAS;
+		}		
+		planoMestreRepository.save(planoMestre);
+	}	
 }
