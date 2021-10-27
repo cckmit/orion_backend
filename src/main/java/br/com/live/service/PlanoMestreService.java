@@ -754,7 +754,6 @@ public class PlanoMestreService {
 		PlanoMestre planoMestre = planoMestreRepository.findById(parametros.idPlanoMestre);
 
 		// Se tiver ordens geradas, não recria as pré-ordens
-
 		if (planoMestre.situacao < 2) {
 			// Atualiza os parâmetros do plano mestre.
 			PlanoMestreParametros planoMestreParametros = planoMestreParametrosRepository
@@ -788,7 +787,6 @@ public class PlanoMestreService {
 			Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao>();
 
 			for (Integer idMap : mapPreOrdens.keySet()) {
-
 				preOrdem = mapPreOrdens.get(idMap);
 				preOrdem.id = planoMestreCustom.findNextIdPreOrdem();
 				preOrdem = planoMestrePreOrdemRepository.saveAndFlush(preOrdem);
@@ -803,8 +801,7 @@ public class PlanoMestreService {
 				ordemProducaoService.validarDadosOrdem(preOrdem, mapPreOrdensComErro);
 				ordemProducaoService.validarDadosItem(preOrdem, listPreOrdemItens, mapPreOrdensComErro);
 			}
-
-			ordemProducaoService.atualizarErrosPreOrdens(mapPreOrdensComErro);
+			ordemProducaoService.atualizarErrosPreOrdens(mapPreOrdensComErro);			
 		}
 	}
 
