@@ -27,7 +27,7 @@ public class UsuarioBiService {
 	private final UsuarioBiCustom usuarioBiCustom;
 	private final ProgramaBiRepository programaBiRepository;
 	private final UsuarioTipoEmailBiRepository usuarioTipoEmailBiRepository;
-	private final TiposEmailBiRepository tiposEmailBiRepository;
+	private final TiposEmailBiRepository tiposEmailBiRepository;	
 
 	public UsuarioBiService(UsuarioBiRepository usuarioBiRepository,
 			UsuarioProgramaBiRepository usuarioProgramaBiRepository, UsuarioBiCustom usuarioBiCustom,
@@ -70,34 +70,42 @@ public class UsuarioBiService {
 	}
 
 	public void saveProgramas(long codUsuario, List<String> listaIdsProgramas) {
-
 		List<UsuarioProgramaBi> programasAtuais = usuarioProgramaBiRepository.findByCodUsuario(codUsuario);
-
 		for (UsuarioProgramaBi dadosPrograma : programasAtuais) {
-
-			if (!listaIdsProgramas.contains(dadosPrograma.idPrograma)) {
-				usuarioBiCustom.deleteTiposEmailProgramaUsuario(codUsuario, dadosPrograma.idPrograma);
+			if (!listaIdsProgramas.contains(dadosPrograma.idPrograma)) {				
+				usuarioTipoEmailBiRepository.deleteByCodUsuarioAndIdPrograma(codUsuario, dadosPrograma.idPrograma);
+				usuarioProgramaBiRepository.deleteByCodUsuarioAndIdPrograma(codUsuario, dadosPrograma.idPrograma);
 			}
 		}
+		adicionarProgramas(codUsuario, listaIdsProgramas);
+	}
 
-		usuarioProgramaBiRepository.deleteByCodUsuario(codUsuario);
-
+	public void saveProgramaToUsuarios(String idPrograma, List<Long> listaIdsUsuarios) {						
+		List<UsuarioProgramaBi> programasAtuais = usuarioProgramaBiRepository.findByIdPrograma(idPrograma);
+		for (UsuarioProgramaBi dadosPrograma : programasAtuais) {
+			if (!listaIdsUsuarios.contains(dadosPrograma.codUsuario)) {				
+				usuarioTipoEmailBiRepository.deleteByCodUsuarioAndIdPrograma(dadosPrograma.codUsuario, idPrograma);
+				usuarioProgramaBiRepository.deleteByCodUsuarioAndIdPrograma(dadosPrograma.codUsuario, idPrograma);
+			}			
+		}											
+		for (Long codUsuario : listaIdsUsuarios) {
+			adicionarPrograma(codUsuario, idPrograma);
+		}
+	}
+	
+	public void adicionarProgramas(long codUsuario, List<String> listaIdsProgramas) {
 		for (String idPrograma : listaIdsProgramas) {
-
-			UsuarioProgramaBi usuarioProgramaBi = new UsuarioProgramaBi(codUsuario, idPrograma);
+			adicionarPrograma(codUsuario, idPrograma);
+		}
+	}	
+	
+	private void adicionarPrograma(long codUsuario, String idPrograma) {
+		UsuarioProgramaBi usuarioProgramaBi = usuarioProgramaBiRepository.findByCodUsuarioAndIdPrograma(codUsuario, idPrograma);
+		if (usuarioProgramaBi == null) {			
+			usuarioProgramaBi = new UsuarioProgramaBi(codUsuario, idPrograma);
 			usuarioProgramaBiRepository.save(usuarioProgramaBi);
 		}
 	}
-
-	public void adicionarProgramas(long codUsuario, List<String> listaIdsProgramas) {
-		for (String idPrograma : listaIdsProgramas) {
-			UsuarioProgramaBi usuarioProgramaBi = usuarioProgramaBiRepository.findByCodUsuarioAndIdPrograma(codUsuario, idPrograma);
-			if (usuarioProgramaBi == null) {			
-				usuarioProgramaBi = new UsuarioProgramaBi(codUsuario, idPrograma);
-				usuarioProgramaBiRepository.save(usuarioProgramaBi);
-			}
-		}
-	}	
 	
 	public void sobreporProgramas(long codUsuario, List<String> listaIdsProgramas) {
 		
@@ -164,6 +172,18 @@ public class UsuarioBiService {
 		return listaIdsProgramas;
 	}
 
+	public List<Long> findIdsUsuariosByPrograma(String idPrograma) {
+
+		List<UsuarioProgramaBi> programas = usuarioProgramaBiRepository.findByIdPrograma(idPrograma);
+
+		List<Long> listaIdsUsuarios = new ArrayList<Long>();
+
+		for (UsuarioProgramaBi programa : programas) {
+			listaIdsUsuarios.add(programa.codUsuario);
+		}
+		return listaIdsUsuarios;
+	}
+	
 	public List<ProgramaBi> findProgramasPorUsuario(long codUsuario) {
 
 		ProgramaBi dadosPrograma = null;

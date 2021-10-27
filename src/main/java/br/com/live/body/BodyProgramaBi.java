@@ -16,7 +16,8 @@ public class BodyProgramaBi {
 	public String extrator;
 	public String planilha;
 	public String help;
-	public List<SalvarTipoEmailBi> tiposEmail;
+	public List<SalvarTipoEmailBi> tiposEmail;	
+	public List<Long> listaIdsUsuarios;
 	
 	public List<ConteudoChaveAlfaNum> listaAreasModulos;
 	public List<ConteudoChaveNumerica> listaUsuarios;	

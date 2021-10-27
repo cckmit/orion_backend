@@ -64,5 +64,5 @@ public class ProgramaBiController {
 	public List<ProgramaBi> findProgramasByListaAreasModulosAndUsuarios(@RequestBody BodyProgramaBi body) {
 		return programaBiService.findProgramasByListaAreasModulosAndUsuarios(body.listaAreasModulos, body.listaUsuarios);
 	}
-	
+
 }

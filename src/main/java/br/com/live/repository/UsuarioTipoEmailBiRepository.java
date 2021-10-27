@@ -18,7 +18,7 @@ public interface UsuarioTipoEmailBiRepository extends JpaRepository<UsuarioTipoE
 	@Query("SELECT p FROM UsuarioTipoEmailBi p where p.codUsuario = :codUsuario and p.idPrograma = :idPrograma")
 	List<UsuarioTipoEmailBi> findByIdUsuarioIdPrograma(long codUsuario, String idPrograma);
 	
-	void deleteByCodUsuario(long codUsuario);
-	
+	void deleteByCodUsuario(long codUsuario);	
 	void deleteByIdPrograma(String idPrograma);
+	void deleteByCodUsuarioAndIdPrograma(long codUsuario, String idPrograma);
 }
