@@ -45,7 +45,12 @@ public class UsuarioBiController {
           return usuarioBiRepository.findAll(); 
     }
 
-	@RequestMapping(value = "/{idUsuario}", method = RequestMethod.GET)
+    @RequestMapping(value = "/by-programa/{idPrograma}", method = RequestMethod.GET)
+    public List<UsuarioBi> findAll(@PathVariable("idPrograma") String idPrograma) {
+          return usuarioBiCustom.findUsuariosByIdPrograma(idPrograma); 
+    }
+    
+    @RequestMapping(value = "/{idUsuario}", method = RequestMethod.GET)
 	public UsuarioBi findByIdUsuario(@PathVariable("idUsuario") long idUsuario) {
 		return usuarioBiRepository.findByCodUsuario(idUsuario);
 	}
