@@ -27,5 +27,10 @@ public class TabelaPrecoController {
     public List<TabelaPreco> findAll() {
           return tabelaPrecoCustom.findAll();
     }
+    
+    @RequestMapping(value = "/find-all", method = RequestMethod.GET)
+    public List<TabelaPreco> findAllTabelas() {
+          return tabelaPrecoCustom.findAllTabelas();
+    }
 	
 }

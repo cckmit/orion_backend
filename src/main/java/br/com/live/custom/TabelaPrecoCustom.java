@@ -28,6 +28,15 @@ public class TabelaPrecoCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(TabelaPreco.class));
 	}
+	
+	public List<TabelaPreco> findAllTabelas() {
+
+		String query = " select p.col_tabela_preco || '.' || p.mes_tabela_preco || '.' || p.seq_tabela_preco id, "
+				+ " p.col_tabela_preco colecao, p.mes_tabela_preco mes, p.seq_tabela_preco sequencia, p.descricao "
+				+ " from pedi_090 p ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(TabelaPreco.class));
+	}
 
 	public double findPrecoProduto(int colecao, int mes, int sequencia, String grupo, String item) {
 		

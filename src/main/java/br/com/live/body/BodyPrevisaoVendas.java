@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.live.model.ConsultaPrevisaoVendasItem;
 import br.com.live.model.ConsultaPrevisaoVendasItemTam;
+import br.com.live.model.TabelaPreco;
 
 public class BodyPrevisaoVendas {
 
@@ -18,38 +19,32 @@ public class BodyPrevisaoVendas {
 	public List<ConsultaPrevisaoVendasItemTam> previsaoVendasItemTamanhos;
 
 	public int getColTabPrecoSellIn() {
-		String[] codigoSeparado = idTabelaPrecoSellIn.split("[.]");
-		int colecao = Integer.parseInt(codigoSeparado [0]);
+		int colecao = TabelaPreco.getColTabelaPreco(idTabelaPrecoSellIn);
 		return colecao;
 	}
 	
 	public int getMesTabPrecoSellIn() {
-		String[] codigoSeparado = idTabelaPrecoSellIn.split("[.]");
-		int mes = Integer.parseInt(codigoSeparado [1]);
+		int mes = TabelaPreco.getMesTabelaPreco(idTabelaPrecoSellIn);
 		return mes;
 	}
 	
 	public int getSeqTabPrecoSellIn() {
-		String[] codigoSeparado = idTabelaPrecoSellIn.split("[.]");
-		int sequencia = Integer.parseInt(codigoSeparado [2]);
+		int sequencia = TabelaPreco.getSeqTabelaPreco(idTabelaPrecoSellIn);
 		return sequencia;
 	}
 	
 	public int getColTabPrecoSellOut() {
-		String[] codigoSeparado = idTabelaPrecoSellOut.split("[.]");
-		int colecao = Integer.parseInt(codigoSeparado [0]);
+		int colecao = TabelaPreco.getColTabelaPreco(idTabelaPrecoSellOut);
 		return colecao;
 	}
 	
 	public int getMesTabPrecoSellOut() {
-		String[] codigoSeparado = idTabelaPrecoSellOut.split("[.]");
-		int mes = Integer.parseInt(codigoSeparado [1]);
+		int mes = TabelaPreco.getMesTabelaPreco(idTabelaPrecoSellOut);
 		return mes;
 	}
 	
 	public int getSeqTabPrecoSellOut() {
-		String[] codigoSeparado = idTabelaPrecoSellOut.split("[.]");
-		int sequencia = Integer.parseInt(codigoSeparado [2]);
+		int sequencia = TabelaPreco.getSeqTabelaPreco(idTabelaPrecoSellOut);
 		return sequencia;
 	}
 	

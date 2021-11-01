@@ -39,4 +39,21 @@ public class TabelaPreco {
 		this.descricao = descricao;
 	}	
 	
+	public static int getColTabelaPreco(String idTabela) {
+		String[] codigoSeparado = idTabela.split("[.]");
+		int colecao = Integer.parseInt(codigoSeparado [0]);
+		return colecao;
+	}
+	
+	public static int getMesTabelaPreco(String idTabela) {
+		String[] codigoSeparado = idTabela.split("[.]");
+		int mes = Integer.parseInt(codigoSeparado [1]);
+		return mes;
+	}
+	
+	public static int getSeqTabelaPreco(String idTabela) {
+		String[] codigoSeparado = idTabela.split("[.]");
+		int seqeuncia = Integer.parseInt(codigoSeparado [2]);
+		return seqeuncia;
+	}
 }

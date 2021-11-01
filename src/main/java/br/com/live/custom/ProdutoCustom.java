@@ -304,6 +304,13 @@ public class ProdutoCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
 	}
+	
+	public List<Colecao> findAllSubColecoes() {
+
+		String query = " select b.cd_agrupador id, b.ds_agrupador descricao from basi_630 b ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
+	}
 
 	public List<Colecao> findColecoesByCodigos(String colecoes) {		
 

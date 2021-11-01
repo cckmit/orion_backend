@@ -33,5 +33,10 @@ public class ColecaoController {
     public List<Colecao> findAllColecoesPermanentes() {
           return produtoRepository.findAllColecoesPermanentes();
     }
+    
+    @RequestMapping(value = "/sub-colecoes", method = RequestMethod.GET)
+    public List<Colecao> findAllSubColecoes() {
+          return produtoRepository.findAllSubColecoes();
+    }
 }
 

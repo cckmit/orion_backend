@@ -13,7 +13,7 @@ public interface MetasDaEstacaoRepository extends JpaRepository<MetasDaEstacao, 
 	
 	List<MetasDaEstacao> findAll();
 	
-	@Query("SELECT u FROM MetasDaEstacao u where u.codEstacao = :codEstacao and u.tipoMeta = :tipoMeta")
+	@Query("SELECT u FROM MetasDaEstacao u where u.codEstacao = :codEstacao and u.tipoMeta = :tipoMeta order by u.mes")
 	List<MetasDaEstacao> findByCodEstacaoAndTipoMeta(int codEstacao, int tipoMeta);
 	
 	@Query("SELECT u FROM MetasDaEstacao u where u.id = :idMetas")
