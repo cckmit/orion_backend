@@ -17,6 +17,11 @@ public interface UsuarioProgramaBiRepository extends JpaRepository<UsuarioProgra
 	
 	@Query("SELECT p FROM UsuarioProgramaBi p where p.codUsuario = :codUsuario and p.idPrograma = :idPrograma")
 	UsuarioProgramaBi findByCodUsuarioAndIdPrograma(long codUsuario, String idPrograma);
+
+	@Query("SELECT p FROM UsuarioProgramaBi p where p.idPrograma = :idPrograma")
+	List<UsuarioProgramaBi> findByIdPrograma(String idPrograma);
 	
 	void deleteByCodUsuario(long codUsuario);
+	void deleteByIdPrograma(String idPrograma);
+	void deleteByCodUsuarioAndIdPrograma(long codUsuario, String idPrograma);
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.repository.UsuarioBiRepository;
 import br.com.live.service.UsuarioBiService;
+import br.com.live.body.BodyProgramaBi;
 import br.com.live.body.BodyUsuarioBi;
 import br.com.live.custom.UsuarioBiCustom;
 import br.com.live.entity.ProgramaBi;
@@ -24,7 +25,7 @@ import br.com.live.model.FiltroProgramaBi;
 public class UsuarioBiController {
     private UsuarioBiRepository usuarioBiRepository;
     private UsuarioBiService usuarioBiService;
-    private UsuarioBiCustom usuarioBiCustom;
+    private UsuarioBiCustom usuarioBiCustom;    
 
     @Autowired
     public UsuarioBiController(UsuarioBiRepository usuarioBiRepository, UsuarioBiService usuarioBiService, UsuarioBiCustom usuarioBiCustom) {
@@ -43,8 +44,13 @@ public class UsuarioBiController {
     public List<UsuarioBi> findAll() {
           return usuarioBiRepository.findAll(); 
     }
+
+    @RequestMapping(value = "/by-programa/{idPrograma}", method = RequestMethod.GET)
+    public List<UsuarioBi> findAll(@PathVariable("idPrograma") String idPrograma) {
+          return usuarioBiCustom.findUsuariosByIdPrograma(idPrograma); 
+    }
     
-	@RequestMapping(value = "/{idUsuario}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{idUsuario}", method = RequestMethod.GET)
 	public UsuarioBi findByIdUsuario(@PathVariable("idUsuario") long idUsuario) {
 		return usuarioBiRepository.findByCodUsuario(idUsuario);
 	}
@@ -53,6 +59,11 @@ public class UsuarioBiController {
 	public List<String> findByCodUsuario(@PathVariable("idUsuario") long idUsuario) {
 		return usuarioBiService.findIdsProgramasByUsuario(idUsuario);
 	}
+
+    @RequestMapping(value = "/usuarios-programa/{idPrograma}", method = RequestMethod.GET)
+    public List<Long> findByIdPrograma(@PathVariable("idPrograma") String idPrograma) {
+        return usuarioBiService.findIdsUsuariosByPrograma(idPrograma);
+    }
 	
 	@RequestMapping(value = "/programas-por-usuario/{idUsuario}", method = RequestMethod.GET)
 	public List<ProgramaBi> findProgramasByUsuario(@PathVariable("idUsuario") long idUsuario) {
@@ -110,6 +121,11 @@ public class UsuarioBiController {
 	@RequestMapping(value = "/excluir-all-tipo-email", method = RequestMethod.POST)
 	public void excluiAllTipoEmail(@RequestBody BodyUsuarioBi body) {
 		usuarioBiService.excluiTodosTiposEmailSelecionado(body.id, body.idPrograma);
+	}
+	
+	@RequestMapping(value = "/salvar-prog-usuarios", method = RequestMethod.POST)
+	public void saveProgramasByListaAreasModulosAndUsuarios(@RequestBody BodyProgramaBi body) {
+		usuarioBiService.saveProgramaToUsuarios(body.id, body.listaIdsUsuarios);
 	}
 	
 	@RequestMapping(value = "/validar-usuario/{idUsuario}/{usuario}", method = RequestMethod.GET)

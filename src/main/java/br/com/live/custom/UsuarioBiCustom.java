@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.entity.UsuarioBi;
 import br.com.live.model.FiltroProgramaBi;
 
 @Repository
@@ -78,5 +79,14 @@ public class UsuarioBiCustom {
 		return (encontrou == 1);
 	}
 	
-	
+	public List<UsuarioBi> findUsuariosByIdPrograma(String idPrograma) {
+		
+		String query = " select b.cod_usuario codUsuario, b.nome, b.usuario, b.senha, b.email, b.situacao, b.administrador " 
+		+ " from orion_bi_004 a, orion_bi_003 b "
+		+ " where a.id_programa = '" + idPrograma + "' "
+		+ " and b.cod_usuario = a.cod_usuario "
+		+ " order by b.cod_usuario ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(UsuarioBi.class));		
+	}
 }

@@ -245,7 +245,7 @@ public class OrdemProducaoServiceTransaction {
 			status = mapPreOrdensComErro.get(idPreOrdem);
 			if (!status.isConcluido()) {
 				preOrdem.status = status.getMensagem().toUpperCase();	
-				planoMestrePreOrdemRepository.save(preOrdem);
+				planoMestrePreOrdemRepository.save(preOrdem); 
 			}			
 		}				
 	}	

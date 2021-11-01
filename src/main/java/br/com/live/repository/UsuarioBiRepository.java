@@ -11,9 +11,10 @@ import br.com.live.entity.UsuarioBi;
 @Repository
 public interface UsuarioBiRepository extends JpaRepository<UsuarioBi, Long> {
 	
+	@Query("SELECT u FROM UsuarioBi u order by u.codUsuario")
 	List<UsuarioBi> findAll();
 	
-	@Query("SELECT u FROM UsuarioBi u where u.codUsuario = :codUsuario")
+	@Query("SELECT u FROM UsuarioBi u where u.codUsuario = :codUsuario order by u.codUsuario")
 	UsuarioBi findByCodUsuario(long codUsuario);
 	
 	void deleteBycodUsuario(long codUsuario);
