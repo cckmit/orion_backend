@@ -507,7 +507,7 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 	
-	public int findNextIdPlanoMestreItemCompleto() {
+	public int findNextIdPlanoMestreItemPorCor() {
 		String query = " select id_orion_016.nextval from dual ";
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
