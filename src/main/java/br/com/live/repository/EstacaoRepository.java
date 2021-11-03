@@ -11,6 +11,7 @@ import br.com.live.entity.Estacao;
 @Repository
 public interface EstacaoRepository extends JpaRepository<Estacao, Integer> {
 	
+	@Query("SELECT u FROM Estacao u order by u.codEstacao")
 	List<Estacao> findAll();
 	
 	@Query("SELECT u FROM Estacao u where u.codEstacao = :codEstacao")
