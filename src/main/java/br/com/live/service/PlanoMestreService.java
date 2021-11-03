@@ -404,24 +404,21 @@ public class PlanoMestreService {
 	
 	public void salvarGrade(long idPlanoMestre, String grupo, String item,
 			List<ConsultaItensTamPlanoMestre> gradeAlterada) {
-
 		for (ConsultaItensTamPlanoMestre itemAlterado : gradeAlterada) {
 			ProdutoPlanoMestre produto = produtoPlanoMestreRepository.findByIdPlanoCodGrupoSubCor(
 					itemAlterado.idPlanoMestre, itemAlterado.grupo, itemAlterado.sub, itemAlterado.item);
-
 			if (produto == null) {
 				produto = new ProdutoPlanoMestre();
+				produto.id = planoMestreCustom.findNextIdPlanoMestreItens();
 				produto.idPlanoMestre = idPlanoMestre;
 				produto.nivel = "1";
 				produto.grupo = itemAlterado.grupo;
 				produto.sub = itemAlterado.sub;
 				produto.item = itemAlterado.item;
 			}
-
 			produto.qtdeProgramada = itemAlterado.qtdeProgramada;
 			produtoPlanoMestreRepository.save(produto);
 		}
-
 		aplicarMultiplicador(idPlanoMestre, grupo, item);
 	}
 
@@ -435,6 +432,7 @@ public class PlanoMestreService {
 				.findByIdPlanoMestre(idPlanoMestre);
 
 		PlanoMestre planoMestreCopia = CopiarPlanoMestre.getCopiaPlanoMestre(planoMestre);
+		planoMestreCopia.id = planoMestreCustom.findNextIdPlanoMestre();
 		planoMestreRepository.save(planoMestreCopia);
 
 		PlanoMestreParametros planoMestreParametrosCopia = CopiarPlanoMestre
@@ -444,12 +442,14 @@ public class PlanoMestreService {
 		for (ProdutoPlanoMestre produto : produtos) {
 			ProdutoPlanoMestre produtoCopia = CopiarPlanoMestre.getCopiaProdutoPlanoMestre(produto,
 					planoMestreCopia.id);
+			produtoCopia.id = planoMestreCustom.findNextIdPlanoMestreItens();
 			produtoPlanoMestreRepository.save(produtoCopia);
 		}
 
 		for (ProdutoPlanoMestrePorCor produtoCor : produtosPorCor) {
 			ProdutoPlanoMestrePorCor produtoCorCopia = CopiarPlanoMestre.getCopiaProdutoPlanoMestrePorCor(produtoCor,
 					planoMestreCopia.id);
+			produtoCorCopia.id = planoMestreCustom.findNextIdPlanoMestreItemPorCor();
 			produtoPlanoMestrePorCorRepository.save(produtoCorCopia);
 
 			PlanoMestreParamProgItem parametroProgramacaoItem = planoMestreParamProgItemRepository
@@ -526,7 +526,7 @@ public class PlanoMestreService {
 		List<ProdutoPlanoMestrePorCor> produtosPorCor = geracao.getProdutosPorCorPlanoMestre(produtos);
 		
 		for (ProdutoPlanoMestrePorCor produtoPlanoMestrePorCor : produtosPorCor) {
-			produtoPlanoMestrePorCor.id = planoMestreCustom.findNextIdPlanoMestreItemCompleto();
+			produtoPlanoMestrePorCor.id = planoMestreCustom.findNextIdPlanoMestreItemPorCor();
 			produtoPlanoMestrePorCor.idPlanoMestre = planoMestre.id;			
 			produtoPlanoMestrePorCorRepository.save(produtoPlanoMestrePorCor);
 			AlternativaRoteiroPadrao alternativaRoteiroPadrao = produtoRepository.findAlternativaRoteiroPadraoByCodigo(
