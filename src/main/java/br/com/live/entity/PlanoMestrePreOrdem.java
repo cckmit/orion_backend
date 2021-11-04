@@ -32,4 +32,7 @@ public class PlanoMestrePreOrdem {
     
     @Column(name="ordem_gerada")
     public int ordemGerada;
+    
+    @Column(name="mensagem_gravacao")
+    public String mensagemGravacaoOrdem;
 }

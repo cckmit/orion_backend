@@ -751,6 +751,8 @@ public class PlanoMestreService {
 
 	public void gerarPreOrdens(ParametrosPlanoMestre parametros) {
 
+		System.out.println("Método gerarPreOrdens");
+		
 		PlanoMestre planoMestre = planoMestreRepository.findById(parametros.idPlanoMestre);
 
 		// Se tiver ordens geradas, não recria as pré-ordens
@@ -776,32 +778,32 @@ public class PlanoMestreService {
 			List<ProgramacaoPlanoMestre> programacao = planoMestreCustom
 					.findProgramacaoByIdPlanoMestre(parametros.idPlanoMestre);
 
+			System.out.println("criando objeto geracaoPreOrdens");
 			GeracaoPreOrdens geracaoPreOrdens = new GeracaoPreOrdens(parametros.idPlanoMestre,
 					parametros.agrupaOpPorRefer, parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP,
 					parametros.depositoOP, parametros.observacaoOP, programacao);
 
-			Map<Integer, PlanoMestrePreOrdem> mapPreOrdens = geracaoPreOrdens.getMapPreOrdens();
-			List<PlanoMestrePreOrdemItem> listPreOrdemItens;
-
-			PlanoMestrePreOrdem preOrdem;
+			Map<Integer, PlanoMestrePreOrdem> mapPreOrdens = geracaoPreOrdens.getMapPreOrdens();			
 			Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao>();
 
+			System.out.println("gerando as pré ordens");
 			for (Integer idMap : mapPreOrdens.keySet()) {
-				preOrdem = mapPreOrdens.get(idMap);
-				preOrdem.id = planoMestreCustom.findNextIdPreOrdem();
-				preOrdem = planoMestrePreOrdemRepository.saveAndFlush(preOrdem);
-				listPreOrdemItens = geracaoPreOrdens.getListPreOrdemItens(idMap);
-
+				PlanoMestrePreOrdem preOrdem = mapPreOrdens.get(idMap);
+				preOrdem.id = planoMestreCustom.findNextIdPreOrdem();								
+				planoMestrePreOrdemRepository.save(preOrdem);
+				
+				List<PlanoMestrePreOrdemItem> listPreOrdemItens = geracaoPreOrdens.getListPreOrdemItens(idMap);
 				for (PlanoMestrePreOrdemItem preOrdemItem : listPreOrdemItens) {
-					preOrdemItem.id = planoMestreCustom.findNextIdPreOrdemItem();
+					preOrdemItem.id = planoMestreCustom.findNextIdPreOrdemItem();					
 					preOrdemItem.idOrdem = preOrdem.id;
-					planoMestrePreOrdemItemRepository.saveAndFlush(preOrdemItem);
+					planoMestrePreOrdemItemRepository.save(preOrdemItem);
 				}
 
 				ordemProducaoService.validarDadosOrdem(preOrdem, mapPreOrdensComErro);
 				ordemProducaoService.validarDadosItem(preOrdem, listPreOrdemItens, mapPreOrdensComErro);
 			}
 			ordemProducaoService.atualizarErrosPreOrdens(mapPreOrdensComErro);			
+			System.out.println("pré ordens geradas!");
 		}
 	}
 

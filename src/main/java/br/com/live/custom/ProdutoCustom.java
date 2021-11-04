@@ -525,6 +525,28 @@ public class ProdutoCustom {
 		return (encontrou == 1);	   	
 	}
 	
+	public boolean roteiroSequenciado(String grupo, String sub, String item, int alternativa, int roteiro) { 
+		int encontrou = 0;
+	
+		String query = " select 1 from mqop_050 " 
+		+ " where mqop_050.nivel_estrutura = '1' " 
+	    + " and mqop_050.grupo_estrutura   = '" + grupo + "'"
+	    + " and (mqop_050.subgru_estrutura = '" + sub + "' or mqop_050.subgru_estrutura = '000') "
+	    + " and (mqop_050.item_estrutura   = '" + item + "' or mqop_050.item_estrutura   = '000000') "
+	    + " and mqop_050.numero_alternati  = " + alternativa
+	    + " and mqop_050.numero_roteiro    = " + roteiro 
+		+ " and mqop_050.sequencia_estagio = 0 "
+	    + " and rownum = 1 ";
+	   
+		try {
+			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+		
+		return !(encontrou == 1);
+	}
+	
 	private String[] getCodProdutoCadRoteiro(String grupo, String sub, String item, int alternativa, int roteiro) {
 		
 		String[] codProdutoRoteiro = new String[3];

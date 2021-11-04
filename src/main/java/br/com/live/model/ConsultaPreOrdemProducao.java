@@ -11,7 +11,14 @@ public class ConsultaPreOrdemProducao {
 	public String deposito;
 	public int ordemGerada;
 	public String status;
+	public String mensagemGravacaoOrdem;
 	
+	public String getMensagemGravacaoOrdem() {
+		return mensagemGravacaoOrdem;
+	}
+	public void setMensagemGravacaoOrdem(String mensagemGravacaoOrdem) {
+		this.mensagemGravacaoOrdem = mensagemGravacaoOrdem;
+	}
 	public String getStatus() {
 		return status;
 	}

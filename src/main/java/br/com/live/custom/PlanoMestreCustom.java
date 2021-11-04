@@ -260,7 +260,7 @@ public class PlanoMestreCustom {
 	public List<ConsultaPreOrdemProducao> findPreOrdensByIdPlanoMestre(long idPlanoMestre) {
 
 		String query = "select a.id, a.referencia || ' - ' || b.descr_referencia referencia, a.periodo, "
-				+ " a.alternativa || ' - ' || max(c.descricao) alternativa, a.roteiro, a.quantidade, a.status,"
+				+ " a.alternativa || ' - ' || max(c.descricao) alternativa, a.roteiro, a.quantidade, a.status, max(a.mensagem_gravacao) mensagemGravacaoOrdem, "
 				+ " a.deposito || ' - ' || max(d.descricao) deposito, a.observacao, max(a.ordem_gerada) ordemGerada "
 				+ " from orion_020 a, basi_030 b, basi_070 c, basi_205 d " + " where a.num_plano_mestre = "
 				+ idPlanoMestre + " and b.nivel_estrutura = '1' " + " and b.referencia = a.referencia "
@@ -396,37 +396,13 @@ public class PlanoMestreCustom {
 	}
 
 	public int findNextIdPreOrdem() {
-
-		Integer id;
-
-		String query = " select nvl(max(id),0) from orion_020 ";
-
-		try {
-			id = jdbcTemplate.queryForObject(query, Integer.class);
-		} catch (Exception e) {
-			id = 0;
-		}
-
-		id++;
-
-		return (int) id;
+		String query = " select id_orion_020.nextval from dual ";
+		return (int) jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
 	public int findNextIdPreOrdemItem() {
-
-		Integer id;
-
-		String query = " select nvl(max(id),0) from orion_021 ";
-
-		try {
-			id = jdbcTemplate.queryForObject(query, Integer.class);
-		} catch (Exception e) {
-			id = 0;
-		}
-
-		id++;
-
-		return (int) id;
+		String query = " select id_orion_021.nextval from dual ";
+		return (int) jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
 	private String getColecoesPlanoMestre(long idPlanoMestre) {

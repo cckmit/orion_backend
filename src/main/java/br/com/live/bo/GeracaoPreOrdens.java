@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.entity.PlanoMestrePreOrdemItem;
@@ -43,7 +44,9 @@ public class GeracaoPreOrdens {
 		this.depositoOrdem = depositoOrdem;
 		this.observacaoOrdem = observacaoOrdem;
 		this.programacaoItens = programacaoItens;
-
+		this.ordensCapa = new ArrayList<PreOrdemProducao>();
+		this.ordensItens = new ArrayList<PreOrdemProducaoItem>();
+		
 		agruparOrdens();
 		gerarPreOrdens();
 		putMapPreOrdens();
@@ -57,9 +60,9 @@ public class GeracaoPreOrdens {
 
 		List<PlanoMestrePreOrdemItem> listPlanoMestrePreOrdemItem = new ArrayList<PlanoMestrePreOrdemItem>();
 
-		for (PreOrdemProducaoItem ordemItem : ordensItens) {
-			if (ordemItem.id != idMapPreOrdem)
-				continue;
+		List<PreOrdemProducaoItem> itensFiltrados = ordensItens.stream().filter(p -> p.id == idMapPreOrdem).collect(Collectors.toList());
+		
+		for (PreOrdemProducaoItem ordemItem : itensFiltrados) {
 
 			PlanoMestrePreOrdemItem planoMestrePreOrdemItem = new PlanoMestrePreOrdemItem();
 			planoMestrePreOrdemItem.idPlanoMestre = idPlanoMestre;
@@ -141,16 +144,13 @@ public class GeracaoPreOrdens {
 
 		Integer quantidade;
 
-		ordensCapa = new ArrayList<PreOrdemProducao>();
-		ordensItens = new ArrayList<PreOrdemProducaoItem>();
-
 		for (String chave : mapOrdensAgrupadas.keySet()) {
 
 			quantidade = mapOrdensAgrupadas.get(chave);
 
 			if (quantidade < qtdeMinimaOrdem)
 				continue;
-			
+
 			setOrdem(chave);
 		}
 	}
@@ -163,6 +163,7 @@ public class GeracaoPreOrdens {
 		int roteiro = 0;
 		int periodo = 0;
 
+		int quantidade = mapOrdensAgrupadas.get(chave);
 		String[] inicio = chave.split("[.]");
 		String identificador = inicio[0];
 
@@ -171,114 +172,90 @@ public class GeracaoPreOrdens {
 			alternativa = Integer.parseInt(inicio[2]);
 			roteiro = Integer.parseInt(inicio[3]);
 			periodo = Integer.parseInt(inicio[4]);
-			setOrdem(1, grupo, cor, periodo, alternativa, roteiro);
+			setOrdem(1, grupo, cor, periodo, alternativa, roteiro, quantidade);
 		} else if (identificador.equalsIgnoreCase("2")) {
 			grupo = inicio[1];
 			cor = inicio[2];
 			alternativa = Integer.parseInt(inicio[3]);
 			roteiro = Integer.parseInt(inicio[4]);
 			periodo = Integer.parseInt(inicio[5]);
-			setOrdem(2, grupo, cor, periodo, alternativa, roteiro);
+			setOrdem(2, grupo, cor, periodo, alternativa, roteiro, quantidade);
 		}
 	}
 
-	private void setOrdem(int tipoAgrupamento, String grupo, String cor, int periodo, int alternativa, int roteiro) {
+	private void setOrdem(int tipoAgrupamento, String grupo, String cor, int periodo, int alternativa, int roteiro,
+			int qtdeProgramada) {
+		int qtdeOrdens = 1;
+		int qtdeProgItem;
 
-		int qtdeTotalProg = 0;
-		int qtdeProgramada = 0;
-		int qtdeProgramar = 0;		
-		PreOrdemProducaoItem preOrdemItem;
-		List<PreOrdemProducaoItem> listaItens = new ArrayList<PreOrdemProducaoItem>();
+		System.out.println("setOrdem");
+		
+		if (qtdeProgramada > this.qtdeMaximaOrdem)
+			qtdeOrdens = (int) Math.ceil((double) qtdeProgramada / (double) this.qtdeMaximaOrdem);
 
-		for (ProgramacaoPlanoMestre item : programacaoItens) {
+		System.out.println("qtdeOrdens: " + qtdeOrdens);
+		
+		List<ProgramacaoPlanoMestre> itens = filtraItensByChave(tipoAgrupamento, grupo, cor, periodo, alternativa, roteiro);
+		
+		for (int i = 0; i < qtdeOrdens; i++) {
+			
+			int qtdeTotalProg = 0;
 
-			if ((!chaveValida(tipoAgrupamento, grupo, cor, alternativa, roteiro, periodo, item))
-					|| (item.qtdeProgramada == 0))
-				continue;
+			PreOrdemProducao preOrdem = new PreOrdemProducao();
+			preOrdem.id = getIdPreOrdem();
+			preOrdem.grupo = grupo;
+			preOrdem.periodo = periodo;
+			preOrdem.alternativa = alternativa;
+			preOrdem.roteiro = roteiro;
+			
+			System.out.println(preOrdem.id);
+			
+			for (ProgramacaoPlanoMestre item : itens) {
+				
+				qtdeProgItem = (int) Math.ceil((double) item.qtdeProgramada / (double) qtdeOrdens); 	
+				qtdeTotalProg += qtdeProgItem;
 
-			qtdeProgramada = item.qtdeProgramada;
-			qtdeProgramar = 0;			
-
-			while (qtdeProgramada > 0) {
-
-				if ((qtdeTotalProg + qtdeProgramada) <= qtdeMaximaOrdem)
-					qtdeProgramar = qtdeProgramada;
-				else {
-					qtdeProgramar = qtdeProgramada - ((qtdeTotalProg + qtdeProgramada) - qtdeMaximaOrdem);					
-
-					if (qtdeProgramar <= 0) {
-
-						if (listaItens.size() > 0) {
-							populaListOrdens(grupo, cor, periodo, alternativa, roteiro, listaItens);
-						}
-
-						listaItens.clear();
-						qtdeTotalProg = 0;
-					}
-				}
-
-				if (qtdeProgramar <= 0)
-					continue;
-
-				preOrdemItem = new PreOrdemProducaoItem();
+				PreOrdemProducaoItem preOrdemItem = new PreOrdemProducaoItem();
+				preOrdemItem.id = preOrdem.id;
 				preOrdemItem.grupo = item.grupo;
 				preOrdemItem.sub = item.sub;
 				preOrdemItem.item = item.item;
 				preOrdemItem.alternativa = item.alternativa;
 				preOrdemItem.roteiro = item.roteiro;
 				preOrdemItem.periodo = item.periodo;
-				preOrdemItem.qtdeProgramada = qtdeProgramar;
-
-				qtdeTotalProg += qtdeProgramar;
-				qtdeProgramada -= qtdeProgramar;
+				preOrdemItem.qtdeProgramada = qtdeProgItem;		
 				
-				listaItens.add(preOrdemItem);
-			}
-		}
-
-		if (listaItens.size() > 0) {
-			populaListOrdens(grupo, cor, periodo, alternativa, roteiro, listaItens);
+				System.out.println(item.grupo + "." + item.sub + "." + item.item  + "." + qtdeProgItem);
+				
+				ordensItens.add(preOrdemItem);
+			}			
+			
+			System.out.println("qtdeTotalProg: " + qtdeTotalProg);
+			
+			preOrdem.qtdeProgramada = qtdeTotalProg;
+			ordensCapa.add(preOrdem);
 		}
 	}
 
-	private void populaListOrdens(String grupo, String cor, int periodo, int alternativa, int roteiro,
-			List<PreOrdemProducaoItem> listaItens) {
+	private List<ProgramacaoPlanoMestre> filtraItensByChave (int tipoAgrupamento, String grupo, String cor, int periodo, int alternativa, int roteiro) {
+		
+		List<ProgramacaoPlanoMestre> itensFiltrados = new ArrayList<ProgramacaoPlanoMestre>();
+		
+		List<ProgramacaoPlanoMestre> itensFiltro1 = programacaoItens.stream().filter(p -> ((p.grupo.equalsIgnoreCase(grupo))
+				&& (p.alternativa == alternativa) && (p.roteiro == roteiro) && (p.periodo == periodo)))
+				.collect(Collectors.toList());
 
-		int qtdeTotalProg = 0;
-		int idOrdem = 0;
+		for (ProgramacaoPlanoMestre item : itensFiltro1) {
+			if ((!chaveValida(tipoAgrupamento, grupo, cor, alternativa, roteiro, periodo, item))
+					|| (item.qtdeProgramada == 0))
+				continue;
 
-		idOrdem = getIdPreOrdem();
-
-		PreOrdemProducao preOrdem = new PreOrdemProducao();
-		preOrdem.id = idOrdem;
-		preOrdem.grupo = grupo;
-		preOrdem.periodo = periodo;
-		preOrdem.alternativa = alternativa;
-		preOrdem.roteiro = roteiro;
-
-		for (PreOrdemProducaoItem item : listaItens) {
-
-			PreOrdemProducaoItem preOrdemItem;
-
-			preOrdemItem = new PreOrdemProducaoItem();
-			preOrdemItem.id = idOrdem;
-			preOrdemItem.grupo = item.grupo;
-			preOrdemItem.sub = item.sub;
-			preOrdemItem.item = item.item;
-			preOrdemItem.alternativa = item.alternativa;
-			preOrdemItem.roteiro = item.roteiro;
-			preOrdemItem.periodo = item.periodo;
-			preOrdemItem.qtdeProgramada = item.qtdeProgramada;
-
-			qtdeTotalProg += preOrdemItem.qtdeProgramada;
-
-			ordensItens.add(preOrdemItem);
+			itensFiltrados.add(item);
 		}
-
-		preOrdem.qtdeProgramada = qtdeTotalProg;
-		ordensCapa.add(preOrdem);
+		
+		return itensFiltrados;
 	}
-
+	
 	private int getIdPreOrdem() {
 		return (ordensCapa.size() + 1);
 	}
@@ -297,5 +274,5 @@ public class GeracaoPreOrdens {
 			isValida = true;
 
 		return isValida;
-	}
+	}	
 }

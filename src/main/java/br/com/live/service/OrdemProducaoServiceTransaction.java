@@ -215,11 +215,13 @@ public class OrdemProducaoServiceTransaction {
 		boolean dadosOk = true;
 		boolean existeEstrutura = true;
 		boolean existeRoteiro = true;
+		boolean roteiroSequenciado = true;
 
 		for (PlanoMestrePreOrdemItem preOrdemItem : preOrdemItens) {
 			existeEstrutura = produtoCustom.existsEstrutura(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa);
 			existeRoteiro = produtoCustom.existsRoteiro(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdem.roteiro);
-			if ((!existeEstrutura)||(!existeRoteiro)) break;
+			roteiroSequenciado = produtoCustom.roteiroSequenciado(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdem.roteiro);
+			if ((!existeEstrutura)||(!existeRoteiro)||(roteiroSequenciado)) break;
 		}
 		
 		if (!existeEstrutura) {
@@ -230,6 +232,11 @@ public class OrdemProducaoServiceTransaction {
 		if (!existeRoteiro) {
 			dadosOk = false;
 			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não existe roteiro para a alternativa e roteiro!"));			
+		}
+		
+		if (!roteiroSequenciado) {
+			dadosOk = false;
+			mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Roteiro do produto não está sequenciado!"));						
 		}
 		
 		return dadosOk;
@@ -244,7 +251,8 @@ public class OrdemProducaoServiceTransaction {
 			preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
 			status = mapPreOrdensComErro.get(idPreOrdem);
 			if (!status.isConcluido()) {
-				preOrdem.status = status.getMensagem().toUpperCase();	
+				preOrdem.status = status.getMensagem().toUpperCase();
+				preOrdem.mensagemGravacaoOrdem = status.getMensagemCompleta();
 				planoMestrePreOrdemRepository.save(preOrdem); 
 			}			
 		}				
@@ -276,13 +284,12 @@ public class OrdemProducaoServiceTransaction {
 				
 				preOrdem.ordemGerada = idOrdemProducao;
 				preOrdem.situacao = 1; // Ordem Gerada
-				preOrdem.status = "ORDEM GERADA COM SUCESSO!";
+				preOrdem.status = "ORDEM GERADA COM SUCESSO!";				
 				listaPreOrdensConcluidas.add(preOrdem);
 
 			} catch (Exception e) {				
-				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível gerar a ordem de produção!"));
-				if (idOrdemProducao > 0) ordemProducaoCustom.excluirOrdemProducao(idOrdemProducao);
-				System.out.println(e.getMessage());
+				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível gerar a ordem de produção!", e.getMessage()));
+				if (idOrdemProducao > 0) ordemProducaoCustom.excluirOrdemProducao(idOrdemProducao);				
 			}						
 		}
 							
@@ -315,11 +322,11 @@ public class OrdemProducaoServiceTransaction {
 		if (validarExclusaoOrdem(preOrdem, mapPreOrdensComErro)) {		
 			try {			
 				ordemProducaoCustom.excluirOrdemProducao(preOrdem.ordemGerada);				
-				preOrdem.status = "ORDEM EXCLUÍDA COM SUCESSO!";
 				preOrdem.situacao = 2; // Ordem Excluída
+				preOrdem.status = "ORDEM EXCLUÍDA COM SUCESSO!";								
 				listaPreOrdensConcluidas.add(preOrdem);
 			} catch (Exception e) {
-				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível excluir essa ordem!"));
+				mapPreOrdensComErro.put(preOrdem.id, new StatusGravacao(false, "Não foi possível excluir essa ordem!", e.getMessage()));
 			}
 		}
 		
