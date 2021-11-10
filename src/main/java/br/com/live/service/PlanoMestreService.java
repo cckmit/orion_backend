@@ -362,8 +362,6 @@ public class PlanoMestreService {
 		}
 	}
 
-	// TODO - ALTERAR REGRA 
-	
 	public void salvarParametrosProgramacaoItem(long idPlanoMestre, String grupo, String item, int alternativa,
 			int roteiro, int periodo, int multiplicador, int planoInicio, int planoFim) {
 		
@@ -781,7 +779,7 @@ public class PlanoMestreService {
 			System.out.println("criando objeto geracaoPreOrdens");
 			GeracaoPreOrdens geracaoPreOrdens = new GeracaoPreOrdens(parametros.idPlanoMestre,
 					parametros.agrupaOpPorRefer, parametros.qtdeMaximaOP, parametros.qtdeMinimaOP, parametros.periodoOP,
-					parametros.depositoOP, parametros.observacaoOP, programacao);
+					parametros.depositoOP, parametros.observacaoOP, planoMestreParametros.multiplicador, programacao);
 
 			Map<Integer, PlanoMestrePreOrdem> mapPreOrdens = geracaoPreOrdens.getMapPreOrdens();			
 			Map<Long, StatusGravacao> mapPreOrdensComErro = new HashMap<Long, StatusGravacao>();

@@ -21,6 +21,7 @@ public class GeracaoPreOrdens {
 	private int qtdeMinimaOrdem;
 	private int periodoOrdem;
 	private int depositoOrdem;
+	private int multiplicador;
 	private String observacaoOrdem;
 	private List<ProgramacaoPlanoMestre> programacaoItens;
 	Map<String, Integer> mapOrdensAgrupadas;
@@ -33,7 +34,7 @@ public class GeracaoPreOrdens {
 	List<PlanoMestrePreOrdemItem> listPlanoMestrePreOrdemItem;
 
 	public GeracaoPreOrdens(long idPlanoMestre, int agrupaPorReferencia, int qtdeMaximaOrdem, int qtdeMinimaOrdem,
-			int periodoOrdem, int depositoOrdem, String observacaoOrdem,
+			int periodoOrdem, int depositoOrdem, String observacaoOrdem, int multiplicador,
 			List<ProgramacaoPlanoMestre> programacaoItens) {
 
 		this.idPlanoMestre = idPlanoMestre;
@@ -42,8 +43,9 @@ public class GeracaoPreOrdens {
 		this.qtdeMinimaOrdem = qtdeMinimaOrdem;
 		this.periodoOrdem = periodoOrdem;
 		this.depositoOrdem = depositoOrdem;
-		this.observacaoOrdem = observacaoOrdem;
+		this.observacaoOrdem = observacaoOrdem;		
 		this.programacaoItens = programacaoItens;
+		this.multiplicador = multiplicador;
 		this.ordensCapa = new ArrayList<PreOrdemProducao>();
 		this.ordensItens = new ArrayList<PreOrdemProducaoItem>();
 		
@@ -213,6 +215,11 @@ public class GeracaoPreOrdens {
 			for (ProgramacaoPlanoMestre item : itens) {
 				
 				qtdeProgItem = (int) Math.ceil((double) item.qtdeProgramada / (double) qtdeOrdens); 	
+				
+				// Se for informado qtde máxima, pode existir quebra das ordens. Por isso é ajustado a quantidade pelo multiplo do plano.
+				if ((this.qtdeMaximaOrdem > 0)&&(this.qtdeMaximaOrdem < 999999))
+					qtdeProgItem = Multiplicador.ajustarQuantidade(this.multiplicador, qtdeProgItem);
+				
 				qtdeTotalProg += qtdeProgItem;
 
 				PreOrdemProducaoItem preOrdemItem = new PreOrdemProducaoItem();
