@@ -31,3 +31,14 @@ create table orion_083
 
 comment on table orion_083 is 'Tabela de Cadastro de Tipos de Ponto - Fios';
 ----------------------------------------------------------------------------
+create table orion_084
+(id varchar2(20) default 0,
+ referencia varchar2(10) default 0,
+ id_tipo_ponto number(9) default 0,
+ comprimento_costura number(9,2) default 0,
+ constraint orion_084_pk primary key (id),
+ constraint fk_orion_084_orion_082 foreign key (id_tipo_ponto) references orion_082 (id)
+);
+
+comment on table orion_083 is 'Tabela de Consumo de Fios e Linhas';
+----------------------------------------------------------------------------
