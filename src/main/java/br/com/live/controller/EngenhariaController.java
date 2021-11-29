@@ -12,20 +12,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyEngenharia;
 import br.com.live.custom.EngenhariaCustom;
+import br.com.live.entity.ConsumoFiosLinhas;
+import br.com.live.entity.ConsumoMetragemFio;
 import br.com.live.entity.MarcasFio;
 import br.com.live.entity.TipoPonto;
 import br.com.live.entity.TipoPontoFio;
 import br.com.live.entity.TiposFio;
+import br.com.live.model.ConsultaConsumoMetragem;
+import br.com.live.model.ConsultaTabelaConsumo;
 import br.com.live.model.ConsultaTipoPonto;
 import br.com.live.model.ConsultaTipoPontoFio;
 import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.Maquinas;
 import br.com.live.model.OptionProduto;
+import br.com.live.repository.ConsumoFiosLinhasRepository;
+import br.com.live.repository.ConsumoMetragemFioRepository;
 import br.com.live.repository.MarcasFioRepository;
 import br.com.live.repository.TiposFioRepository;
 import br.com.live.repository.TiposPontoFioRepository;
 import br.com.live.repository.TiposPontoRepository;
 import br.com.live.service.EngenhariaService;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
 @CrossOrigin
@@ -38,16 +45,20 @@ public class EngenhariaController {
 	private EngenhariaCustom engenhariaCustom;
     private TiposPontoFioRepository tiposPontoFioRepository;
     private TiposPontoRepository tiposPontoRepository;
+    private ConsumoFiosLinhasRepository consumoFiosLinhasRepository;
+    private ConsumoMetragemFioRepository consumoMetragemFioRepository;
 
 	@Autowired
 	public EngenhariaController(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository, EngenhariaService engenhariaService, EngenhariaCustom engenhariaCustom,
-    TiposPontoFioRepository tiposPontoFioRepository, TiposPontoRepository tiposPontoRepository) {
+    TiposPontoFioRepository tiposPontoFioRepository, TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository, ConsumoMetragemFioRepository consumoMetragemFioRepository) {
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaService = engenhariaService;
 		this.engenhariaCustom = engenhariaCustom;
         this.tiposPontoRepository = tiposPontoRepository;
         this.tiposPontoFioRepository = tiposPontoFioRepository;
+        this.consumoFiosLinhasRepository = consumoFiosLinhasRepository;
+        this.consumoMetragemFioRepository = consumoMetragemFioRepository;
 	}
 	
 	@RequestMapping(value = "/find-all-marcas", method = RequestMethod.GET)
@@ -85,6 +96,11 @@ public class EngenhariaController {
         return tiposPontoRepository.findAll();
     }
 
+    @RequestMapping(value = "/find-all-ref-consumo", method = RequestMethod.GET)
+    public List<ConsultaTabelaConsumo> findAllReferenciasConsumo() {                  
+        return engenhariaCustom.findAllReferenciasSalvas();
+    }
+
     @RequestMapping(value = "/find-tipo-ponto-by-idRegistro/{idRegistro}", method = RequestMethod.GET)
     public TipoPontoFio findTipoPontoFioById(@PathVariable("idRegistro") String idRegistro) {                  
         return tiposPontoFioRepository.findByIdTipoPontoFio(idRegistro);
@@ -105,7 +121,55 @@ public class EngenhariaController {
     public List<ConsultaTipoPontoFio> findTiposPontoFioById(@PathVariable("idTipoPonto") int idTipoPonto) {                  
         return engenhariaCustom.findTipoPontoFio(idTipoPonto);
     }
-    
+
+    //
+    // Consulta Tipo de Ponto por Referencia
+    //
+    @RequestMapping(value = "/find-tipo-ponto-by-ref/{referencia}", method = RequestMethod.GET)
+    public List<ConsultaTabelaConsumo> findTfiposPontoFioById(@PathVariable("referencia") String referencia) {                 
+        return engenhariaCustom.findConsumoByReferencia(referencia);
+    }
+
+    //
+    // Get Dados Referência
+    //
+    @RequestMapping(value = "/get-dados-referencia/{referencia}", method = RequestMethod.GET)
+    public OptionProduto getDadosReferencia(@PathVariable("referencia") String referencia) {
+        return engenhariaCustom.findReferenciaById(referencia);
+    }
+
+    //
+    // Consulta Tipo de Ponto por Referencia
+    //
+    @RequestMapping(value = "/find-consumo-by-id/{idConsumo}", method = RequestMethod.GET)
+    public ConsumoFiosLinhas findConsumoById(@PathVariable("idConsumo") String idConsumo) {
+        return consumoFiosLinhasRepository.findConsumoById(idConsumo);
+    }
+
+    //
+    // Consulta Consumo Metragem by ID
+    //
+    @RequestMapping(value = "/find-consumo-metragem-by-id/{idConsumoMetragem}", method = RequestMethod.GET)
+    public ConsumoMetragemFio findConsumoMetragemById(@PathVariable("idConsumoMetragem") String idConsumoMetragem) {
+        return consumoMetragemFioRepository.findConsumoMetragemFioById(idConsumoMetragem);
+    }
+
+    //
+    // Return Option Pacotes
+    //
+    @RequestMapping(value = "/option-pacotes/{tipoFio}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> returnOptionPacotes(@PathVariable("tipoFio") int tipoFio) {
+        return engenhariaService.makeListOptionPackages(tipoFio);
+    }
+
+    //
+    // Consulta Resumo por Tipo de Fio
+    //
+    @RequestMapping(value = "/resumo/{referencia}", method = RequestMethod.GET)
+    public List<ConsultaConsumoMetragem> ConsultaResumoPorReferencia(@PathVariable("referencia") String referencia) {
+        return engenhariaCustom.ConsultaResumoPorReferencia(referencia);
+    }
+
     @RequestMapping(value = "/save-marcas", method = RequestMethod.POST)
     public MarcasFio saveMarcas(@RequestBody BodyEngenharia body) {                  
     	return engenhariaService.saveMarcas(body.id, body.descricao);
@@ -113,7 +177,7 @@ public class EngenhariaController {
     
     @RequestMapping(value = "/save-tipos", method = RequestMethod.POST)
     public TiposFio saveTipos(@RequestBody BodyEngenharia body) {                  
-    	return engenhariaService.saveTipos(body.id, body.descricao, body.titulo, body.centimetrosCone);
+    	return engenhariaService.saveTipos(body.id, body.descricao, body.titulo, body.centimetrosCone, body.centimetrosCone2, body.centimetrosCone3);
     }
 
     //
@@ -130,6 +194,33 @@ public class EngenhariaController {
     @RequestMapping(value = "/save-tipos-ponto-fio", method = RequestMethod.POST)
     public TipoPontoFio saveTiposPontoFio(@RequestBody BodyEngenharia body) {                  
     	return engenhariaService.saveTiposPontoFio(body.idTipoPonto, body.idRegistro, body.tipoFio, body.consumoFio);
+    }
+
+    //
+    // Salva Consumo
+    //
+    @RequestMapping(value = "/save-consumo", method = RequestMethod.POST)
+    public ConsumoFiosLinhas saveConsumo(@RequestBody BodyEngenharia body) {                  
+    	return engenhariaService.saveConsumo(body.idRegistro, body.referencia, body.idTipoPonto, body.comprimentoCostura);
+    }
+
+    //
+    // Cálcula Consumo Metragem Fio
+    //
+    @RequestMapping(value = "/calcula-consumo-metragem", method = RequestMethod.POST)
+    public List<ConsultaConsumoMetragem> calculaConsumoMetragem(@RequestBody BodyEngenharia body) {                  
+    	engenhariaService.CalculaConsumoFio(body.idTipoPonto, body.idRegistro, body.referencia);
+        return engenhariaCustom.ConsultaConsumoMetragem(body.idRegistro);
+    }
+
+    //
+    // Atualizar Pacote
+    //
+    @RequestMapping(value = "/atualizar-pacote", method = RequestMethod.POST)
+    public void atualizarPacote(@RequestBody BodyEngenharia body) {                  
+    	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet);
+        engenhariaService.CalculaConsumoFio(body.idTipoPonto, body.idRegistro, body.referencia);
+        //return engenhariaCustom.ConsultaConsumoMetragem(body.idRegistro);
     }
     
     @RequestMapping(value = "/delete-marcas/{idMarcas}", method = RequestMethod.DELETE)
@@ -156,4 +247,9 @@ public class EngenhariaController {
         return engenhariaCustom.findTipoPontoFio(idTipoPonto);
     }
 
+    @RequestMapping(value = "/delete-consumo-costura/{idComposto}/{referencia}", method = RequestMethod.DELETE)
+    public List<ConsultaTabelaConsumo> deleteConsumoCostura(@PathVariable("idComposto") String idComposto, @PathVariable("referencia") String referencia) {                  
+    	engenhariaService.deleteConsumoFiosLinhas(idComposto);
+        return engenhariaCustom.findConsumoByReferencia(referencia);
+    }
 }

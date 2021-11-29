@@ -14,6 +14,9 @@ public interface TiposPontoFioRepository extends JpaRepository<TipoPontoFio, Str
 	
 	@Query("SELECT u FROM TipoPontoFio u where u.id = :id")
 	TipoPontoFio findByIdTipoPontoFio(String id);
+
+	@Query("SELECT u FROM TipoPontoFio u where u.idTipoPonto = :idTipoPonto")
+	List<TipoPontoFio> findByIdTipoPonto(int idTipoPonto);
 	
 	void deleteById(String id);
 

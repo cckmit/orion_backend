@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.model.ConsultaConsumoMetragem;
+import br.com.live.model.ConsultaTabelaConsumo;
 import br.com.live.model.ConsultaTipoPonto;
 import br.com.live.model.ConsultaTipoPontoFio;
 import br.com.live.model.ConsultaTiposFio;
@@ -77,8 +79,7 @@ public class EngenhariaCustom {
 	}
 
 	public List<ConsultaTiposFio> findAllTiposFio() {
-		String query = " select a.id, a.descricao, a.titulo, a.centim_cone centimetrosCone, b.id || ' - ' || b.descricao marca from orion_081 a, orion_080 b "
-				+ " where a.marca = b.id ";
+		String query = " select a.id, a.descricao, a.titulo, a.centim_cone centimetrosCone from orion_081 a ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTiposFio.class));
 	}
@@ -113,4 +114,61 @@ public class EngenhariaCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTipoPonto.class));
 	}
 
+	public List<ConsultaTabelaConsumo> findConsumoByReferencia(String referencia) {
+		String query = " select a.id, a.id_tipo_ponto tipoPonto, a.comprimento_costura comprimentoCostura, b.descricao from orion_084 a, orion_082 b "
+				+ " where a.referencia = '" + referencia + "'" + " and a.id_tipo_ponto = b.id ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTabelaConsumo.class));
+	}
+
+	public OptionProduto findReferenciaById(String referencia) {
+		String query = " select v.referencia codigo, v.descr_referencia descricao from basi_030 v "
+		+ " where v.nivel_estrutura = '1' "
+		+ " and v.referencia = '" + referencia + "'";
+
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OptionProduto.class));
+	}
+
+	public List<ConsultaTabelaConsumo> findAllReferenciasSalvas() {
+		String query = " select o.referencia id, d.descr_referencia descricao from orion_084 o, basi_030 d "
+		+ " where o.referencia = d.referencia group by o.referencia, d.descr_referencia";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTabelaConsumo.class));
+	}
+
+	public void deleteConsumo(String referencia, int tipoPonto) {
+		String queryDelete = " delete from  orion_085 u where u.referencia = '" + referencia + "'"
+		+ " and u.id_tipo_ponto = " + tipoPonto;
+
+		jdbcTemplate.update(queryDelete);
+	}
+
+	public void deleteConsumoByIdReferencia(String idReferencia) {
+		String queryDelete = " delete from orion_085 u where u.id_referencia = '" + idReferencia + "'";
+
+		jdbcTemplate.update(queryDelete);
+	}
+
+	public List<ConsultaConsumoMetragem> ConsultaConsumoMetragem(String idConsumo) {
+		String query = " select n.id, n.pacote, n.metragem_costura_cm consumoFio, n.metragem_total metragemTotal, n.metragem_um metragemUm, m.grupo_maquina || '.' || m.sub_grupo_maquina maquina, p.descricao descTipoFio, p.id tipoFio from orion_085 n, orion_082 m, orion_083 o, orion_081 p "
+		+ " where n.id_referencia = '" + idConsumo + "'"
+		+ " and m.id = n.id_tipo_ponto "
+		+ " and o.id_tipo_ponto = m.id "
+		+ " and o.tipo_fio = n.sequencia "
+		+ " and p.id = o.tipo_fio ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaConsumoMetragem.class));
+	}
+
+	public List<ConsultaConsumoMetragem> ConsultaResumoPorReferencia(String referencia) {
+		String query = " select p.descricao descTipoFio, SUM(b.metragem_total) metragemTotal, SUM(b.metragem_um) metragemUm from orion_085 b, orion_082 m, orion_083 o, orion_081 p "
+		+ " where m.id = b.id_tipo_ponto "
+		+ " and o.id_tipo_ponto = m.id "
+		+ " and o.tipo_fio = b.sequencia "
+		+ " and p.id = o.tipo_fio "
+		+ " and b.referencia = '" + referencia + "'"
+		+ " group by p.descricao ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaConsumoMetragem.class));
+	}
 }

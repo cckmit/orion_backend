@@ -16,14 +16,22 @@ public class TiposFio {
 	@Column(name="centim_cone")
 	public int centimetroCone;
 	
+	@Column(name="centim_cone2")
+	public int centimetroCone2;
+
+	@Column(name="centim_cone3")
+	public int centimetroCone3;
+
 	public TiposFio() {
 		
 	}
 
-	public TiposFio(int id, String descricao, int titulo, int centimetroCone) {
+	public TiposFio(int id, String descricao, int titulo, int centimetroCone, int centimetroCone2, int centimetroCone3) {
 		this.id = id;
 		this.descricao = descricao;
 		this.titulo = titulo;
 		this.centimetroCone = centimetroCone;
+		this.centimetroCone2 = centimetroCone2;
+		this.centimetroCone3 = centimetroCone3;
 	}
 }

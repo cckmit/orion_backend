@@ -4,6 +4,8 @@ create table orion_081
  descricao varchar2(100),
  titulo number(9) default 0,
  centim_cone number(9) default 0,
+ centim_cone2 number(9) default 0,
+ centim_cone3 number(9) default 0,
  constraint orion_081_pk primary key (id)
 );
 
@@ -41,4 +43,21 @@ create table orion_084
 );
 
 comment on table orion_083 is 'Tabela de Consumo de Fios e Linhas';
+----------------------------------------------------------------------------
+create table orion_085
+(id varchar2(20) default 0,
+ id_referencia varchar2(10),
+ sequencia number(9) default 0,
+ referencia varchar2(10),
+ id_tipo_ponto number(9) default 0,
+ pacote number(9) default 0,
+ metragem_costura_cm number(9,2) default 0,
+ metragem_total number(9,2) default 0,
+ metragem_um number(9,2) default 0,
+ constraint orion_085_pk primary key (id),
+ constraint fk_orion_085_orion_082 foreign key (id_tipo_ponto) references orion_082 (id),
+ constraint fk_orion_085_orion_084 foreign key (id_referencia) references orion_084 (id)
+);
+
+comment on table orion_085 is 'Tabela de Consumo de Fios e Linhas - Consumo por cada Fio';
 ----------------------------------------------------------------------------

@@ -22,6 +22,46 @@ public class TipoPontoFio {
 
     @Column(name = "consumo_fio")
     public float consumoFio;
+    
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getSequencia() {
+        return sequencia;
+    }
+
+    public void setSequencia(int sequencia) {
+        this.sequencia = sequencia;
+    }
+
+    public int getIdTipoPonto() {
+        return idTipoPonto;
+    }
+
+    public void setIdTipoPonto(int idTipoPonto) {
+        this.idTipoPonto = idTipoPonto;
+    }
+
+    public int getTipoFio() {
+        return tipoFio;
+    }
+
+    public void setTipoFio(int tipoFio) {
+        this.tipoFio = tipoFio;
+    }
+
+    public float getConsumoFio() {
+        return consumoFio;
+    }
+
+    public void setConsumoFio(float consumoFio) {
+        this.consumoFio = consumoFio;
+    }
 
     public TipoPontoFio() {
 
