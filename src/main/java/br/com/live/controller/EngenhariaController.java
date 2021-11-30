@@ -193,7 +193,7 @@ public class EngenhariaController {
     //
     @RequestMapping(value = "/save-tipos-ponto-fio", method = RequestMethod.POST)
     public TipoPontoFio saveTiposPontoFio(@RequestBody BodyEngenharia body) {                  
-    	return engenhariaService.saveTiposPontoFio(body.idTipoPonto, body.idRegistro, body.tipoFio, body.consumoFio);
+    	return engenhariaService.saveTiposPontoFio(body.idTipoPonto, body.idRegistro, body.tipoFio1, body.tipoFio2, body.tipoFio3, body.consumoFio, body.descricao);
     }
 
     //

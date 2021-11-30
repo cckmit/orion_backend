@@ -12,7 +12,11 @@ public class BodyEngenharia {
 
 	public int idTipoPonto;
 	public int sequencia;
-	public int tipoFio;
+	
+	public int tipoFio1;
+	public int tipoFio2;
+	public int tipoFio3;
+
 	public float consumoFio;
 	public float comprimentoCostura;
 

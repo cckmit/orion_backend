@@ -101,8 +101,11 @@ public class EngenhariaCustom {
 	}
 
 	public List<ConsultaTipoPontoFio> findTipoPontoFio(int idTipoPonto) {
-		String query = " select a.id, a.sequencia, a.id_tipo_ponto idTipoPonto, a.tipo_fio tipoFio, a.consumo_fio consumoFio, b.descricao descFio from orion_083 a, orion_081 b "
-				+ " where a.id_tipo_ponto = " + idTipoPonto + " and a.tipo_fio = b.id ";
+		String query = " select a.id, a.sequencia, a.descricao, a.id_tipo_ponto idTipoPonto, a.tipo_fio_1 tipoFio1, a.tipo_fio_2 tipoFio2, a.tipo_fio_3 tipoFio3, a.consumo_fio consumoFio, b.descricao descFio1, c.descricao descFio2, d.descricao descFio3 from orion_083 a, orion_081 b, orion_081 c, orion_081 d "
+		+ " where a.id_tipo_ponto = " + idTipoPonto
+		+ " and a.tipo_fio_1 = b.id "
+		+ " and a.tipo_fio_2 = c.id " 
+		+ " and a.tipo_fio_3 = d.id ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTipoPontoFio.class));
 	}

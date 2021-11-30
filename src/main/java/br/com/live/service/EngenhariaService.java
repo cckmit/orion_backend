@@ -99,7 +99,7 @@ public class EngenhariaService {
 		return tiposPontoRepository.findByIdTipoPonto(id);
 	}
 
-	public TipoPontoFio saveTiposPontoFio(int idTipoPonto, String idRegistro, int tipoFio, float consumoFio) {
+	public TipoPontoFio saveTiposPontoFio(int idTipoPonto, String idRegistro, int tipoFio1, int tipoFio2, int tipoFio3, float consumoFio, String descricao) {
 		TipoPontoFio dadosTipoPontoFio = null;
 
 		dadosTipoPontoFio = tiposPontoFioRepository.findByIdTipoPontoFio(idRegistro);
@@ -107,8 +107,9 @@ public class EngenhariaService {
 		if (dadosTipoPontoFio == null) {
 
 			int sequencia = engenhariaCustom.findIdNewSequenciaPontoFio(idTipoPonto);
+			
+			dadosTipoPontoFio = new TipoPontoFio(sequencia, descricao, idTipoPonto, tipoFio1, tipoFio2, tipoFio3, consumoFio);
 
-			dadosTipoPontoFio = new TipoPontoFio(sequencia, idTipoPonto, tipoFio, consumoFio);
 		} else {
 			dadosTipoPontoFio.consumoFio = consumoFio;
 		}
@@ -163,13 +164,13 @@ public class EngenhariaService {
 
 		} else {
 			for (TipoPontoFio dados : tiposFio) {
-				dadosFio = tiposFioRepository.findByIdTipo(dados.tipoFio);
+				dadosFio = tiposFioRepository.findByIdTipo(dados.tipoFio1);
 
 				metragemTotal = (dadosConsumo.comprimentoCostura * dados.consumoFio) / 100;
 
 				metragemUm = metragemTotal / dadosFio.centimetroCone;
 
-				consumoMetragem = new ConsumoMetragemFio(dados.tipoFio, referencia, idConsumo, idTipoPonto,
+				consumoMetragem = new ConsumoMetragemFio(dados.tipoFio1, referencia, idConsumo, idTipoPonto,
 						dadosFio.centimetroCone, dados.consumoFio, metragemTotal, metragemUm);
 
 				consumoMetragemFioRepository.saveAndFlush(consumoMetragem);
