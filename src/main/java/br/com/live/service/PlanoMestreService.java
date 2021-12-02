@@ -45,7 +45,7 @@ import br.com.live.model.OcupacaoPlanoMestre;
 import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.PreOrdemProducaoIndicadores;
-import br.com.live.model.ProdutoCompleto;
+import br.com.live.model.Produto;
 import br.com.live.model.ProgramacaoPlanoMestre;
 import br.com.live.entity.ProdutoPlanoMestre;
 import br.com.live.repository.PlanoMestreOcupacaoArtigoRepository;
@@ -478,7 +478,7 @@ public class PlanoMestreService {
 			processos = processoProdutoCustom.findByParameters(parametros);
 		}
 
-		List<ProdutoCompleto> produtos = planoMestreCustom.findProdutosByParameters(parametros);
+		List<Produto> produtos = planoMestreCustom.findProdutosByParameters(parametros);
 
 		System.out.println("Criando o plano mestre");
 		GeracaoPlanoMestre geracao = new GeracaoPlanoMestre(parametros, estoques, demandas, processos, produtos);

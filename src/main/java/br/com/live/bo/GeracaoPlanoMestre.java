@@ -15,7 +15,7 @@ import br.com.live.entity.ProcessoProdutoPlano;
 import br.com.live.entity.ProdutoPlanoMestre;
 import br.com.live.entity.ProdutoPlanoMestrePorCor;
 import br.com.live.model.AlternativaRoteiroPadrao;
-import br.com.live.model.ProdutoCompleto;
+import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.FormataParametrosPlanoMestre;
@@ -28,7 +28,7 @@ public class GeracaoPlanoMestre {
 	private List<EstoqueProduto> estoques;
 	private List<DemandaProdutoPlano> demandas;
 	private List<ProcessoProdutoPlano> processos;
-	private List<ProdutoCompleto> produtos;
+	private List<Produto> produtos;
 
 	private Map<String, ProdutoPlanoMestre> mapProdutos;
 
@@ -38,7 +38,7 @@ public class GeracaoPlanoMestre {
 	private final static int PROCESSO = 3;
 
 	public GeracaoPlanoMestre(ParametrosPlanoMestre parametros, List<EstoqueProduto> estoques,
-			List<DemandaProdutoPlano> demandas, List<ProcessoProdutoPlano> processos, List<ProdutoCompleto> produtos) {
+			List<DemandaProdutoPlano> demandas, List<ProcessoProdutoPlano> processos, List<Produto> produtos) {
 
 		this.parametros = parametros;
 		this.estoques = estoques;
@@ -127,7 +127,7 @@ public class GeracaoPlanoMestre {
 
 	private void atualizarProduto(int tipoDistribuicao) {
 		if (produtos != null) {
-			for (ProdutoCompleto produto : produtos) {
+			for (Produto produto : produtos) {
 				/*if (tipoDistribuicao == 4 && produto.qtdePrevisaoVendas == 0)
 					continue;*/
 				atualizarProduto(GeracaoPlanoMestre.PRODUTO, 0, produto.nivel, produto.grupo, produto.sub, produto.item,

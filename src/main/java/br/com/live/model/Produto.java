@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class ProdutoCompleto {
+public class Produto {
 
 	public String nivel;
 	public String grupo;

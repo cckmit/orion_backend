@@ -24,6 +24,7 @@ import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.LinhaProduto;
 import br.com.live.model.MarcacaoRisco;
+import br.com.live.model.Produto;
 import br.com.live.model.PublicoAlvo;
 import br.com.live.model.Roteiro;
 import br.com.live.util.FiltroProduto;
@@ -91,6 +92,26 @@ public class ProdutoCustom {
 		      + " order by c.item_estrutura, c.descricao_15 " ;
 		
 		System.out.println("CorProdutos - query: " + query);
+		
+		try {
+			cores = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CorProduto.class));
+		} catch (Exception e) {
+			cores = new ArrayList<CorProduto> ();
+		}
+		
+		return cores;
+	}
+	
+	public List<CorProduto> findCoresByNivelGrupoSub(String nivel, String grupo, String sub) {
+		
+		List<CorProduto> cores;
+		
+		String query = " select rownum id, a.item_estrutura item, a.descricao_15 descricao "
+		+ " from basi_010 a "
+		+ " where a.nivel_estrutura = '" + nivel + "' "
+		+ " and a.grupo_estrutura = '" + grupo + "' "
+		+ " and a.subgru_estrutura = '" + sub + "'"
+		+ " and a.item_ativo = 0 " ;
 		
 		try {
 			cores = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CorProduto.class));
@@ -769,4 +790,31 @@ public class ProdutoCustom {
 		return observacao;
 	}
 		
+	public List<Produto> findProdutosComRoteiroByNiveis(String niveis) {
+				
+		List<Produto> produtos;
+		
+		String query = " select m.nivel_estrutura nivel, m.grupo_estrutura grupo, b.tamanho_ref sub, a.descr_referencia || ' ' || b.descr_tam_refer narrativa"
+		+ " from mqop_050 m, basi_030 a, basi_020 b "
+		+ " where m.nivel_estrutura in ('" + niveis + "') "
+		+ "  and a.nivel_estrutura = m.nivel_estrutura "
+		+ "  and a.referencia = m.grupo_estrutura "
+		+ "  and b.basi030_nivel030 = m.nivel_estrutura "
+		+ "  and b.basi030_referenc = m.grupo_estrutura "
+        + "  and exists (select 1 from basi_010 c "
+	    + "  where c.nivel_estrutura = b.basi030_nivel030 "
+	    + "  and c.grupo_estrutura = b.basi030_referenc "
+	    + "  and c.subgru_estrutura = b.tamanho_ref "
+	    + "  and c.item_ativo = 0) "
+		+ " group by m.nivel_estrutura, m.grupo_estrutura, b.tamanho_ref, a.descr_referencia, b.descr_tam_refer "
+		+ " order by m.nivel_estrutura, m.grupo_estrutura, b.tamanho_ref, a.descr_referencia, b.descr_tam_refer ";
+
+		try {
+			produtos= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			produtos = new ArrayList<Produto> ();
+		}
+		
+		return produtos;
+	}
 }

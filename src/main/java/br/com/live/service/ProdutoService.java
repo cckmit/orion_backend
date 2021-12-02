@@ -12,6 +12,7 @@ import br.com.live.model.ConsultaItemSugestaoCancelProducao;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.MarcacaoRisco;
+import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
 import br.com.live.util.FiltroProduto;
 
@@ -23,7 +24,15 @@ public class ProdutoService {
 	public ProdutoService(ProdutoCustom produtoRepository) {
 		this.produtoRepository = produtoRepository;		
 	}
-
+	
+	public List<Produto> findProdutosComRoteiroByNiveis(String niveis) {
+		return produtoRepository.findProdutosComRoteiroByNiveis(niveis);
+	}	
+	
+	public  List<CorProduto> findCoresByNivelGrupoSub(String nivel, String grupo, String sub) {
+		return produtoRepository.findCoresByNivelGrupoSub(nivel, grupo, sub);
+	}
+	
 	public List<ProdutoReferencia> findProdutosByParameters(FiltroProduto filtro) {		
 		return produtoRepository.findProdutosByParameters(filtro);		
 	}

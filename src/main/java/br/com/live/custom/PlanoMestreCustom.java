@@ -12,7 +12,7 @@ import br.com.live.model.GradeDistribuicaoGrupoItem;
 import br.com.live.model.ConsultaProgramadoReferencia;
 import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
-import br.com.live.model.ProdutoCompleto;
+import br.com.live.model.Produto;
 import br.com.live.model.ProgramacaoPlanoMestre;
 import br.com.live.util.FormataParametrosPlanoMestre;
 import br.com.live.util.ParametrosPlanoMestre;
@@ -26,7 +26,7 @@ public class PlanoMestreCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<ProdutoCompleto> findProdutosByParameters(ParametrosPlanoMestre parametros) {
+	public List<Produto> findProdutosByParameters(ParametrosPlanoMestre parametros) {
 
 		System.out.println("findProdutosByParameters");
 
@@ -100,7 +100,7 @@ public class PlanoMestreCustom {
 
 		System.out.println("Query ProdutoCompleto: " + query);
 
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutoCompleto.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
 	}
 
 	private String getQueryItensPorRefCor(String colecoes) {

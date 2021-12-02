@@ -16,6 +16,7 @@ import br.com.live.model.Alternativa;
 import br.com.live.model.ConsultaItemSugestaoCancelProducao;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
+import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
 import br.com.live.service.ProdutoService;
 import br.com.live.util.CodigoGrupoItem;
@@ -99,5 +100,14 @@ public class ProdutoController {
 	public List<Embarque> findEmbarques() {
 		return produtoService.findEmbarques();
 	}
+	
+	@RequestMapping(value = "/prod-com-roteiros/{niveis}", method = RequestMethod.GET)
+	public List<Produto> findProdutosComRoteiroByNiveis(@PathVariable String niveis) {
+		return produtoService.findProdutosComRoteiroByNiveis(niveis);
+	}
 
+	@RequestMapping(value = "/cores-by-nivel-grupo-sub/{nivel}/{grupo}/{sub}", method = RequestMethod.GET)
+	public  List<CorProduto> findCoresByNivelGrupoSub(@PathVariable String nivel, @PathVariable String grupo, @PathVariable String sub) {
+		return produtoService.findCoresByNivelGrupoSub(nivel, grupo, sub);
+	}
 }
