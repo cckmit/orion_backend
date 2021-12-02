@@ -219,7 +219,7 @@ public class OrdemProducaoServiceTransaction {
 
 		for (PlanoMestrePreOrdemItem preOrdemItem : preOrdemItens) {
 			existeEstrutura = produtoCustom.existsEstrutura(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa);
-			existeRoteiro = produtoCustom.existsRoteiro(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdem.roteiro);
+			existeRoteiro = produtoCustom.existsRoteiro("1", preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdem.roteiro);
 			roteiroSequenciado = produtoCustom.roteiroSequenciado(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdem.roteiro);
 			if ((!existeEstrutura)||(!existeRoteiro)||(roteiroSequenciado)) break;
 		}

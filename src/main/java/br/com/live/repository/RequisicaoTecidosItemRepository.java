@@ -19,10 +19,10 @@ public interface RequisicaoTecidosItemRepository extends JpaRepository<Requisica
 	@Query("SELECT u FROM RequisicaoTecidosItem u where u.idRequisicao = :idRequisicao order by u.sequencia")
 	List<RequisicaoTecidosItem> findByIdRequisicao(long idRequisicao);
 
-	@Query("SELECT MAX(u.id) + 1 FROM RequisicaoTecidosItem u")
+	@Query("SELECT NVL(MAX(u.id),0) + 1 FROM RequisicaoTecidosItem u")
 	Integer findNextId();
 
-	@Query("SELECT MAX(u.sequencia) + 1 FROM RequisicaoTecidosItem u where u.idRequisicao = :idRequisicao")
+	@Query("SELECT NVL(MAX(u.sequencia),0) + 1 FROM RequisicaoTecidosItem u where u.idRequisicao = :idRequisicao")
 	Integer findNextSequencia(long idRequisicao);
 
 	void deleteByIdRequisicao(long idRequisicao);

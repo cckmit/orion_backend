@@ -525,11 +525,11 @@ public class ProdutoCustom {
 		return (encontrou == 1);	   	
 	}
 	
-	public boolean existsRoteiro(String grupo, String sub, String item, int alternativa, int roteiro) {
+	public boolean existsRoteiro(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
 		int encontrou = 0;
 		
 		String query = " select 1 from mqop_050 "
-	    + " where mqop_050.nivel_estrutura = '1' "
+	    + " where mqop_050.nivel_estrutura = '" + nivel + "' "
 	    + " and mqop_050.grupo_estrutura   = '" + grupo + "'"
 	    + " and (mqop_050.subgru_estrutura = '" + sub + "' or mqop_050.subgru_estrutura = '000') "
 	    + " and (mqop_050.item_estrutura   = '" + item + "' or mqop_050.item_estrutura   = '000000') "

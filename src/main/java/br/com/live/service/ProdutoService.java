@@ -76,4 +76,8 @@ public class ProdutoService {
 	public List<MarcacaoRisco> findMarcacoesRisco(String grupo, int risco, int seqRisco, int alternativa) {
 		return produtoRepository.findMarcacoesRisco(grupo, risco, seqRisco, alternativa);
 	}
+	
+	public boolean existsRoteiro(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
+		return produtoRepository.existsRoteiro(nivel, grupo, sub, item, alternativa, roteiro);
+	}
 }

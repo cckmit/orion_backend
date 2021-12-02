@@ -110,4 +110,9 @@ public class ProdutoController {
 	public  List<CorProduto> findCoresByNivelGrupoSub(@PathVariable String nivel, @PathVariable String grupo, @PathVariable String sub) {
 		return produtoService.findCoresByNivelGrupoSub(nivel, grupo, sub);
 	}
+	
+	@RequestMapping(value = "/existe-roteiro/{nivel}/{grupo}/{sub}/{item}/{alternativa}/{roteiro}", method = RequestMethod.GET)
+	public boolean existsRoteiro(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
+		return produtoService.existsRoteiro(nivel, grupo, sub, item, alternativa, roteiro);
+	}
 }

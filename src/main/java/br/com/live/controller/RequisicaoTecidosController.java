@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.body.BodyRequisicaoTecidos;
 import br.com.live.custom.RequisicaoTecidosCustom;
 import br.com.live.entity.RequisicaoTecidos;
+import br.com.live.entity.RequisicaoTecidosItem;
 import br.com.live.model.ConsultaRequisicaoTecidosItem;
 import br.com.live.repository.RequisicaoTecidosItemRepository;
 import br.com.live.repository.RequisicaoTecidosRepository;
@@ -25,6 +26,7 @@ public class RequisicaoTecidosController {
 
 	private final RequisicaoTecidosService requisicaoTecidosService;
 	private final RequisicaoTecidosRepository requisicaoTecidosRepository;	
+	private final RequisicaoTecidosItemRepository requisicaoTecidosItemRepository;
 	private final RequisicaoTecidosCustom requisicaoTecidosCustom;
 
 	@Autowired
@@ -33,7 +35,8 @@ public class RequisicaoTecidosController {
 			RequisicaoTecidosItemRepository requisicaoTecidosItemRepository,
 			RequisicaoTecidosCustom requisicaoTecidosCustom) {
 		this.requisicaoTecidosService = requisicaoTecidosService;
-		this.requisicaoTecidosRepository = requisicaoTecidosRepository;		
+		this.requisicaoTecidosRepository = requisicaoTecidosRepository;
+		this.requisicaoTecidosItemRepository = requisicaoTecidosItemRepository;
 		this.requisicaoTecidosCustom = requisicaoTecidosCustom;
 	}
 
@@ -50,6 +53,11 @@ public class RequisicaoTecidosController {
 		return body;
 	}
 
+	@RequestMapping(value = "/item/{idRequisicaoItem}", method = RequestMethod.GET)
+	public RequisicaoTecidosItem findRequisicaoItemByIdItem(@PathVariable("idRequisicaoItem") long idRequisicaoItem) {
+		return requisicaoTecidosItemRepository.findById(idRequisicaoItem);
+	}
+	
 	@RequestMapping(value = "/salvar-requisicao", method = RequestMethod.POST)
 	public RequisicaoTecidos saveRequisicao(@RequestBody BodyRequisicaoTecidos body) {
 		return requisicaoTecidosService.saveRequisicao(body.requisicaoTecidos.id, body.requisicaoTecidos.descricao,
