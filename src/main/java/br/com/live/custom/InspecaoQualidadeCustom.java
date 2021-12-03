@@ -270,6 +270,7 @@ public class InspecaoQualidadeCustom {
 		+ " where a.data = ? "
 		+ " and a.usuario = ? "
 		+ " and b.id_inspecao = a.id_inspecao "
+		+ " and b.cod_motivo > 0 "
 		+ " group by a.ordem_producao, a.ordem_confeccao, b.cod_motivo " 
 		+ " ) motivos";
 		

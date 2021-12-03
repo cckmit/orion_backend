@@ -82,17 +82,17 @@ public class ProdutoController {
 	}	
 
 	@RequestMapping(value = "/item/{codigo}", method = RequestMethod.GET)
-	public ProdutoReferenciaCor findItemByCodigo(@PathVariable String codigo) {
+	public ProdutoReferenciaCor findItemByCodigo(@PathVariable("codigo") String codigo) {
 		return produtoService.findItemByCodigo(CodigoGrupoItem.getGrupo(codigo), CodigoGrupoItem.getItem(codigo));
 	}
 
 	@RequestMapping(value = "/alternativas/{codigo}", method = RequestMethod.GET)
-	public List<Alternativa> findAlternativasByCodigo(@PathVariable String codigo) {
+	public List<Alternativa> findAlternativasByCodigo(@PathVariable("codigo") String codigo) {
 		return produtoService.findAlternativasByCodigo(CodigoGrupoItem.getGrupo(codigo), CodigoGrupoItem.getItem(codigo));
 	}
 	
 	@RequestMapping(value = "/roteiros/{codigo}/{alternativa}", method = RequestMethod.GET)
-	public List<Roteiro> findRoteirosByCodigo(@PathVariable String codigo, @PathVariable int alternativa) {
+	public List<Roteiro> findRoteirosByCodigo(@PathVariable("codigo") String codigo, @PathVariable("alternativa") int alternativa) {
 		return produtoService.findRoteirosByCodigo(CodigoGrupoItem.getGrupo(codigo), CodigoGrupoItem.getItem(codigo), alternativa);
 	}
 	
@@ -102,17 +102,17 @@ public class ProdutoController {
 	}
 	
 	@RequestMapping(value = "/prod-com-roteiros/{niveis}", method = RequestMethod.GET)
-	public List<Produto> findProdutosComRoteiroByNiveis(@PathVariable String niveis) {
+	public List<Produto> findProdutosComRoteiroByNiveis(@PathVariable("niveis") String niveis) {
 		return produtoService.findProdutosComRoteiroByNiveis(niveis);
 	}
 
 	@RequestMapping(value = "/cores-by-nivel-grupo-sub/{nivel}/{grupo}/{sub}", method = RequestMethod.GET)
-	public  List<CorProduto> findCoresByNivelGrupoSub(@PathVariable String nivel, @PathVariable String grupo, @PathVariable String sub) {
+	public  List<CorProduto> findCoresByNivelGrupoSub(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("sub") String sub) {
 		return produtoService.findCoresByNivelGrupoSub(nivel, grupo, sub);
 	}
 	
 	@RequestMapping(value = "/existe-roteiro/{nivel}/{grupo}/{sub}/{item}/{alternativa}/{roteiro}", method = RequestMethod.GET)
-	public boolean existsRoteiro(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
+	public boolean existsRoteiro(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("sub") String sub, @PathVariable("item") String item, @PathVariable("alternativa") int alternativa, @PathVariable("roteiro") int roteiro) {
 		return produtoService.existsRoteiro(nivel, grupo, sub, item, alternativa, roteiro);
 	}
 }

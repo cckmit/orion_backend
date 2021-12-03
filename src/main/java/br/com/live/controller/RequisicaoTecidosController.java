@@ -58,6 +58,11 @@ public class RequisicaoTecidosController {
 		return requisicaoTecidosItemRepository.findById(idRequisicaoItem);
 	}
 	
+	@RequestMapping(value = "/itens/{idRequisicao}", method = RequestMethod.GET)
+	public List<ConsultaRequisicaoTecidosItem> findRequisicaoItensByIdRequisicao(@PathVariable("idRequisicao") long idRequisicao) {
+		return requisicaoTecidosCustom.findItensByIdRequisicao(idRequisicao);
+	}	
+	
 	@RequestMapping(value = "/salvar-requisicao", method = RequestMethod.POST)
 	public RequisicaoTecidos saveRequisicao(@RequestBody BodyRequisicaoTecidos body) {
 		return requisicaoTecidosService.saveRequisicao(body.requisicaoTecidos.id, body.requisicaoTecidos.descricao,
