@@ -20,6 +20,9 @@ public class ConsumoMetragemFio {
 	@Column(name = "id_tipo_ponto")
 	public int idTipoPonto;
 
+    @Column(name = "id_tipo_fio")
+	public int idTipoFio;
+
 	public int pacote;
 
     @Column(name = "metragem_costura_cm")
@@ -85,12 +88,18 @@ public class ConsumoMetragemFio {
     public void setMetragemUm(float metragemUm) {
         this.metragemUm = metragemUm;
     }
+    public int getIdTipoFio() {
+        return idTipoFio;
+    }
+    public void setIdTipoFio(int idTipoFio) {
+        this.idTipoFio = idTipoFio;
+    }
 
     public ConsumoMetragemFio() {
     }
 
     public ConsumoMetragemFio(int sequencia, String referencia, String idReferencia, int idTipoPonto, int pacote,
-            float metragemCosturaCm, float metragemTotal, float metragemUm) {
+            float metragemCosturaCm, float metragemTotal, float metragemUm, int idTipoFio) {
         this.id = idReferencia + "-" + sequencia;
         this.sequencia = sequencia;
         this.referencia = referencia;
@@ -100,6 +109,7 @@ public class ConsumoMetragemFio {
         this.metragemCosturaCm = metragemCosturaCm;
         this.metragemTotal = metragemTotal;
         this.metragemUm = metragemUm;
+        this.idTipoFio = idTipoFio;
     }
 
     

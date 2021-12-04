@@ -9,6 +9,8 @@ public class ConsultaConsumoMetragem {
     public String maquina;
     public int tipoFio;
     public String descTipoFio;
+    public String descOperacao;
+    public int sequencia;
         
     public String getId() {
         return id;
@@ -74,11 +76,27 @@ public class ConsultaConsumoMetragem {
         this.descTipoFio = descTipoFio;
     }
 
+    public String getDescOperacao() {
+        return descOperacao;
+    }
+
+    public void setDescOperacao(String descOperacao) {
+        this.descOperacao = descOperacao;
+    }
+
+    public int getSequencia() {
+        return sequencia;
+    }
+
+    public void setSequencia(int sequencia) {
+        this.sequencia = sequencia;
+    }
+
     public ConsultaConsumoMetragem() {
     }
 
     public ConsultaConsumoMetragem(int pacote, float consumoFio, float metragemTotal, float metragemUm, String maquina,
-            int tipoFio, String descTipoFio) {
+            int tipoFio, String descTipoFio, String descOperacao, int sequencia) {
         this.pacote = pacote;
         this.consumoFio = consumoFio;
         this.metragemTotal = metragemTotal;
@@ -86,5 +104,7 @@ public class ConsultaConsumoMetragem {
         this.maquina = maquina;
         this.tipoFio = tipoFio;
         this.descTipoFio = descTipoFio;
+        this.descOperacao = descOperacao;
+        this.sequencia = sequencia;
     } 
 }

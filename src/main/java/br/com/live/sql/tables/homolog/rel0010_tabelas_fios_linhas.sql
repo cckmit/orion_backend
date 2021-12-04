@@ -51,10 +51,11 @@ create table orion_085
  sequencia number(9) default 0,
  referencia varchar2(10),
  id_tipo_ponto number(9) default 0,
+ id_tipo_fio number(9) default 0,
  pacote number(9) default 0,
  metragem_costura_cm number(9,2) default 0,
  metragem_total number(9,2) default 0,
- metragem_um number(9,2) default 0,
+ metragem_um number(10,6) default 0,
  constraint orion_085_pk primary key (id),
  constraint fk_orion_085_orion_082 foreign key (id_tipo_ponto) references orion_082 (id),
  constraint fk_orion_085_orion_084 foreign key (id_referencia) references orion_084 (id)

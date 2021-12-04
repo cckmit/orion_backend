@@ -163,6 +163,14 @@ public class EngenhariaController {
     }
 
     //
+    // Return Option Tipos de Fio
+    //
+    @RequestMapping(value = "/option-tipos-fio/{idTipoPonto}/{sequencia}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> returnOptionTiposFio(@PathVariable("idTipoPonto") int idTipoPonto, @PathVariable("sequencia") int sequencia) {
+        return engenhariaService.makeListOptionTiposFio(idTipoPonto, sequencia);
+    }
+
+    //
     // Consulta Resumo por Tipo de Fio
     //
     @RequestMapping(value = "/resumo/{referencia}", method = RequestMethod.GET)
@@ -185,7 +193,7 @@ public class EngenhariaController {
     //
     @RequestMapping(value = "/save-tipos-ponto", method = RequestMethod.POST)
     public TipoPonto saveTiposPonto(@RequestBody BodyEngenharia body) {                  
-    	return engenhariaService.saveTiposPonto(body.id, body.descricao, body.maquina);
+    	return engenhariaService.saveTiposPonto(body.id, body.descricao);
     }
 
     //
@@ -218,7 +226,7 @@ public class EngenhariaController {
     //
     @RequestMapping(value = "/atualizar-pacote", method = RequestMethod.POST)
     public void atualizarPacote(@RequestBody BodyEngenharia body) {                  
-    	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet);
+    	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet, body.idTipoFio);
         engenhariaService.CalculaConsumoFio(body.idTipoPonto, body.idRegistro, body.referencia);
         //return engenhariaCustom.ConsultaConsumoMetragem(body.idRegistro);
     }

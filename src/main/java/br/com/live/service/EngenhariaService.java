@@ -80,19 +80,15 @@ public class EngenhariaService {
 		return tiposFioRepository.findByIdTipo(id);
 	}
 
-	public TipoPonto saveTiposPonto(int id, String descricao, String maquina) {
-
+	public TipoPonto saveTiposPonto(int id, String descricao) {
 		TipoPonto tipos = null;
-		String[] codigoSeparado = maquina.split("[.]");
 
 		if (id == 0) {
 			id = engenhariaCustom.findIdNewTipoPonto();
-			tipos = new TipoPonto(id, descricao, codigoSeparado[0], codigoSeparado[1]);
+			tipos = new TipoPonto(id, descricao);
 		} else {
 			tipos = tiposPontoRepository.findByIdTipoPonto(id);
 			tipos.descricao = descricao;
-			tipos.grupoMaquina = codigoSeparado[0];
-			tipos.subGrupoMaquina = codigoSeparado[1];
 		}
 		tiposPontoRepository.save(tipos);
 
@@ -165,23 +161,26 @@ public class EngenhariaService {
 		} else {
 			for (TipoPontoFio dados : tiposFio) {
 				dadosFio = tiposFioRepository.findByIdTipo(dados.tipoFio1);
+				
+				System.out.println("dados.sequencia: " + dados.sequencia);
 
 				metragemTotal = (dadosConsumo.comprimentoCostura * dados.consumoFio) / 100;
 
 				metragemUm = metragemTotal / dadosFio.centimetroCone;
 
-				consumoMetragem = new ConsumoMetragemFio(dados.tipoFio1, referencia, idConsumo, idTipoPonto,
-						dadosFio.centimetroCone, dados.consumoFio, metragemTotal, metragemUm);
+				consumoMetragem = new ConsumoMetragemFio(dados.sequencia, referencia, idConsumo, idTipoPonto,
+						dadosFio.centimetroCone, dados.consumoFio, metragemTotal, metragemUm, dados.tipoFio1);
 
 				consumoMetragemFioRepository.saveAndFlush(consumoMetragem);
 			}
 		}
 	}
 
-	public void atualizarPacote(int pacoteAtualizado, String idConsumo) {
+	public void atualizarPacote(int pacoteAtualizado, String idConsumo, int tipoFioAtualizado) {
 		ConsumoMetragemFio consumoMetragem = consumoMetragemFioRepository.findConsumoMetragemFioById(idConsumo);
 
 		consumoMetragem.pacote = pacoteAtualizado;
+		consumoMetragem.idTipoFio = tipoFioAtualizado;
 
 		consumoMetragemFioRepository.save(consumoMetragem);
 	}
@@ -216,6 +215,51 @@ public class EngenhariaService {
 		}
 
 		return listPacotes;
+	}
+
+	public List<ConteudoChaveNumerica> makeListOptionTiposFio(int idTipoPonto, int sequencia) {
+
+		List<ConteudoChaveNumerica> listTiposFio = new ArrayList<ConteudoChaveNumerica>();
+
+		if ((idTipoPonto < 0) || (sequencia < 0)) return listTiposFio;
+
+		ConteudoChaveNumerica objectTipoFio1 = null;
+		ConteudoChaveNumerica objectTipoFio2 = null;
+		ConteudoChaveNumerica objectTipoFio3 = null;
+		
+		System.out.println(idTipoPonto + "-" + sequencia);
+
+		String id = idTipoPonto + "-" + sequencia;
+
+		TipoPontoFio dadosPonto = tiposPontoFioRepository.findByIdTipoPontoFio(id);
+
+		TiposFio dadosFio = null;
+
+		if (dadosPonto.tipoFio1 > 0) {
+			
+			dadosFio = tiposFioRepository.findByIdTipo(dadosPonto.tipoFio1);
+			
+			objectTipoFio1 = new ConteudoChaveNumerica(dadosPonto.tipoFio1, Integer.toString(dadosPonto.tipoFio1) + " - " + dadosFio.descricao);
+			listTiposFio.add(objectTipoFio1);
+		}
+
+		if (dadosPonto.tipoFio2 > 0) {
+
+			dadosFio = tiposFioRepository.findByIdTipo(dadosPonto.tipoFio2);
+
+			objectTipoFio2 = new ConteudoChaveNumerica(dadosPonto.tipoFio2, Integer.toString(dadosPonto.tipoFio2) + " - " + dadosFio.descricao);
+			listTiposFio.add(objectTipoFio2);
+		}
+
+		if (dadosPonto.tipoFio3 > 0) {
+
+			dadosFio = tiposFioRepository.findByIdTipo(dadosPonto.tipoFio2);
+
+			objectTipoFio3 = new ConteudoChaveNumerica(dadosPonto.tipoFio3, Integer.toString(dadosPonto.tipoFio3) + " - " + dadosFio.descricao);
+			listTiposFio.add(objectTipoFio3);
+		}
+
+		return listTiposFio;
 	}
 
 	public void deleteMarcas(int idMarcas) {
