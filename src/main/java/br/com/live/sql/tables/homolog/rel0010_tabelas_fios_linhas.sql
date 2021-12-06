@@ -21,8 +21,8 @@ comment on table orion_082 is 'Tabela de Cadastro de Tipos de Ponto';
 ----------------------------------------------------------------------------
 create table orion_083
 (id varchar2(20) default 0,
- sequencia number(6) default 0,
  id_tipo_ponto number(9) default 0,
+ sequencia number(6) default 0,
  descricao varchar2(50),
  tipo_fio_1 number(6) default 0,
  tipo_fio_2 number(6) default 0,
@@ -51,10 +51,11 @@ create table orion_085
  sequencia number(9) default 0,
  referencia varchar2(10),
  id_tipo_ponto number(9) default 0,
+ id_tipo_fio number(9) default 0,
  pacote number(9) default 0,
  metragem_costura_cm number(9,2) default 0,
  metragem_total number(9,2) default 0,
- metragem_um number(9,2) default 0,
+ metragem_um number(10,6) default 0,
  constraint orion_085_pk primary key (id),
  constraint fk_orion_085_orion_082 foreign key (id_tipo_ponto) references orion_082 (id),
  constraint fk_orion_085_orion_084 foreign key (id_referencia) references orion_084 (id)

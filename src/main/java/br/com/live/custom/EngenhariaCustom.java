@@ -79,7 +79,7 @@ public class EngenhariaCustom {
 	}
 
 	public List<ConsultaTiposFio> findAllTiposFio() {
-		String query = " select a.id, a.descricao, a.titulo, a.centim_cone centimetrosCone from orion_081 a ";
+		String query = " select a.id, a.descricao, a.titulo, a.centim_cone centimetrosCone, a.centim_cone2 centimetrosCone2, a.centim_cone3 centimetrosCone3 from orion_081 a ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTiposFio.class));
 	}
@@ -101,17 +101,18 @@ public class EngenhariaCustom {
 	}
 
 	public List<ConsultaTipoPontoFio> findTipoPontoFio(int idTipoPonto) {
-		String query = " select a.id, a.sequencia, a.descricao, a.id_tipo_ponto idTipoPonto, a.tipo_fio_1 tipoFio1, a.tipo_fio_2 tipoFio2, a.tipo_fio_3 tipoFio3, a.consumo_fio consumoFio, b.descricao descFio1, c.descricao descFio2, d.descricao descFio3 from orion_083 a, orion_081 b, orion_081 c, orion_081 d "
-		+ " where a.id_tipo_ponto = " + idTipoPonto
-		+ " and a.tipo_fio_1 = b.id "
-		+ " and a.tipo_fio_2 = c.id " 
-		+ " and a.tipo_fio_3 = d.id ";
+		String query = " select a.id, a.descricao, a.sequencia, a.consumo_fio consumoFio,"
+				+ " a.tipo_fio_1 tipoFio1, (select nvl(b.descricao,'') from orion_081 b where b.id = a.tipo_fio_1) descFio1, "
+				+ " a.tipo_fio_2 tipoFio2, (select nvl(b.descricao,'') from orion_081 b where b.id = a.tipo_fio_2) descFio2, "
+				+ " a.tipo_fio_3 tipoFio3, (select nvl(b.descricao,'') from orion_081 b where b.id = a.tipo_fio_3) descFio3 "
+ 			+ " from orion_083 a "
+ 			+ " where a.id_tipo_ponto = " + idTipoPonto;
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTipoPontoFio.class));
 	}
 
 	public ConsultaTipoPonto findTipoPonto(int idTipoPonto) {
-		String query = " select l.id, l.descricao, l.grupo_maquina || '.' || l.sub_grupo_maquina maquina from orion_082 l "
+		String query = " select l.id, l.descricao from orion_082 l "
 				+ " where l.id = " + idTipoPonto;
 
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTipoPonto.class));
@@ -153,12 +154,12 @@ public class EngenhariaCustom {
 	}
 
 	public List<ConsultaConsumoMetragem> ConsultaConsumoMetragem(String idConsumo) {
-		String query = " select n.id, n.pacote, n.metragem_costura_cm consumoFio, n.metragem_total metragemTotal, n.metragem_um metragemUm, m.grupo_maquina || '.' || m.sub_grupo_maquina maquina, p.descricao descTipoFio, p.id tipoFio from orion_085 n, orion_082 m, orion_083 o, orion_081 p "
+		String query = " select n.id, n.sequencia, n.pacote, n.metragem_costura_cm consumoFio, n.id_tipo_fio tipoFio, p.descricao descTipoFio, n.metragem_total metragemTotal, n.metragem_um metragemUm, o.descricao descOperacao from orion_085 n, orion_082 m, orion_083 o, orion_081 p "
 		+ " where n.id_referencia = '" + idConsumo + "'"
 		+ " and m.id = n.id_tipo_ponto "
 		+ " and o.id_tipo_ponto = m.id "
-		+ " and o.tipo_fio = n.sequencia "
-		+ " and p.id = o.tipo_fio ";
+		+ " and p.id = n.id_tipo_fio "
+		+ " and n.sequencia = o.sequencia ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaConsumoMetragem.class));
 	}
@@ -167,10 +168,10 @@ public class EngenhariaCustom {
 		String query = " select p.descricao descTipoFio, SUM(b.metragem_total) metragemTotal, SUM(b.metragem_um) metragemUm from orion_085 b, orion_082 m, orion_083 o, orion_081 p "
 		+ " where m.id = b.id_tipo_ponto "
 		+ " and o.id_tipo_ponto = m.id "
-		+ " and o.tipo_fio = b.sequencia "
-		+ " and p.id = o.tipo_fio "
+		+ " and p.id = b.id_tipo_fio "
 		+ " and b.referencia = '" + referencia + "'"
-		+ " group by p.descricao ";
+		+ " and b.sequencia = o.sequencia "
+		+ " group by p.descricao " ;
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaConsumoMetragem.class));
 	}
