@@ -9,3 +9,6 @@ VALUES (19,'Tipos de Ponto','Engenharia','/tipo-ponto');
 
 INSERT INTO orion_002 (id, descricao, modulo, path)
 VALUES (20,'Requisição de Tecidos','Confecção','/requisicao-tecidos');
+
+INSERT INTO orion_002 (id, descricao, modulo, path)
+VALUES (21,'Consulta de Requisição de Tecidos','Beneficiamento','/requisicao-tecidos-liberados');
