@@ -21,8 +21,8 @@ comment on table orion_082 is 'Tabela de Cadastro de Tipos de Ponto';
 ----------------------------------------------------------------------------
 create table orion_083
 (id varchar2(20) default 0,
- sequencia number(6) default 0,
  id_tipo_ponto number(9) default 0,
+ sequencia number(6) default 0,
  descricao varchar2(50),
  tipo_fio_1 number(6) default 0,
  tipo_fio_2 number(6) default 0,

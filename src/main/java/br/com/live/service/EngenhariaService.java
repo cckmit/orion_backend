@@ -161,8 +161,6 @@ public class EngenhariaService {
 		} else {
 			for (TipoPontoFio dados : tiposFio) {
 				dadosFio = tiposFioRepository.findByIdTipo(dados.tipoFio1);
-				
-				System.out.println("dados.sequencia: " + dados.sequencia);
 
 				metragemTotal = (dadosConsumo.comprimentoCostura * dados.consumoFio) / 100;
 
@@ -226,12 +224,12 @@ public class EngenhariaService {
 		ConteudoChaveNumerica objectTipoFio1 = null;
 		ConteudoChaveNumerica objectTipoFio2 = null;
 		ConteudoChaveNumerica objectTipoFio3 = null;
-		
-		System.out.println(idTipoPonto + "-" + sequencia);
 
 		String id = idTipoPonto + "-" + sequencia;
 
 		TipoPontoFio dadosPonto = tiposPontoFioRepository.findByIdTipoPontoFio(id);
+
+		if (dadosPonto == null) return listTiposFio;
 
 		TiposFio dadosFio = null;
 
