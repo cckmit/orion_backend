@@ -22,4 +22,7 @@ public interface RequisicaoTecidosRepository extends JpaRepository<RequisicaoTec
 	
 	@Query("SELECT u FROM RequisicaoTecidos u where u.situacao = :situacao order by u.id desc")
 	List<RequisicaoTecidos> findBySituacao(int situacao);
+	
+	@Query("SELECT u FROM RequisicaoTecidos u where u.situacao <> 0 order by u.id desc")
+	List<RequisicaoTecidos> findByNotSituacaoDigitada();
 }

@@ -11,4 +11,4 @@ INSERT INTO orion_002 (id, descricao, modulo, path)
 VALUES (20,'Requisição de Tecidos','Confecção','/requisicao-tecidos');
 
 INSERT INTO orion_002 (id, descricao, modulo, path)
-VALUES (21,'Consulta de Requisição de Tecidos','Beneficiamento','/requisicao-tecidos-liberados');
+VALUES (21,'Consulta de Requisições de Tecidos','Beneficiamento','/requisicao-tecidos-liberados');

@@ -13,5 +13,6 @@ public class BodyRequisicaoTecidos {
 	public RequisicaoTecidos requisicaoTecidos;
 	public RequisicaoTecidosItem requisicaoTecidosItem; 
 	public List<ConsultaRequisicaoTecidosItem> requisicaoTecidosItens;
+	public boolean consideraConfirmados;
 	
 }

@@ -1,7 +1,7 @@
 create table orion_090
 (id number(9),
  descricao varchar2(100) default '',
- situacao number(1) default 0, -- 0-Em digitação, 1-Liberado 
+ situacao number(1) default 0, -- 0-Em digitação, 1-Liberado, 2-Programado 
  usuario varchar2(100) default '',
  data date,
  constraint orion_090_pk primary key (id));
