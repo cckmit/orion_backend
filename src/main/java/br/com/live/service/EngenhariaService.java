@@ -95,7 +95,8 @@ public class EngenhariaService {
 		return tiposPontoRepository.findByIdTipoPonto(id);
 	}
 
-	public TipoPontoFio saveTiposPontoFio(int idTipoPonto, String idRegistro, int tipoFio1, int tipoFio2, int tipoFio3, float consumoFio, String descricao) {
+	public TipoPontoFio saveTiposPontoFio(int idTipoPonto, String idRegistro, int tipoFio1, int tipoFio2, int tipoFio3,
+			float consumoFio, String descricao) {
 		TipoPontoFio dadosTipoPontoFio = null;
 
 		dadosTipoPontoFio = tiposPontoFioRepository.findByIdTipoPontoFio(idRegistro);
@@ -103,11 +104,12 @@ public class EngenhariaService {
 		if (dadosTipoPontoFio == null) {
 
 			int sequencia = engenhariaCustom.findIdNewSequenciaPontoFio(idTipoPonto);
-			
-			dadosTipoPontoFio = new TipoPontoFio(sequencia, descricao, idTipoPonto, tipoFio1, tipoFio2, tipoFio3, consumoFio);
+
+			dadosTipoPontoFio = new TipoPontoFio(sequencia, descricao, idTipoPonto, consumoFio);
 
 		} else {
 			dadosTipoPontoFio.consumoFio = consumoFio;
+			dadosTipoPontoFio.descricao = descricao;
 		}
 
 		tiposPontoFioRepository.save(dadosTipoPontoFio);
@@ -122,65 +124,63 @@ public class EngenhariaService {
 
 		if (consumo == null) {
 			consumo = new ConsumoFiosLinhas(referencia, idTipoPonto, comprimentoCostura);
+			consumoFiosLinhasRepository.saveAndFlush(consumo);
+			insertFiosTipoDePonto(idTipoPonto, referencia);
 		} else {
 			consumo.comprimentoCostura = comprimentoCostura;
+			consumoFiosLinhasRepository.saveAndFlush(consumo);
+			CalculaConsumoFios(idTipoPonto, id, referencia);
 		}
-
-		consumoFiosLinhasRepository.save(consumo);
 
 		return consumo;
 	}
 
-	public void CalculaConsumoFio(int idTipoPonto, String idConsumo, String referencia) {
+	public void insertFiosTipoDePonto(int idTipoPonto, String referencia) {
+		List<TipoPontoFio> fios = tiposPontoFioRepository.findByIdTipoPonto(idTipoPonto);
 
-		ConsumoMetragemFio consumoMetragem;
-		TiposFio dadosFio = null;
-		float metragemTotal;
-		float metragemUm;
+		for (TipoPontoFio fio : fios) {
+			ConsumoMetragemFio consumoMetragem = new ConsumoMetragemFio(fio.sequencia, referencia,
+					referencia + "-" + idTipoPonto, idTipoPonto,
+					0, fio.consumoFio, 0, 0, 0, " ");
 
-		List<TipoPontoFio> tiposFio = new ArrayList<TipoPontoFio>();
-		List<ConsumoMetragemFio> tiposFioGravados = new ArrayList<ConsumoMetragemFio>();
-		ConsumoFiosLinhas dadosConsumo = consumoFiosLinhasRepository.findConsumoById(idConsumo);
-
-		tiposFio = tiposPontoFioRepository.findByIdTipoPonto(idTipoPonto);
-		tiposFioGravados = consumoMetragemFioRepository.findConsumoMetragemFioByIdReferencia(idConsumo);
-
-		if (tiposFioGravados.size() > 0) {
-			for (ConsumoMetragemFio dadosFioGrav : tiposFioGravados) {
-				
-				metragemTotal = (dadosConsumo.comprimentoCostura * dadosFioGrav.metragemCosturaCm) / 100;
-
-				metragemUm = metragemTotal / dadosFioGrav.pacote;
-
-				dadosFioGrav.metragemTotal = metragemTotal;
-				dadosFioGrav.metragemUm = metragemUm;
-
-				consumoMetragemFioRepository.saveAndFlush(dadosFioGrav);
-			}
-
-		} else {
-			for (TipoPontoFio dados : tiposFio) {
-				dadosFio = tiposFioRepository.findByIdTipo(dados.tipoFio1);
-
-				metragemTotal = (dadosConsumo.comprimentoCostura * dados.consumoFio) / 100;
-
-				metragemUm = metragemTotal / dadosFio.centimetroCone;
-
-				consumoMetragem = new ConsumoMetragemFio(dados.sequencia, referencia, idConsumo, idTipoPonto,
-						dadosFio.centimetroCone, dados.consumoFio, metragemTotal, metragemUm, dados.tipoFio1);
-
-				consumoMetragemFioRepository.saveAndFlush(consumoMetragem);
-			}
+			consumoMetragemFioRepository.save(consumoMetragem);
 		}
 	}
 
-	public void atualizarPacote(int pacoteAtualizado, String idConsumo, int tipoFioAtualizado) {
+	public void CalculaConsumoFios(int idTipoPonto, String idConsumo, String referencia) {
+
+		List<ConsumoMetragemFio> tiposFioGravados = new ArrayList<ConsumoMetragemFio>();
+		tiposFioGravados = consumoMetragemFioRepository.findConsumoMetragemFioByIdReferencia(idConsumo);
+		
+		for (ConsumoMetragemFio dadosFioGrav : tiposFioGravados) {
+			if (dadosFioGrav.pacote > 0)
+				calculoConsumoFioAvulso(dadosFioGrav.id);
+		}
+	}
+
+	public void calculoConsumoFioAvulso(String idConsumo) {
+		ConsumoMetragemFio consumoMetragem = consumoMetragemFioRepository.findConsumoMetragemFioById(idConsumo);
+		ConsumoFiosLinhas consumoCapa = consumoFiosLinhasRepository.findConsumoById(consumoMetragem.idReferencia);
+
+		float metragemTotal = (consumoMetragem.metragemCosturaCm * consumoCapa.comprimentoCostura) / 100;
+
+		float metragemUm = metragemTotal / consumoMetragem.pacote;
+
+		consumoMetragem.metragemTotal = metragemTotal;
+		consumoMetragem.metragemUm = metragemUm;
+
+		consumoMetragemFioRepository.saveAndFlush(consumoMetragem);
+	}
+
+	public void atualizarPacote(int pacoteAtualizado, String idConsumo, int tipoFioAtualizado, String observacao) {
 		ConsumoMetragemFio consumoMetragem = consumoMetragemFioRepository.findConsumoMetragemFioById(idConsumo);
 
 		consumoMetragem.pacote = pacoteAtualizado;
 		consumoMetragem.idTipoFio = tipoFioAtualizado;
+		consumoMetragem.observacao = observacao;
 
-		consumoMetragemFioRepository.save(consumoMetragem);
+		consumoMetragemFioRepository.saveAndFlush(consumoMetragem);
+		calculoConsumoFioAvulso(idConsumo);
 	}
 
 	public List<ConteudoChaveNumerica> makeListOptionPackages(int tipoFio) {
@@ -213,51 +213,6 @@ public class EngenhariaService {
 		}
 
 		return listPacotes;
-	}
-
-	public List<ConteudoChaveNumerica> makeListOptionTiposFio(int idTipoPonto, int sequencia) {
-
-		List<ConteudoChaveNumerica> listTiposFio = new ArrayList<ConteudoChaveNumerica>();
-
-		if ((idTipoPonto < 0) || (sequencia < 0)) return listTiposFio;
-
-		ConteudoChaveNumerica objectTipoFio1 = null;
-		ConteudoChaveNumerica objectTipoFio2 = null;
-		ConteudoChaveNumerica objectTipoFio3 = null;
-
-		String id = idTipoPonto + "-" + sequencia;
-
-		TipoPontoFio dadosPonto = tiposPontoFioRepository.findByIdTipoPontoFio(id);
-
-		if (dadosPonto == null) return listTiposFio;
-
-		TiposFio dadosFio = null;
-
-		if (dadosPonto.tipoFio1 > 0) {
-			
-			dadosFio = tiposFioRepository.findByIdTipo(dadosPonto.tipoFio1);
-			
-			objectTipoFio1 = new ConteudoChaveNumerica(dadosPonto.tipoFio1, Integer.toString(dadosPonto.tipoFio1) + " - " + dadosFio.descricao);
-			listTiposFio.add(objectTipoFio1);
-		}
-
-		if (dadosPonto.tipoFio2 > 0) {
-
-			dadosFio = tiposFioRepository.findByIdTipo(dadosPonto.tipoFio2);
-
-			objectTipoFio2 = new ConteudoChaveNumerica(dadosPonto.tipoFio2, Integer.toString(dadosPonto.tipoFio2) + " - " + dadosFio.descricao);
-			listTiposFio.add(objectTipoFio2);
-		}
-
-		if (dadosPonto.tipoFio3 > 0) {
-
-			dadosFio = tiposFioRepository.findByIdTipo(dadosPonto.tipoFio2);
-
-			objectTipoFio3 = new ConteudoChaveNumerica(dadosPonto.tipoFio3, Integer.toString(dadosPonto.tipoFio3) + " - " + dadosFio.descricao);
-			listTiposFio.add(objectTipoFio3);
-		}
-
-		return listTiposFio;
 	}
 
 	public void deleteMarcas(int idMarcas) {

@@ -101,12 +101,9 @@ public class EngenhariaCustom {
 	}
 
 	public List<ConsultaTipoPontoFio> findTipoPontoFio(int idTipoPonto) {
-		String query = " select a.id, a.descricao, a.sequencia, a.consumo_fio consumoFio,"
-				+ " a.tipo_fio_1 tipoFio1, (select nvl(b.descricao,'') from orion_081 b where b.id = a.tipo_fio_1) descFio1, "
-				+ " a.tipo_fio_2 tipoFio2, (select nvl(b.descricao,'') from orion_081 b where b.id = a.tipo_fio_2) descFio2, "
-				+ " a.tipo_fio_3 tipoFio3, (select nvl(b.descricao,'') from orion_081 b where b.id = a.tipo_fio_3) descFio3 "
- 			+ " from orion_083 a "
- 			+ " where a.id_tipo_ponto = " + idTipoPonto;
+		String query = " select a.id, a.descricao, a.sequencia, a.consumo_fio consumoFio "
+				+ " from orion_083 a "
+				+ " where a.id_tipo_ponto = " + idTipoPonto;
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTipoPontoFio.class));
 	}
@@ -127,22 +124,22 @@ public class EngenhariaCustom {
 
 	public OptionProduto findReferenciaById(String referencia) {
 		String query = " select v.referencia codigo, v.descr_referencia descricao from basi_030 v "
-		+ " where v.nivel_estrutura = '1' "
-		+ " and v.referencia = '" + referencia + "'";
+				+ " where v.nivel_estrutura = '1' "
+				+ " and v.referencia = '" + referencia + "'";
 
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OptionProduto.class));
 	}
 
 	public List<ConsultaTabelaConsumo> findAllReferenciasSalvas() {
 		String query = " select o.referencia id, d.descr_referencia descricao from orion_084 o, basi_030 d "
-		+ " where o.referencia = d.referencia group by o.referencia, d.descr_referencia";
+				+ " where o.referencia = d.referencia group by o.referencia, d.descr_referencia";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTabelaConsumo.class));
 	}
 
 	public void deleteConsumo(String referencia, int tipoPonto) {
 		String queryDelete = " delete from  orion_085 u where u.referencia = '" + referencia + "'"
-		+ " and u.id_tipo_ponto = " + tipoPonto;
+				+ " and u.id_tipo_ponto = " + tipoPonto;
 
 		jdbcTemplate.update(queryDelete);
 	}
@@ -154,25 +151,33 @@ public class EngenhariaCustom {
 	}
 
 	public List<ConsultaConsumoMetragem> ConsultaConsumoMetragem(String idConsumo) {
-		String query = " select n.id, n.sequencia, n.pacote, n.metragem_costura_cm consumoFio, n.id_tipo_fio tipoFio, p.descricao descTipoFio, n.metragem_total metragemTotal, n.metragem_um metragemUm, o.descricao descOperacao from orion_085 n, orion_082 m, orion_083 o, orion_081 p "
-		+ " where n.id_referencia = '" + idConsumo + "'"
-		+ " and m.id = n.id_tipo_ponto "
-		+ " and o.id_tipo_ponto = m.id "
-		+ " and p.id = n.id_tipo_fio "
-		+ " and n.sequencia = o.sequencia ";
+		String query = " select n.id, n.sequencia, n.pacote, n.observacao, n.metragem_costura_cm consumoFio, n.id_tipo_fio tipoFio, p.descricao descTipoFio, n.metragem_total metragemTotal, n.metragem_um metragemUm, o.descricao descOperacao from orion_085 n, orion_082 m, orion_083 o, orion_081 p "
+				+ " where n.id_referencia = '" + idConsumo + "'"
+				+ " and m.id = n.id_tipo_ponto "
+				+ " and o.id_tipo_ponto = m.id "
+				+ " and p.id (+) = n.id_tipo_fio "
+				+ " and n.sequencia = o.sequencia ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaConsumoMetragem.class));
 	}
 
 	public List<ConsultaConsumoMetragem> ConsultaResumoPorReferencia(String referencia) {
 		String query = " select p.descricao descTipoFio, SUM(b.metragem_total) metragemTotal, SUM(b.metragem_um) metragemUm from orion_085 b, orion_082 m, orion_083 o, orion_081 p "
-		+ " where m.id = b.id_tipo_ponto "
-		+ " and o.id_tipo_ponto = m.id "
-		+ " and p.id = b.id_tipo_fio "
-		+ " and b.referencia = '" + referencia + "'"
-		+ " and b.sequencia = o.sequencia "
-		+ " group by p.descricao " ;
+				+ " where m.id = b.id_tipo_ponto "
+				+ " and o.id_tipo_ponto = m.id "
+				+ " and p.id = b.id_tipo_fio "
+				+ " and b.referencia = '" + referencia + "'"
+				+ " and b.sequencia = o.sequencia "
+				+ " group by p.descricao ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaConsumoMetragem.class));
+	}
+
+	public List<OptionProduto> findOptionsTiposFio() {
+		String query = "select a.id codigo, a.descricao from orion_081 a "
+				+ " union "
+				+ " select 0 codigo, 'NENHUM' descricao from dual ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OptionProduto.class));
 	}
 }
