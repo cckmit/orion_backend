@@ -31,9 +31,9 @@ public class RequisicaoTecidosService {
 		RequisicaoTecidos requisicao = requisicaoTecidosRepository.findById(id);
 
 		if (requisicao == null) {
-			requisicao = new RequisicaoTecidos(requisicaoTecidosRepository.findNextId(), descricao, situacao, usuario, new Date());
+			requisicao = new RequisicaoTecidos(requisicaoTecidosRepository.findNextId(), descricao.toUpperCase(), situacao, usuario, new Date());
 		} else {
-			requisicao.descricao = descricao;
+			requisicao.descricao = descricao.toUpperCase();
 			requisicao.situacao = situacao;
 		}
 		requisicaoTecidosRepository.save(requisicao);
