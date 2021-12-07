@@ -23,10 +23,7 @@ create table orion_083
 (id varchar2(20) default 0,
  id_tipo_ponto number(9) default 0,
  sequencia number(6) default 0,
- descricao varchar2(50),
- tipo_fio_1 number(6) default 0,
- tipo_fio_2 number(6) default 0,
- tipo_fio_3 number(6) default 0,
+ descricao varchar2(100),
  consumo_fio number(9,2) default 0,
  constraint orion_083_pk primary key (id),
  constraint fk_orion_083_orion_082 foreign key (id_tipo_ponto) references orion_082 (id)
@@ -56,6 +53,7 @@ create table orion_085
  metragem_costura_cm number(9,2) default 0,
  metragem_total number(9,2) default 0,
  metragem_um number(10,6) default 0,
+ observacao varchar2(100),
  constraint orion_085_pk primary key (id),
  constraint fk_orion_085_orion_082 foreign key (id_tipo_ponto) references orion_082 (id),
  constraint fk_orion_085_orion_084 foreign key (id_referencia) references orion_084 (id)

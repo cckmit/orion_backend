@@ -163,19 +163,21 @@ public class EngenhariaController {
     }
 
     //
-    // Return Option Tipos de Fio
-    //
-    @RequestMapping(value = "/option-tipos-fio/{idTipoPonto}/{sequencia}", method = RequestMethod.GET)
-    public List<ConteudoChaveNumerica> returnOptionTiposFio(@PathVariable("idTipoPonto") int idTipoPonto, @PathVariable("sequencia") int sequencia) {
-        return engenhariaService.makeListOptionTiposFio(idTipoPonto, sequencia);
-    }
-
-    //
     // Consulta Resumo por Tipo de Fio
     //
     @RequestMapping(value = "/resumo/{referencia}", method = RequestMethod.GET)
     public List<ConsultaConsumoMetragem> ConsultaResumoPorReferencia(@PathVariable("referencia") String referencia) {
         return engenhariaCustom.ConsultaResumoPorReferencia(referencia);
+    }
+
+    @RequestMapping(value = "/options-tipos-fio", method = RequestMethod.GET)
+    public List<OptionProduto> findOptionsTiposFio() {
+        return engenhariaCustom.findOptionsTiposFio();
+    }
+    
+    @RequestMapping(value = "/consulta-fios-calculados/{idComposto}", method = RequestMethod.GET)
+    public List<ConsultaConsumoMetragem> ConsultaFiosCalculados(@PathVariable("idComposto") String idComposto) {
+        return engenhariaCustom.ConsultaConsumoMetragem(idComposto);
     }
 
     @RequestMapping(value = "/save-marcas", method = RequestMethod.POST)
@@ -215,9 +217,10 @@ public class EngenhariaController {
     //
     // Cálcula Consumo Metragem Fio
     //
+
     @RequestMapping(value = "/calcula-consumo-metragem", method = RequestMethod.POST)
     public List<ConsultaConsumoMetragem> calculaConsumoMetragem(@RequestBody BodyEngenharia body) {                  
-    	engenhariaService.CalculaConsumoFio(body.idTipoPonto, body.idRegistro, body.referencia);
+    	engenhariaService.CalculaConsumoFios(body.idTipoPonto, body.idRegistro, body.referencia);
         return engenhariaCustom.ConsultaConsumoMetragem(body.idRegistro);
     }
 
@@ -226,9 +229,7 @@ public class EngenhariaController {
     //
     @RequestMapping(value = "/atualizar-pacote", method = RequestMethod.POST)
     public void atualizarPacote(@RequestBody BodyEngenharia body) {                  
-    	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet, body.idTipoFio);
-        engenhariaService.CalculaConsumoFio(body.idTipoPonto, body.idRegistro, body.referencia);
-        //return engenhariaCustom.ConsultaConsumoMetragem(body.idRegistro);
+    	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet, body.idTipoFio, body.observacao);
     }
     
     @RequestMapping(value = "/delete-marcas/{idMarcas}", method = RequestMethod.DELETE)

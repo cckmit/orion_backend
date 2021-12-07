@@ -23,6 +23,7 @@ public class BodyEngenharia {
 	public String idRegistro;
 	public String referencia;
 	public String idConsumoMet;
+	public String observacao;
 
 	public int idTipoFio;
 }
