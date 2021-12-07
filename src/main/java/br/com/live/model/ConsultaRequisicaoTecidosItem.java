@@ -3,6 +3,7 @@ package br.com.live.model;
 public class ConsultaRequisicaoTecidosItem {
 
 	private long id;
+	private int sequencia;
 	private String nivel;
 	private String grupo;
 	private String sub;
@@ -65,5 +66,11 @@ public class ConsultaRequisicaoTecidosItem {
 	}
 	public void setQuantidade(double quantidade) {
 		this.quantidade = quantidade;
-	}	
+	}
+	public int getSequencia() {
+		return sequencia;
+	}
+	public void setSequencia(int sequencia) {
+		this.sequencia = sequencia;
+	}
 }

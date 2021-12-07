@@ -45,6 +45,11 @@ public class RequisicaoTecidosController {
 		return requisicaoTecidosRepository.findAll();
 	}
 
+	@RequestMapping(value = "liberadas", method = RequestMethod.GET)
+	public List<RequisicaoTecidos> findAllRequisicoesLiberadas() {
+		return requisicaoTecidosRepository.findBySituacao(1);
+	}
+	
 	@RequestMapping(value = "/capa-itens/{idRequisicao}", method = RequestMethod.GET)
 	public BodyRequisicaoTecidos findRequisicaoByIdRequisicao(@PathVariable("idRequisicao") long idRequisicao) {
 		BodyRequisicaoTecidos body = new BodyRequisicaoTecidos();
@@ -90,5 +95,5 @@ public class RequisicaoTecidosController {
 			@PathVariable("idRequisicaoItem") long idRequisicaoItem) {
 		requisicaoTecidosService.deleteRequisicaoItem(idRequisicaoItem);
 		return requisicaoTecidosCustom.findItensByIdRequisicao(idRequisicao);
-	}
+	}	
 }

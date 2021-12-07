@@ -794,21 +794,21 @@ public class ProdutoCustom {
 				
 		List<Produto> produtos;
 		
-		String query = " select m.nivel_estrutura nivel, m.grupo_estrutura grupo, b.tamanho_ref sub, a.descr_referencia || ' ' || b.descr_tam_refer narrativa"
-		+ " from mqop_050 m, basi_030 a, basi_020 b "
-		+ " where m.nivel_estrutura in ('" + niveis + "') "
-		+ "  and a.nivel_estrutura = m.nivel_estrutura "
-		+ "  and a.referencia = m.grupo_estrutura "
-		+ "  and b.basi030_nivel030 = m.nivel_estrutura "
-		+ "  and b.basi030_referenc = m.grupo_estrutura "
-        + "  and exists (select 1 from basi_010 c "
-	    + "  where c.nivel_estrutura = b.basi030_nivel030 "
-	    + "  and c.grupo_estrutura = b.basi030_referenc "
-	    + "  and c.subgru_estrutura = b.tamanho_ref "
-	    + "  and c.item_ativo = 0) "
-		+ " group by m.nivel_estrutura, m.grupo_estrutura, b.tamanho_ref, a.descr_referencia, b.descr_tam_refer "
-		+ " order by m.nivel_estrutura, m.grupo_estrutura, b.tamanho_ref, a.descr_referencia, b.descr_tam_refer ";
-
+		String query = " select b.basi030_nivel030 nivel, b.basi030_referenc grupo, b.tamanho_ref sub, a.descr_referencia || ' ' || b.descr_tam_refer narrativa "
+		+ " from basi_030 a, basi_020 b "
+		+ " where a.nivel_estrutura in ('" + niveis + "') "
+	    + " and a.nivel_estrutura = b.basi030_nivel030 " 
+		+ " and a.referencia = b.basi030_referenc "
+		+ " and exists (select 1 from mqop_050 m "
+		+ " where m.nivel_estrutura = a.nivel_estrutura "
+		+ " and m.grupo_estrutura = a.referencia "
+		+ " and (m.subgru_estrutura = b.tamanho_ref or m.subgru_estrutura = '000')) "
+		+ " and exists (select 1 from basi_010 c " 
+		+ " where c.nivel_estrutura = b.basi030_nivel030 " 
+		+ " and c.grupo_estrutura = b.basi030_referenc " 
+		+ " and c.subgru_estrutura = b.tamanho_ref "
+		+ " and c.item_ativo = 0) ";
+		
 		try {
 			produtos= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
 		} catch (Exception e) {

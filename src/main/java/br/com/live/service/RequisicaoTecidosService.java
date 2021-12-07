@@ -1,5 +1,7 @@
 package br.com.live.service;
 
+import java.util.Date;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +31,9 @@ public class RequisicaoTecidosService {
 		RequisicaoTecidos requisicao = requisicaoTecidosRepository.findById(id);
 
 		if (requisicao == null) {
-			requisicao = new RequisicaoTecidos(requisicaoTecidosRepository.findNextId(), descricao, situacao, usuario);
+			requisicao = new RequisicaoTecidos(requisicaoTecidosRepository.findNextId(), descricao.toUpperCase(), situacao, usuario, new Date());
 		} else {
-			requisicao.descricao = descricao;
+			requisicao.descricao = descricao.toUpperCase();
 			requisicao.situacao = situacao;
 		}
 		requisicaoTecidosRepository.save(requisicao);

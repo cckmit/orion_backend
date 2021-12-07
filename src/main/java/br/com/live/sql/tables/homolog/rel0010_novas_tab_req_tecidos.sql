@@ -3,6 +3,7 @@ create table orion_090
  descricao varchar2(100) default '',
  situacao number(1) default 0, -- 0-Em digitação, 1-Liberado 
  usuario varchar2(100) default '',
+ data date,
  constraint orion_090_pk primary key (id));
  
 comment on table orion_090 is 'Tabela de requisição de tecidos para atender a confecção - Capa'; 

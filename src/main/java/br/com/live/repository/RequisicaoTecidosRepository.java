@@ -17,6 +17,9 @@ public interface RequisicaoTecidosRepository extends JpaRepository<RequisicaoTec
 	@Query("SELECT u FROM RequisicaoTecidos u where u.id = :id")
 	RequisicaoTecidos findById(long id);
 	
-	@Query("SELECT NVL(MAX(u.id),0) + 1 FROM RequisicaoTecidos u ")
+	@Query("SELECT NVL(MAX(u.id),0) + 1 FROM RequisicaoTecidos u")
 	Integer findNextId();
+	
+	@Query("SELECT u FROM RequisicaoTecidos u where u.situacao = :situacao order by u.id desc")
+	List<RequisicaoTecidos> findBySituacao(int situacao);
 }

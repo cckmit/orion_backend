@@ -27,7 +27,9 @@ public class RequisicaoTecidosCustom {
 		+ " and b.grupo_estrutura = a.grupo "
 		+ " and b.subgru_estrutura = a.sub "
 		+ " and b.item_estrutura = a.item "
-		+ " and a.id_requisicao = " + idRequisicao;
+		+ " and a.id_requisicao = " + idRequisicao
+		+ " order by a.sequencia " 
+		;
 		
 		try {
 			itens = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaRequisicaoTecidosItem.class));
