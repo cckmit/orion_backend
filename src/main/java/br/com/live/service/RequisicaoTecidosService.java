@@ -26,6 +26,12 @@ public class RequisicaoTecidosService {
 		this.produtoCustom = produtoCustom;
 	}
 
+	public void confirmarRequisicao(long id) {
+		RequisicaoTecidos requisicao = requisicaoTecidosRepository.findById(id);
+		requisicao.situacao = 2;
+		requisicaoTecidosRepository.save(requisicao);
+	}
+	
 	public RequisicaoTecidos saveRequisicao(long id, String descricao, int situacao, String usuario) {
 
 		RequisicaoTecidos requisicao = requisicaoTecidosRepository.findById(id);

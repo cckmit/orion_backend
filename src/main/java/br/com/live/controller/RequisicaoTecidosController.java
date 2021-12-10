@@ -25,7 +25,7 @@ import br.com.live.service.RequisicaoTecidosService;
 public class RequisicaoTecidosController {
 
 	private final RequisicaoTecidosService requisicaoTecidosService;
-	private final RequisicaoTecidosRepository requisicaoTecidosRepository;	
+	private final RequisicaoTecidosRepository requisicaoTecidosRepository;
 	private final RequisicaoTecidosItemRepository requisicaoTecidosItemRepository;
 	private final RequisicaoTecidosCustom requisicaoTecidosCustom;
 
@@ -45,11 +45,14 @@ public class RequisicaoTecidosController {
 		return requisicaoTecidosRepository.findAll();
 	}
 
-	@RequestMapping(value = "liberadas", method = RequestMethod.GET)
-	public List<RequisicaoTecidos> findAllRequisicoesLiberadas() {
+	@RequestMapping(value = "liberadas/{consideraConfirmadas}", method = RequestMethod.GET)
+	public List<RequisicaoTecidos> findAllRequisicoesLiberadas(
+			@PathVariable("consideraConfirmadas") boolean consideraConfirmadas) {
+		if (consideraConfirmadas)
+			return requisicaoTecidosRepository.findByNotSituacaoDigitada();
 		return requisicaoTecidosRepository.findBySituacao(1);
 	}
-	
+
 	@RequestMapping(value = "/capa-itens/{idRequisicao}", method = RequestMethod.GET)
 	public BodyRequisicaoTecidos findRequisicaoByIdRequisicao(@PathVariable("idRequisicao") long idRequisicao) {
 		BodyRequisicaoTecidos body = new BodyRequisicaoTecidos();
@@ -62,12 +65,13 @@ public class RequisicaoTecidosController {
 	public RequisicaoTecidosItem findRequisicaoItemByIdItem(@PathVariable("idRequisicaoItem") long idRequisicaoItem) {
 		return requisicaoTecidosItemRepository.findById(idRequisicaoItem);
 	}
-	
+
 	@RequestMapping(value = "/itens/{idRequisicao}", method = RequestMethod.GET)
-	public List<ConsultaRequisicaoTecidosItem> findRequisicaoItensByIdRequisicao(@PathVariable("idRequisicao") long idRequisicao) {
+	public List<ConsultaRequisicaoTecidosItem> findRequisicaoItensByIdRequisicao(
+			@PathVariable("idRequisicao") long idRequisicao) {
 		return requisicaoTecidosCustom.findItensByIdRequisicao(idRequisicao);
-	}	
-	
+	}
+
 	@RequestMapping(value = "/salvar-requisicao", method = RequestMethod.POST)
 	public RequisicaoTecidos saveRequisicao(@RequestBody BodyRequisicaoTecidos body) {
 		return requisicaoTecidosService.saveRequisicao(body.requisicaoTecidos.id, body.requisicaoTecidos.descricao,
@@ -84,6 +88,14 @@ public class RequisicaoTecidosController {
 		return requisicaoTecidosCustom.findItensByIdRequisicao(body.requisicaoTecidosItem.idRequisicao);
 	}
 
+	@RequestMapping(value = "/confirmar", method = RequestMethod.POST)
+	public List<RequisicaoTecidos> confirmarRequisicao(@RequestBody BodyRequisicaoTecidos body) {
+		requisicaoTecidosService.confirmarRequisicao(body.idRequisicao);
+		if (body.consideraConfirmados)
+			return requisicaoTecidosRepository.findByNotSituacaoDigitada();
+		return requisicaoTecidosRepository.findBySituacao(1);
+	}
+
 	@RequestMapping(value = "/requisicao/{idRequisicao}", method = RequestMethod.DELETE)
 	public List<RequisicaoTecidos> deleteRequisicao(@PathVariable("idRequisicao") long idRequisicao) {
 		requisicaoTecidosService.deleteRequisicao(idRequisicao);
@@ -95,5 +107,5 @@ public class RequisicaoTecidosController {
 			@PathVariable("idRequisicaoItem") long idRequisicaoItem) {
 		requisicaoTecidosService.deleteRequisicaoItem(idRequisicaoItem);
 		return requisicaoTecidosCustom.findItensByIdRequisicao(idRequisicao);
-	}	
+	}
 }
