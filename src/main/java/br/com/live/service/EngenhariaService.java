@@ -123,31 +123,34 @@ public class EngenhariaService {
 		consumo = consumoFiosLinhasRepository.findConsumoById(id);
 
 		if (consumo == null) {
-			consumo = new ConsumoFiosLinhas(referencia, idTipoPonto, comprimentoCostura);
+
+			int sequencia = engenhariaCustom.findProxSequenciaTipoPonto(idTipoPonto, referencia);
+
+			consumo = new ConsumoFiosLinhas(referencia, idTipoPonto, sequencia, comprimentoCostura);
 			consumoFiosLinhasRepository.saveAndFlush(consumo);
-			insertFiosTipoDePonto(idTipoPonto, referencia);
+			insertFiosTipoDePonto(idTipoPonto, referencia, sequencia);
 		} else {
 			consumo.comprimentoCostura = comprimentoCostura;
 			consumoFiosLinhasRepository.saveAndFlush(consumo);
-			CalculaConsumoFios(idTipoPonto, id, referencia);
+			CalculaConsumoFios(id);
 		}
 
 		return consumo;
 	}
 
-	public void insertFiosTipoDePonto(int idTipoPonto, String referencia) {
+	public void insertFiosTipoDePonto(int idTipoPonto, String referencia, int sequencia) {
 		List<TipoPontoFio> fios = tiposPontoFioRepository.findByIdTipoPonto(idTipoPonto);
 
 		for (TipoPontoFio fio : fios) {
 			ConsumoMetragemFio consumoMetragem = new ConsumoMetragemFio(fio.sequencia, referencia,
-					referencia + "-" + idTipoPonto, idTipoPonto,
+					referencia + "-" + idTipoPonto + "-" + sequencia, idTipoPonto,
 					0, fio.consumoFio, 0, 0, 0, " ");
 
 			consumoMetragemFioRepository.save(consumoMetragem);
 		}
 	}
 
-	public void CalculaConsumoFios(int idTipoPonto, String idConsumo, String referencia) {
+	public void CalculaConsumoFios(String idConsumo) {
 
 		List<ConsumoMetragemFio> tiposFioGravados = new ArrayList<ConsumoMetragemFio>();
 		tiposFioGravados = consumoMetragemFioRepository.findConsumoMetragemFioByIdReferencia(idConsumo);

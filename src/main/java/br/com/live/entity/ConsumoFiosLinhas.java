@@ -16,6 +16,8 @@ public class ConsumoFiosLinhas {
 
 	@Column(name = "id_tipo_ponto")
 	public int idTipoPonto;
+
+    public int sequencia;
 	
     @Column(name = "comprimento_costura")
 	public float comprimentoCostura;
@@ -53,14 +55,23 @@ public class ConsumoFiosLinhas {
         this.comprimentoCostura = comprimentoCostura;
     }
 
+    public int getSequencia() {
+        return sequencia;
+    }
+
+    public void setSequencia(int sequencia) {
+        this.sequencia = sequencia;
+    }
+
     public ConsumoFiosLinhas() {
 		
 	}
 
-    public ConsumoFiosLinhas(String referencia, int idTipoPonto, float comprimentoCostura) {
-        this.id = referencia + "-" + idTipoPonto;
+    public ConsumoFiosLinhas(String referencia, int idTipoPonto, int sequencia, float comprimentoCostura) {
+        this.id = referencia + "-" + idTipoPonto + "-" + sequencia;
         this.referencia = referencia;
         this.idTipoPonto = idTipoPonto;
         this.comprimentoCostura = comprimentoCostura;
+        this.sequencia = sequencia;
     }
 }

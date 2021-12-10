@@ -78,6 +78,22 @@ public class EngenhariaCustom {
 		return proxCod;
 	}
 
+	public int findProxSequenciaTipoPonto(int idTipoPonto, String referencia) {
+		int proxSeq = 0;
+
+		String query = " select nvl(max(a.sequencia), 0)+ 1 from orion_084 a "
+		+ " where a.referencia = '" + referencia + "'"
+		+ " and a.id_tipo_ponto = " + idTipoPonto;
+
+		try {
+			proxSeq = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			proxSeq = 0;
+		}
+
+		return proxSeq;
+	}
+
 	public List<ConsultaTiposFio> findAllTiposFio() {
 		String query = " select a.id, a.descricao, a.titulo, a.centim_cone centimetrosCone, a.centim_cone2 centimetrosCone2, a.centim_cone3 centimetrosCone3 from orion_081 a ";
 

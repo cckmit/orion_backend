@@ -220,7 +220,7 @@ public class EngenhariaController {
 
     @RequestMapping(value = "/calcula-consumo-metragem", method = RequestMethod.POST)
     public List<ConsultaConsumoMetragem> calculaConsumoMetragem(@RequestBody BodyEngenharia body) {                  
-    	engenhariaService.CalculaConsumoFios(body.idTipoPonto, body.idRegistro, body.referencia);
+    	engenhariaService.CalculaConsumoFios(body.idRegistro);
         return engenhariaCustom.ConsultaConsumoMetragem(body.idRegistro);
     }
 
