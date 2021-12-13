@@ -40,7 +40,8 @@ public class RequisicaoTecidosService {
 			requisicao = new RequisicaoTecidos(requisicaoTecidosRepository.findNextId(), descricao.toUpperCase(), situacao, usuario, new Date());
 		} else {
 			requisicao.descricao = descricao.toUpperCase();
-			requisicao.situacao = situacao;
+			if (requisicao.situacao < 2) // Atualiza status apenas se ainda não foi confirmado programação (situacao 2).
+				requisicao.situacao = situacao;
 		}
 		requisicaoTecidosRepository.save(requisicao);
 		return requisicao;
