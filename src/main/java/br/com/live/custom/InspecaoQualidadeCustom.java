@@ -291,5 +291,15 @@ public class InspecaoQualidadeCustom {
 				
 		return jdbcTemplate.queryForObject(query, Integer.class, data, usuario);
 	}
+
+	public int findQtdePecasByDataUsuario(Date data, String usuario) {
+		
+		String query = " select nvl(sum(k.quantidade),0) from orion_051 k, orion_050 j "
+		+ " where k.usuario = ? "
+		+ " and j.data = ? "
+		+ " and k.id_inspecao = j.id_inspecao ";
+				
+		return jdbcTemplate.queryForObject(query, Integer.class, usuario, data);
+	}
 	
 }

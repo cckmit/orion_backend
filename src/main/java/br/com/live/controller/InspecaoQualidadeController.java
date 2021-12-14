@@ -43,7 +43,7 @@ public class InspecaoQualidadeController {
 	@RequestMapping(value = "/revisores", method = RequestMethod.GET)
 	public List<Empregado> findAllRevisoresOrigem() {
 		return inspecaoQualidadeService.findRevisoresOrigem();
-	}	
+	}
 	
 	@RequestMapping(value = "/dados-inspecionados/{data}/{usuario}", method = RequestMethod.GET)
 	public BodyInspecaoQualidade findDadosInspecionadosByDataRevisor(@PathVariable("data") String data, @PathVariable("usuario") String usuario) {

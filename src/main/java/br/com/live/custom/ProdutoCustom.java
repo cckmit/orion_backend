@@ -546,6 +546,11 @@ public class ProdutoCustom {
 		return (encontrou == 1);	   	
 	}
 	
+    public boolean existsRoteiroAltRotMaiorZero (String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
+		if ((alternativa == 0) || (roteiro == 0)) return true;
+		return existsRoteiro(nivel, grupo, sub, item, alternativa, roteiro);
+	}
+
 	public boolean roteiroSequenciado(String grupo, String sub, String item, int alternativa, int roteiro) { 
 		int encontrou = 0;
 	

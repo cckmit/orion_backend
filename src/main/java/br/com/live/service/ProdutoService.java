@@ -80,4 +80,8 @@ public class ProdutoService {
 	public boolean existsRoteiro(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
 		return produtoRepository.existsRoteiro(nivel, grupo, sub, item, alternativa, roteiro);
 	}
+
+	public boolean existsRoteiroRequisicao(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
+		return produtoRepository.existsRoteiroAltRotMaiorZero(nivel, grupo, sub, item, alternativa, roteiro);
+	}
 }

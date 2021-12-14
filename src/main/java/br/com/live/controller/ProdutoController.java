@@ -115,4 +115,9 @@ public class ProdutoController {
 	public boolean existsRoteiro(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("sub") String sub, @PathVariable("item") String item, @PathVariable("alternativa") int alternativa, @PathVariable("roteiro") int roteiro) {
 		return produtoService.existsRoteiro(nivel, grupo, sub, item, alternativa, roteiro);
 	}
+
+	@RequestMapping(value = "/existe-roteiro-requisicao/{nivel}/{grupo}/{sub}/{item}/{alternativa}/{roteiro}", method = RequestMethod.GET)
+	public boolean existsRoteiroRequisicao(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("sub") String sub, @PathVariable("item") String item, @PathVariable("alternativa") int alternativa, @PathVariable("roteiro") int roteiro) {
+		return produtoService.existsRoteiroRequisicao(nivel, grupo, sub, item, alternativa, roteiro);
+	}
 }

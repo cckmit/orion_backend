@@ -31,13 +31,14 @@ public class RequisicaoTecidosService {
 		requisicao.situacao = 2;
 		requisicaoTecidosRepository.save(requisicao);
 	}
-	
+
 	public RequisicaoTecidos saveRequisicao(long id, String descricao, int situacao, String usuario) {
 
 		RequisicaoTecidos requisicao = requisicaoTecidosRepository.findById(id);
 
 		if (requisicao == null) {
-			requisicao = new RequisicaoTecidos(requisicaoTecidosRepository.findNextId(), descricao.toUpperCase(), situacao, usuario, new Date());
+			requisicao = new RequisicaoTecidos(requisicaoTecidosRepository.findNextId(), descricao.toUpperCase(),
+					situacao, usuario, new Date());
 		} else {
 			requisicao.descricao = descricao.toUpperCase();
 			if (requisicao.situacao < 2) // Atualiza status apenas se ainda não foi confirmado programação (situacao 2).
@@ -50,7 +51,7 @@ public class RequisicaoTecidosService {
 	public void saveRequisicaoItem(long id, long idRequisicao, String nivel, String grupo, String sub, String item,
 			int alternativa, int roteiro, double quantidade) {
 
-		if (produtoCustom.existsRoteiro(nivel, grupo, sub, item, alternativa, roteiro)) {
+		if (produtoCustom.existsRoteiroAltRotMaiorZero(nivel, grupo, sub, item, alternativa, roteiro)) {
 			RequisicaoTecidosItem requisicaoItem = requisicaoTecidosItemRepository.findById(id);
 			if (requisicaoItem == null) {
 				requisicaoItem = new RequisicaoTecidosItem(requisicaoTecidosItemRepository.findNextId(), idRequisicao,

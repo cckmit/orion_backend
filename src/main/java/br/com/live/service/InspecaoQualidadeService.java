@@ -95,8 +95,9 @@ public class InspecaoQualidadeService {
 		int qtdePacotesInspecionados = inspecaoQualidadeCustom.findQtdePacotesInspByDataUsuario(data, usuario);
 		int qtdeMotivosLancados = inspecaoQualidadeCustom.findQtdeMotivosLancByDataUsuario(data, usuario);
 		int qtdeMedidasLancadas = inspecaoQualidadeCustom.findQtdeMedidasLancByDataUsuario(data, usuario);
+		int qtdePecas = inspecaoQualidadeCustom.findQtdePecasByDataUsuario(data, usuario);
 		
-		return new BodyInspecaoQualidade(qtdePacotesInspecionados, qtdeMotivosLancados, qtdeMedidasLancadas);
+		return new BodyInspecaoQualidade(qtdePacotesInspecionados, qtdeMotivosLancados, qtdeMedidasLancadas, qtdePecas);
 	}
 	
 	

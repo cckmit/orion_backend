@@ -22,6 +22,7 @@ public class BodyInspecaoQualidade {
 	public int qtdePacotesInspecionados;
 	public int qtdeMotivosLancados;
 	public int qtdeMedidasLancadas;
+	public int qtdePecas;
 	
 	public BodyInspecaoQualidade() {}
 	
@@ -39,11 +40,18 @@ public class BodyInspecaoQualidade {
 	public BodyInspecaoQualidade(InspecaoQualidade inspecaoQualidade, List<InspecaoQualidadeLanctoMedida> inspecaoQualidadeLanctoMedidas) {
 		this.inspecaoQualidade = inspecaoQualidade;
 		this.inspecaoQualidadeLanctoMedidas = inspecaoQualidadeLanctoMedidas;
-	}	
-	
+	}
+
 	public BodyInspecaoQualidade(int qtdePacotesInspecionados, int qtdeMotivosLancados, int qtdeMedidasLancadas) {
 		this.qtdePacotesInspecionados = qtdePacotesInspecionados;
 		this.qtdeMotivosLancados = qtdeMotivosLancados;
-		this.qtdeMedidasLancadas = qtdeMedidasLancadas;		
+		this.qtdeMedidasLancadas = qtdeMedidasLancadas;
+	}
+	
+	public BodyInspecaoQualidade(int qtdePacotesInspecionados, int qtdeMotivosLancados, int qtdeMedidasLancadas, int qtdePecas) {
+		this.qtdePacotesInspecionados = qtdePacotesInspecionados;
+		this.qtdeMotivosLancados = qtdeMotivosLancados;
+		this.qtdeMedidasLancadas = qtdeMedidasLancadas;
+		this.qtdePecas = qtdePecas;
 	}
 }
