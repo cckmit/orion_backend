@@ -10,6 +10,9 @@ import br.com.live.entity.RequisicaoTecidos;
 import br.com.live.entity.RequisicaoTecidosItem;
 import br.com.live.repository.RequisicaoTecidosItemRepository;
 import br.com.live.repository.RequisicaoTecidosRepository;
+import br.com.live.util.ConfiguracoesSistema;
+import br.com.live.util.Email;
+
 
 @Service
 @Transactional
@@ -45,6 +48,25 @@ public class RequisicaoTecidosService {
 				requisicao.situacao = situacao;
 		}
 		requisicaoTecidosRepository.save(requisicao);
+		
+		return requisicao;
+	}
+	
+	public RequisicaoTecidos liberarRequisicao(long id) {
+
+		RequisicaoTecidos requisicao = requisicaoTecidosRepository.findById(id);
+		
+		if (requisicao.situacao < 2)
+			requisicao.situacao = 1; // Liberada
+			
+		requisicaoTecidosRepository.save(requisicao);
+		
+		String assunto = "Requisição de Tecidos " + id;
+		String corpoEmail = "<h4> Uma nova requisi&ccedil;&atilde;o de tecidos (n&uacute;mero <bold>" + id + "</bold>) foi liberada pelo PCP! <br/> Clique <a href='http://" + ConfiguracoesSistema.getIpFrontEnd() + "/requisicao-tecidos-liberados'> aqui </a> para acessar a consulta de requisi&ccedil&otilde;es.</h4>";
+		String emailDestino = "janaina.pcp@liveoficial.com.br";
+		
+		Email.sendEmail(assunto, corpoEmail, emailDestino);
+		
 		return requisicao;
 	}
 
