@@ -11,5 +11,5 @@ public class BodyUsuario {
 	public List<Long> listaIdsProgramas;
 	public int situacao;
 	public int liberaInspecaoQualidade;
-	
+	public String email;
 }

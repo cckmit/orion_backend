@@ -48,7 +48,7 @@ public class UsuarioController {
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public Usuario saveUsuario(@RequestBody BodyUsuario body) {
-		return usuarioService.saveUsuario(body.id, body.nome, body.usuario, body.senha, body.listaIdsProgramas, body.situacao, body.liberaInspecaoQualidade);
+		return usuarioService.saveUsuario(body.id, body.nome, body.usuario, body.senha, body.listaIdsProgramas, body.situacao, body.liberaInspecaoQualidade, body.email);
 	}
 	
 	@RequestMapping(value = "programas-usuario/{idUsuario}", method = RequestMethod.GET)
@@ -75,5 +75,4 @@ public class UsuarioController {
 	public boolean redefinirSenhaUsuario(@PathVariable("usuario") String usuario, @PathVariable("senhaAtual") String senhaAtual, @PathVariable("novaSenha") String novaSenha) {
 		return usuarioService.redefinirSenha(usuario, senhaAtual, novaSenha);
 	}
-	
 }

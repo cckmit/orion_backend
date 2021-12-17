@@ -1,18 +1,19 @@
 package br.com.live.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.ProdutoCustom;
+import br.com.live.entity.Notificacao;
 import br.com.live.entity.RequisicaoTecidos;
 import br.com.live.entity.RequisicaoTecidosItem;
 import br.com.live.repository.RequisicaoTecidosItemRepository;
 import br.com.live.repository.RequisicaoTecidosRepository;
 import br.com.live.util.ConfiguracoesSistema;
 import br.com.live.util.Email;
-
 
 @Service
 @Transactional
@@ -21,12 +22,15 @@ public class RequisicaoTecidosService {
 	private final RequisicaoTecidosRepository requisicaoTecidosRepository;
 	private final RequisicaoTecidosItemRepository requisicaoTecidosItemRepository;
 	private final ProdutoCustom produtoCustom;
+	private final NotificacaoService notificacaoService;
 
 	public RequisicaoTecidosService(RequisicaoTecidosRepository requisicaoTecidosRepository,
-			RequisicaoTecidosItemRepository requisicaoTecidosItemRepository, ProdutoCustom produtoCustom) {
+			RequisicaoTecidosItemRepository requisicaoTecidosItemRepository, ProdutoCustom produtoCustom,
+			NotificacaoService notificacaoService) {
 		this.requisicaoTecidosRepository = requisicaoTecidosRepository;
 		this.requisicaoTecidosItemRepository = requisicaoTecidosItemRepository;
 		this.produtoCustom = produtoCustom;
+		this.notificacaoService = notificacaoService;
 	}
 
 	public void confirmarRequisicao(long id) {
@@ -48,25 +52,31 @@ public class RequisicaoTecidosService {
 				requisicao.situacao = situacao;
 		}
 		requisicaoTecidosRepository.save(requisicao);
-		
+
 		return requisicao;
 	}
-	
+
 	public RequisicaoTecidos liberarRequisicao(long id) {
 
 		RequisicaoTecidos requisicao = requisicaoTecidosRepository.findById(id);
-		
+
 		if (requisicao.situacao < 2)
 			requisicao.situacao = 1; // Liberada
-			
+
 		requisicaoTecidosRepository.save(requisicao);
-		
+
 		String assunto = "Requisição de Tecidos " + id;
-		String corpoEmail = "<h4> Uma nova requisi&ccedil;&atilde;o de tecidos (n&uacute;mero <bold>" + id + "</bold>) foi liberada pelo PCP! <br/> Clique <a href='http://" + ConfiguracoesSistema.getIpFrontEnd() + "/requisicao-tecidos-liberados'> aqui </a> para acessar a consulta de requisi&ccedil&otilde;es.</h4>";
-		String emailDestino = "janaina.pcp@liveoficial.com.br";
-		
-		Email.sendEmail(assunto, corpoEmail, emailDestino);
-		
+		String corpoEmail = "<h4> Uma nova requisi&ccedil;&atilde;o de tecidos (n&uacute;mero <bold>" + id
+				+ "</bold>) foi liberada pelo PCP! <br/> Clique <a href='http://" + ConfiguracoesSistema.getIpFrontEnd()
+				+ "/requisicao-tecidos-liberados'> aqui </a> para acessar a consulta de requisi&ccedil&otilde;es.</h4>";
+
+		List<String> emails = notificacaoService.findEmailByTipoNotificacao(Notificacao.REQUISICAO_TECIDOS);
+
+		for (String email : emails) {
+			if (email != null)
+				Email.sendEmail(assunto, corpoEmail, email);
+		}
+
 		return requisicao;
 	}
 
