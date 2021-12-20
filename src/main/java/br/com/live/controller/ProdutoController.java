@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyFiltroProduto;
 import br.com.live.entity.ProdutoReferencia;
 import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
@@ -20,7 +21,6 @@ import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
 import br.com.live.service.ProdutoService;
 import br.com.live.util.CodigoGrupoItem;
-import br.com.live.util.FiltroProduto;
 
 @RestController
 @CrossOrigin
@@ -31,7 +31,7 @@ public class ProdutoController {
 	private ProdutoService produtoService;
 
 	@RequestMapping(value = "/produtos-colecoes", method = RequestMethod.POST)
-	public List<ProdutoReferencia> findByColecoes(@RequestBody FiltroProduto filtro) {
+	public List<ProdutoReferencia> findByColecoes(@RequestBody BodyFiltroProduto filtro) {
 
 		List<ProdutoReferencia> produtos = null;
 
@@ -43,7 +43,7 @@ public class ProdutoController {
 	}
 
 	@RequestMapping(value = "/cores-colecoes", method = RequestMethod.POST)
-	public List<CorProduto> findCoresByColecoes(@RequestBody FiltroProduto filtro) {
+	public List<CorProduto> findCoresByColecoes(@RequestBody BodyFiltroProduto filtro) {
 
 		List<CorProduto> cores = null;
 
@@ -56,7 +56,7 @@ public class ProdutoController {
 
 	// TODO - ELIMINAR MÉTODO
 	@RequestMapping(value = "/itens-colecoes", method = RequestMethod.POST)
-	public List<ProdutoReferenciaCor> findItensByFiltro(@RequestBody FiltroProduto filtro) {
+	public List<ProdutoReferenciaCor> findItensByFiltro(@RequestBody BodyFiltroProduto filtro) {
 
 		List<ProdutoReferenciaCor> itens = null;
 
@@ -69,7 +69,7 @@ public class ProdutoController {
 	}
 	
 	@RequestMapping(value = "/itens-sug-cancelamento", method = RequestMethod.POST)
-	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelProducaoByFiltro(@RequestBody FiltroProduto filtro) {
+	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelProducaoByFiltro(@RequestBody BodyFiltroProduto filtro) {
 		
 		List<ConsultaItemSugestaoCancelProducao> itens = null;
 		

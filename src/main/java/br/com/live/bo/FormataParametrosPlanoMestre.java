@@ -1,7 +1,11 @@
-package br.com.live.util;
+package br.com.live.bo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.live.body.BodyParametrosPlanoMestre;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 public class FormataParametrosPlanoMestre {
 
@@ -14,9 +18,9 @@ public class FormataParametrosPlanoMestre {
 	private final static int PLANO7 = 7;
 	private final static int PLANO8 = 8;
 
-	private ParametrosPlanoMestre parametros;
+	private BodyParametrosPlanoMestre parametros;
 
-	public FormataParametrosPlanoMestre(ParametrosPlanoMestre parametros) {
+	public FormataParametrosPlanoMestre(BodyParametrosPlanoMestre parametros) {
 		this.parametros = parametros;
 	}
 

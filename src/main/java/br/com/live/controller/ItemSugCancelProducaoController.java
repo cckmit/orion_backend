@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyParametrosItemSugCancelProd;
 import br.com.live.entity.ItemSugCancelProducao;
 import br.com.live.repository.ItemSugCancelProducaoRepository;
-import br.com.live.util.ParametrosItemSugCancelProd;
 
 @RestController
 @CrossOrigin
@@ -26,14 +26,14 @@ public class ItemSugCancelProducaoController {
     }
 	
 	@RequestMapping(value = "/sugerir", method = RequestMethod.POST)	
-	public List<ItemSugCancelProducao> sugerir(@RequestBody ParametrosItemSugCancelProd parametro) {		
+	public List<ItemSugCancelProducao> sugerir(@RequestBody BodyParametrosItemSugCancelProd parametro) {		
 		List<ItemSugCancelProducao> itens = parametro.getItensSelecionados();
 		itemSugCancelProducaoRepository.saveAll(itens);				
 		return itemSugCancelProducaoRepository.findAll();
 	}
 
 	@RequestMapping(value = "/remover", method = RequestMethod.POST)	
-	public List<ItemSugCancelProducao> remover(@RequestBody ParametrosItemSugCancelProd parametro) {		
+	public List<ItemSugCancelProducao> remover(@RequestBody BodyParametrosItemSugCancelProd parametro) {		
 		List<ItemSugCancelProducao> itens = parametro.getItensSelecionados();			
 		itemSugCancelProducaoRepository.deleteAll(itens);				
 		return itemSugCancelProducaoRepository.findAll();

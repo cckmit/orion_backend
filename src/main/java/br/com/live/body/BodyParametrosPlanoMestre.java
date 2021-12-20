@@ -1,11 +1,13 @@
-package br.com.live.util;
+package br.com.live.body;
 
 import java.util.List;
 
 import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
-public class ParametrosPlanoMestre {
+public class BodyParametrosPlanoMestre {
 	
 	public String descricao;
 	public String usuario;
@@ -103,9 +105,9 @@ public class ParametrosPlanoMestre {
     public int periodoOcupacaoInicio;
     public int periodoOcupacaoFim;
     
-	public FiltroProduto getFiltroProduto () {
+	public BodyFiltroProduto getFiltroProduto () {
 		
-		FiltroProduto filtro = new FiltroProduto();
+		BodyFiltroProduto filtro = new BodyFiltroProduto();
 		
 		filtro.colecoes = this.colecoes;
 		filtro.colecoesPermanentes = this.colecoesPermanentes;

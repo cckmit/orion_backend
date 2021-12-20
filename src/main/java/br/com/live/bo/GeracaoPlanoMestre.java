@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import br.com.live.body.BodyParametrosPlanoMestre;
 import br.com.live.entity.DemandaProdutoPlano;
 import br.com.live.entity.EstoqueProduto;
 import br.com.live.entity.PlanoMestre;
@@ -18,12 +19,10 @@ import br.com.live.model.AlternativaRoteiroPadrao;
 import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
-import br.com.live.util.FormataParametrosPlanoMestre;
-import br.com.live.util.ParametrosPlanoMestre;
 
 public class GeracaoPlanoMestre {
 
-	private ParametrosPlanoMestre parametros;
+	private BodyParametrosPlanoMestre parametros;
 
 	private List<EstoqueProduto> estoques;
 	private List<DemandaProdutoPlano> demandas;
@@ -37,7 +36,7 @@ public class GeracaoPlanoMestre {
 	private final static int DEMANDA = 2;
 	private final static int PROCESSO = 3;
 
-	public GeracaoPlanoMestre(ParametrosPlanoMestre parametros, List<EstoqueProduto> estoques,
+	public GeracaoPlanoMestre(BodyParametrosPlanoMestre parametros, List<EstoqueProduto> estoques,
 			List<DemandaProdutoPlano> demandas, List<ProcessoProdutoPlano> processos, List<Produto> produtos) {
 
 		this.parametros = parametros;

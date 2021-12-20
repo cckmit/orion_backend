@@ -9,11 +9,11 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.bo.FormataParametrosPlanoMestre;
+import br.com.live.body.BodyParametrosPlanoMestre;
 import br.com.live.entity.DemandaProduto;
 import br.com.live.entity.DemandaProdutoPlano;
 import br.com.live.model.PedidoVenda;
-import br.com.live.util.FormataParametrosPlanoMestre;
-import br.com.live.util.ParametrosPlanoMestre;
 
 @Repository
 public class DemandaProdutoCustom {
@@ -45,7 +45,7 @@ public class DemandaProdutoCustom {
 		return listDemandaProdutoPlano;
 	}
 
-	public List<DemandaProdutoPlano> findByParameters(ParametrosPlanoMestre parametros) {
+	public List<DemandaProdutoPlano> findByParameters(BodyParametrosPlanoMestre parametros) {
 
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
 

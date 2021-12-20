@@ -13,6 +13,7 @@ import br.com.live.bo.CopiarPlanoMestre;
 import br.com.live.bo.GeracaoPlanoMestre;
 import br.com.live.bo.GeracaoPreOrdens;
 import br.com.live.bo.Multiplicador;
+import br.com.live.body.BodyParametrosPlanoMestre;
 import br.com.live.custom.CapacidadeProducaoCustom;
 import br.com.live.custom.DemandaProdutoCustom;
 import br.com.live.custom.EstoqueProdutoCustom;
@@ -57,7 +58,6 @@ import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
 import br.com.live.repository.ProdutoPlanoMestrePorCorRepository;
 import br.com.live.repository.ProdutoPlanoMestreRepository;
-import br.com.live.util.ParametrosPlanoMestre;
 import br.com.live.util.StatusGravacao;
 
 @Service
@@ -460,7 +460,7 @@ public class PlanoMestreService {
 		return findAll();
 	}
 
-	public List<PlanoMestre> gerar(ParametrosPlanoMestre parametros) {
+	public List<PlanoMestre> gerar(BodyParametrosPlanoMestre parametros) {
 
 		long idPlanoMestre = 0;
 
@@ -747,7 +747,7 @@ public class PlanoMestreService {
 		}
 	}
 
-	public void gerarPreOrdens(ParametrosPlanoMestre parametros) {
+	public void gerarPreOrdens(BodyParametrosPlanoMestre parametros) {
 
 		System.out.println("Método gerarPreOrdens");
 		

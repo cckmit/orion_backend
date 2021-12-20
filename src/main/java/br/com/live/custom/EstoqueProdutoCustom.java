@@ -8,10 +8,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.bo.FormataParametrosPlanoMestre;
+import br.com.live.body.BodyParametrosPlanoMestre;
 import br.com.live.entity.EstoqueProduto;
 import br.com.live.model.Deposito;
-import br.com.live.util.FormataParametrosPlanoMestre;
-import br.com.live.util.ParametrosPlanoMestre;
 
 @Repository
 public class EstoqueProdutoCustom {
@@ -24,7 +24,7 @@ public class EstoqueProdutoCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<EstoqueProduto> findByParameters(ParametrosPlanoMestre parametros) {
+	public List<EstoqueProduto> findByParameters(BodyParametrosPlanoMestre parametros) {
 
 		String query = "select new br.com.live.entity.EstoqueProduto (e.id, e.nivel, e.grupo, e.sub, e.item, e.deposito, e.quantidade, e.colecao, e.linha, e.artigo, e.artigoCotas, e.origem, e.permanente, e.embarque) from EstoqueProduto e ";
 		String condicao = "where ";

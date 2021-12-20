@@ -1,9 +1,12 @@
-package br.com.live.util;
+package br.com.live.body;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FiltroProduto  {
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
+
+public class BodyFiltroProduto  {
 
 	public List<ConteudoChaveNumerica> colecoes ;
 	public List<ConteudoChaveNumerica> colecoesPermanentes ;

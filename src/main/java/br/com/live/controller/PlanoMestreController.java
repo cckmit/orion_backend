@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyParametrosPlanoMestre;
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestreParametros;
 import br.com.live.model.ConsultaPreOrdemProducao;
@@ -20,7 +21,6 @@ import br.com.live.model.PreOrdemProducaoIndicadores;
 import br.com.live.entity.PlanoMestreParamProgItem;
 import br.com.live.service.PlanoMestreService;
 import br.com.live.util.CodigoGrupoItem;
-import br.com.live.util.ParametrosPlanoMestre;
 
 @RestController
 @CrossOrigin
@@ -31,28 +31,28 @@ public class PlanoMestreController {
 	private PlanoMestreService planoMestreService;
 
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)
-	public List<PlanoMestre> gerar(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<PlanoMestre> gerar(@RequestBody BodyParametrosPlanoMestre parametros) {
 		return planoMestreService.gerar(parametros);
 	}
 
 	@RequestMapping(value = "/copiar", method = RequestMethod.POST)
-	public List<PlanoMestre> copiar(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<PlanoMestre> copiar(@RequestBody BodyParametrosPlanoMestre parametros) {
 		return planoMestreService.copiar(parametros.idPlanoMestre);
 	}
 	
 	@RequestMapping(value = "/salvar-situacao", method = RequestMethod.POST)
-	public void salvarSituacao(@RequestBody ParametrosPlanoMestre parametros) {			
+	public void salvarSituacao(@RequestBody BodyParametrosPlanoMestre parametros) {			
 		planoMestreService.salvarSituacao(parametros.idPlanoMestre, parametros.situacaoPlanoMestre);
 	}
 	
 	@RequestMapping(value = "/salvar-itens", method = RequestMethod.POST)
-	public List<ConsultaItensPlanoMestre> salvarItens(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<ConsultaItensPlanoMestre> salvarItens(@RequestBody BodyParametrosPlanoMestre parametros) {
 		planoMestreService.salvarItens(parametros.itensPlanoMestre);
 		return planoMestreService.findProdutos(parametros.idPlanoMestre);
 	}
 
 	@RequestMapping(value = "/salvar-grade", method = RequestMethod.POST)
-	public List<ConsultaItensTamPlanoMestre> salvarGrade(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<ConsultaItensTamPlanoMestre> salvarGrade(@RequestBody BodyParametrosPlanoMestre parametros) {
 		planoMestreService.salvarGrade(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codigoGrupoCor),
 				CodigoGrupoItem.getItem(parametros.codigoGrupoCor), parametros.gradeTamanhosItem);
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre,
@@ -61,7 +61,7 @@ public class PlanoMestreController {
 	}
 
 	@RequestMapping(value = "pre-ordens/gerar", method = RequestMethod.POST)
-	public List<ConsultaPreOrdemProducao> gerarPreOrdens(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<ConsultaPreOrdemProducao> gerarPreOrdens(@RequestBody BodyParametrosPlanoMestre parametros) {
 		planoMestreService.gerarPreOrdens(parametros);
 		return planoMestreService.findPreOrdensByIdPlanoMestre(parametros.idPlanoMestre);
 	}
@@ -72,7 +72,7 @@ public class PlanoMestreController {
 	}
 
 	@RequestMapping(value = "pre-ordens/indicadores/selecionados", method = RequestMethod.POST)
-	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens(@RequestBody ParametrosPlanoMestre parametros) {
+	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens(@RequestBody BodyParametrosPlanoMestre parametros) {
 		return planoMestreService.findIndicadoresByPreOrdens(parametros.idPlanoMestre, parametros.preOrdensSelected);
 	}
 		
@@ -106,13 +106,13 @@ public class PlanoMestreController {
 	}
 
 	@RequestMapping(value = "/salvar-param-programacao", method = RequestMethod.POST)
-	public List<ConsultaItensTamPlanoMestre> salvarParamProgramacao(@RequestBody ParametrosPlanoMestre parametros) {
+	public List<ConsultaItensTamPlanoMestre> salvarParamProgramacao(@RequestBody BodyParametrosPlanoMestre parametros) {
 		planoMestreService.salvarParametrosProgramacaoItem(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg), parametros.alternativaProg, parametros.roteiroProg, parametros.periodoProg, parametros.multiplicadorProg, parametros.planoInicio, parametros.planoFim);		
 		return planoMestreService.findTamanhos(parametros.idPlanoMestre, CodigoGrupoItem.getGrupo(parametros.codGrupoItemProg), CodigoGrupoItem.getItem(parametros.codGrupoItemProg));
 	}
 	
 	@RequestMapping(value = "/ocupacao/calcular", method = RequestMethod.POST)
-	public PlanoMestreParametros calcularOcupacao(@RequestBody ParametrosPlanoMestre parametros) {		
+	public PlanoMestreParametros calcularOcupacao(@RequestBody BodyParametrosPlanoMestre parametros) {		
 		return planoMestreService.calcularOcupacaoPlano(parametros.idPlanoMestre, parametros.periodoOcupacaoInicio, parametros.periodoOcupacaoFim);		
 	}	
 	

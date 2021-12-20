@@ -3,6 +3,8 @@ package br.com.live.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import br.com.live.body.BodyFiltroProduto;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.ProdutoReferencia;
 import br.com.live.entity.ProdutoReferenciaCor;
@@ -14,7 +16,6 @@ import br.com.live.model.Embarque;
 import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
-import br.com.live.util.FiltroProduto;
 
 @Service
 public class ProdutoService {
@@ -33,19 +34,19 @@ public class ProdutoService {
 		return produtoRepository.findCoresByNivelGrupoSub(nivel, grupo, sub);
 	}
 	
-	public List<ProdutoReferencia> findProdutosByParameters(FiltroProduto filtro) {		
+	public List<ProdutoReferencia> findProdutosByParameters(BodyFiltroProduto filtro) {		
 		return produtoRepository.findProdutosByParameters(filtro);		
 	}
 
-	public List<CorProduto> findCoresByParameters(FiltroProduto filtro) {		
+	public List<CorProduto> findCoresByParameters(BodyFiltroProduto filtro) {		
 		return produtoRepository.findCoresByParameters(filtro);		
 	}
 
-	public List<ProdutoReferenciaCor> findItensByParameters(FiltroProduto filtro) {		
+	public List<ProdutoReferenciaCor> findItensByParameters(BodyFiltroProduto filtro) {		
 		return produtoRepository.findItensByParameters(filtro);		
 	}
 
-	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelamentoByParameters(FiltroProduto filtro) {
+	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelamentoByParameters(BodyFiltroProduto filtro) {
 		return produtoRepository.findItensSugestaoCancelProducaoByParameters(filtro);
 	}
 	

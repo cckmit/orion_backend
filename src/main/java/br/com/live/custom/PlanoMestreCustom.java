@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository;
 import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.GradeDistribuicaoGrupoItem;
 import br.com.live.model.ConsultaProgramadoReferencia;
+import br.com.live.bo.FormataParametrosPlanoMestre;
+import br.com.live.body.BodyParametrosPlanoMestre;
 import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.Produto;
 import br.com.live.model.ProgramacaoPlanoMestre;
-import br.com.live.util.FormataParametrosPlanoMestre;
-import br.com.live.util.ParametrosPlanoMestre;
 
 @Repository
 public class PlanoMestreCustom {
@@ -26,7 +26,7 @@ public class PlanoMestreCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<Produto> findProdutosByParameters(ParametrosPlanoMestre parametros) {
+	public List<Produto> findProdutosByParameters(BodyParametrosPlanoMestre parametros) {
 
 		System.out.println("findProdutosByParameters");
 

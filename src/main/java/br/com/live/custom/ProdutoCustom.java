@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.body.BodyFiltroProduto;
 import br.com.live.entity.ProdutoReferencia;
 import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
@@ -27,7 +28,6 @@ import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.Produto;
 import br.com.live.model.PublicoAlvo;
 import br.com.live.model.Roteiro;
-import br.com.live.util.FiltroProduto;
 
 @Repository
 public class ProdutoCustom {
@@ -40,7 +40,7 @@ public class ProdutoCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<ProdutoReferencia> findProdutosByParameters(FiltroProduto filtro) {
+	public List<ProdutoReferencia> findProdutosByParameters(BodyFiltroProduto filtro) {
 
 		String query = "select new br.com.live.entity.ProdutoReferencia (p.id, p.grupo, p.descricao, p.colecao, p.permanente) from ProdutoReferencia p ";
 		String condicao = "where ";
@@ -66,7 +66,7 @@ public class ProdutoCustom {
 		return q.getResultList();
 	}
 
-	public List<CorProduto> findCoresByParameters(FiltroProduto filtro) {
+	public List<CorProduto> findCoresByParameters(BodyFiltroProduto filtro) {
 		
 		List<CorProduto> cores;
 		
@@ -130,7 +130,7 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Embarque.class));
 	}
 
-	public List<ProdutoReferenciaCor> findItensByParameters(FiltroProduto filtro) {
+	public List<ProdutoReferenciaCor> findItensByParameters(BodyFiltroProduto filtro) {
 
 		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
 		String condicao = "where ";
@@ -166,7 +166,7 @@ public class ProdutoCustom {
 		return q.getResultList();
 	}
 
-	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelProducaoByParameters(FiltroProduto filtro) {
+	public List<ConsultaItemSugestaoCancelProducao> findItensSugestaoCancelProducaoByParameters(BodyFiltroProduto filtro) {
 		
 		String comando = " where ";
 		

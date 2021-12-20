@@ -1,11 +1,11 @@
-package br.com.live.util;
+package br.com.live.body;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.live.entity.ItemSugCancelProducao;
 
-public class ParametrosItemSugCancelProd {
+public class BodyParametrosItemSugCancelProd {
 
 	public List<String> selecionados ; 
 		

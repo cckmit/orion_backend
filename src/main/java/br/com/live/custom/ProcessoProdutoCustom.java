@@ -8,10 +8,10 @@ import javax.persistence.EntityManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.bo.FormataParametrosPlanoMestre;
+import br.com.live.body.BodyParametrosPlanoMestre;
 import br.com.live.entity.ProcessoProduto;
 import br.com.live.entity.ProcessoProdutoPlano;
-import br.com.live.util.FormataParametrosPlanoMestre;
-import br.com.live.util.ParametrosPlanoMestre;
 
 @Repository
 public class ProcessoProdutoCustom {
@@ -42,7 +42,7 @@ public class ProcessoProdutoCustom {
 		return listProcessoProdutoPlano;
 	}
 
-	public List<ProcessoProdutoPlano> findByParameters(ParametrosPlanoMestre parametros) {
+	public List<ProcessoProdutoPlano> findByParameters(BodyParametrosPlanoMestre parametros) {
 
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
 
