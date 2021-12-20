@@ -12,8 +12,6 @@ import br.com.live.entity.RequisicaoTecidos;
 import br.com.live.entity.RequisicaoTecidosItem;
 import br.com.live.repository.RequisicaoTecidosItemRepository;
 import br.com.live.repository.RequisicaoTecidosRepository;
-import br.com.live.util.ConfiguracoesSistema;
-import br.com.live.util.Email;
 
 @Service
 @Transactional
@@ -23,14 +21,19 @@ public class RequisicaoTecidosService {
 	private final RequisicaoTecidosItemRepository requisicaoTecidosItemRepository;
 	private final ProdutoCustom produtoCustom;
 	private final NotificacaoService notificacaoService;
+	private final Configuracoes configuracoes;
+	private final Email email;
 
 	public RequisicaoTecidosService(RequisicaoTecidosRepository requisicaoTecidosRepository,
 			RequisicaoTecidosItemRepository requisicaoTecidosItemRepository, ProdutoCustom produtoCustom,
-			NotificacaoService notificacaoService) {
+			NotificacaoService notificacaoService, Configuracoes configuracoes,
+			Email email) {
 		this.requisicaoTecidosRepository = requisicaoTecidosRepository;
 		this.requisicaoTecidosItemRepository = requisicaoTecidosItemRepository;
 		this.produtoCustom = produtoCustom;
 		this.notificacaoService = notificacaoService;
+		this.configuracoes = configuracoes;
+		this.email = email;
 	}
 
 	public void confirmarRequisicao(long id) {
@@ -65,16 +68,27 @@ public class RequisicaoTecidosService {
 
 		requisicaoTecidosRepository.save(requisicao);
 
+		System.out.println("url front-end: " + configuracoes.getUrlFrontEnd());
+		
 		String assunto = "Requisição de Tecidos " + id;
 		String corpoEmail = "<h4> Uma nova requisi&ccedil;&atilde;o de tecidos (n&uacute;mero <bold>" + id
-				+ "</bold>) foi liberada pelo PCP! <br/> Clique <a href='http://" + ConfiguracoesSistema.getIpFrontEnd()
+				+ "</bold>) foi liberada pelo PCP! <br/> Clique <a href='http://" + configuracoes.getUrlFrontEnd()
 				+ "/requisicao-tecidos-liberados'> aqui </a> para acessar a consulta de requisi&ccedil&otilde;es.</h4>";
 
 		List<String> emails = notificacaoService.findEmailByTipoNotificacao(Notificacao.REQUISICAO_TECIDOS);
 
-		for (String email : emails) {
-			if (email != null)
-				Email.sendEmail(assunto, corpoEmail, email);
+		for (String destinatario : emails) {
+			if (destinatario != null) {
+				
+				System.out.println("Envio de Email");
+				System.out.println("destinatario: " + destinatario);
+				System.out.println("remetente: " + configuracoes.getRemetenteEmail());
+				System.out.println("smtp: " + configuracoes.getSmtpEmail());
+				System.out.println("porta: " + configuracoes.getPortaEmail());
+				System.out.println("senha: " + configuracoes.getSenhaEmail());
+				
+				email.enviar(assunto, corpoEmail, destinatario);
+			}
 		}
 
 		return requisicao;
