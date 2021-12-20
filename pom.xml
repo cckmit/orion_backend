@@ -12,11 +12,11 @@
 	<groupId>br.com.live</groupId>
 	<artifactId>orion-backend</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>00002-SNAPSHOT</version>
 	<name>Sistema Orion</name>
 	<description>Orion - Backend</description>
 	<properties>
-		<java.version>11</java.version>		
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -85,6 +85,17 @@
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-email -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-email</artifactId>
+			<version>1.5</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.7</version>
 		</dependency>
 	</dependencies>
 
