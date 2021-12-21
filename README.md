@@ -15,13 +15,10 @@ Acessar o diretório do projeto:
 
 Exemplo: C:\live\workspace\orion-backend
 
-## Revisar configurações antes de gerar o executável
+## As propriedades com as configurações do ambiente de desenvolvimento e produção estão separadas nos arquivos:
 
-### Alterar arquivo application.properties
+### application-dev.properties (desenvolvimento)
 
-Apontar aplicação para a base de produção e porta 8081 (essa é a porta que está disponível para o Orion-Backend no servidor micro 23).
-
-BASE DE TESTE
 spring.jpa.show-sql=false
 spring.jpa.hibernate.ddl-auto=none
 spring.jpa.generate-ddl: false
@@ -32,7 +29,8 @@ spring.datasource.password=teste
 spring.datasource.initialization-mode=always
 server.port = 8080
 
-BASE DE PRODUCAO
+### application-prod.properties (produção)
+
 spring.jpa.show-sql=false
 spring.jpa.hibernate.ddl-auto=none
 spring.jpa.generate-ddl: false
@@ -43,18 +41,15 @@ spring.datasource.password=ORACLE
 spring.datasource.initialization-mode=always
 server.port = 8081
 
-
-Após revisar as configurações, rodar os comandos:
+Rodar os comandos:
 
 ### `mvn clean install`
 
 Estem comando irá gerar o arquivo jar executável na pasta target do projeto.
 
+### `java -jar -Dspring.profiles.active=prod nome_arquivo.jar` 
 
-### `java -jar nome_arquivo.jar`
-
-Esse comando irá iniciar o servidor tomcat com toda a aplicação do backend.
-
+Esse comando irá iniciar o servidor tomcat apontando para o arquivo de configuração do ambiente de produção.
 
 # Gerar build do React (frontend)
 
@@ -63,11 +58,10 @@ Primeiro deve ser atualizado a pasta public/images com as imagens das referênci
 \\AD02\Arquivos\Grupos\Marketing - Empresa\Fotos BI\
 
 
-## Revisar configurações antes de gerar o build
+## As propriedades com as configurações do ambiente de desenvolvimento e produção estão nos arquivos:
 
-Apontar o caminho do servidor backend no arquivo:
-
-/services/api.js
+.env
+.env.production
 
 -> baseURL: "http://172.16.1.23:8081"  // Produção - Micro 23
 
