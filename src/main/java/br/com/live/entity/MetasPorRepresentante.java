@@ -13,7 +13,7 @@ public class MetasPorRepresentante {
 	public String id;
 	
 	@Column(name = "cod_estacao")
-	public int codEstacao;
+	public long codEstacao;
 	
 	@Column(name = "tipo_meta")
 	public int tipoMeta;
@@ -30,7 +30,7 @@ public class MetasPorRepresentante {
 		
 	}
 
-	public MetasPorRepresentante(int codEstacao, int codRepresentante, int tipoMeta, float meta, String descricaoRep) {
+	public MetasPorRepresentante(long codEstacao, int codRepresentante, int tipoMeta, float meta, String descricaoRep) {
 		this.id = codEstacao + "-" + codRepresentante + "-" + tipoMeta;
 		this.codEstacao = codEstacao;
 		this.tipoMeta = tipoMeta;

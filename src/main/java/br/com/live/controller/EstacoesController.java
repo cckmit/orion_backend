@@ -59,7 +59,7 @@ public class EstacoesController {
     }
     
     @RequestMapping(value = "/find-by-codigo/{codEstacao}", method = RequestMethod.GET)
-    public Estacao findByCodEstacao(@PathVariable("codEstacao") int codEstacao) {                  
+    public Estacao findByCodEstacao(@PathVariable("codEstacao") long codEstacao) {                  
         return estacaoRepository.findByCodEstacao(codEstacao);
     }
     
@@ -68,19 +68,35 @@ public class EstacoesController {
         return estacaoCustom.findRepresentantes();
     }
     
+    @RequestMapping(value = "/find-meta-representante-by-idMeta/{idMetas}", method = RequestMethod.GET)
+    public MetasPorRepresentante findRepresentantes(@PathVariable("idMetas") String idMetas) {                  
+        return metasPorRepresentanteRepository.findByIdMetas(idMetas);
+    }
+    
+    @RequestMapping(value = "/find-meta-venda-by-idMeta/{idMetas}", method = RequestMethod.GET)
+    public MetasDaEstacao findVendas(@PathVariable("idMetas") String idMetas) {      
+        return metasDaEstacaoRepository.findByIdMetas(idMetas);
+    }
+    
     @RequestMapping(value = "/save-estacao", method = RequestMethod.POST)
     public Estacao saveEstacao(@RequestBody BodyEstacao body) {                  
     	return estacaoService.saveEstacao(body.codEstacao,body.descricao,body.catalogo);
     }
     
     @RequestMapping(value = "/find-metas-vendas/{codEstacao}/{tipoMeta}", method = RequestMethod.GET)
-    public List<MetasDaEstacao> findMetasVendas(@PathVariable("codEstacao") int codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
+    public List<MetasDaEstacao> findMetasVendas(@PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
         return metasDaEstacaoRepository.findByCodEstacaoAndTipoMeta(codEstacao, tipoMeta);
     }
     
     @RequestMapping(value = "/find-metas-representante/{codEstacao}/{tipoMeta}", method = RequestMethod.GET)
-    public List<MetasPorRepresentante> findMetasRepresentante(@PathVariable("codEstacao") int codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
+    public List<MetasPorRepresentante> findMetasRepresentante(@PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
         return metasPorRepresentanteRepository.findByCodEstacaoAndTipoMeta(codEstacao, tipoMeta);
+    }
+    
+    @RequestMapping(value = "/copiar-representantes/{codEstacao}/{tipoMeta}", method = RequestMethod.GET)
+    public List<MetasPorRepresentante> copiarRepresentantes(@PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
+    	estacaoService.copiarRepresentantes(codEstacao, tipoMeta);
+    	return metasPorRepresentanteRepository.findByCodEstacaoAndTipoMeta(codEstacao, tipoMeta);
     }
     
     @RequestMapping(value = "/save-metas", method = RequestMethod.POST)
@@ -94,19 +110,19 @@ public class EstacoesController {
     }
     
     @RequestMapping(value = "/delete-metas/{codEstacao}/{tipoMeta}/{idMeta}", method = RequestMethod.DELETE)
-    public List<MetasDaEstacao> deleteMetas(@PathVariable("codEstacao") int codEstacao, @PathVariable("tipoMeta") int tipoMeta, @PathVariable("idMeta") String idMeta) {                  
+    public List<MetasDaEstacao> deleteMetas(@PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta, @PathVariable("idMeta") String idMeta) {                  
         estacaoService.excluirMetas(idMeta);
         return metasDaEstacaoRepository.findByCodEstacaoAndTipoMeta(codEstacao, tipoMeta);
     }
     
     @RequestMapping(value = "/delete-metas-representante/{codEstacao}/{tipoMeta}/{idMeta}", method = RequestMethod.DELETE)
-    public List<MetasPorRepresentante> deleteMetasRepresentante(@PathVariable("codEstacao") int codEstacao, @PathVariable("tipoMeta") int tipoMeta, @PathVariable("idMeta") String idMeta) {                  
+    public List<MetasPorRepresentante> deleteMetasRepresentante(@PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta, @PathVariable("idMeta") String idMeta) {                  
         estacaoService.excluirMetasRepresentante(idMeta);
         return metasPorRepresentanteRepository.findByCodEstacaoAndTipoMeta(codEstacao, tipoMeta);
     }
     
     @RequestMapping(value = "/find-tabelas-preco/{codEstacao}", method = RequestMethod.GET)
-    public List<ConsultaEstacaoTabelaPreco> findTabelasPreco(@PathVariable("codEstacao") int codEstacao) {                  
+    public List<ConsultaEstacaoTabelaPreco> findTabelasPreco(@PathVariable("codEstacao") long codEstacao) {                  
         return estacaoCustom.findTabelasPreco(codEstacao);
     }
     
@@ -116,7 +132,7 @@ public class EstacoesController {
     }
     
     @RequestMapping(value = "/delete-estacao-tabela/{codEstacao}/{id}", method = RequestMethod.DELETE)
-    public List<ConsultaEstacaoTabelaPreco> deleteEstacaoTabelaPreco(@PathVariable("codEstacao") int codEstacao, @PathVariable("id") String id) {                  
+    public List<ConsultaEstacaoTabelaPreco> deleteEstacaoTabelaPreco(@PathVariable("codEstacao") long codEstacao, @PathVariable("id") String id) {                  
         estacaoService.excluirEstacaoTabela(id);
         return estacaoCustom.findTabelasPreco(codEstacao);
     }
@@ -153,14 +169,34 @@ public class EstacoesController {
     }
     
     @RequestMapping(value = "/delete-agrupador/{codEstacao}/{id}", method = RequestMethod.DELETE)
-    public List<ConsultaEstacaoAgrupadores> deleteEstacaoAgrupador(@PathVariable("codEstacao") int codEstacao, @PathVariable("id") String id) {                  
+    public List<ConsultaEstacaoAgrupadores> deleteEstacaoAgrupador(@PathVariable("codEstacao") long codEstacao, @PathVariable("id") String id) {                  
         estacaoService.excluirEstacaoAgrupador(id);
         return estacaoCustom.findAgrupadoresGrid(codEstacao);
+    }
+    
+    @RequestMapping(value = "/delete-estacao/{codEstacao}", method = RequestMethod.DELETE)
+    public void deleteEstacao(@PathVariable("codEstacao") long codEstacao) {                  
+        estacaoService.excluirEstacao(codEstacao);
+    }
+    
+    @RequestMapping(value = "/delete-agrupador-total/{codAgrupador}", method = RequestMethod.DELETE)
+    public void deleteAgrupador(@PathVariable("codAgrupador") int codAgrupador) {                  
+        estacaoService.excluirAgrupador(codAgrupador);
     }
     
     @RequestMapping(value = "/find-estacao-agrupador/{codEstacao}", method = RequestMethod.GET)
     public List<ConsultaEstacaoAgrupadores> findEstacaoAgrupador(@PathVariable("codEstacao") int codEstacao) {                  
         return estacaoCustom.findAgrupadoresGrid(codEstacao);
+    }
+    
+    @RequestMapping(value = "/find-desc-catalogo/{codCatalogo}", method = RequestMethod.GET)
+    public String findDescCatalogo(@PathVariable("codCatalogo") int codCatalogo) {                  
+        return estacaoCustom.findDescCatalogo(codCatalogo);
+    }
+    
+    @RequestMapping(value = "/duplicar-estacao/{codEstacaoAnt}", method = RequestMethod.GET)
+    public Estacao duplicarEstacao(@PathVariable("codEstacaoAnt") long codEstacaoAnt) {                  
+        return estacaoService.duplicarCadastro(codEstacaoAnt);
     }
     
     @RequestMapping(value = "/save-estacao-agrupadores", method = RequestMethod.POST)

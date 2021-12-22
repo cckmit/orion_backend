@@ -13,7 +13,7 @@ public class MetasDaEstacao {
 	public String id;
 	
 	@Column(name = "cod_estacao")
-	public int codEstacao;
+	public long codEstacao;
 	
 	public int mes;
 	
@@ -29,7 +29,7 @@ public class MetasDaEstacao {
 		
 	}
 
-	public MetasDaEstacao(int codEstacao, int mes, int ano, int tipoMeta, float percDistribuicao) {
+	public MetasDaEstacao(long codEstacao, int mes, int ano, int tipoMeta, float percDistribuicao) {
 		this.id = codEstacao + "-" + mes + "-" + ano + "-" + tipoMeta;
 		this.codEstacao = codEstacao;
 		this.mes = mes;

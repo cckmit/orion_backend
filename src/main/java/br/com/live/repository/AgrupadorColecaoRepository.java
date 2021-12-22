@@ -16,4 +16,6 @@ public interface AgrupadorColecaoRepository extends JpaRepository<AgrupadorColec
 	AgrupadorColecao findByIdComposto(String idComposto);
 	
 	void deleteById(String id);
+	
+	void deleteByCodAgrupador(int codAgrupador);
 }

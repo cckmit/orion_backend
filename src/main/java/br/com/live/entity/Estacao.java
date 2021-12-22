@@ -11,7 +11,7 @@ public class Estacao {
 
 	@Id	
 	@Column(name = "cod_estacao")
-	public int codEstacao;
+	public long codEstacao;
 	
 	public String descricao;
 	public int catalogo;
@@ -20,7 +20,7 @@ public class Estacao {
 		
 	}
 
-	public Estacao(int codEstacao, String descricao, int catalogo) {
+	public Estacao(long codEstacao, String descricao, int catalogo) {
 		this.codEstacao = codEstacao;
 		this.descricao = descricao;
 		this.catalogo = catalogo;

@@ -15,7 +15,7 @@ public interface EstacaoRepository extends JpaRepository<Estacao, Integer> {
 	List<Estacao> findAll();
 	
 	@Query("SELECT u FROM Estacao u where u.codEstacao = :codEstacao")
-	Estacao findByCodEstacao(int codEstacao);
+	Estacao findByCodEstacao(long codEstacao);
 	
-	void deleteByCodEstacao(int codEstacao);
+	void deleteByCodEstacao(long codEstacao);
 }

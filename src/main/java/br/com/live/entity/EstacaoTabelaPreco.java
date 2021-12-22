@@ -13,7 +13,7 @@ public class EstacaoTabelaPreco {
 	public String id;
 	
 	@Column(name = "cod_estacao")
-	public int codEstacao;
+	public long codEstacao;
 	
 	@Column(name = "col_tab")
 	public int colTab;
@@ -28,7 +28,7 @@ public class EstacaoTabelaPreco {
 		
 	}
 
-	public EstacaoTabelaPreco(int codEstacao, int colTab, int mesTab, int seqTab) {
+	public EstacaoTabelaPreco(long codEstacao, int colTab, int mesTab, int seqTab) {
 		this.id = codEstacao + "-" + colTab + "-" + mesTab + "-" + seqTab;
 		this.codEstacao = codEstacao;
 		this.colTab = colTab;

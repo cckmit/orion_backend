@@ -1,5 +1,7 @@
 package br.com.live.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,5 +14,8 @@ public interface EstacaoTabelaPrecoRepository extends JpaRepository<EstacaoTabel
 	@Query("SELECT u FROM EstacaoTabelaPreco u where u.id = :id")
 	EstacaoTabelaPreco findByIdComposto(String id);
 	
-	void deleteByCodEstacao(int codEstacao);
+	@Query("SELECT u FROM EstacaoTabelaPreco u where u.codEstacao = :codEstacao")
+	List<EstacaoTabelaPreco> findByCodEstacao(long codEstacao);
+	
+	void deleteByCodEstacao(long codEstacao);
 }

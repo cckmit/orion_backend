@@ -2,6 +2,8 @@ package br.com.live.service;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import br.com.live.custom.EstacaoCustom;
@@ -23,6 +25,7 @@ import br.com.live.repository.MetasDaEstacaoRepository;
 import br.com.live.repository.MetasPorRepresentanteRepository;
 
 @Service
+@Transactional
 public class EstacaoService {
 	
 	private final EstacaoRepository estacaoRepository;
@@ -155,6 +158,100 @@ public class EstacaoService {
 		return estacaoCustom.findAgrupadoresGrid(codEstacao);
 	}
 	
+	public void copiarRepresentantes(long codEstacao, int tipoMeta) {
+		MetasPorRepresentante metasRepCopia;
+		
+		List<MetasPorRepresentante> vendasRep = metasPorRepresentanteRepository.findByCodEstacaoAndTipoMeta(codEstacao, tipoMeta);
+		
+		if (tipoMeta == 1) {
+			estacaoCustom.deleteByCodEstacaoAndTipoMeta(codEstacao, 2);
+		} else {
+			estacaoCustom.deleteByCodEstacaoAndTipoMeta(codEstacao, 1);
+		}
+		
+		for (MetasPorRepresentante dadosRep : vendasRep) {
+			if (tipoMeta == 1) {
+				metasRepCopia = new MetasPorRepresentante(dadosRep.codEstacao, dadosRep.codRepresentante, 2, dadosRep.meta, dadosRep.descricaoRep);
+			} else {
+				metasRepCopia = new MetasPorRepresentante(dadosRep.codEstacao, dadosRep.codRepresentante, 1, dadosRep.meta, dadosRep.descricaoRep);
+			}
+			metasPorRepresentanteRepository.save(metasRepCopia);
+		}	
+	}
+	
+	public Estacao duplicarCadastro(long codEstacaoOrigem) {
+		Estacao estacao = estacaoRepository.findByCodEstacao(codEstacaoOrigem);
+		
+		Estacao dadosEstacao = saveEstacao(0, estacao.descricao + "(CÓPIA DA ESTAÇÃO " + codEstacaoOrigem + ")", estacao.catalogo);
+		
+		gravarNovaEstacao(codEstacaoOrigem, dadosEstacao.codEstacao);
+		
+		return dadosEstacao;
+	}
+	
+	public void gravarNovaEstacao(long codEstacaoOrigem, long codEstacaoDestino) {	
+		gravarMetasDaEstacao(codEstacaoOrigem, codEstacaoDestino, 1);
+		gravarMetasDaEstacao(codEstacaoOrigem, codEstacaoDestino, 2);
+		
+		gravarMetasRepresentantes(codEstacaoOrigem, codEstacaoDestino, 1);
+		gravarMetasRepresentantes(codEstacaoOrigem, codEstacaoDestino, 2);
+		
+		gravarTabelasPreco(codEstacaoOrigem, codEstacaoDestino);
+		gravarAgrupadores(codEstacaoOrigem, codEstacaoDestino);
+	}
+	
+	public void gravarMetasDaEstacao(long codEstacaoOrigem, long codEstacaoDestino, int tipoMeta) {
+		MetasDaEstacao dadosImportados;
+		
+		List<MetasDaEstacao> dadosEstacaoVendas = metasDaEstacaoRepository.findByCodEstacaoAndTipoMeta(codEstacaoOrigem, tipoMeta);
+		
+		for (MetasDaEstacao estacaoVendas : dadosEstacaoVendas) {
+			dadosImportados = new MetasDaEstacao(codEstacaoDestino, estacaoVendas.mes, estacaoVendas.ano, estacaoVendas.tipoMeta, estacaoVendas.percDistribuicao);
+			metasDaEstacaoRepository.save(dadosImportados);
+		}
+	}
+	
+	public void gravarMetasRepresentantes(long codEstacaoOrigem, long codEstacaoDestino, int tipoMeta) {
+		MetasPorRepresentante dadosImportados;
+		
+		List<MetasPorRepresentante> dadosMetasRepresentante= metasPorRepresentanteRepository.findByCodEstacaoAndTipoMeta(codEstacaoOrigem, tipoMeta);
+		
+		for (MetasPorRepresentante estacaoRep : dadosMetasRepresentante) {
+			dadosImportados = new MetasPorRepresentante(codEstacaoDestino, estacaoRep.codRepresentante, estacaoRep.tipoMeta, estacaoRep.meta, estacaoRep.descricaoRep);
+			metasPorRepresentanteRepository.save(dadosImportados);
+		}
+	}
+	
+	public void gravarTabelasPreco(long codEstacaoOrigem, long codEstacaoDestino) {
+		EstacaoTabelaPreco dadosImportados;
+		
+		List<EstacaoTabelaPreco> dadosTabelasPreco = estacaoTabelaPrecoRepository.findByCodEstacao(codEstacaoOrigem);
+		
+		for (EstacaoTabelaPreco tabelaPreco : dadosTabelasPreco) {
+			dadosImportados = new EstacaoTabelaPreco(codEstacaoDestino,tabelaPreco.colTab, tabelaPreco.mesTab, tabelaPreco.seqTab);
+			estacaoTabelaPrecoRepository.save(dadosImportados);
+		}
+	}
+	
+	public void gravarAgrupadores(long codEstacaoOrigem, long codEstacaoDestino) {
+		EstacaoAgrupador dadosImportados;
+		
+		List<EstacaoAgrupador> dadosAgrupador = estacaoAgrupadorRepository.findByCodEstacao(codEstacaoOrigem);
+		
+		for (EstacaoAgrupador agrupador : dadosAgrupador) {
+			dadosImportados = new EstacaoAgrupador(agrupador.codAgrupador, codEstacaoDestino);
+			estacaoAgrupadorRepository.save(dadosImportados);
+		}
+	}
+	
+	public void excluirEstacao(long codEstacao) {
+		metasDaEstacaoRepository.deleteByCodEstacao(codEstacao);
+		metasPorRepresentanteRepository.deleteByCodEstacao(codEstacao);
+		estacaoTabelaPrecoRepository.deleteByCodEstacao(codEstacao);
+		estacaoAgrupadorRepository.deleteByCodEstacao(codEstacao);
+		estacaoRepository.deleteByCodEstacao(codEstacao);
+	}
+
 	public void excluirMetas(String id) {
 		metasDaEstacaoRepository.deleteById(id);
 	}
@@ -173,5 +270,10 @@ public class EstacaoService {
 	
 	public void excluirEstacaoAgrupador(String idEstacaoAgrupador) {
 		estacaoAgrupadorRepository.deleteById(idEstacaoAgrupador);
+	}
+	
+	public void excluirAgrupador(int codAgrupador) {
+		agrupadorColecaoRepository.deleteByCodAgrupador(codAgrupador);
+		agrupadorRepository.deleteById(codAgrupador);
 	}
 }

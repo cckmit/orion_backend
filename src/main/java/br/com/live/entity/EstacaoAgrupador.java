@@ -12,17 +12,17 @@ public class EstacaoAgrupador {
 	@Id
 	public String id;
 	
+	@Column(name = "cod_estacao")
+	public long codEstacao;
+	
 	@Column(name = "cod_agrupador")
 	public int codAgrupador;
-	
-	@Column(name = "cod_estacao")
-	public int codEstacao;
 	
 	public EstacaoAgrupador() {
 		
 	}
 
-	public EstacaoAgrupador(int codAgrupador, int codEstacao) {
+	public EstacaoAgrupador(int codAgrupador, long codEstacao) {
 		this.id = codAgrupador + "-" + codEstacao;
 		this.codAgrupador = codAgrupador;
 		this.codEstacao = codEstacao;
