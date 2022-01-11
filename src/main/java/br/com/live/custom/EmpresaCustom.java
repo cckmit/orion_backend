@@ -39,4 +39,10 @@ public class EmpresaCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Empregado.class)); 
 	}
 
+	public List<Empresa> findAllEmpresas() {
+
+		String query = " select lpad(nvl(a.cgc_9,''),8,0) || lpad(nvl(a.cgc_4,''),4,0) || lpad(nvl(a.cgc_2,''),2,0) cnpjEmpresa, a.nome_empresa nome from fatu_500 a ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Empresa.class));
+	}
 }
