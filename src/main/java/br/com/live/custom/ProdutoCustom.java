@@ -316,6 +316,14 @@ public class ProdutoCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
 	}
+	
+	public List<Colecao> findAllColecoesWithPermanentes() {
+		String query = " select b.colecao id, b.descr_colecao descricao from basi_140 b "
+				+ " where b.descricao_espanhol not like '%COLECAO ANTIGA%' "
+				+ " order by b.colecao ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
+	}
 
 	public List<Colecao> findAllColecoesPermanentes() {
 

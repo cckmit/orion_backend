@@ -82,8 +82,8 @@ public class EstacaoCustom {
 
 		String query = " select a.id, a.cod_agrupador codAgrupador, a.colecao, a.sub_colecao subColecao, b.descr_colecao descColecao, c.ds_agrupador descSubColecao from orion_076 a, basi_140 b, basi_630 c "
 				+ " where a.cod_agrupador = " + codAgrupador + " and a.colecao = b.colecao "
-				+ " and a.sub_colecao = c.cd_agrupador ";
-
+				+ " and a.sub_colecao = c.cd_agrupador (+)";
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaColecoesAgrupador.class));
 	}
 

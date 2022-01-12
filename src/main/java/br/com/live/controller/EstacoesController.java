@@ -159,6 +159,7 @@ public class EstacoesController {
     
     @RequestMapping(value = "/save-agrupadores-colecao", method = RequestMethod.POST)
     public List<ConsultaColecoesAgrupador> saveAgrupadorColecao(@RequestBody BodyAgrupador body) {
+    	System.out.println("teste");
     	return estacaoService.saveColecaoAgrupador(body.codAgrupador, body.colecao, body.subColecao);
     }
     
