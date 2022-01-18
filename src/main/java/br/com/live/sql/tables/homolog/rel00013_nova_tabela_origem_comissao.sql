@@ -38,3 +38,6 @@ VALUES (24,'Movimentação de Bens','Patrimonial','/movimentacao');
 -------------------------------------------------------------------------------------
 INSERT INTO orion_002 (id, descricao, modulo, path)
 VALUES (25,'Consultar Movimentações','Patrimonial','/consultar-movimentacoes');
+-------------------------------------------------------------------------------------
+INSERT INTO orion_002 (id, descricao, modulo, path)
+VALUES (26,'Liberar Sugestão','Comercial','/liberar-sugestao');

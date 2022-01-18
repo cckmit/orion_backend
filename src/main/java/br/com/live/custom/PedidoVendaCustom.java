@@ -29,4 +29,27 @@ public class PedidoVendaCustom {
 		
 		jdbcTemplate.update(query);
 	}
+	
+	public int findSugestaoLocked(int codigoEmpresa) {
+
+		Integer sugestao;
+
+		String query = " select k.nr_sugestao from fatu_503 k "
+				+ " where k.sugestao_libera = 1 "
+				+ " and k.codigo_empresa = " + codigoEmpresa;
+
+		try {
+			sugestao = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			sugestao = 0;
+		}
+		return sugestao;
+	}
+	
+	public void liberarSugestao(int numeroSugestao) {
+		String query = " update fatu_503 "
+				+ "set sugestao_libera = 0"
+				+ "where nr_sugestao = " + numeroSugestao;
+		jdbcTemplate.update(query);
+	}
 }

@@ -47,4 +47,14 @@ public class PedidoVendaController {
     	pedidoVendaService.salvarComissaoOrigem(body.percComissao);
     	return pedidoVendaCustom.findOrigensPedido();
     }
+    
+    @RequestMapping(value = "/find-sug-locked/{empresaSelect}", method = RequestMethod.GET)
+    public Integer findSugestaoLocked(@PathVariable("empresaSelect") int empresaSelect) {              
+        return pedidoVendaCustom.findSugestaoLocked(empresaSelect);
+    }
+    
+    @RequestMapping(value = "/liberar-sugestao/{numeroSugestao}", method = RequestMethod.GET)
+    public void liberarSugestao(@PathVariable("numeroSugestao") int numeroSugestao) {              
+        pedidoVendaCustom.liberarSugestao(numeroSugestao);
+    }
 }
