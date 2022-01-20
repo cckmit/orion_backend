@@ -1,5 +1,8 @@
 package br.com.live.body;
 
+import java.util.List;
+
+import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyTarefas {
 	
@@ -17,5 +20,8 @@ public class BodyTarefas {
 	public String dataPrevista;
 	public int numDocInterno;
 	public int numDocFornecedor;
-
+	
+	public List<ConteudoChaveNumerica> usuarios;
+	public String dataInicio;
+	public String dataFim;
 }

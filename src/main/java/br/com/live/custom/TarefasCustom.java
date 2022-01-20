@@ -9,7 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaDadosLancHoras;
 import br.com.live.model.ConsultaGridTarefas;
+import br.com.live.model.ConsultaHorasLancadas;
 import br.com.live.model.ConsultaHorasTarefa;
+import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 
 @Repository
 public class TarefasCustom {
@@ -128,4 +131,13 @@ public class TarefasCustom {
 		
 	}
 	
+	public List<ConsultaHorasLancadas> findLancamentoHoras(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim) {
+		String query = " select a.id, a.id_usuario || ' - ' || b.nome usuario, a.data_lancamento data, a.id_tarefa || ' - ' || c.titulo tarefa, c.situacao, c.origem, a.tempo_gasto tempo, c.sistema from orion_adm_002 a, orion_001 b, orion_adm_001 c "
+				+ " where a.id_usuario = b.id "
+				+ " and a.id_tarefa= c.id "
+				+ " and a.id_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ")"
+				+ " and a.data_lancamento BETWEEN ? and ? "
+				+ " order by a.data_lancamento desc ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHorasLancadas.class), FormataData.parseStringToDate(dataInicio), FormataData.parseStringToDate(dataFim));
+	}
 }

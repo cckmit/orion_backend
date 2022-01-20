@@ -16,6 +16,7 @@ import br.com.live.custom.TarefasCustom;
 import br.com.live.entity.Tarefas;
 import br.com.live.model.ConsultaDadosLancHoras;
 import br.com.live.model.ConsultaGridTarefas;
+import br.com.live.model.ConsultaHorasLancadas;
 import br.com.live.model.ConsultaHorasTarefa;
 import br.com.live.repository.TarefasRepository;
 import br.com.live.service.TarefasService;
@@ -92,5 +93,10 @@ public class TarefasController {
 	@RequestMapping(value = "/consultar-atribuidas/{idUsuario}/{listarAbertos}", method = RequestMethod.GET)
 	public List<ConsultaDadosLancHoras> consultarAtribuidas(@PathVariable("idUsuario") int idUsuario, @PathVariable("listarAbertos") boolean listarAbertos) {
 		return tarefasCustom.findAllTarefas(idUsuario, listarAbertos); 
+	}
+	
+	@RequestMapping(value = "/consultar-horas-lancadas", method = RequestMethod.POST)
+	public List<ConsultaHorasLancadas> consultarAtribuidas(@RequestBody BodyTarefas body) {
+		return tarefasCustom.findLancamentoHoras(body.usuarios, body.dataInicio, body.dataFim);
 	}	
 }

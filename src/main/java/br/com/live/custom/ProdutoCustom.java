@@ -336,7 +336,7 @@ public class ProdutoCustom {
 	
 	public List<Colecao> findAllSubColecoes() {
 
-		String query = " select b.cd_agrupador id, b.ds_agrupador descricao from basi_630 b ";
+		String query = " select b.cd_agrupador id, b.ds_agrupador descricao from basi_630 b order by b.cd_agrupador ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
 	}
