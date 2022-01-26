@@ -1,6 +1,7 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.model.ConsultaPreOrdemProducaoItem;
 import br.com.live.model.GradeDistribuicaoGrupoItem;
 import br.com.live.model.ConsultaProgramadoReferencia;
 import br.com.live.bo.FormataParametrosPlanoMestre;
@@ -271,6 +273,35 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducao.class));
 	}
 
+	public List<ConsultaPreOrdemProducaoItem> findPreOrdens(String planosMestres, String embarques, String referencias) {
+		/*
+		public long id; ok
+		public long idPlanoMestre;
+		public String referencia; ok
+		public int periodo; ok
+		public String alternativa; ok
+		public int roteiro; ok
+		public int quantidade; ok
+		public String tamanho;
+		public String cor;
+		public Date dataEmbarque;
+		*/
+		String query = " select a.id, a.num_plano_mestre, a.referencia, b.sub, b.item, a.alternativa, a.roteiro, b.quantidade, c.data_entrega "
+        + " from orion_020 a, orion_021 b, basi_590 c "
+	    + " where a.num_plano_mestre in (" + planosMestres + ") "
+	    + " and a.ordem_gerada = 0 "
+	    + " and b.num_id_ordem = a.id "
+	    + " and c.nivel = '1' "
+	    + " and c.grupo = a.referencia "
+	    + " and c.subgrupo = b.sub "
+	    + " and c.item = b.item "
+	    + " and a.referencia in (" + referencias + ") "
+	    + " and c.grupo_embarque in (" + embarques + ") "
+	    + " order by a.referencia, b.item, b.sub, c.data_entrega ";
+				
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducaoItem.class));
+	}
+	
 	public int findQtdePecasProgByPreOrdens(List<Integer> preOrdens) {
 
 		int qtdePecas = 0;

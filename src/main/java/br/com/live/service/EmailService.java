@@ -5,11 +5,11 @@ import org.apache.commons.mail.HtmlEmail;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Email {
+public class EmailService {
 	
-	private final Configuracoes configuracoes;
+	private final ConfiguracoesService configuracoes;
 	
-	public Email(Configuracoes configuracoes) {
+	public EmailService(ConfiguracoesService configuracoes) {
 		this.configuracoes = configuracoes;
 	}
 	
@@ -33,7 +33,5 @@ public class Email {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
-
 }

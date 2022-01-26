@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class Configuracoes {
+public class ConfiguracoesService {
 	
 	@Value("${app.url.front-end}")
     private String urlFrontEnd;

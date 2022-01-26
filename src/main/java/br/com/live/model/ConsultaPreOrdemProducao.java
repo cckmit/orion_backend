@@ -3,6 +3,7 @@ package br.com.live.model;
 public class ConsultaPreOrdemProducao {
 
 	public long id;
+	public long idPlanoMestre;
 	public String referencia;
 	public int periodo;
 	public String alternativa;
@@ -13,6 +14,12 @@ public class ConsultaPreOrdemProducao {
 	public String status;
 	public String mensagemGravacaoOrdem;
 	
+	public long getIdPlanoMestre() {
+		return idPlanoMestre;
+	}
+	public void setIdPlanoMestre(long idPlanoMestre) {
+		this.idPlanoMestre = idPlanoMestre;
+	}
 	public String getMensagemGravacaoOrdem() {
 		return mensagemGravacaoOrdem;
 	}

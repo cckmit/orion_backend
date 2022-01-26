@@ -211,7 +211,7 @@ public class PrevisaoVendasCustom {
 		int qtdePrevisao = 0;
 		String query = "";
 
-		query = " select sum(o.qtde_previsao) from orion_042 o "
+		query = " select nvl(sum(o.qtde_previsao),0) from orion_042 o "
 		+ " where o.id_previsao_vendas in ( " + idsPrevisao + ")"
 		+ " and o.grupo = '" + grupo + "'" 
 		+ " and o.item = '" + item + "'";		
@@ -223,13 +223,13 @@ public class PrevisaoVendasCustom {
 		}
 
 		if (qtdePrevisao <= 0) {
-			query = " select o.qtde_previsao from orion_041 o " 
+			query = " select nvl(sum(o.qtde_previsao),0) from orion_041 o " 
 		    + " where o.id_previsao_vendas in (" + idsPrevisao + ")"
 			+ " and o.grupo = '" + grupo + "'" 
 		    + " and o.item = '" + item + "'";
 
 			try {
-				qtdePrevisao = jdbcTemplate.queryForObject(query, Integer.class);
+				qtdePrevisao = jdbcTemplate.queryForObject(query, Integer.class);				
 			} catch (Exception e) {
 				qtdePrevisao = 0;
 			}

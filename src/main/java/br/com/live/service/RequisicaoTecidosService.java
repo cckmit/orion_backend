@@ -21,13 +21,13 @@ public class RequisicaoTecidosService {
 	private final RequisicaoTecidosItemRepository requisicaoTecidosItemRepository;
 	private final ProdutoCustom produtoCustom;
 	private final NotificacaoService notificacaoService;
-	private final Configuracoes configuracoes;
-	private final Email email;
+	private final ConfiguracoesService configuracoes;
+	private final EmailService email;
 
 	public RequisicaoTecidosService(RequisicaoTecidosRepository requisicaoTecidosRepository,
 			RequisicaoTecidosItemRepository requisicaoTecidosItemRepository, ProdutoCustom produtoCustom,
-			NotificacaoService notificacaoService, Configuracoes configuracoes,
-			Email email) {
+			NotificacaoService notificacaoService, ConfiguracoesService configuracoes,
+			EmailService email) {
 		this.requisicaoTecidosRepository = requisicaoTecidosRepository;
 		this.requisicaoTecidosItemRepository = requisicaoTecidosItemRepository;
 		this.produtoCustom = produtoCustom;
