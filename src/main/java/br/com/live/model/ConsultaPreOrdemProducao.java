@@ -1,5 +1,7 @@
 package br.com.live.model;
 
+import java.util.Date;
+
 public class ConsultaPreOrdemProducao {
 
 	public long id;
@@ -13,7 +15,15 @@ public class ConsultaPreOrdemProducao {
 	public int ordemGerada;
 	public String status;
 	public String mensagemGravacaoOrdem;
+	public Date dataEmbarque;
+	public double tempoCostura;
 	
+	public double getTempoCostura() {
+		return tempoCostura;
+	}
+	public void setTempoCostura(double tempoCostura) {
+		this.tempoCostura = tempoCostura;
+	}
 	public long getIdPlanoMestre() {
 		return idPlanoMestre;
 	}
@@ -87,5 +97,11 @@ public class ConsultaPreOrdemProducao {
 	}
 	public void setQuantidade(int quantidade) {
 		this.quantidade = quantidade;
+	}
+	public Date getDataEmbarque() {
+		return dataEmbarque;
+	}
+	public void setDataEmbarque(Date dataEmbarque) {
+		this.dataEmbarque = dataEmbarque;
 	}
 }

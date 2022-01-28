@@ -25,6 +25,7 @@ import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.LinhaProduto;
 import br.com.live.model.MarcacaoRisco;
+import br.com.live.model.NecessidadeTecidos;
 import br.com.live.model.Produto;
 import br.com.live.model.PublicoAlvo;
 import br.com.live.model.Roteiro;
@@ -673,6 +674,20 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaDadosRoteiro.class));
 	}
 	
+	public double findTempoCostura(String grupo, String sub, String item, int alternativa, int roteiro) {
+		
+		String query = " select nvl(sum(m.minutos_homem),0) minutos from mqop_050 m "
+		+ " where m.nivel_estrutura = '1' "
+		+ " and m.grupo_estrutura = '" + grupo + "'"
+		+ " and (m.subgru_estrutura = '" + sub + "' or m.subgru_estrutura = '000') "
+		+ " and (m.item_estrutura = '" + item + "' or m.item_estrutura = '000000') "
+		+ " and m.numero_alternati = " + alternativa
+		+ " and m.numero_roteiro = " + roteiro
+		+ " and m.codigo_estagio = 20 "; // Estágio de Costura
+				
+		return jdbcTemplate.queryForObject(query, Double.class);
+	}
+	
 	public List<ConsultaDadosEstrutura> findDadosEstrutura(String grupo, String sub, String item, int alternativa) {
 				
 		String query = " select basi_050.sequencia, basi_050.qtde_camadas qtdeCamadas, "
@@ -829,5 +844,88 @@ public class ProdutoCustom {
 		}
 		
 		return produtos;
+	}
+	
+ 	public List<NecessidadeTecidos> calcularNecessidadeTecido(String grupo, String sub, String item, int alternativa, int quantidade) {
+		
+		List<NecessidadeTecidos> tecidos = new ArrayList<NecessidadeTecidos> (); 
+		
+		String subTecido = "";
+		String itemTecido = "";
+		double consumoTecido = 0.0;		
+		double qtdeKgProg = 0.0;
+		double metrosTecido = 0.0;
+		double larguraRisco = 0.0;
+		double larguraFilete = 0.0;
+		double metrosOrdem = 0.0;
+		double qtdeTotMetrosTecido = 0.0;
+		double tirasLargura = 0.0;
+		double qtdePerdas = 0.0;		
+		
+		int riscoPadrao = findRiscoPadraoByCodigo(grupo);
+		
+		ConsultaDadosCompEstrutura dadosComponente;
+		ConsultaDadosFilete dadosFileteEstrutura;
+		ConsultaDadosFilete dadosFileteRisco;
+		ConsultaDadosFilete dadosFileteTecido;
+		
+		List<ConsultaDadosEstrutura> listaDadosEstrutura = findDadosEstrutura(grupo, sub, item, alternativa);
+				
+		for (ConsultaDadosEstrutura dadosEstrutura : listaDadosEstrutura) {
+			subTecido = dadosEstrutura.subComp;
+			itemTecido = dadosEstrutura.itemComp;
+			consumoTecido = dadosEstrutura.consumo;			
+			
+			if ((subTecido.equalsIgnoreCase("000"))||(consumoTecido == 0.000000)) {
+				dadosComponente = findDadosComponenteEstrutura(grupo, sub, dadosEstrutura.itemItem, dadosEstrutura.sequencia, alternativa);
+				subTecido = dadosComponente.sub;
+				consumoTecido = dadosComponente.consumo; 
+			}
+			
+			if (itemTecido.equalsIgnoreCase("000000")) {
+				dadosComponente = findDadosComponenteEstrutura(grupo, dadosEstrutura.subItem, item, dadosEstrutura.sequencia, alternativa);	
+				itemTecido = dadosComponente.item;				
+			}
+		
+			qtdeKgProg = (consumoTecido * (float) quantidade);
+			metrosTecido = 0.0; 
+			qtdeTotMetrosTecido = 0.0;
+			
+			dadosFileteEstrutura = findDadosFileteEstrutura(grupo, sub, item, dadosEstrutura.sequencia, alternativa);
+									 
+			if (dadosFileteEstrutura.tipoCorte == 2) {				
+				dadosFileteRisco = findDadosFileteRisco(grupo, riscoPadrao, dadosEstrutura.sequencia, alternativa);
+				
+				larguraFilete = dadosFileteEstrutura.larguraFilete; 
+				larguraRisco = dadosFileteRisco.larguraRisco;
+				
+				if (larguraRisco == 0.000) {				
+					dadosFileteTecido = findDadosFileteTecidos(dadosEstrutura.grupoComp, subTecido);
+					
+					if (dadosFileteTecido.tubularAberto == 2) larguraRisco = dadosFileteTecido.larguraTecido * 2;					
+				}	
+										
+				if (larguraRisco == 0.000) larguraRisco = 1.000;
+				if (larguraFilete == 0.000) larguraFilete = 1.000;
+				
+				metrosOrdem = ((double) quantidade * dadosFileteEstrutura.comprimentoFilete);					
+				
+				tirasLargura = larguraRisco / larguraFilete;
+				
+				if (tirasLargura == 0.000) tirasLargura = 1.000; 
+				
+				metrosTecido = metrosOrdem / tirasLargura; 
+				
+				if (dadosEstrutura.percPerdas > 0.000) {						
+					qtdePerdas = (dadosEstrutura.percPerdas * metrosTecido) / 100;
+					metrosTecido += qtdePerdas;  
+				}
+				
+				qtdeTotMetrosTecido += metrosTecido;		            								
+			}
+			
+			tecidos.add(new NecessidadeTecidos(dadosEstrutura.sequencia, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subTecido, itemTecido, qtdeKgProg, qtdeTotMetrosTecido));					
+		}
+		return tecidos;
 	}
 }

@@ -10,5 +10,6 @@ public class BodySugestaoReservaTecidos {
 	public List<ConteudoChaveNumerica> planosMestres ;
 	public List<ConteudoChaveNumerica> embarques ;
 	public List<ConteudoChaveAlfaNum> referencias ; 	
+	public List<ConteudoChaveAlfaNum> depositos ;
 	
 }

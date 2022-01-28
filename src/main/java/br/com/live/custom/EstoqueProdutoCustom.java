@@ -114,7 +114,7 @@ public class EstoqueProdutoCustom {
 		return q.getResultList();
 	}
 
-	public int findQtdeEstoqueByProdutoAndDepositos(String nivel, String grupo, String sub, String item, String depositos) {
+	public Double findQtdeEstoqueByProdutoAndDepositos(String nivel, String grupo, String sub, String item, String depositos) {
 		
 		String query = " select nvl(sum(a.qtde_estoque_atu),0) quantidade "
 		+ " from estq_040 a "
@@ -124,9 +124,9 @@ public class EstoqueProdutoCustom {
 		+ " and a.cditem_item = '" + item + "'"
 		+ " and a.deposito in (" + depositos + ")" ;
 				
-		return jdbcTemplate.queryForObject(query, Integer.class);		
+		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
-	
+
 	public List<Deposito> findAllDepositos() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "

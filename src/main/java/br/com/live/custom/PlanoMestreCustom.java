@@ -1,7 +1,6 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -18,6 +17,7 @@ import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.Produto;
 import br.com.live.model.ProgramacaoPlanoMestre;
+import br.com.live.util.ConverteLista;
 
 @Repository
 public class PlanoMestreCustom {
@@ -273,20 +273,65 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducao.class));
 	}
 
-	public List<ConsultaPreOrdemProducaoItem> findPreOrdens(String planosMestres, String embarques, String referencias) {
-		/*
-		public long id; ok
-		public long idPlanoMestre;
-		public String referencia; ok
-		public int periodo; ok
-		public String alternativa; ok
-		public int roteiro; ok
-		public int quantidade; ok
-		public String tamanho;
-		public String cor;
-		public Date dataEmbarque;
-		*/
-		String query = " select a.id, a.num_plano_mestre, a.referencia, b.sub, b.item, a.alternativa, a.roteiro, b.quantidade, c.data_entrega "
+	
+	public List<ConsultaPreOrdemProducao> findPreOrdensOrdenadosPorDataEmbarqueTempoCosturaByPlanosEmbarquesReferencias(String planosMestres, String embarques, String referencias) { 
+				
+		String query = " select pre_ordens_priorizadas.id, "
+	    + " pre_ordens_priorizadas.num_plano_mestre, "
+	    + " pre_ordens_priorizadas.referencia, "
+	    + " pre_ordens_priorizadas.alternativa, "
+	    + " pre_ordens_priorizadas.roteiro, "
+	    + " pre_ordens_priorizadas.data_entrega, "
+	    + " pre_ordens_priorizadas.quantidade, "
+	    + " pre_ordens_priorizadas.tempo_costura "
+	    + " from (select pre_ordens.id, "
+	    + " pre_ordens.num_plano_mestre, "
+	    + " pre_ordens.referencia, "
+	    + " pre_ordens.alternativa, "
+	    + " pre_ordens.roteiro, "
+	    + " pre_ordens.data_entrega, "
+	    + " sum(pre_ordens.quantidade) quantidade, "
+	    + " sum(pre_ordens.tempo_costura) tempo_costura "
+	    + " from (select a.id, "
+	    + " a.num_plano_mestre, "
+	    + " a.referencia, "       
+	    + " a.alternativa, "
+	    + " a.roteiro, "
+	    + " c.data_entrega, "
+	    + " b.sub, "
+	    + " b.item, "
+	    + " b.quantidade, "
+	    + " (select nvl(sum(m.minutos_homem),0) * b.quantidade from mqop_050 m "
+	    + " where m.nivel_estrutura = '1' "
+	    + " and m.grupo_estrutura = a.referencia "
+	    + " and (m.subgru_estrutura = b.sub or m.subgru_estrutura = '000') "
+	    + " and (m.item_estrutura = b.item or m.item_estrutura = '000000') "
+	    + " and m.numero_alternati = a.alternativa "
+	    + " and m.numero_roteiro = a.roteiro "
+	    + " and m.codigo_estagio = 20 "
+	    + " ) tempo_costura " 
+	    + " from orion_020 a, orion_021 b, basi_590 c " 
+	    + " where a.num_plano_mestre in (" + planosMestres + ")" 
+	    + " and a.ordem_gerada = 0 "
+	    + " and b.num_id_ordem = a.id " 
+	    + " and c.nivel = '1' "
+	    + " and c.grupo = a.referencia " 
+	    + " and c.subgrupo = b.sub "
+	    + " and c.item = b.item "
+	    + " and a.referencia in (" + referencias + ") "
+	    + " and c.grupo_embarque in (" + embarques + ") "
+	    + " ) pre_ordens "
+	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.alternativa, pre_ordens.roteiro, pre_ordens.data_entrega "
+	    + " ) pre_ordens_priorizadas "
+	    + " order by pre_ordens_priorizadas.data_entrega, pre_ordens_priorizadas.tempo_costura desc ";		
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducao.class));
+	}
+	
+	/*
+	public List<ConsultaPreOrdemProducaoItem> findPreOrdensItensByIdPreOrdem(long idPreOrdem) {
+
+		String query = " select a.id, a.num_plano_mestre idPlanoMestre, a.referencia, b.sub tamanho, b.item cor, a.alternativa alternativaItem, a.roteiro, b.quantidade, c.data_entrega dataEmbarque "
         + " from orion_020 a, orion_021 b, basi_590 c "
 	    + " where a.num_plano_mestre in (" + planosMestres + ") "
 	    + " and a.ordem_gerada = 0 "
@@ -297,17 +342,17 @@ public class PlanoMestreCustom {
 	    + " and c.item = b.item "
 	    + " and a.referencia in (" + referencias + ") "
 	    + " and c.grupo_embarque in (" + embarques + ") "
-	    + " order by a.referencia, b.item, b.sub, c.data_entrega ";
+	    + " order by c.data_entrega, a.referencia, b.item, b.sub ";
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducaoItem.class));
-	}
+	}*/
 	
 	public int findQtdePecasProgByPreOrdens(List<Integer> preOrdens) {
 
 		int qtdePecas = 0;
 
 		String query = "select sum(a.quantidade) " + " from orion_020 a " + " where a.id in ("
-				+ parseToString(preOrdens) + ") ";
+				+ ConverteLista.parseInteger(preOrdens) + ") ";
 
 		try {
 			qtdePecas = jdbcTemplate.queryForObject(query, Integer.class);
@@ -325,7 +370,7 @@ public class PlanoMestreCustom {
 		String query = " select sum(minutos.total_minutos) "
 				+ " from (select a.referencia, b.sub, b.item, b.quantidade, sum(f.minutos_homem), b.quantidade * sum(f.minutos_homem) total_minutos "
 				+ " from orion_020 a, orion_021 b, orion_016 c, orion_017 d, mqop_050 f " + " where a.id in ("
-				+ parseToString(preOrdens) + ") " + " and b.num_id_ordem = a.id "
+				+ ConverteLista.parseInteger(preOrdens) + ") " + " and b.num_id_ordem = a.id "
 				+ " and c.num_plano_mestre = a.num_plano_mestre " + " and c.grupo = a.referencia "
 				+ " and c.item = b.item " + " and d.num_item_plano_mestre = c.id " + " and f.nivel_estrutura = '1' "
 				+ " and f.grupo_estrutura = a.referencia "
@@ -342,13 +387,13 @@ public class PlanoMestreCustom {
 
 		return qtdeMinutos;
 	}
-
+	
 	public int findQtdeReferenciasProgByPreOrdens(List<Integer> preOrdens) {
 
 		int qtdeReferencias = 0;
 
 		String query = " select count(*) from (select a.referencia " + " from orion_020 a " + " where a.id in ("
-				+ parseToString(preOrdens) + ") " + " group by a.referencia) referencias ";
+				+ ConverteLista.parseInteger(preOrdens) + ") " + " group by a.referencia) referencias ";
 
 		try {
 			qtdeReferencias = jdbcTemplate.queryForObject(query, Integer.class);
@@ -364,7 +409,7 @@ public class PlanoMestreCustom {
 		int qtdeSKUs = 0;
 
 		String query = " select count(*) from (select a.referencia, b.sub, b.item " + " from orion_020 a, orion_021 b "
-				+ " where a.id in (" + parseToString(preOrdens) + ") " + " and b.num_id_ordem = a.id "
+				+ " where a.id in (" + ConverteLista.parseInteger(preOrdens) + ") " + " and b.num_id_ordem = a.id "
 				+ " group by a.referencia, b.sub, b.item) skus ";
 
 		try {
@@ -381,7 +426,7 @@ public class PlanoMestreCustom {
 		int qtdeLoteMedio = 0;
 
 		String query = " select sum(a.quantidade) / count(*) " + "  from orion_020 a " + " where a.id in ("
-				+ parseToString(preOrdens) + ") ";
+				+ ConverteLista.parseInteger(preOrdens) + ") ";
 
 		try {
 			qtdeLoteMedio = jdbcTemplate.queryForObject(query, Integer.class);
@@ -396,9 +441,9 @@ public class PlanoMestreCustom {
 
 		long id = 0;
 
-		String query = " select a.id " + "  from orion_020 a " + " where a.id in (" + parseToString(preOrdens) + ") "
+		String query = " select a.id " + "  from orion_020 a " + " where a.id in (" + ConverteLista.parseInteger(preOrdens) + ") "
 				+ "   and a.quantidade = (select max(b.quantidade) from orion_020 b "
-				+ "                        where b.id in (" + parseToString(preOrdens) + ")) " + "   and rownum = 1 ";
+				+ "                        where b.id in (" + ConverteLista.parseInteger(preOrdens) + ")) " + "   and rownum = 1 ";
 
 		try {
 			id = jdbcTemplate.queryForObject(query, Integer.class);
@@ -413,9 +458,9 @@ public class PlanoMestreCustom {
 
 		long id = 0;
 
-		String query = " select a.id " + "  from orion_020 a " + " where a.id in (" + parseToString(preOrdens) + ") "
+		String query = " select a.id " + "  from orion_020 a " + " where a.id in (" + ConverteLista.parseInteger(preOrdens) + ") "
 				+ "   and a.quantidade = (select min(b.quantidade) from orion_020 b "
-				+ "                        where b.id in (" + parseToString(preOrdens) + ")) " + "   and rownum = 1 ";
+				+ "                        where b.id in (" + ConverteLista.parseInteger(preOrdens) + ")) " + "   and rownum = 1 ";
 
 		try {
 			id = jdbcTemplate.queryForObject(query, Integer.class);
@@ -485,23 +530,9 @@ public class PlanoMestreCustom {
 		}
 
 		if (!colecoesPrevisao.isEmpty())
-			colecoes += "," + parseToString(colecoesPrevisao);
+			colecoes += "," + ConverteLista.parseInteger(colecoesPrevisao);
 
 		return colecoes;
-	}
-
-	private String parseToString(List<Integer> listaIDs) {
-
-		String listaString = "";
-
-		for (Integer id : listaIDs) {
-			if (listaString.equalsIgnoreCase(""))
-				listaString = Integer.toString(id);
-			else
-				listaString += ", " + id;
-		}
-
-		return listaString;
 	}
 
 	public int findNextIdPlanoMestre() {
