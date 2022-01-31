@@ -924,7 +924,7 @@ public class ProdutoCustom {
 				qtdeTotMetrosTecido += metrosTecido;		            								
 			}
 			
-			tecidos.add(new NecessidadeTecidos(dadosEstrutura.sequencia, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subTecido, itemTecido, qtdeKgProg, qtdeTotMetrosTecido));					
+			tecidos.add(new NecessidadeTecidos(dadosEstrutura.sequencia, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subTecido, itemTecido, qtdeKgProg, qtdeTotMetrosTecido, consumoTecido));					
 		}
 		return tecidos;
 	}

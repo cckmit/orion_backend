@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaPreOrdemProducao;
-import br.com.live.model.ConsultaPreOrdemProducaoItem;
 import br.com.live.model.GradeDistribuicaoGrupoItem;
 import br.com.live.model.ConsultaProgramadoReferencia;
 import br.com.live.bo.FormataParametrosPlanoMestre;
@@ -297,7 +296,7 @@ public class PlanoMestreCustom {
 	    + " a.referencia, "       
 	    + " a.alternativa, "
 	    + " a.roteiro, "
-	    + " c.data_entrega, "
+	    + " min(c.data_entrega) data_entrega, "
 	    + " b.sub, "
 	    + " b.item, "
 	    + " b.quantidade, "
@@ -311,15 +310,25 @@ public class PlanoMestreCustom {
 	    + " and m.codigo_estagio = 20 "
 	    + " ) tempo_costura " 
 	    + " from orion_020 a, orion_021 b, basi_590 c " 
-	    + " where a.num_plano_mestre in (" + planosMestres + ")" 
-	    + " and a.ordem_gerada = 0 "
-	    + " and b.num_id_ordem = a.id " 
+	    + " where a.ordem_gerada = 0 ";
+	    
+	    if (!planosMestres.isEmpty())
+	    	query += " and a.num_plano_mestre in (" + planosMestres + ")";
+	    
+		query += " and b.num_id_ordem = a.id " 
 	    + " and c.nivel = '1' "
 	    + " and c.grupo = a.referencia " 
 	    + " and c.subgrupo = b.sub "
-	    + " and c.item = b.item "
-	    + " and a.referencia in (" + referencias + ") "
-	    + " and c.grupo_embarque in (" + embarques + ") "
+	    + " and c.item = b.item ";
+
+	    if (!referencias.isEmpty())
+	    	query += " and a.referencia in (" + referencias + ") ";
+	    
+	    if (!embarques.isEmpty())
+	    	query += " and c.grupo_embarque in (" + embarques + ") ";	    
+	    	    
+	    query += " group by a.id,a.num_plano_mestre,a.referencia, "       
+	    + " a.alternativa,a.roteiro,b.sub,b.item,b.quantidade "
 	    + " ) pre_ordens "
 	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.alternativa, pre_ordens.roteiro, pre_ordens.data_entrega "
 	    + " ) pre_ordens_priorizadas "

@@ -9,8 +9,9 @@ public class NecessidadeTecidos {
 	private String item;	
 	private double qtdeKg;
 	private double qtdeMetros;
+	private double qtdeKgUnit;
 	
-	public NecessidadeTecidos(int sequencia, String nivel, String grupo, String sub, String item, double qtdeKg, double qtdeMetros) {
+	public NecessidadeTecidos(int sequencia, String nivel, String grupo, String sub, String item, double qtdeKg, double qtdeMetros, double qtdeKgUnit) {
 		this.sequencia = sequencia;
 		this.nivel = nivel;
 		this.grupo = grupo;
@@ -18,6 +19,7 @@ public class NecessidadeTecidos {
 		this.item = item;
 		this.qtdeKg = qtdeKg;
 		this.qtdeMetros = qtdeMetros;
+		this.qtdeKgUnit = qtdeKgUnit;
 	}
 	
 	public int getSequencia() {
@@ -61,5 +63,11 @@ public class NecessidadeTecidos {
 	}
 	public void setQtdeMetros(double qtdeMetros) {
 		this.qtdeMetros = qtdeMetros;
-	}	
+	}
+	public double getQtdeKgUnit() {
+		return qtdeKgUnit;
+	}
+	public void setQtdeKgUnit(double qtdeKgUnit) {
+		this.qtdeKgUnit = qtdeKgUnit;
+	}
 }
