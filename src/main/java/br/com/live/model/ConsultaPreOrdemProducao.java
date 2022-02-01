@@ -16,14 +16,21 @@ public class ConsultaPreOrdemProducao {
 	public String status;
 	public String mensagemGravacaoOrdem;
 	public Date dataEmbarque;
-	public double tempoCostura;
-	
-	public double getTempoCostura() {
-		return tempoCostura;
+	public int qtdeEstagioCritico;
+	public double tempoProducaoUnit;
+		
+	public int getQtdeEstagioCritico() {
+		return qtdeEstagioCritico;
 	}
-	public void setTempoCostura(double tempoCostura) {
-		this.tempoCostura = tempoCostura;
+	public void setQtdeEstagioCritico(int qtdeEstagioCritico) {
+		this.qtdeEstagioCritico = qtdeEstagioCritico;
 	}
+	public double getTempoProducaoUnit() {
+		return tempoProducaoUnit;
+	}
+	public void setTempoProducaoUnit(double tempoProducaoUnit) {
+		this.tempoProducaoUnit = tempoProducaoUnit;
+	}	
 	public long getIdPlanoMestre() {
 		return idPlanoMestre;
 	}

@@ -127,6 +127,18 @@ public class EstoqueProdutoCustom {
 		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
 
+	public Double findQtdeEmpenhadaByProduto(String nivel, String grupo, String sub, String item) {
+		
+		String query = " select nvl(sum(t.qtde_reservada),0) quantidade " 
+		+ " from tmrp_041 t "
+		+ " where t.nivel_estrutura = '" + nivel + "'"
+		+ " and t.grupo_estrutura = '" + grupo + "' "
+		+ " and t.subgru_estrutura = '" + sub + "' "
+		+ " and t.item_estrutura = '" + item + "' ";
+				
+		return jdbcTemplate.queryForObject(query, Double.class);		
+	}	
+		
 	public List<Deposito> findAllDepositos() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "

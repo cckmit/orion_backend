@@ -9,21 +9,26 @@ public class SugestaoReservaPorTecido {
 	private String descricao;
 	private String unidade;	
 	private Double qtdeNecessidade;
-	private Double qtdeDisponivel;
-	private Double qtdeSugerido;
-	private Double qtdeSaldo;
+	private Double qtdeEstoque;
+	private Double qtdeEmpenhada;
+	protected Double qtdeDisponivel;
+	protected Double qtdeSugerido;
+	protected Double qtdeSaldo;
 
-	public SugestaoReservaPorTecido(String nivel, String grupo, String sub, String item, String descricao, String unidade, double qtdeNecessidade, double qtdeDisponivel, double qtdeSugerido, double qtdeSaldo) {
+	public SugestaoReservaPorTecido(String nivel, String grupo, String sub, String item, String descricao, String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido) {
 		this.nivel = nivel; 
 		this.grupo = grupo; 
 		this.sub = sub; 
 		this.item = item; 
 		this.descricao = descricao;
 		this.unidade = unidade;
-		this.qtdeNecessidade = qtdeNecessidade; 
-		this.qtdeDisponivel = qtdeDisponivel;
+		this.qtdeNecessidade = qtdeNecessidade;
+		this.qtdeEstoque = qtdeEstoque;
+		this.qtdeEmpenhada = qtdeEmpenhada;		
 		this.qtdeSugerido = qtdeSugerido;
-		this.qtdeSaldo = qtdeSaldo;
+		this.qtdeDisponivel = 0.0; 
+		this.qtdeSugerido = 0.0;
+		acertaSaldos();
 	}
 	
 	public String getNivel() {
@@ -86,23 +91,39 @@ public class SugestaoReservaPorTecido {
 		return qtdeDisponivel;
 	}
 
-	public void setQtdeDisponivel(Double qtdeDisponivel) {
-		this.qtdeDisponivel = qtdeDisponivel;
-	}
-
 	public Double getQtdeSugerido() {
 		return qtdeSugerido;
 	}
 
 	public void setQtdeSugerido(Double qtdeSugerido) {
 		this.qtdeSugerido = qtdeSugerido;
+		acertaSaldos();
 	}
 
 	public Double getQtdeSaldo() {
 		return qtdeSaldo;
 	}
 
-	public void setQtdeSaldo(Double qtdeSaldo) {
-		this.qtdeSaldo = qtdeSaldo;
-	}	
+	public Double getQtdeEstoque() {
+		return qtdeEstoque;
+	}
+
+	public void setQtdeEstoque(Double qtdeEstoque) {
+		this.qtdeEstoque = qtdeEstoque;
+		acertaSaldos();
+	}
+
+	public Double getQtdeEmpenhada() {
+		return qtdeEmpenhada;		
+	}
+
+	public void setQtdeEmpenhada(Double qtdeEmpenhada) {
+		this.qtdeEmpenhada = qtdeEmpenhada;
+		acertaSaldos();
+	}
+	
+	private void acertaSaldos() {
+		this.qtdeDisponivel = this.qtdeEstoque - this.qtdeEmpenhada;
+		this.qtdeSaldo = this.qtdeDisponivel - this.qtdeSugerido;		
+	}
 }

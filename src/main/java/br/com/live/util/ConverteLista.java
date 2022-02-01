@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ConverteLista {
 
-	public static String parseInteger(List<Integer> listaIDs) {
+	public static String converteListIntToStr(List<Integer> listaIDs) {
 
 		String listaString = "";
 
@@ -19,7 +19,7 @@ public class ConverteLista {
 	}
 
 	
-	public static String parseString(List<String> listaIDs) {
+	public static String converteListStrToStr(List<String> listaIDs) {
 
 		String listaString = "";
 
