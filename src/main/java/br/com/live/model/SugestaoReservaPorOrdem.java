@@ -4,14 +4,16 @@ public class SugestaoReservaPorOrdem extends SugestaoReservaPorTecido {
 
 	private int prioridade;
 	private long idOrdem;
+	private String sortimento;
 	private int sequencia;
 	private double qtdeNecessidadeUnit;
 	
-	public SugestaoReservaPorOrdem(int prioridade, long idOrdem, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
+	public SugestaoReservaPorOrdem(int prioridade, long idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
 			String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, double qtdeNecessidadeUnit) {
 		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido);
 		this.prioridade = prioridade;
 		this.idOrdem = idOrdem;
+		this.sortimento = sortimento;
 		this.sequencia = sequencia;
 		this.qtdeNecessidadeUnit = qtdeNecessidadeUnit;
 	}
@@ -32,14 +34,22 @@ public class SugestaoReservaPorOrdem extends SugestaoReservaPorTecido {
 		this.idOrdem = idOrdem;
 	}
 
+	public String getSortimento() {
+		return sortimento;
+	}
+
+	public void setSortimento(String sortimento) {
+		this.sortimento = sortimento;
+	}	
+
 	public int getSequencia() {
 		return sequencia;
 	}
 
 	public void setSequencia(int sequencia) {
 		this.sequencia = sequencia;
-	}	
-	
+	}
+		
 	public double getQtdeNecessidadeUnit() {
 		return qtdeNecessidadeUnit;
 	}

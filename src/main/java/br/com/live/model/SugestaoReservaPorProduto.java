@@ -3,7 +3,7 @@ package br.com.live.model;
 import java.util.Date;
 
 public class SugestaoReservaPorProduto {
-
+	
 	private String nivel;
 	private String grupo;
 	private String tamanho;

@@ -6,6 +6,21 @@ public class PreOrdemProducaoItem extends PreOrdemProducao {
 	public String item;
 	public int qtdeProgramada;	
 	
+	public PreOrdemProducaoItem() {
+		super();
+	};
+	
+	public PreOrdemProducaoItem(int id, String grupo, int alternativa, int roteiro, int periodo, String sub, String item, int qtdeProgramada) {
+		this.id = id; 
+		this.grupo = grupo; 
+		this.alternativa = alternativa; 
+		this.roteiro = roteiro; 
+		this.periodo = periodo; 
+		this.sub = sub; 
+		this.item = item; 
+		this.qtdeProgramada = qtdeProgramada;
+	}
+	
 	public String getSub() {
 		return sub;
 	}
