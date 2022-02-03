@@ -81,3 +81,9 @@ values (27, 'Consulta de Lançamento de Horas', 'TI', '/consulta-lancamento-hora
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (28, 'Sugestão de Reserva de Tecidos', 'Confecção', '/sugestao-reserva-tecidos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (29, 'Mapa de Endereços', 'Expedição', '/mapa-enderecos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (30, 'Localiza Embarque', 'Expedição', '/localiza-embarque');
