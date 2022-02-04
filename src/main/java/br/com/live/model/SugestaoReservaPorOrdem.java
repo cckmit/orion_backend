@@ -7,6 +7,7 @@ public class SugestaoReservaPorOrdem extends SugestaoReservaPorTecido {
 	private String sortimento;
 	private int sequencia;
 	private double qtdeNecessidadeUnit;
+	private double qtdeNecessidadeRecalculada;
 	
 	public SugestaoReservaPorOrdem(int prioridade, long idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
 			String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, double qtdeNecessidadeUnit) {
@@ -58,6 +59,14 @@ public class SugestaoReservaPorOrdem extends SugestaoReservaPorTecido {
 		this.qtdeNecessidadeUnit = qtdeNecessidadeUnit;
 	}
 	
+	public double getQtdeNecessidadeRecalculada() {
+		return qtdeNecessidadeRecalculada;
+	}
+
+	public void setQtdeNecessidadeRecalculada(double qtdeNecessidadeRecalculada) {
+		this.qtdeNecessidadeRecalculada = qtdeNecessidadeRecalculada;
+	}
+		
 	public void setQtdeDisponivel(double qtdeDisponivel) {
 		this.qtdeDisponivel = qtdeDisponivel;
 		acertaSaldo();
@@ -70,5 +79,10 @@ public class SugestaoReservaPorOrdem extends SugestaoReservaPorTecido {
 	
 	private void acertaSaldo() {
 		this.qtdeSaldo = this.qtdeDisponivel - this.qtdeSugerido;
+	}
+	
+	public double getQtdeNecessidadeDisponivel() {
+		if (this.qtdeNecessidadeRecalculada > 0) return this.qtdeNecessidadeRecalculada;
+		else return this.getQtdeNecessidade();
 	}
 }
