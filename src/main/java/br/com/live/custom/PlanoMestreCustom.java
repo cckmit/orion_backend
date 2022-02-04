@@ -1,7 +1,11 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +16,7 @@ import br.com.live.model.GradeDistribuicaoGrupoItem;
 import br.com.live.model.ConsultaProgramadoReferencia;
 import br.com.live.bo.FormataParametrosPlanoMestre;
 import br.com.live.body.BodyParametrosPlanoMestre;
+import br.com.live.entity.PlanoMestre;
 import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.Produto;
@@ -317,7 +322,7 @@ public class PlanoMestreCustom {
 	    + " and m.grupo_estrutura = a.referencia "
 	    + " and (m.subgru_estrutura = b.sub or m.subgru_estrutura = '000') "
 	    + " and (m.item_estrutura = b.item or m.item_estrutura = '000000') " 
-	    + " and m.numero_alternati = a.alternativa' "
+	    + " and m.numero_alternati = a.alternativa "
 	    + " and m.numero_roteiro = a.roteiro "
 	    + " ) tempo_producao "
         + " from orion_020 a, orion_021 b, basi_590 c " 
@@ -470,6 +475,38 @@ public class PlanoMestreCustom {
 		return id;
 	}
 
+	public List<PlanoMestre> findAllPlanosMestreComPreOrdensNaoGeradas() {
+	
+		String query = " select a.num_plano_mestre id, a.descricao, a.data, a.situacao, a.usuario from orion_010 a "
+		+ " where a.data > sysdate - 30 "
+		+ " and exists (select 1 from orion_020 b "
+		+ " where b.num_plano_mestre = a.num_plano_mestre "
+		+ " and b.ordem_gerada = 0) "
+		+ " order by a.num_plano_mestre desc " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PlanoMestre.class));
+	}
+	
+	public List<Produto> findAllReferenciasByPlanoMestre(String planosMestres) {
+		
+		List<Produto> referencias; 
+		
+		String query = " select a.grupo, b.descr_referencia narrativa from orion_016 a, basi_030 b "
+		+ " where a.num_plano_mestre in (" + planosMestres + ") "
+		+ " and b.nivel_estrutura = '1' "
+		+ " and b.referencia = a.grupo "
+		+ " group by a.grupo, b.descr_referencia "  
+		+ " order by a.grupo, b.descr_referencia " ;
+		
+		try {
+			referencias = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			referencias = new ArrayList<Produto>();
+		}
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+	}
+	
 	public int findNextIdPreOrdem() {
 		String query = " select id_orion_020.nextval from dual ";
 		return (int) jdbcTemplate.queryForObject(query, Integer.class);

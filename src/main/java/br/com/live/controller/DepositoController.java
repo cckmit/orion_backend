@@ -24,8 +24,12 @@ public class DepositoController {
     }
 	
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<Deposito> findAll() {
-          return estoqueProdutoCustom.findAllDepositos();
+    public List<Deposito> findAllDepositosPecas() {
+          return estoqueProdutoCustom.findAllDepositosPecas();
     }
-	
+    
+    @RequestMapping(value = "tecidos", method = RequestMethod.GET)
+    public List<Deposito> findAllDepositosTecidos() {
+          return estoqueProdutoCustom.findAllDepositosTecidos();
+    }	
 }

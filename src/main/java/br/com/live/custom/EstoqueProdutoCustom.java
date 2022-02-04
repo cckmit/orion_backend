@@ -139,11 +139,22 @@ public class EstoqueProdutoCustom {
 		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
 		
-	public List<Deposito> findAllDepositos() {
+	public List<Deposito> findAllDepositosPecas() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
 		+ " where b.descricao like 'DEP N1%' "
 		  + " and b.tipo_volume in (0,1) "
+		  + " and b.considera_tmrp = 1 "
+		+ " order by b.codigo_deposito " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		
+	}
+		
+	public List<Deposito> findAllDepositosTecidos() {
+		
+		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
+		+ " where b.descricao like 'DEP N2%' "
+		  + " and b.tipo_volume = 2 "
 		  + " and b.considera_tmrp = 1 "
 		+ " order by b.codigo_deposito " ;
 		

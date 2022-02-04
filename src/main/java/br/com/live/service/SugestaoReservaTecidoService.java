@@ -53,6 +53,13 @@ public class SugestaoReservaTecidoService {
 	}
 
 	public void calcularSugestaoReserva(String planosMestres, String embarques, String referencias, String depositos) {
+		
+		System.out.println("calcularSugestaoReserva");
+		System.out.println("planosMestres: " + planosMestres);
+		System.out.println("embarques: " + embarques);
+		System.out.println("referencias: " + referencias);
+		System.out.println("depositos: " + planosMestres);
+		
 		depositosTecidos = depositos;
 		mapDadosPorTecido = new HashMap<String, SugestaoReservaPorTecido>();
 		mapDadosPorOrdem = new HashMap<Long, List<SugestaoReservaPorOrdem>>();
@@ -84,6 +91,7 @@ public class SugestaoReservaTecidoService {
 	}
 
 	private void guardarQtdesPecasAtendidas(long idOrdem) {		
+		System.out.println("guardarQtdesPecasAtendidas");
 		String chave;
 		SugestaoReservaPorProduto sugestao;
 		List<PreOrdemProducaoItem> pecasRecalculadas;
@@ -113,7 +121,7 @@ public class SugestaoReservaTecidoService {
 	}
 	
 	private void revisarQtdesQueSeraoAtendidasNaOrdem(long idOrdem) {
-		
+		System.out.println("revisarQtdesQueSeraoAtendidasNaOrdem");
 		Map<String, Double> mapTecidosXQtdeNecessaria = new HashMap<String, Double>();
 
 		List<SugestaoReservaPorOrdem> tecidos = mapDadosPorOrdem.get(idOrdem);
@@ -169,7 +177,7 @@ public class SugestaoReservaTecidoService {
 	
 	@SuppressWarnings("unchecked")
 	private void recalcularQtdePecasDaOrdem(long idOrdem, String nivelTecido, String grupoTecido, String subTecido, String itemTecido, double percentualDiminuir) {
-		
+		System.out.println("recalcularQtdePecasDaOrdem");
 		List<String> sortimentos = new ArrayList<String>();
 		List<PreOrdemProducaoItem> itensRecalculados = new ArrayList<PreOrdemProducaoItem>();
 		List<SugestaoReservaPorOrdem> tecidos = mapDadosPorOrdem.get(idOrdem);				
@@ -198,6 +206,7 @@ public class SugestaoReservaTecidoService {
 	}
 	
 	private void recalcularNecessidadeTecidosDaOrdem(long idOrdem) {
+		System.out.println("recalcularNecessidadeTecidosDaOrdem");
 		mapDadosPorOrdem.remove(idOrdem);
 		List<PreOrdemProducaoItem> itensRecalculados = mapPecasRecalculadas.get(idOrdem);		
 		List<SugestaoReservaPorOrdem> necessidadesOrdem = mapDadosPorOrdem.get(idOrdem);
@@ -215,7 +224,8 @@ public class SugestaoReservaTecidoService {
 		}
 	}	
 	
-	private void reservaTecidoParaOrdem(SugestaoReservaPorOrdem tecidoOrdem) {				
+	private void reservaTecidoParaOrdem(SugestaoReservaPorOrdem tecidoOrdem) {			
+		System.out.println("reservaTecidoParaOrdem");
 		double qtdeReservada = 0;
 		double qtdeReservar = tecidoOrdem.getQtdeNecessidadeDisponivel();
 		
@@ -232,8 +242,7 @@ public class SugestaoReservaTecidoService {
 	}	
 	
 	private void calcularNecessidades() {
-		System.out.println("calcularNecessidadesTecidos");
-		
+		System.out.println("calcularNecessidades");		
 		int ordemReserva = 0;
 		
 		for (ConsultaPreOrdemProducao ordem : listaPriorizadaPreOrdens) {						
@@ -264,6 +273,7 @@ public class SugestaoReservaTecidoService {
 	}
  
 	private void guardarQtdesOriginaisPecasPrevistas(long idOrdem, String grupo, int alternativa, int roteiro, int periodo, String sub, String item, int qtdeProgramada) {		
+		System.out.println("guardarQtdesOriginaisPecasPrevistas");
 		List<PreOrdemProducaoItem> itensOrdem; 
 		
 		if (mapPecasPrevistas.containsKey(idOrdem)) itensOrdem = mapPecasPrevistas.get(idOrdem);
@@ -274,23 +284,23 @@ public class SugestaoReservaTecidoService {
 	}
 	
 	private void guardarDadosPorProduto(String nivel, String grupo, String tamanho, String cor, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista) {
-
+		System.out.println("guardarDadosPorProduto");
 		SugestaoReservaPorProduto sugestao;
 		
 		String chave = nivel + "." + grupo + "." + tamanho + "." + cor + "." + alternativa + "." + roteiro;		
 		
 		if (mapDadosPorProduto.containsKey(chave)) {
-			sugestao = new SugestaoReservaPorProduto(nivel, grupo, tamanho, cor, descricao, alternativa, roteiro, dataEmbarque, qtdeEstagioCritico, tempoProducaoUnit, qtdePrevista, 0, 0);	
-			mapDadosPorProduto.put(chave, sugestao);		
+			sugestao = mapDadosPorProduto.get(chave);
+			sugestao.setQtdePrevista(sugestao.getQtdePrevista() + qtdePrevista);			
 		}
 		else {
-			sugestao = mapDadosPorProduto.get(chave);
-			sugestao.setQtdePrevista(sugestao.getQtdePrevista() + qtdePrevista);
+			sugestao = new SugestaoReservaPorProduto(nivel, grupo, tamanho, cor, descricao, alternativa, roteiro, dataEmbarque, qtdeEstagioCritico, tempoProducaoUnit, qtdePrevista, 0, 0);	
+			mapDadosPorProduto.put(chave, sugestao);		
 		}
 	}
 	
 	private void guardarDadosPorTecido(String nivelTecido, String grupoTecido, String subTecido, String itemTecido, double qtdeKg, double qtdeEstoque, double qtdeEmpenhada) {
-
+		System.out.println("guardarDadosPorTecido");
 		String codTecido = nivelTecido + "." + grupoTecido + "." + subTecido + "." + itemTecido;
 
 		if (mapDadosPorTecido.containsKey(codTecido)) {
@@ -305,7 +315,8 @@ public class SugestaoReservaTecidoService {
 
 	private void guardarDadosPorOrdem(int ordemReserva, long idOrdem, String sortimento, int sequencia, String nivelTecido, String grupoTecido,
 			String subTecido, String itemTecido, double qtdeKgUnit, double qtdeKg, double qtdeEstoque, double qtdeEmpenhada) {
-
+		System.out.println("guardarDadosPorOrdem");		
+		
 		if (mapDadosPorOrdem.containsKey(idOrdem)) {
 			List<SugestaoReservaPorOrdem> tecidos = mapDadosPorOrdem.get(idOrdem);			
 			
