@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.ExpedicaoCustom;
+import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
 
@@ -32,6 +33,10 @@ public class ExpedicaoService {
 		pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		
 		return enderecosCustom.findEmbarque(periodo, ordem, pacote);
+	}
+	
+	public DadosModalEndereco findDadosModalEnd (int deposito, String endereco) {
+		return enderecosCustom.findDadosModalEndereco(deposito, endereco);
 	}
 }
 

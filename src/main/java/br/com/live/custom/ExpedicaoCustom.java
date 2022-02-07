@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
 
@@ -22,10 +23,10 @@ public class ExpedicaoCustom {
 	public List<EnderecoCount> findReferenciaEnd(int codDeposito) {
 		List<EnderecoCount> dadosEnd;
 
-		String query = " select count(*) totalPecas, a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item referencia from pcpc_330 a "
+		String query = " select count(*) totalPecas, a.grupo || '.' || a.subgrupo || '.' || a.item referencia, a.endereco from pcpc_330 a "
 				+ " where a.deposito = " + codDeposito
 				+ " and a.estoque_tag = 1 "
-				+ " group by a.endereco, a.nivel, a.grupo, a.subgrupo, a.item ";
+				+ " group by a.endereco, a.grupo, a.subgrupo, a.item, a.endereco ";
 		
 		try {
 			dadosEnd = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EnderecoCount.class));
@@ -60,5 +61,33 @@ public class ExpedicaoCustom {
 		}
 		return dadosEmbarque;
 	}
-
+	
+	public DadosModalEndereco findDadosModalEndereco(int deposito, String endereco) {
+		DadosModalEndereco dadosModal;
+		
+		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, d.qtde_estoque_atu saldo, nvl(e.grupo_embarque, 0) embarque from pcpc_330 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
+				+ " where a.deposito = " + deposito
+				+ " and a.estoque_tag = 1 "
+				+ " and a.endereco = '" + endereco + "'"
+				+ " and b.nivel_estrutura = '1' "
+				+ " and b.referencia = a.grupo "
+				+ " and c.colecao = b.colecao "
+				+ " and d.cditem_nivel99 = '1' "
+				+ " and d.cditem_grupo = a.grupo "
+				+ " and d.cditem_subgrupo = a.subgrupo "
+				+ " and d.cditem_item = a.item "
+				+ " and d.deposito = " + deposito
+				+ " and e.nivel (+) = '1' "
+				+ " and e.grupo (+) = a.grupo "
+				+ " and e.subgrupo (+) = a.subgrupo "
+				+ " and e.item (+) = a.item "
+				+ " group by a.endereco, a.grupo, a.subgrupo, a.item, b.colecao, c.descr_colecao, d.qtde_estoque_atu, e.grupo_embarque ";
+		
+		try {
+			dadosModal = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(DadosModalEndereco.class));
+		} catch (Exception e) {
+			dadosModal = new DadosModalEndereco();
+		}
+		return dadosModal;
+	}
 }
