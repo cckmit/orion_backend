@@ -122,9 +122,17 @@ public class PlanoMestreService {
 	public List<PlanoMestre> findAll() {
 		return planoMestreRepository.findAll();
 	}
+	
+	public List<PlanoMestre> findAllPlanosMestreComPreOrdensNaoGeradas() {
+		return planoMestreCustom.findAllPlanosMestreComPreOrdensNaoGeradas();
+	}
 
 	public List<ConsultaItensPlanoMestre> findProdutos(long idPlanoMestre) {
 		return planoMestreCustom.findItensPorRefCorByIdPlanoMestre(idPlanoMestre);
+	}
+	
+	public List<Produto> findAllRefenciasByPlanoMestre(String planosMestres) {
+		return planoMestreCustom.findAllReferenciasByPlanoMestre(planosMestres);
 	}
 
 	private String findTodasColecoesPlanoMestre(long idPlanoMestre) {

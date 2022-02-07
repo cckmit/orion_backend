@@ -114,7 +114,7 @@ public class EstoqueProdutoCustom {
 		return q.getResultList();
 	}
 
-	public int findQtdeEstoqueByProdutoAndDepositos(String nivel, String grupo, String sub, String item, String depositos) {
+	public Double findQtdeEstoqueByProdutoAndDepositos(String nivel, String grupo, String sub, String item, String depositos) {
 		
 		String query = " select nvl(sum(a.qtde_estoque_atu),0) quantidade "
 		+ " from estq_040 a "
@@ -124,14 +124,37 @@ public class EstoqueProdutoCustom {
 		+ " and a.cditem_item = '" + item + "'"
 		+ " and a.deposito in (" + depositos + ")" ;
 				
-		return jdbcTemplate.queryForObject(query, Integer.class);		
+		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
-	
-	public List<Deposito> findAllDepositos() {
+
+	public Double findQtdeEmpenhadaByProduto(String nivel, String grupo, String sub, String item) {
+		
+		String query = " select nvl(sum(t.qtde_reservada),0) quantidade " 
+		+ " from tmrp_041 t "
+		+ " where t.nivel_estrutura = '" + nivel + "'"
+		+ " and t.grupo_estrutura = '" + grupo + "' "
+		+ " and t.subgru_estrutura = '" + sub + "' "
+		+ " and t.item_estrutura = '" + item + "' ";
+				
+		return jdbcTemplate.queryForObject(query, Double.class);		
+	}	
+		
+	public List<Deposito> findAllDepositosPecas() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
 		+ " where b.descricao like 'DEP N1%' "
 		  + " and b.tipo_volume in (0,1) "
+		  + " and b.considera_tmrp = 1 "
+		+ " order by b.codigo_deposito " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		
+	}
+		
+	public List<Deposito> findAllDepositosTecidos() {
+		
+		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
+		+ " where b.descricao like 'DEP N2%' "
+		  + " and b.tipo_volume = 2 "
 		  + " and b.considera_tmrp = 1 "
 		+ " order by b.codigo_deposito " ;
 		

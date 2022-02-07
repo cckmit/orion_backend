@@ -18,9 +18,11 @@ import br.com.live.model.OcupacaoPlanoMestre;
 import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.PreOrdemProducaoIndicadores;
+import br.com.live.model.Produto;
 import br.com.live.entity.PlanoMestreParamProgItem;
 import br.com.live.service.PlanoMestreService;
 import br.com.live.util.CodigoGrupoItem;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
 @CrossOrigin
@@ -75,17 +77,27 @@ public class PlanoMestreController {
 	public PreOrdemProducaoIndicadores findIndicadoresByPreOrdens(@RequestBody BodyParametrosPlanoMestre parametros) {
 		return planoMestreService.findIndicadoresByPreOrdens(parametros.idPlanoMestre, parametros.preOrdensSelected);
 	}
-		
+	
+	@RequestMapping(value = "/referencias", method = RequestMethod.POST)
+	public List<Produto> findReferencias(@RequestBody List<ConteudoChaveNumerica> planosMestres) {
+		return planoMestreService.findAllRefenciasByPlanoMestre(ConteudoChaveNumerica.parseValueToString(planosMestres));
+	}
+	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<PlanoMestre> findAll() {
 		return planoMestreService.findAll();
 	}
 
+	@RequestMapping(value = "com-pre-ordens-nao-geradas", method = RequestMethod.GET)
+	public List<PlanoMestre> findAllPlanosMestreComPreOrdensNaoGeradas() {
+		return planoMestreService.findAllPlanosMestreComPreOrdensNaoGeradas();
+	}
+	
 	@RequestMapping(value = "/produtos/{id}", method = RequestMethod.GET)
 	public List<ConsultaItensPlanoMestre> findProdutos(@PathVariable("id") long idPlanoMestre) {
 		return planoMestreService.findProdutos(idPlanoMestre);
 	}
-
+	
 	@RequestMapping(value = "/tamanhos/{id}/{codigo}", method = RequestMethod.GET)
 	public List<ConsultaItensTamPlanoMestre> findTamanhos(@PathVariable("id") long idPlanoMestre,
 			@PathVariable("codigo") String codigo) {

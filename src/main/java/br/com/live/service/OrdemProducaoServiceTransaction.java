@@ -14,10 +14,8 @@ import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.entity.PlanoMestrePreOrdemItem;
-import br.com.live.model.ConsultaDadosCompEstrutura;
-import br.com.live.model.ConsultaDadosEstrutura;
-import br.com.live.model.ConsultaDadosFilete;
 import br.com.live.model.ConsultaDadosRoteiro;
+import br.com.live.model.NecessidadeTecidos;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
@@ -108,6 +106,14 @@ public class OrdemProducaoServiceTransaction {
 	
 	private void gravarDadosTecidos(int idOrdemProducao, PlanoMestrePreOrdem preOrdem, PlanoMestrePreOrdemItem preOrdemItem) {
 		
+		List<NecessidadeTecidos> tecidos = produtoCustom.calcularNecessidadeTecido(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa, preOrdemItem.quantidade);
+
+		for (NecessidadeTecidos tecido : tecidos) {
+			ordemProducaoCustom.gravarCapaEnfesto(idOrdemProducao, preOrdem.grupo, tecido.getSequencia(), preOrdem.alternativa, preOrdem.roteiro);
+			ordemProducaoCustom.gravarTecidosEnfesto(idOrdemProducao, preOrdemItem.item, tecido.getNivel(), tecido.getGrupo(), tecido.getSub(), tecido.getItem(), tecido.getSequencia(), tecido.getQtdeKg(), tecido.getQtdeMetros());			
+		}
+		
+		/*
 		String subTecido = "";
 		String itemTecido = "";
 		double consumoTecido = 0.0;		
@@ -125,7 +131,7 @@ public class OrdemProducaoServiceTransaction {
 		ConsultaDadosFilete dadosFileteEstrutura;
 		ConsultaDadosFilete dadosFileteRisco;
 		ConsultaDadosFilete dadosFileteTecido;
-		
+				
 		List<ConsultaDadosEstrutura> listaDadosEstrutura = produtoCustom.findDadosEstrutura(preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, preOrdem.alternativa);
 				
 		for (ConsultaDadosEstrutura dadosEstrutura : listaDadosEstrutura) {
@@ -143,7 +149,7 @@ public class OrdemProducaoServiceTransaction {
 				dadosComponente = produtoCustom.findDadosComponenteEstrutura(preOrdem.grupo, dadosEstrutura.subItem, preOrdemItem.item, dadosEstrutura.sequencia, preOrdem.alternativa);	
 				itemTecido = dadosComponente.item;				
 			}
-		
+					
 			ordemProducaoCustom.gravarCapaEnfesto(idOrdemProducao, preOrdem.grupo, dadosEstrutura.sequencia, preOrdem.alternativa, preOrdem.roteiro);
 			
 			qtdeKgProg = (consumoTecido * (float) preOrdemItem.quantidade);
@@ -185,6 +191,7 @@ public class OrdemProducaoServiceTransaction {
 			
 			ordemProducaoCustom.gravarTecidosEnfesto(idOrdemProducao, preOrdemItem.item, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subTecido, itemTecido, dadosEstrutura.sequencia, qtdeKgProg, qtdeTotMetrosTecido);			
 		}
+		*/
 	}
 	
 	private void gravarDadosItem(int idOrdemProducao, PlanoMestrePreOrdem preOrdem, PlanoMestrePreOrdemItem preOrdemItem) {
