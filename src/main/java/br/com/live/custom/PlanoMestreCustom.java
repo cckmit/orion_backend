@@ -1,11 +1,7 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +17,7 @@ import br.com.live.model.ConsultaItensPlanoMestre;
 import br.com.live.model.ConsultaItensTamPlanoMestre;
 import br.com.live.model.Produto;
 import br.com.live.model.ProgramacaoPlanoMestre;
+import br.com.live.model.SugestaoReservaTecidos;
 import br.com.live.util.ConverteLista;
 
 @Repository
@@ -277,7 +274,7 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducao.class));
 	}
 	
-	public List<ConsultaPreOrdemProducao> findPreOrdensOrdenadosPorDataEmbarqueQtdeEstagCriticoTempoProducao(String planosMestres, String embarques, String referencias) { 
+	public List<ConsultaPreOrdemProducao> findPreOrdensPorOrdemPriorizacaoByPlanosEmbarquesReferencias(int priorizacao, String planosMestres, String embarques, String referencias) { 
 		
 		String query = " select pre_ordens_priorizadas.id, " 
 	    + " pre_ordens_priorizadas.num_plano_mestre idPlanoMestre, "
@@ -293,10 +290,10 @@ public class PlanoMestreCustom {
 	    + " pre_ordens.referencia, "
 	    + " pre_ordens.alternativa, "
 	    + " pre_ordens.roteiro, "
-	    + " pre_ordens.data_embarque, "
+	    + " min(pre_ordens.data_embarque) data_embarque, "
 	    + " sum(pre_ordens.quantidade) quantidade, "
 	    + " max(pre_ordens.qtde_estagio_critico) qtde_estagio_critico, "
-	    + " sum(pre_ordens.tempo_producao) tempo_producao_unit "
+	    + " max(pre_ordens.tempo_producao) tempo_producao_unit "
 	    + " from (select a.id, "
 	    + " a.num_plano_mestre, "
 	    + " a.referencia, "
@@ -344,10 +341,20 @@ public class PlanoMestreCustom {
 		
 		query += " group by a.id,a.num_plano_mestre,a.referencia, a.alternativa,a.roteiro,b.sub,b.item,b.quantidade "
   	    + " ) pre_ordens "
-  	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.alternativa, pre_ordens.roteiro, pre_ordens.data_embarque "
-		+ " ) pre_ordens_priorizadas "
-		+ " order by pre_ordens_priorizadas.data_embarque, pre_ordens_priorizadas.qtde_estagio_critico desc, pre_ordens_priorizadas.tempo_producao_unit desc, pre_ordens_priorizadas.quantidade desc ";
-				
+  	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.alternativa, pre_ordens.roteiro "
+		+ " ) pre_ordens_priorizadas ";
+						
+		String ordenacao = "";
+		
+		if (priorizacao == SugestaoReservaTecidos.POR_EMBARQUE_ESTAG_CRITICOS_TEMPO_PRODUCAO)
+			ordenacao = " order by pre_ordens_priorizadas.data_embarque, pre_ordens_priorizadas.qtde_estagio_critico desc, pre_ordens_priorizadas.tempo_producao_unit desc, pre_ordens_priorizadas.quantidade desc ";
+		else if (priorizacao == SugestaoReservaTecidos.POR_ESTAG_CRITICOS_TEMPO_PRODUCAO_EMBARQUE)
+			ordenacao = " order by pre_ordens_priorizadas.qtde_estagio_critico desc, pre_ordens_priorizadas.tempo_producao_unit desc, pre_ordens_priorizadas.data_embarque, pre_ordens_priorizadas.quantidade desc ";
+		else if (priorizacao == SugestaoReservaTecidos.POR_TEMPO_PRODUCAO_EMBARQUE_ESTAG_CRITICOS)
+			ordenacao = " order by pre_ordens_priorizadas.tempo_producao_unit desc, pre_ordens_priorizadas.data_embarque, pre_ordens_priorizadas.qtde_estagio_critico desc, pre_ordens_priorizadas.quantidade desc ";
+		
+		query += ordenacao;
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducao.class));
 	}
 	
@@ -504,7 +511,7 @@ public class PlanoMestreCustom {
 			referencias = new ArrayList<Produto>();
 		}
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		return referencias; 
 	}
 	
 	public int findNextIdPreOrdem() {

@@ -7,6 +7,7 @@ public class Produto {
 	public String sub;
 	public String item;
 	public String narrativa;	
+	public String unidade;
 	public int qtdePrevisaoVendas;	
 	
 	public String getNivel() {
@@ -38,6 +39,12 @@ public class Produto {
 	}
 	public void setNarrativa(String narrativa) {
 		this.narrativa = narrativa;
+	}	
+	public String getUnidade() {
+		return unidade;
+	}
+	public void setUnidade(String unidade) {
+		this.unidade = unidade;
 	}
 	public int getQtdePrevisaoVendas() {
 		return qtdePrevisaoVendas;

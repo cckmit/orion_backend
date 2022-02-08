@@ -99,12 +99,14 @@ public class SugestaoReservaPorProduto {
 	}
 	public void setQtdePrevista(int qtdePrevista) {
 		this.qtdePrevista = qtdePrevista;
+		this.calcularPercentualAtendido();
 	}
 	public int getQtdeAtendida() {
 		return qtdeAtendida;
 	}
 	public void setQtdeAtendida(int qtdeAtendida) {
 		this.qtdeAtendida = qtdeAtendida;
+		this.calcularPercentualAtendido();
 	}
 	public double getPercentualAtendido() {
 		return percentualAtendido;
@@ -112,4 +114,7 @@ public class SugestaoReservaPorProduto {
 	public void setPercentualAtendido(double percentualAtendido) {
 		this.percentualAtendido = percentualAtendido;
 	}
+	private void calcularPercentualAtendido() {
+		this.percentualAtendido = ((double) this.qtdeAtendida / (double) this.qtdePrevista) * 100;
+	}	
 }

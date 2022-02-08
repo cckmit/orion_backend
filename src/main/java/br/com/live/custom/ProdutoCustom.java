@@ -818,6 +818,28 @@ public class ProdutoCustom {
 		return observacao;
 	}
 		
+	public Produto findProduto(String nivel, String grupo, String sub, String item) {
+		
+		Produto produto;
+		
+		String query = " select a.nivel_estrutura nivel, a.grupo_estrutura grupo, a.subgru_estrutura sub, a.item_estrutura item, a.narrativa, b.unidade_medida unidade" 
+		+ " from basi_010 a, basi_030 b "
+		+ " where a.nivel_estrutura = '" + nivel + "' " 
+		+ " and a.grupo_estrutura = '" + grupo + "' "
+		+ " and a.subgru_estrutura = '" + sub + "' "
+		+ " and a.item_estrutura = '" + item + "' "
+		+ " and b.nivel_estrutura = a.nivel_estrutura "
+		+ " and b.referencia = a.grupo_estrutura ";
+		
+		try {
+			produto = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			produto = new Produto();;
+		}
+
+		return produto;
+	}
+	
 	public List<Produto> findProdutosComRoteiroByNiveis(String niveis) {
 				
 		List<Produto> produtos;

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodySugestaoReservaTecidos;
+import br.com.live.model.SugestaoReservaTecidos;
 import br.com.live.service.SugestaoReservaTecidoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -21,15 +22,11 @@ public class SugestaoReservaTecidoController {
 	private SugestaoReservaTecidoService sugestaoReservaTecidoService;
 
 	@RequestMapping(value = "/calcular", method = RequestMethod.POST)
-	public void gerarPreOrdens(@RequestBody BodySugestaoReservaTecidos body) {
-		sugestaoReservaTecidoService.calcularSugestaoReserva(ConteudoChaveNumerica.parseValueToString(body.planosMestres),
+	public SugestaoReservaTecidos gerarPreOrdens(@RequestBody BodySugestaoReservaTecidos body) {
+		return sugestaoReservaTecidoService.calcularSugestaoReserva(ConteudoChaveNumerica.parseValueToString(body.planosMestres),
 				ConteudoChaveNumerica.parseValueToString(body.embarques),
 				ConteudoChaveAlfaNum.parseValueToString(body.referencias),
-				ConteudoChaveNumerica.parseValueToString(body.depositos));
-		
-		
-		
-		
-		
+				ConteudoChaveNumerica.parseValueToString(body.depositos),
+				body.priorizacao);		
 	}
 }

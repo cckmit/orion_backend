@@ -11,5 +11,6 @@ public class BodySugestaoReservaTecidos {
 	public List<ConteudoChaveNumerica> embarques ;
 	public List<ConteudoChaveAlfaNum> referencias ; 	
 	public List<ConteudoChaveNumerica> depositos ;
+	public int priorizacao ;
 	
 }
