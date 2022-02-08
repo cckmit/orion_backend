@@ -279,6 +279,7 @@ public class PlanoMestreCustom {
 		String query = " select pre_ordens_priorizadas.id, " 
 	    + " pre_ordens_priorizadas.num_plano_mestre idPlanoMestre, "
 	    + " pre_ordens_priorizadas.referencia, "
+	    + " pre_ordens_priorizadas.descr_referencia descrReferencia, "
 	    + " pre_ordens_priorizadas.alternativa, "
 	    + " pre_ordens_priorizadas.roteiro, "
 	    + " pre_ordens_priorizadas.data_embarque dataEmbarque, "
@@ -288,6 +289,7 @@ public class PlanoMestreCustom {
 	    + " from (select pre_ordens.id, "
 	    + " pre_ordens.num_plano_mestre, "
 	    + " pre_ordens.referencia, "
+	    + " pre_ordens.descr_referencia, "
 	    + " pre_ordens.alternativa, "
 	    + " pre_ordens.roteiro, "
 	    + " min(pre_ordens.data_embarque) data_embarque, "
@@ -299,6 +301,7 @@ public class PlanoMestreCustom {
 	    + " a.referencia, "
 	    + " a.alternativa, "
 	    + " a.roteiro, "
+	    + " min(r.descr_referencia) descr_referencia, "
 	    + " min(c.data_entrega) data_embarque, "
 	    + " b.sub, "
 	    + " b.item, "
@@ -322,9 +325,13 @@ public class PlanoMestreCustom {
 	    + " and m.numero_alternati = a.alternativa "
 	    + " and m.numero_roteiro = a.roteiro "
 	    + " ) tempo_producao "
-        + " from orion_020 a, orion_021 b, basi_590 c " 
-		+ " where a.ordem_gerada = 0 " 
+        + " from orion_020 a, basi_030 r, orion_021 b, basi_590 c " 
+		+ " where a.ordem_gerada = 0 " 		
+		+ " and r.nivel_estrutura = '1' "
+		+ " and r.referencia = a.referencia "				
 		+ " and b.num_id_ordem = a.id "
+		+ " and r.nivel_estrutura = '1' "
+		+ " and r.referencia = a.referencia "
 		+ " and c.nivel = '1' "
 		+ " and c.grupo = a.referencia " 
 		+ " and c.subgrupo = b.sub "
@@ -341,7 +348,7 @@ public class PlanoMestreCustom {
 		
 		query += " group by a.id,a.num_plano_mestre,a.referencia, a.alternativa,a.roteiro,b.sub,b.item,b.quantidade "
   	    + " ) pre_ordens "
-  	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.alternativa, pre_ordens.roteiro "
+  	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.descr_referencia , pre_ordens.alternativa, pre_ordens.roteiro "
 		+ " ) pre_ordens_priorizadas ";
 						
 		String ordenacao = "";

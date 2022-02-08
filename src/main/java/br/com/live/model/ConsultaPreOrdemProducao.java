@@ -7,6 +7,7 @@ public class ConsultaPreOrdemProducao {
 	public long id;
 	public long idPlanoMestre;
 	public String referencia;
+	public String descrReferencia;
 	public int periodo;
 	public String alternativa;
 	public int roteiro;
@@ -80,6 +81,12 @@ public class ConsultaPreOrdemProducao {
 	}
 	public void setReferencia(String referencia) {
 		this.referencia = referencia;
+	}
+	public String getDescrReferencia() {
+		return descrReferencia;
+	}
+	public void setDescrReferencia(String descrReferencia) {
+		this.descrReferencia = descrReferencia;
 	}
 	public int getPeriodo() {
 		return periodo;

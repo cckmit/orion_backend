@@ -1,32 +1,22 @@
 package br.com.live.model;
 
-public class SugestaoReservaPorOrdem extends SugestaoReservaPorTecido {
+public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido {
 
-	private int prioridade;
 	private long idOrdem;
 	private String sortimento;
 	private int sequencia;
 	private double qtdeNecessidadeUnit;
 	private double qtdeNecessidadeRecalculada;
 	
-	public SugestaoReservaPorOrdem(int prioridade, long idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
+	public SugestaoReservaPorOrdemSortimento(long idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
 			String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, double qtdeNecessidadeUnit) {
 		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido);
-		this.prioridade = prioridade;
 		this.idOrdem = idOrdem;
 		this.sortimento = sortimento;
 		this.sequencia = sequencia;
 		this.qtdeNecessidadeUnit = qtdeNecessidadeUnit;
 	}
 	
-	public int getPrioridade() {
-		return prioridade;
-	}
-
-	public void setPrioridade(int prioridade) {
-		this.prioridade = prioridade;
-	}
-		
 	public long getIdOrdem() {
 		return idOrdem;
 	}
