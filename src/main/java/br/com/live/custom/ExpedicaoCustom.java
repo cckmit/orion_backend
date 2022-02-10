@@ -90,4 +90,50 @@ public class ExpedicaoCustom {
 		}
 		return dadosModal;
 	}
+	
+	public void gravarEnderecos(int periodo, int ordemProducao, int ordemConfeccao, int sequencia, String endereco) {
+		String queryUpdate = " update pcpc_330 "
+				+ " set endereco = '" + endereco + "'"
+				+ " where pcpc_330.periodo_producao = " + periodo
+				+ " and pcpc_330.ordem_producao = " + ordemProducao
+				+ " and pcpc_330.ordem_confeccao = " + ordemConfeccao
+				+ " and pcpc_330.sequencia = " + sequencia;
+
+		jdbcTemplate.update(queryUpdate);
+	}
+	
+	public String validarGravacaoEndereco(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
+		String endereco = "";
+		
+		String query = " select nvl(a.endereco, '') from pcpc_330 a "
+				+ " where a.periodo_producao = " + periodo
+				+ " and a.ordem_producao = " + ordemProducao
+				+ " and a.ordem_confeccao = " + ordemConfeccao
+				+ " and a.sequencia = " + sequencia;
+		
+		try {
+			endereco = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			endereco = "";
+		}
+		return endereco;
+	}
+	
+	public int validarPecaEmEstoque(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
+		int flagEstoque = 0;
+		
+		String query = " select 1 from pcpc_330 a "
+				+ " where a.periodo_producao = " + periodo
+				+ " and a.ordem_producao = " + ordemProducao
+				+ " and a.ordem_confeccao = " + ordemConfeccao
+				+ " and a.sequencia = " + sequencia
+				+ " and a.estoque_tag = 4 ";
+	
+		try {
+			flagEstoque = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			flagEstoque = 0;
+		}
+		return flagEstoque; 
+	}
 }
