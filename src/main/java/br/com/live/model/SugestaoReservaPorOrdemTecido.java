@@ -22,5 +22,16 @@ public class SugestaoReservaPorOrdemTecido extends SugestaoReservaPorTecido {
 	}
 	public void setQtdeNecessidadeUnit(double qtdeNecessidadeUnit) {
 		this.qtdeNecessidadeUnit = qtdeNecessidadeUnit;
+	}		
+	public void setQtdeDisponivel(double qtdeDisponivel) {
+		this.qtdeDisponivel = qtdeDisponivel;
+		acertaSaldo();
+	}	
+	public void setQtdeSugerido(double qtdeSugerido) {
+		this.qtdeSugerido = qtdeSugerido;
+		acertaSaldo();
+	}		
+	private void acertaSaldo() {
+		this.qtdeSaldo = this.qtdeDisponivel - this.qtdeSugerido;
 	}
 }

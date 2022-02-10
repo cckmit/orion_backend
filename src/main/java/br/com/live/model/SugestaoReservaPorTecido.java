@@ -26,8 +26,6 @@ public class SugestaoReservaPorTecido {
 		this.qtdeEstoque = qtdeEstoque;
 		this.qtdeEmpenhada = qtdeEmpenhada;		
 		this.qtdeSugerido = qtdeSugerido;
-		this.qtdeDisponivel = 0.0; 
-		this.qtdeSugerido = 0.0;
 		acertaSaldos();
 	}
 	
