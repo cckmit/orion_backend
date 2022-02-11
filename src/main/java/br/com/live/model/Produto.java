@@ -8,8 +8,15 @@ public class Produto {
 	public String item;
 	public String narrativa;	
 	public String unidade;
-	public int qtdePrevisaoVendas;	
+	public int qtdePrevisaoVendas;
+	public int seqTamanho;
 	
+	public int getSeqTamanho() {
+		return seqTamanho;
+	}
+	public void setSeqTamanho(int seqTamanho) {
+		this.seqTamanho = seqTamanho;
+	}
 	public String getNivel() {
 		return nivel;
 	}

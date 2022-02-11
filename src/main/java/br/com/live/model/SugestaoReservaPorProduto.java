@@ -2,11 +2,12 @@ package br.com.live.model;
 
 import java.util.Date;
 
-public class SugestaoReservaPorProduto {
+public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorProduto> {
 
+	private int prioridade;
 	private String nivel;
 	private String grupo;
-	private String tamanho;
+	private String tamanho;	
 	private String cor;
 	private String descricao;
 	private int alternativa;
@@ -17,8 +18,10 @@ public class SugestaoReservaPorProduto {
 	private int qtdePrevista;
 	private int qtdeAtendida;
 	private double percentualAtendido;
+	private int seqTamanho;
 	
-	public SugestaoReservaPorProduto(String nivel, String grupo, String tamanho, String cor, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista, int qtdeAtendida, double percentualAtendido) {
+	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista, int qtdeAtendida, double percentualAtendido) {
+		this.prioridade = prioridade;
 		this.nivel = nivel; 
 		this.grupo = grupo; 
 		this.tamanho = tamanho; 
@@ -32,8 +35,14 @@ public class SugestaoReservaPorProduto {
 		this.qtdePrevista = qtdePrevista; 
 		this.qtdeAtendida = qtdeAtendida; 
 		this.percentualAtendido = percentualAtendido;
+		this.seqTamanho = seqTamanho;
 	}
-	
+	public int getPrioridade() {
+		return prioridade;
+	}
+	public void setPrioridade(int prioridade) {
+		this.prioridade = prioridade;
+	}
 	public String getNivel() {
 		return nivel;
 	}
@@ -114,7 +123,35 @@ public class SugestaoReservaPorProduto {
 	public void setPercentualAtendido(double percentualAtendido) {
 		this.percentualAtendido = percentualAtendido;
 	}
+	public int getSeqTamanho() {
+		return seqTamanho;
+	}
+	public void setSeqTamanho(int seqTamanho) {
+		this.seqTamanho = seqTamanho;
+	}
 	private void calcularPercentualAtendido() {
 		this.percentualAtendido = ((double) this.qtdeAtendida / (double) this.qtdePrevista) * 100;
 	}	
+	
+	@Override
+	public int compareTo(SugestaoReservaPorProduto outroProduto) {
+		
+		//if (outroProduto.getPrioridade() != getPrioridade())
+		//	return Integer.compare(outroProduto.getPrioridade(), getPrioridade());
+		
+		if (outroProduto.getSeqTamanho() > getSeqTamanho())
+			return 1;
+		
+		return 0;
+		
+		/*if (outroProduto.getDataEmbarque() != getDataEmbarque())
+			return outroProduto.getDataEmbarque().equals(getDataEmbarque()) ? 1 : 0;
+		else if (outroProduto.getQtdeEstagioCritico() != getQtdeEstagioCritico())
+				return Integer.compare(outroProduto.getQtdeEstagioCritico(), getQtdeEstagioCritico());
+			else if (outroProduto.getTempoProducaoUnit() != getTempoProducaoUnit())
+				return Double.compare(outroProduto.getTempoProducaoUnit(), getTempoProducaoUnit());
+			else if (!outroProduto.getGrupo().equalsIgnoreCase(getGrupo()))
+				return outroProduto.getGrupo().equalsIgnoreCase(getGrupo()) ? 1 : 0;
+			else*/ 							
+	}
 }
