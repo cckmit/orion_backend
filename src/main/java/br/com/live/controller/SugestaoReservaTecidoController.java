@@ -29,4 +29,9 @@ public class SugestaoReservaTecidoController {
 				ConteudoChaveNumerica.parseValueToString(body.depositos),
 				body.priorizacao);		
 	}
+	
+	@RequestMapping(value = "/gerar-ordens", method = RequestMethod.POST)
+	public void gerarOrdensProducao(@RequestBody BodySugestaoReservaTecidos body) {		
+		sugestaoReservaTecidoService.gerarOrdensProducao(body.listaItensComQtdesAtendidas);		
+	}
 }

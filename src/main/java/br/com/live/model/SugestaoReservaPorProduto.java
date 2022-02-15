@@ -16,11 +16,10 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 	private int qtdeEstagioCritico;
 	private double tempoProducaoUnit;
 	private int qtdePrevista;
-	private int qtdeAtendida;
-	private double percentualAtendido;
+	private int qtdeAtendida;	
 	private int seqTamanho;
 	
-	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista, int qtdeAtendida, double percentualAtendido) {
+	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista, int qtdeAtendida) {
 		this.prioridade = prioridade;
 		this.nivel = nivel; 
 		this.grupo = grupo; 
@@ -33,8 +32,7 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 		this.qtdeEstagioCritico = qtdeEstagioCritico; 
 		this.tempoProducaoUnit = tempoProducaoUnit; 
 		this.qtdePrevista = qtdePrevista; 
-		this.qtdeAtendida = qtdeAtendida; 
-		this.percentualAtendido = percentualAtendido;
+		this.qtdeAtendida = qtdeAtendida; 		
 		this.seqTamanho = seqTamanho;
 	}
 	public int getPrioridade() {
@@ -107,21 +105,13 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 		return qtdePrevista;
 	}
 	public void setQtdePrevista(int qtdePrevista) {
-		this.qtdePrevista = qtdePrevista;
-		this.calcularPercentualAtendido();
+		this.qtdePrevista = qtdePrevista;		
 	}
 	public int getQtdeAtendida() {
 		return qtdeAtendida;
 	}
 	public void setQtdeAtendida(int qtdeAtendida) {
-		this.qtdeAtendida = qtdeAtendida;
-		this.calcularPercentualAtendido();
-	}
-	public double getPercentualAtendido() {
-		return percentualAtendido;
-	}
-	public void setPercentualAtendido(double percentualAtendido) {
-		this.percentualAtendido = percentualAtendido;
+		this.qtdeAtendida = qtdeAtendida;		
 	}
 	public int getSeqTamanho() {
 		return seqTamanho;
@@ -129,29 +119,19 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 	public void setSeqTamanho(int seqTamanho) {
 		this.seqTamanho = seqTamanho;
 	}
-	private void calcularPercentualAtendido() {
-		this.percentualAtendido = ((double) this.qtdeAtendida / (double) this.qtdePrevista) * 100;
-	}	
 	
 	@Override
 	public int compareTo(SugestaoReservaPorProduto outroProduto) {
 		
-		//if (outroProduto.getPrioridade() != getPrioridade())
-		//	return Integer.compare(outroProduto.getPrioridade(), getPrioridade());
-		
-		if (outroProduto.getSeqTamanho() > getSeqTamanho())
+		if (outroProduto.getPrioridade() < getPrioridade())
 			return 1;
+		else if (outroProduto.getPrioridade() > getPrioridade())
+			return -1;
+		else if (outroProduto.getSeqTamanho() < getSeqTamanho())
+			return 1;
+		if (outroProduto.getSeqTamanho() > getSeqTamanho())
+			return -1;
 		
-		return 0;
-		
-		/*if (outroProduto.getDataEmbarque() != getDataEmbarque())
-			return outroProduto.getDataEmbarque().equals(getDataEmbarque()) ? 1 : 0;
-		else if (outroProduto.getQtdeEstagioCritico() != getQtdeEstagioCritico())
-				return Integer.compare(outroProduto.getQtdeEstagioCritico(), getQtdeEstagioCritico());
-			else if (outroProduto.getTempoProducaoUnit() != getTempoProducaoUnit())
-				return Double.compare(outroProduto.getTempoProducaoUnit(), getTempoProducaoUnit());
-			else if (!outroProduto.getGrupo().equalsIgnoreCase(getGrupo()))
-				return outroProduto.getGrupo().equalsIgnoreCase(getGrupo()) ? 1 : 0;
-			else*/ 							
+		return 0;		
 	}
 }

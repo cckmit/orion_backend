@@ -88,7 +88,7 @@ public class PlanoMestreController {
 		return planoMestreService.findAll();
 	}
 
-	@RequestMapping(value = "com-pre-ordens-nao-geradas", method = RequestMethod.GET)
+	@RequestMapping(value = "sem-ordens-producao", method = RequestMethod.GET)
 	public List<PlanoMestre> findAllPlanosMestreComPreOrdensNaoGeradas() {
 		return planoMestreService.findAllPlanosMestreComPreOrdensNaoGeradas();
 	}

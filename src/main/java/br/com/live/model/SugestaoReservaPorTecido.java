@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class SugestaoReservaPorTecido {
+public class SugestaoReservaPorTecido implements Comparable<SugestaoReservaPorTecido> {
 
 	private String nivel;
 	private String grupo;
@@ -123,5 +123,14 @@ public class SugestaoReservaPorTecido {
 	private void acertaSaldos() {
 		this.qtdeDisponivel = this.qtdeEstoque - this.qtdeEmpenhada;
 		this.qtdeSaldo = this.qtdeDisponivel - this.qtdeSugerido;		
+	}
+	
+	@Override
+	public int compareTo(SugestaoReservaPorTecido outroTecido) {
+		
+		String codOutroTecido = outroTecido.getNivel() + "." + outroTecido.getGrupo() + "." + outroTecido.getSub() + "." + outroTecido.getItem(); 
+		String codTecidoAtual = getNivel() + "." + getGrupo() + "." + getSub() + "." + getItem();
+		
+		return (codTecidoAtual.compareToIgnoreCase(codOutroTecido));			
 	}
 }

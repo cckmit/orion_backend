@@ -285,7 +285,7 @@ public class PlanoMestreCustom {
 	    + " pre_ordens_priorizadas.data_embarque dataEmbarque, "
 	    + " pre_ordens_priorizadas.quantidade, "
 	    + " pre_ordens_priorizadas.qtde_estagio_critico qtdeEstagioCritico, "
-	    + " pre_ordens_priorizadas.tempo_producao_unit tempoProducaoUnit"
+	    + " pre_ordens_priorizadas.tempo_producao_unit tempoProducaoUnit "
 	    + " from (select pre_ordens.id, "
 	    + " pre_ordens.num_plano_mestre, "
 	    + " pre_ordens.referencia, "
@@ -293,7 +293,7 @@ public class PlanoMestreCustom {
 	    + " pre_ordens.alternativa, "
 	    + " pre_ordens.roteiro, "
 	    + " min(pre_ordens.data_embarque) data_embarque, "
-	    + " sum(pre_ordens.quantidade) quantidade, "
+	    + " max(pre_ordens.quantidade) quantidade, "
 	    + " max(pre_ordens.qtde_estagio_critico) qtde_estagio_critico, "
 	    + " max(pre_ordens.tempo_producao) tempo_producao_unit "
 	    + " from (select a.id, "
@@ -305,7 +305,7 @@ public class PlanoMestreCustom {
 	    + " min(c.data_entrega) data_embarque, "
 	    + " b.sub, "
 	    + " b.item, "
-	    + " b.quantidade, "      
+	    + " max(a.quantidade) quantidade, "      
 	    + " (select count(*) from mqop_005 t "
 	    + " where t.live_estagio_critico = 1 "
 	    + " and exists (select 1 from mqop_050 m "
@@ -346,7 +346,7 @@ public class PlanoMestreCustom {
 	    if (!embarques.isEmpty())
 	    	query += " and c.grupo_embarque in (" + embarques + ") ";	    
 		
-		query += " group by a.id,a.num_plano_mestre,a.referencia, a.alternativa,a.roteiro,b.sub,b.item,b.quantidade "
+		query += " group by a.id,a.num_plano_mestre,a.referencia, a.alternativa,a.roteiro,b.sub,b.item "
   	    + " ) pre_ordens "
   	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.descr_referencia , pre_ordens.alternativa, pre_ordens.roteiro "
 		+ " ) pre_ordens_priorizadas ";
@@ -491,12 +491,13 @@ public class PlanoMestreCustom {
 
 	public List<PlanoMestre> findAllPlanosMestreComPreOrdensNaoGeradas() {
 	
-		String query = " select a.num_plano_mestre id, a.descricao, a.data, a.situacao, a.usuario from orion_010 a "
+		String query = " select a.num_plano_mestre id, a.descricao, a.data, a.situacao, a.usuario from orion_010 a " 
 		+ " where a.data > sysdate - 30 "
-		+ " and exists (select 1 from orion_020 b "
-		+ " where b.num_plano_mestre = a.num_plano_mestre "
+		+ " and a.situacao in (0,1) "
+		+ " and exists (select 1 from orion_020 b " 
+		+ " where b.num_plano_mestre = a.num_plano_mestre " 
 		+ " and b.ordem_gerada = 0) "
-		+ " order by a.num_plano_mestre desc " ;
+		+ " order by a.num_plano_mestre desc ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PlanoMestre.class));
 	}

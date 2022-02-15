@@ -12,11 +12,13 @@ public class SugestaoReservaTecidos {
 	public List<SugestaoReservaPorOrdemTecido> listaSugestaoReservaPorOrdem;
 	public List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto;
 	public List<SugestaoReservaPorTecido> listaSugestaoReservaPorTecido;
+	public List<PreOrdemProducaoItem> listaOrdensItensComQtdesAtendidas;
 	
-	public SugestaoReservaTecidos(List<ConsultaPreOrdemProducao> listaPriorizadaPreOrdens, List<SugestaoReservaPorOrdemTecido> listaSugestaoReservaPorOrdem, List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto, List<SugestaoReservaPorTecido> listaSugestaoReservaPorTecido) {
+	public SugestaoReservaTecidos(List<ConsultaPreOrdemProducao> listaPriorizadaPreOrdens, List<SugestaoReservaPorOrdemTecido> listaSugestaoReservaPorOrdem, List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto, List<SugestaoReservaPorTecido> listaSugestaoReservaPorTecido, List<PreOrdemProducaoItem> listaOrdensItensComQtdesAtendidas) {
 		this.listaPriorizadaPreOrdens = listaPriorizadaPreOrdens;
 		this.listaSugestaoReservaPorOrdem = listaSugestaoReservaPorOrdem;
 		this.listaSugestaoReservaPorProduto = listaSugestaoReservaPorProduto;
 		this.listaSugestaoReservaPorTecido = listaSugestaoReservaPorTecido;
+		this.listaOrdensItensComQtdesAtendidas = listaOrdensItensComQtdesAtendidas;
 	}
 }
