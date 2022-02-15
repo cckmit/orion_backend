@@ -117,9 +117,7 @@ public class SugestaoReservaTecidoService {
 						sugestaoReservaPorOrdemTecido.setQtdeNecessidadeUnit(sugestaoReservaPorOrdemTecido.getQtdeNecessidadeUnit() + item.getQtdeNecessidadeUnit());
 						sugestaoReservaPorOrdemTecido.setQtdeNecessidade(sugestaoReservaPorOrdemTecido.getQtdeNecessidade() + item.getQtdeNecessidade());
 						sugestaoReservaPorOrdemTecido.setQtdeSugerido(sugestaoReservaPorOrdemTecido.getQtdeSugerido() + item.getQtdeSugerido());
-						// TODO - TESTAR ESSA SITUACAO - TEM QUE POSSUIR O MESMO TECIDO EM PARTES DIFERENTES
-						// Parece estar certo, fazer mais testes referente essa logica
- 					    System.out.println("PASSOU POR AQUI: " + idOrdem + " - " + item.getQtdeDisponivel());						
+ 					    //System.out.println("PASSOU POR AQUI: " + idOrdem + " - " + item.getQtdeDisponivel());						
 						//if (item.getQtdeDisponivel() > sugestaoReservaPorOrdemTecido.getQtdeDisponivel()) sugestaoReservaPorOrdemTecido.setQtdeDisponivel(item.getQtdeDisponivel());
 					}
 				} else {

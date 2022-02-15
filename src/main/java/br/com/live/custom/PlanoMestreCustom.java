@@ -282,7 +282,7 @@ public class PlanoMestreCustom {
 	    + " pre_ordens_priorizadas.descr_referencia descrReferencia, "
 	    + " pre_ordens_priorizadas.alternativa, "
 	    + " pre_ordens_priorizadas.roteiro, "
-	    + " pre_ordens_priorizadas.data_embarque dataEmbarque, "
+	    + " nvl(pre_ordens_priorizadas.data_embarque,sysdate+10000) dataEmbarque, "
 	    + " pre_ordens_priorizadas.quantidade, "
 	    + " pre_ordens_priorizadas.qtde_estagio_critico qtdeEstagioCritico, "
 	    + " pre_ordens_priorizadas.tempo_producao_unit tempoProducaoUnit "
@@ -296,47 +296,46 @@ public class PlanoMestreCustom {
 	    + " max(pre_ordens.quantidade) quantidade, "
 	    + " max(pre_ordens.qtde_estagio_critico) qtde_estagio_critico, "
 	    + " max(pre_ordens.tempo_producao) tempo_producao_unit "
-	    + " from (select a.id, "
-	    + " a.num_plano_mestre, "
-	    + " a.referencia, "
-	    + " a.alternativa, "
+        + " from (select a.id, " 
+	    + " a.num_plano_mestre, " 
+	    + " a.referencia, " 
+	    + " a.alternativa, " 
 	    + " a.roteiro, "
-	    + " min(r.descr_referencia) descr_referencia, "
+	    + " min(a.descr_referencia) descr_referencia, " 
 	    + " min(c.data_entrega) data_embarque, "
-	    + " b.sub, "
-	    + " b.item, "
-	    + " max(a.quantidade) quantidade, "      
-	    + " (select count(*) from mqop_005 t "
+	    + " a.sub, "
+	    + " a.item, "      
+	    + " max(a.quantidade) quantidade, "       
+	    + " (select count(*) from mqop_005 t " 
 	    + " where t.live_estagio_critico = 1 "
-	    + " and exists (select 1 from mqop_050 m "
+	    + " and exists (select 1 from mqop_050 m " 
 	    + " where m.nivel_estrutura = '1' "
-	    + " and m.grupo_estrutura = a.referencia "
-	    + " and (m.subgru_estrutura = b.sub or m.subgru_estrutura = '000') "
-	    + " and (m.item_estrutura = b.item or m.item_estrutura = '000000') "
+	    + " and m.grupo_estrutura = a.referencia " 
+	    + " and (m.subgru_estrutura = a.sub or m.subgru_estrutura = '000') " 
+	    + " and (m.item_estrutura = a.item or m.item_estrutura = '000000') "
 	    + " and m.numero_alternati = a.alternativa "
 	    + " and m.numero_roteiro = a.roteiro "
-	    + " and m.codigo_estagio = t.codigo_estagio) "                          
-	    + " ) qtde_estagio_critico, "
-	    + " (select nvl(sum(m.minutos_homem),0) from mqop_050 m "
-	    + " where m.nivel_estrutura = '1' "
-	    + " and m.grupo_estrutura = a.referencia "
-	    + " and (m.subgru_estrutura = b.sub or m.subgru_estrutura = '000') "
-	    + " and (m.item_estrutura = b.item or m.item_estrutura = '000000') " 
-	    + " and m.numero_alternati = a.alternativa "
-	    + " and m.numero_roteiro = a.roteiro "
-	    + " ) tempo_producao "
-        + " from orion_020 a, basi_030 r, orion_021 b, basi_590 c " 
-		+ " where a.ordem_gerada = 0 " 		
-		+ " and r.nivel_estrutura = '1' "
-		+ " and r.referencia = a.referencia "				
-		+ " and b.num_id_ordem = a.id "
-		+ " and r.nivel_estrutura = '1' "
-		+ " and r.referencia = a.referencia "
-		+ " and c.nivel = '1' "
-		+ " and c.grupo = a.referencia " 
-		+ " and c.subgrupo = b.sub "
-		+ " and c.item = b.item ";
-		 	
+	    + " and m.codigo_estagio = t.codigo_estagio) "                           
+	    + " ) qtde_estagio_critico, " 
+	    + " (select nvl(sum(m.minutos_homem),0) from mqop_050 m " 
+	    + " where m.nivel_estrutura = '1' " 
+	    + " and m.grupo_estrutura = a.referencia " 
+	    + " and (m.subgru_estrutura = a.sub or m.subgru_estrutura = '000') " 
+	    + " and (m.item_estrutura = a.item or m.item_estrutura = '000000') "  
+	    + " and m.numero_alternati = a.alternativa " 
+	    + " and m.numero_roteiro = a.roteiro " 
+	    + " ) tempo_producao "  
+	    + " from (select aa.id, aa.num_plano_mestre, aa.referencia, aa.alternativa, aa.roteiro, cc.descr_referencia, bb.sub, bb.item, aa.quantidade "
+	    + " from orion_020 aa, orion_021 bb, basi_030 cc "
+	    + " where aa.ordem_gerada = 0 "
+	    + " and bb.num_id_ordem = aa.id "
+	    + " and cc.nivel_estrutura = '1' "
+	    + " and cc.referencia = aa.referencia) a, basi_590 c "
+	    + " where c.nivel (+) = '1' " 
+	    + " and c.grupo (+) = a.referencia "  
+	    + " and c.subgrupo (+) = a.sub " 
+	    + " and c.item (+) = a.item " ;       
+      
 	    if (!planosMestres.isEmpty())
 	    	query += " and a.num_plano_mestre in (" + planosMestres + ")";
 	    
@@ -345,8 +344,8 @@ public class PlanoMestreCustom {
 	    
 	    if (!embarques.isEmpty())
 	    	query += " and c.grupo_embarque in (" + embarques + ") ";	    
-		
-		query += " group by a.id,a.num_plano_mestre,a.referencia, a.alternativa,a.roteiro,b.sub,b.item "
+	    
+		query += " group by a.id, a.num_plano_mestre, a.referencia, a.alternativa, a.roteiro, a.sub, a.item "
   	    + " ) pre_ordens "
   	    + " group by pre_ordens.id, pre_ordens.num_plano_mestre, pre_ordens.referencia, pre_ordens.descr_referencia , pre_ordens.alternativa, pre_ordens.roteiro "
 		+ " ) pre_ordens_priorizadas ";
@@ -361,6 +360,8 @@ public class PlanoMestreCustom {
 			ordenacao = " order by pre_ordens_priorizadas.tempo_producao_unit desc, pre_ordens_priorizadas.data_embarque, pre_ordens_priorizadas.qtde_estagio_critico desc, pre_ordens_priorizadas.quantidade desc ";
 		
 		query += ordenacao;
+		
+		//System.out.println(query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreOrdemProducao.class));
 	}
