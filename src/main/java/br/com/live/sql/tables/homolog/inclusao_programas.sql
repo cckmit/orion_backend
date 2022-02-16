@@ -90,3 +90,6 @@ values (30, 'Localiza Embarque', 'Expedição', '/localiza-embarque');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (31, 'Endereçar Tags', 'Expedição', '/enderecar');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (33, 'Painel de Distribuição de Caixas', 'Expedição', '/painel-distrib-caixas');
