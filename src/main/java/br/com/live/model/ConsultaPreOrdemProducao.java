@@ -19,6 +19,7 @@ public class ConsultaPreOrdemProducao {
 	public Date dataEmbarque;
 	public int qtdeEstagioCritico;
 	public double tempoProducaoUnit;
+	public int qtdeAtendidaPelaReservaTecido;	
 		
 	public int getQtdeEstagioCritico() {
 		return qtdeEstagioCritico;
@@ -118,4 +119,10 @@ public class ConsultaPreOrdemProducao {
 	public void setDataEmbarque(Date dataEmbarque) {
 		this.dataEmbarque = dataEmbarque;
 	}
+	public int getQtdeAtendidaPelaReservaTecido() {
+		return qtdeAtendidaPelaReservaTecido;
+	}
+	public void setQtdeAtendidaPelaReservaTecido(int qtdeAtendidaPelaReservaTecido) {
+		this.qtdeAtendidaPelaReservaTecido = qtdeAtendidaPelaReservaTecido;
+	}	
 }

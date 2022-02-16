@@ -2,11 +2,12 @@ package br.com.live.model;
 
 import java.util.Date;
 
-public class SugestaoReservaPorProduto {
+public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorProduto> {
 
+	private int prioridade;
 	private String nivel;
 	private String grupo;
-	private String tamanho;
+	private String tamanho;	
 	private String cor;
 	private String descricao;
 	private int alternativa;
@@ -15,10 +16,11 @@ public class SugestaoReservaPorProduto {
 	private int qtdeEstagioCritico;
 	private double tempoProducaoUnit;
 	private int qtdePrevista;
-	private int qtdeAtendida;
-	private double percentualAtendido;
+	private int qtdeAtendida;	
+	private int seqTamanho;
 	
-	public SugestaoReservaPorProduto(String nivel, String grupo, String tamanho, String cor, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista, int qtdeAtendida, double percentualAtendido) {
+	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista, int qtdeAtendida) {
+		this.prioridade = prioridade;
 		this.nivel = nivel; 
 		this.grupo = grupo; 
 		this.tamanho = tamanho; 
@@ -30,10 +32,15 @@ public class SugestaoReservaPorProduto {
 		this.qtdeEstagioCritico = qtdeEstagioCritico; 
 		this.tempoProducaoUnit = tempoProducaoUnit; 
 		this.qtdePrevista = qtdePrevista; 
-		this.qtdeAtendida = qtdeAtendida; 
-		this.percentualAtendido = percentualAtendido;
+		this.qtdeAtendida = qtdeAtendida; 		
+		this.seqTamanho = seqTamanho;
 	}
-	
+	public int getPrioridade() {
+		return prioridade;
+	}
+	public void setPrioridade(int prioridade) {
+		this.prioridade = prioridade;
+	}
 	public String getNivel() {
 		return nivel;
 	}
@@ -98,23 +105,33 @@ public class SugestaoReservaPorProduto {
 		return qtdePrevista;
 	}
 	public void setQtdePrevista(int qtdePrevista) {
-		this.qtdePrevista = qtdePrevista;
-		this.calcularPercentualAtendido();
+		this.qtdePrevista = qtdePrevista;		
 	}
 	public int getQtdeAtendida() {
 		return qtdeAtendida;
 	}
 	public void setQtdeAtendida(int qtdeAtendida) {
-		this.qtdeAtendida = qtdeAtendida;
-		this.calcularPercentualAtendido();
+		this.qtdeAtendida = qtdeAtendida;		
 	}
-	public double getPercentualAtendido() {
-		return percentualAtendido;
+	public int getSeqTamanho() {
+		return seqTamanho;
 	}
-	public void setPercentualAtendido(double percentualAtendido) {
-		this.percentualAtendido = percentualAtendido;
+	public void setSeqTamanho(int seqTamanho) {
+		this.seqTamanho = seqTamanho;
 	}
-	private void calcularPercentualAtendido() {
-		this.percentualAtendido = ((double) this.qtdeAtendida / (double) this.qtdePrevista) * 100;
-	}	
+	
+	@Override
+	public int compareTo(SugestaoReservaPorProduto outroProduto) {
+		
+		if (outroProduto.getPrioridade() < getPrioridade())
+			return 1;
+		else if (outroProduto.getPrioridade() > getPrioridade())
+			return -1;
+		else if (outroProduto.getSeqTamanho() < getSeqTamanho())
+			return 1;
+		if (outroProduto.getSeqTamanho() > getSeqTamanho())
+			return -1;
+		
+		return 0;		
+	}
 }

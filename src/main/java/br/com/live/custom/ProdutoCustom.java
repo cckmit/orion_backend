@@ -822,14 +822,15 @@ public class ProdutoCustom {
 		
 		Produto produto;
 		
-		String query = " select a.nivel_estrutura nivel, a.grupo_estrutura grupo, a.subgru_estrutura sub, a.item_estrutura item, a.narrativa, b.unidade_medida unidade" 
-		+ " from basi_010 a, basi_030 b "
+		String query = " select a.nivel_estrutura nivel, a.grupo_estrutura grupo, a.subgru_estrutura sub, a.item_estrutura item, a.narrativa, b.unidade_medida unidade, nvl(c.ordem_tamanho,0) seqTamanho" 
+		+ " from basi_010 a, basi_030 b, basi_220 c "
 		+ " where a.nivel_estrutura = '" + nivel + "' " 
 		+ " and a.grupo_estrutura = '" + grupo + "' "
 		+ " and a.subgru_estrutura = '" + sub + "' "
 		+ " and a.item_estrutura = '" + item + "' "
 		+ " and b.nivel_estrutura = a.nivel_estrutura "
-		+ " and b.referencia = a.grupo_estrutura ";
+		+ " and b.referencia = a.grupo_estrutura "
+		+ " and c.tamanho_ref (+) = a.subgru_estrutura ";
 		
 		try {
 			produto = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(Produto.class));
