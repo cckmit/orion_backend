@@ -48,7 +48,7 @@ public class UsuarioController {
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public Usuario saveUsuario(@RequestBody BodyUsuario body) {
-		return usuarioService.saveUsuario(body.id, body.nome, body.usuario, body.senha, body.listaIdsProgramas, body.situacao, body.liberaInspecaoQualidade, body.email);
+		return usuarioService.saveUsuario(body.id, body.nome, body.usuario, body.senha, body.listaIdsProgramas, body.situacao, body.liberaInspecaoQualidade, body.email, body.usuarioRepositor);
 	}
 	
 	@RequestMapping(value = "programas-usuario/{idUsuario}", method = RequestMethod.GET)

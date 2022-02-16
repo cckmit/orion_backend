@@ -60,6 +60,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/gravar-parametros", method = RequestMethod.POST)
     public void gravaParametros(@RequestBody BodyExpedicao body) {
     	enderecoService.salvarParametros(body.deposito, body.blocoInicio, body.blocoFim, body.corredorInicio, body.corredorFim, body.boxInicio, body.boxFim, body.cestoInicio, body.cestoFim);
+    	enderecoService.gerarEnderecosDinamicos(body.deposito);
     }
 
 }

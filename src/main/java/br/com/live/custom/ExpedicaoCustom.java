@@ -136,4 +136,19 @@ public class ExpedicaoCustom {
 		}
 		return flagEstoque; 
 	}
+	
+	public void cleanEnderecos(int deposito) {
+		String query = " delete from estq_110 "
+				+ " where estq_110.deposito = ?";
+		
+		jdbcTemplate.update(query, deposito);
+	}
+	
+	public void inserirEnderecosDeposito(int deposito, String endereco) {
+		String query = " insert into estq_110 "
+		+ " values (?,?,?,?,?,?)";
+		
+		jdbcTemplate.update(query, 0,00000, 000, 000000, deposito, endereco);
+	}
+	
 }

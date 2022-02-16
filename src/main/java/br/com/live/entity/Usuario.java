@@ -21,11 +21,14 @@ public class Usuario {
 	@Column(name = "libera_inspecao_qualid")	
 	public int liberaInspecaoQualidade;
 	
+	@Column(name = "usuario_repositor")	
+	public int usuarioRepositor;
+	
 	public Usuario() {
 		
 	}
 	
-	public Usuario(long id, String nome, String usuario, String senha, int situacao, int liberaInspecaoQualidade, String email) {
+	public Usuario(long id, String nome, String usuario, String senha, int situacao, int liberaInspecaoQualidade, String email, int usuarioRepositor) {
 		this.id = id;
 		this.nome = nome;
 		this.usuario = usuario;
@@ -33,6 +36,7 @@ public class Usuario {
 		this.situacao = situacao;
 		this.liberaInspecaoQualidade = liberaInspecaoQualidade;
 		this.email = email;
+		this.usuarioRepositor = usuarioRepositor;
 	}
 	
 }

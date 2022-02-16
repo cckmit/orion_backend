@@ -12,4 +12,5 @@ public class BodyUsuario {
 	public int situacao;
 	public int liberaInspecaoQualidade;
 	public String email;
+	public int usuarioRepositor;
 }
