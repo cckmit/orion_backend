@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyExpedicao;
+import br.com.live.custom.ExpedicaoCustom;
 import br.com.live.entity.ParametrosMapaEndereco;
+import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
@@ -25,11 +27,13 @@ public class ExpedicaoController {
 	
 	private ExpedicaoService enderecoService;
 	private ParametrosMapaEndRepository parametrosMapaEndRepository;
+	private ExpedicaoCustom expedicaoCustom;
 	
     @Autowired
-    public ExpedicaoController(ExpedicaoService enderecoService, ParametrosMapaEndRepository parametrosMapaEndRepository) {
+    public ExpedicaoController(ExpedicaoService enderecoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom) {
     	this.enderecoService = enderecoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
+    	this.expedicaoCustom = expedicaoCustom;
     }
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
@@ -61,6 +65,17 @@ public class ExpedicaoController {
     public void gravaParametros(@RequestBody BodyExpedicao body) {
     	enderecoService.salvarParametros(body.deposito, body.blocoInicio, body.blocoFim, body.corredorInicio, body.corredorFim, body.boxInicio, body.boxFim, body.cestoInicio, body.cestoFim);
     	enderecoService.gerarEnderecosDinamicos(body.deposito);
+    }
+    
+    @RequestMapping(value = "/find-all-capacidades-artigos", method = RequestMethod.GET)
+    public List<ConsultaCapacidadeArtigosEnderecos> findAllCapacidadesArtigos() {
+        return expedicaoCustom.findArtigosEnderecos();
+    }
+    
+    @RequestMapping(value = "/gravar-capacidades", method = RequestMethod.POST)
+    public List<ConsultaCapacidadeArtigosEnderecos> gravarCapacidades(@RequestBody BodyExpedicao body) {
+    	enderecoService.gravarCapacidades(body.itens);
+    	return expedicaoCustom.findArtigosEnderecos();
     }
 
 }
