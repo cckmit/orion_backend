@@ -8,10 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.ExpedicaoCustom;
+import br.com.live.entity.CapacidadeArtigoEndereco;
 import br.com.live.entity.ParametrosMapaEndereco;
+import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
+import br.com.live.repository.CapacidadeArtigoEnderecoRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
 
 @Service
@@ -19,10 +22,12 @@ import br.com.live.repository.ParametrosMapaEndRepository;
 public class ExpedicaoService {
 	private final ExpedicaoCustom enderecosCustom;
 	private final ParametrosMapaEndRepository parametrosMapaEndRepository;
+	private final CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository;
 	
-	public ExpedicaoService(ExpedicaoCustom enderecosCustom, ParametrosMapaEndRepository parametrosMapaEndRepository) {
+	public ExpedicaoService(ExpedicaoCustom enderecosCustom, ParametrosMapaEndRepository parametrosMapaEndRepository, CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository) {
 		this.enderecosCustom = enderecosCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
+		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
 	}
 	
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -112,7 +117,6 @@ public class ExpedicaoService {
         }
 	}
 	
-	
 	public int retornaListaLetraNumero(String valorEntrada) {
 		 Map<String, Integer> letraParaInteger = new HashMap<String, Integer>();
 
@@ -185,6 +189,26 @@ public class ExpedicaoService {
         valorRetorno = integerParaLetra.get(valorEntrada);
         
         return valorRetorno;
+	}
+	
+	public void gravarCapacidades(List<ConsultaCapacidadeArtigosEnderecos> itens) {
+		for (ConsultaCapacidadeArtigosEnderecos dadosCapacidade : itens) {
+			CapacidadeArtigoEndereco dadosArtigo = null;
+			dadosArtigo = capacidadeArtigoEnderecoRepository.findByArtigo(dadosCapacidade.artigo);
+			if (dadosArtigo == null) {
+				dadosArtigo = new CapacidadeArtigoEndereco(dadosCapacidade.artigo, dadosCapacidade.quantPecCesto, dadosCapacidade.perc0, dadosCapacidade.perc1, dadosCapacidade.perc40, dadosCapacidade.perc41, dadosCapacidade.perc94, dadosCapacidade.perc95, dadosCapacidade.perc99);
+			} else {
+				dadosArtigo.qtdePecasCesto = dadosCapacidade.quantPecCesto;
+				dadosArtigo.qtdePerc0 = dadosCapacidade.perc0;
+				dadosArtigo.qtdePerc1 = dadosCapacidade.perc1;
+				dadosArtigo.qtdePerc40 = dadosCapacidade.perc40;
+				dadosArtigo.qtdePerc41 = dadosCapacidade.perc41;
+				dadosArtigo.qtdePerc94 = dadosCapacidade.perc94;
+				dadosArtigo.qtdePerc95 = dadosCapacidade.perc95;
+				dadosArtigo.qtdePerc99 = dadosCapacidade.perc99;
+			}
+			capacidadeArtigoEnderecoRepository.save(dadosArtigo);
+		}
 	}
 }
 
