@@ -164,6 +164,7 @@ public class InspecaoQualidadeCustom {
 	    + " from orion_051 a, efic_040 b, mqop_005 c "
 	    + " where a.id_inspecao = " + idInspecao
 	    + " and b.codigo_motivo  (+) = a.cod_motivo "
+	    + " and b.area_producao  (+) = 1 "
 	    + " and c.codigo_estagio (+) = b.codigo_estagio "
 	    + " order by a.id_lancamento " ;
 		
