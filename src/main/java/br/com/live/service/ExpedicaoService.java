@@ -280,7 +280,7 @@ public class ExpedicaoService {
 			CestoEndereco cesto = enderecosCustom.findEnderecoCesto(produto.nivel, produto.referencia, produto.tamanho, produto.cor, produto.deposito);
 			
 			if (cesto != null) {
-				if (cesto.qtdeCapacDisponivel <= 0) produto.endereco = cesto.endereco;
+				if ((cesto.qtdeCapacidade - cesto.qtdeOcupado) > 0) produto.endereco = cesto.endereco;
 			}
 		}
 		

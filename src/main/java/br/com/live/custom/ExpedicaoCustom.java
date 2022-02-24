@@ -250,6 +250,9 @@ public class ExpedicaoCustom {
 		try {
 			cesto = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(CestoEndereco.class));
 		} catch (Exception e) {
+			
+			System.out.println(e.getMessage());
+			
 			cesto = null;
 		}
 		

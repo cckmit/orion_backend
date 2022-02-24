@@ -3,15 +3,16 @@ package br.com.live.model;
 public class CestoEndereco {
 
 	public String endereco;
-	public int qtdeCapacPecas;
-	public int qtdeCapacOcupada;
-	public int qtdeCapacDisponivel;
+	public int qtdeCapacidade;
+	public int qtdeOcupado;
 	
-	public CestoEndereco(String endereco, int qtdeCapacPecas, int qtdeCapacOcupada) {
+	public CestoEndereco() {}
+	
+	public CestoEndereco(String endereco, int qtdeCapacidade, int qtdeOcupado) {
+		super();
 		this.endereco = endereco; 
-		this.qtdeCapacPecas = qtdeCapacPecas; 
-		this.qtdeCapacOcupada = qtdeCapacOcupada;
-		setQtdeCapacDisponivel();
+		this.qtdeCapacidade = qtdeCapacidade; 
+		this.qtdeOcupado = qtdeOcupado;		
 	}
 
 	public String getEndereco() {
@@ -22,29 +23,19 @@ public class CestoEndereco {
 		this.endereco = endereco;
 	}
 
-	public int getQtdeCapacPecas() {
-		return qtdeCapacPecas;
+	public int getQtdeCapacidade() {
+		return qtdeCapacidade;
 	}
 
-	public void setQtdeCapacPecas(int qtdeCapacPecas) {
-		this.qtdeCapacPecas = qtdeCapacPecas;
-		setQtdeCapacDisponivel();
+	public void setQtdeCapacidade(int qtdeCapacidade) {
+		this.qtdeCapacidade = qtdeCapacidade;
 	}
 
-	public int getQtdeCapacOcupada() {
-		return qtdeCapacOcupada;
+	public int getQtdeOcupado() {
+		return qtdeOcupado;
 	}
 
-	public void setQtdeCapacOcupada(int qtdeCapacOcupada) {
-		this.qtdeCapacOcupada = qtdeCapacOcupada;
-		setQtdeCapacDisponivel();
-	}
-
-	public int getQtdeCapacDisponivel() {
-		return qtdeCapacDisponivel;
-	}
-
-	private void setQtdeCapacDisponivel() {
-		this.qtdeCapacDisponivel = this.qtdeCapacPecas - this.qtdeCapacOcupada;
+	public void setQtdeOcupado(int qtdeOcupado) {
+		this.qtdeOcupado = qtdeOcupado;
 	}
 }

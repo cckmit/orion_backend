@@ -12,7 +12,6 @@ public class ProdutoEnderecar {
 	public int deposito;
 	public int qtdeEnderecar;
 	public int qtdeEnderecada;
-	public int qtdeFalta;
 	public String endereco;
 	
 	public ProdutoEnderecar() {
@@ -28,11 +27,6 @@ public class ProdutoEnderecar {
 		this.cor = cor; 
 		this.qtdeEnderecar = qtdeEnderecar;
 		this.qtdeEnderecada = qtdeEnderecada;		
-		setQtdeFalta();
-	}
-
-	private void setQtdeFalta() {		
-		this.qtdeFalta = this.qtdeEnderecar - this.qtdeEnderecada;  
 	}
 
 	public int getCaixa() {
@@ -83,17 +77,12 @@ public class ProdutoEnderecar {
 		this.deposito = deposito;
 	}
 
-	public void setQtdeFalta(int qtdeFalta) {
-		this.qtdeFalta = qtdeFalta;
-	}
-
 	public int getQtdeEnderecar() {
 		return qtdeEnderecar;
 	}
 
 	public void setQtdeEnderecar(int qtdeEnderecar) {
 		this.qtdeEnderecar = qtdeEnderecar;
-		setQtdeFalta();
 	}
 
 	public int getQtdeEnderecada() {
@@ -102,11 +91,6 @@ public class ProdutoEnderecar {
 
 	public void setQtdeEnderecada(int qtdeEnderecada) {
 		this.qtdeEnderecada = qtdeEnderecada;
-		setQtdeFalta();
-	}
-
-	public int getQtdeFalta() {
-		return qtdeFalta;
 	}
 
 	public String getEndereco() {
