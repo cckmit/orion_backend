@@ -27,7 +27,7 @@ public class SugestaoReservaTecidoController {
 				ConteudoChaveNumerica.parseValueToString(body.embarques),
 				ConteudoChaveAlfaNum.parseValueToString(body.referencias),
 				ConteudoChaveNumerica.parseValueToString(body.depositos),
-				body.priorizacao);		
+				body.priorizacao, body.percentualMinimoAtender);		
 	}
 	
 	@RequestMapping(value = "/gerar-ordens", method = RequestMethod.POST)

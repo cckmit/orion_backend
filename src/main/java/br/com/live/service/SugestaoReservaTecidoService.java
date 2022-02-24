@@ -41,6 +41,7 @@ public class SugestaoReservaTecidoService {
 	private final OrdemProducaoService ordemProducaoService;
 
 	private String depositosTecidos;
+	private int percentualMinimoAtender;
 	private List<ConsultaPreOrdemProducao> listaPriorizadaPreOrdens;
 	private Map<String, SugestaoReservaPorTecido> mapDadosPorTecido;	
 	private Map<Long, List<SugestaoReservaPorOrdemSortimento>> mapDadosPorOrdem;
@@ -62,16 +63,18 @@ public class SugestaoReservaTecidoService {
 		this.ordemProducaoService = ordemProducaoService;
 	}
 
-	public SugestaoReservaTecidos calcularSugestaoReserva(String planosMestres, String embarques, String referencias, String depositos, int priorizacao) {
+	public SugestaoReservaTecidos calcularSugestaoReserva(String planosMestres, String embarques, String referencias, String depositos, int priorizacao, int percentualMinimoAtender) {
 		
 		System.out.println("calcularSugestaoReserva");
 		System.out.println("planosMestres: " + planosMestres);
 		System.out.println("embarques: " + embarques);
 		System.out.println("referencias: " + referencias);
 		System.out.println("depositos: " + depositos);
+		System.out.println("qtdeMinimaPorOrdem: " + percentualMinimoAtender);
 		System.out.println("<=====================>");
 		
-		depositosTecidos = depositos;
+		this.depositosTecidos = depositos;
+		this.percentualMinimoAtender = percentualMinimoAtender;
 		mapDadosPorTecido = new HashMap<String, SugestaoReservaPorTecido>();
 		mapDadosPorOrdem = new HashMap<Long, List<SugestaoReservaPorOrdemSortimento>>();
 		mapDadosPorProduto = new HashMap<String, SugestaoReservaPorProduto>();
@@ -287,7 +290,8 @@ public class SugestaoReservaTecidoService {
 			    //System.out.println("RECALCULAR: codTecidoRecalcular: " + codTecidoRecalcular + " - PERCENTUAL: " + percentual);			    
 				recalcularQtdePecasDaOrdem(idOrdem, conteudo[0], conteudo[1], conteudo[2], conteudo[3], percentual);				
 			}			
-			recalcularNecessidadeTecidosDaOrdem(idOrdem);
+			confirmaRecalculoApenasSeAtendeQtdeMinima(idOrdem);
+			recalcularNecessidadeTecidosDaOrdem(idOrdem);			
 		}
 	}
 		
@@ -296,7 +300,9 @@ public class SugestaoReservaTecidoService {
 		List<PreOrdemProducaoItem> itensRecalculados;
 		List<String> sortimentos = new ArrayList<String>();		
 		List<SugestaoReservaPorOrdemSortimento> tecidos = mapDadosPorOrdem.get(idOrdem);				
-				
+		
+		PlanoMestrePreOrdem ordem = planoMestrePreOrdemRepository.findById(idOrdem);
+		
 		if (mapPecasRecalculadas.containsKey(idOrdem))
 			itensRecalculados = mapPecasRecalculadas.get(idOrdem);
 		else itensRecalculados = new ArrayList<PreOrdemProducaoItem>();
@@ -313,28 +319,67 @@ public class SugestaoReservaTecidoService {
 
 		// para cada sortimento irá diminuir as quantidades conforme O percentual
 		for (String sortimento : sortimentos) {			
-			PlanoMestrePreOrdem ordem = planoMestrePreOrdemRepository.findById(idOrdem);
+			
 			List<PlanoMestrePreOrdemItem> itens = planoMestrePreOrdemItemRepository.findByIdOrdemAndItem(idOrdem, sortimento);			
 				
 			int novaQtde;
 			
-			for (PlanoMestrePreOrdemItem item : itens) {
-				
+			for (PlanoMestrePreOrdemItem item : itens) {				
 				// mantem apenas um item recalculado, pois em tese se houverem mais que um o percentual será o mesmo.
 				itensRecalculados.removeIf(r -> r.sub.equals(item.sub) && r.item.equals(item.item));
 				
 				novaQtde = (int) ((double) item.quantidade * (percentualMaximoPecas / 100.0));
 				
-				if (novaQtde < 0) novaQtde = 0;  				
-					
+				if (novaQtde < 0) novaQtde = 0;  									
+				
 				PreOrdemProducaoItem itemRecalculado = new PreOrdemProducaoItem((int) idOrdem, ordem.grupo, ordem.alternativa, ordem.roteiro, ordem.periodo, item.sub, item.item, novaQtde);
-				itensRecalculados.add(itemRecalculado);				
+				itensRecalculados.add(itemRecalculado);
 			}
 		}
 		
 		if (itensRecalculados.size() > 0) mapPecasRecalculadas.put(idOrdem, itensRecalculados);		
 	}
 		
+	private void confirmaRecalculoApenasSeAtendeQtdeMinima(long idOrdem) {
+
+		List<PreOrdemProducaoItem> previstas = mapPecasPrevistas.get(idOrdem);	
+		List<PreOrdemProducaoItem> recalculados = mapPecasRecalculadas.get(idOrdem);
+		
+		PlanoMestrePreOrdem ordem = planoMestrePreOrdemRepository.findById(idOrdem);
+		Map<String, Integer> mapProdutoXQtde = new HashMap<String, Integer>();
+		
+		String codProduto = "";
+		int qtdeTotalPecas = 0;
+		int quantidade = 0;
+		
+		for (PreOrdemProducaoItem recalculado : recalculados) {
+			codProduto = recalculado.grupo + "." + recalculado.sub + "." + recalculado.item;
+			mapProdutoXQtde.put(codProduto, recalculado.qtdeProgramada);
+		}
+		
+		for (PreOrdemProducaoItem previsto : previstas) {
+			quantidade = previsto.qtdeProgramada;			
+			codProduto = previsto.grupo + "." + previsto.sub + "." + previsto.item;
+			if (mapProdutoXQtde.containsKey(codProduto)) quantidade = mapProdutoXQtde.get(codProduto); 						
+			qtdeTotalPecas += quantidade; 
+		}
+		
+		int percentualAtendido = (int) (((double) qtdeTotalPecas / (double) ordem.quantidade) * 100);				
+
+		//if (idOrdem == 21363) System.out.println("qtdeTotalOrdem: " + ordem.quantidade + " - qtdeTotalPecas: " + qtdeTotalPecas + " - percentualAtendido: " + percentualAtendido);		
+		
+		if (percentualAtendido <= percentualMinimoAtender) {			
+			mapPecasRecalculadas.remove(idOrdem);
+			ArrayList<PreOrdemProducaoItem> itensRecalculados = new ArrayList<PreOrdemProducaoItem>();
+			
+			for (PreOrdemProducaoItem previsto : previstas) {			
+				PreOrdemProducaoItem itemRecalculado = new PreOrdemProducaoItem((int) idOrdem, previsto.grupo, previsto.alternativa, previsto.roteiro, previsto.periodo, previsto.sub, previsto.item, 0);
+				itensRecalculados.add(itemRecalculado);
+			}
+			mapPecasRecalculadas.put(idOrdem, itensRecalculados);
+		}
+	}	
+	
 	private void recalcularNecessidadeTecidosDaOrdem(long idOrdem) {
 		//System.out.println("recalcularNecessidadeTecidosDaOrdem");
 		
