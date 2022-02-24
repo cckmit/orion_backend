@@ -77,7 +77,7 @@ public class ExpedicaoService {
 			msgErro = "Este TAG já foi faturado!";
 		}
 
-		if ((existeEndereco != null) && (!existeEndereco.equals(""))) {
+		if ((existeEndereco != null) && (!existeEndereco.equals("")) && (!existeEndereco.equals("ENDERECAR"))) {
 			msgErro = "Este TAG já foi endereçado!";
 		}
 
@@ -113,8 +113,6 @@ public class ExpedicaoService {
 
 	public void gerarEnderecosDinamicos(int deposito) {
 		ParametrosMapaEndereco dadosParam = parametrosMapaEndRepository.findByDeposito(deposito);
-
-		enderecosCustom.cleanEnderecos(deposito);
 
 		for (int blocoAtual = retornaListaLetraNumero(dadosParam.blocoInicio); blocoAtual <= retornaListaLetraNumero(
 				dadosParam.blocoFim); blocoAtual++) {
