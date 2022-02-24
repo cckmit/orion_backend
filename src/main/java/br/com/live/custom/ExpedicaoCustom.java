@@ -212,9 +212,11 @@ public class ExpedicaoCustom {
 	    + " and b.ordem_producao = a.ordem_producao "
 	    + " and b.ordem_confeccao = a.ordem_cofeccao "
 	    + " and b.sequencia = a.sequencia "
-	    + " group by a.numero_caixa, b.nivel, b.grupo, b.subgrupo, b.item, b.sequencia, b.deposito, b.endereco) tagsEnderecar "  
+	    + " group by a.numero_caixa, b.nivel, b.grupo, b.subgrupo, b.item, b.sequencia, b.deposito, b.endereco) tagsEnderecar, basi_220 tam "  
 	    + " where tagsEnderecar.numero_caixa = " + codCaixa
-	    + " group by tagsEnderecar.numero_caixa, tagsEnderecar.nivel, tagsEnderecar.grupo, tagsEnderecar.subgrupo, tagsEnderecar.item, tagsEnderecar.deposito " ;       
+	    + " and tam.tamanho_ref = tagsEnderecar.subgrupo "
+	    + " group by tagsEnderecar.numero_caixa, tagsEnderecar.nivel, tagsEnderecar.grupo, tagsEnderecar.subgrupo, tagsEnderecar.item, tam.ordem_tamanho, tagsEnderecar.deposito " 
+	    + " order by tagsEnderecar.numero_caixa, tagsEnderecar.nivel, tagsEnderecar.grupo, tagsEnderecar.item, tam.ordem_tamanho, tagsEnderecar.deposito ";       
 
 		try {
 			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutoEnderecar.class));
