@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
+import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
 
@@ -159,4 +160,35 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaCapacidadeArtigosEnderecos.class));
 	}
 	
+	public int validarCaixaAberta() {
+		int numeroCaixa = 0;
+		
+		String query = " select a.numero_caixa numeroCaixa from orion_130 a "
+				+ " where a.situacao_caixa = 0 ";
+	
+		try {
+			numeroCaixa = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			numeroCaixa = 0;
+		}
+		return numeroCaixa; 
+	}
+	
+	public List<DadosTagProd> findDadosTagCaixas(int codCaixa) {
+		String query = " select p.periodo_producao periodo, p.ordem_producao ordem, p.ordem_cofeccao pacote, p.sequencia from orion_131 p "
+				+ "where p.numero_caixa = " + codCaixa;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosTagProd.class));
+	}
+	
+	public void atualizarSituacaoEndereco(int periodo, int ordem, int pacote, int sequencia) {
+		String query = " update pcpc_330 "
+				+ " set endereco = 'ENDERECAR' "
+				+ " where pcpc_330.periodo_producao = ? "
+				+ " and pcpc_330.ordem_producao = ? "
+				+ " and pcpc_330.ordem_confeccao = ? "
+				+ " and pcpc_330.sequencia = ? ";
+		
+		jdbcTemplate.update(query, periodo,ordem, pacote, sequencia);
+	}
 }

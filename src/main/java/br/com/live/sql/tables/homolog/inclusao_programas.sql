@@ -92,4 +92,10 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (31, 'Endereçar Tags', 'Expedição', '/enderecar');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (32, 'Capacidade por Artigo', 'Expedição', '/capacidade-artigo');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (33, 'Painel de Distribuição de Caixas', 'Expedição', '/painel-distrib-caixas');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (34, 'Abertura de Caixas', 'Expedição', '/abertura-caixas');

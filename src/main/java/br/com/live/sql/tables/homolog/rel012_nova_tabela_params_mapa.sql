@@ -25,3 +25,30 @@ create table orion_120
  constraint orion_120_pk primary key (artigo));
  
 comment on table orion_120 is 'Tabela de Capacidades do Artigo';
+
+create table orion_130
+(numero_caixa number(9),
+ situacao_caixa number(1) default 0,
+ usuario varchar2(100),
+ data_hora_inicio Date,
+ data_hora_fim Date,
+ repositor varchar2(100),
+ constraint orion_130_pk primary key (numero_caixa));
+ 
+comment on table orion_130 is 'Tabela de Abertura de Caixas';
+
+create table orion_131
+(numero_tag varchar2(22),
+ numero_caixa number(9),
+ periodo_producao number(4) default 0,
+ ordem_producao number(9) default 0,
+ ordem_cofeccao number(5) default 0,
+ sequencia number(4) default 0,
+ constraint orion_131_pk primary key (numero_tag));
+ 
+comment on table orion_131 is 'Tabela de Tags Lidos por Caixa';
+
+CREATE INDEX INDX_ORION_131_CAIXAS ON orion_131 (numero_caixa, numero_tag);
+
+alter table orion_001
+add (usuario_repositor number(1) default 0);
