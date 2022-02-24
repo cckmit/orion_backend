@@ -12,11 +12,13 @@ import br.com.live.custom.ExpedicaoCustom;
 import br.com.live.entity.AberturaCaixas;
 import br.com.live.entity.CapacidadeArtigoEndereco;
 import br.com.live.entity.ParametrosMapaEndereco;
+import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
+import br.com.live.model.ProdutoEnderecar;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.CapacidadeArtigoEnderecoRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
@@ -269,5 +271,21 @@ public class ExpedicaoService {
 				enderecosCustom.atualizarSituacaoEndereco(tagLido.periodo, tagLido.ordem, tagLido.pacote, tagLido.sequencia);
 			}
 		}
+	}
+	
+	public List<ProdutoEnderecar> findProdutosEnderecarCaixa (int codCaixa) {
+		List<ProdutoEnderecar> produtos = enderecosCustom.findProdutosEnderecar(codCaixa);
+		
+		for (ProdutoEnderecar produto : produtos) {			
+			produto.endereco = ProdutoEnderecar.ENDERECO_INDISPONIVEL;
+			
+			CestoEndereco cesto = enderecosCustom.findEnderecoCesto(produto.nivel, produto.referencia, produto.tamanho, produto.cor, produto.deposito);
+			
+			if (cesto != null) {
+				if (cesto.qtdeCapacDisponivel <= 0) produto.endereco = cesto.endereco;
+			}
+		}
+		
+		return produtos;
 	}
 }

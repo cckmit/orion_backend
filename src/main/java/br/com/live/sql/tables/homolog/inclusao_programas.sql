@@ -99,3 +99,6 @@ values (33, 'Painel de Distribuição de Caixas', 'Expedição', '/painel-distri
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (34, 'Abertura de Caixas', 'Expedição', '/abertura-caixas');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (35, 'Roteiro de Endereçamento de Peças', 'Expedição', '/roteiro-enderecamento');

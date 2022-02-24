@@ -7,11 +7,13 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
+import br.com.live.model.ProdutoEnderecar;
 
 @Repository
 public class ExpedicaoCustom {
@@ -190,5 +192,67 @@ public class ExpedicaoCustom {
 				+ " and pcpc_330.sequencia = ? ";
 		
 		jdbcTemplate.update(query, periodo,ordem, pacote, sequencia);
+	}
+	
+	public List<ProdutoEnderecar> findProdutosEnderecar(int codCaixa) {
+		
+		List<ProdutoEnderecar> produtos = null;
+		
+		String query = " select tagsEnderecar.numero_caixa caixa, " 
+	    + " tagsEnderecar.nivel, " 
+	    + " tagsEnderecar.grupo referencia, " 
+        + " tagsEnderecar.subgrupo tamanho, "
+	    + " tagsEnderecar.item cor, "
+	    + " tagsEnderecar.deposito, "
+	    + " count(*) qtdeEnderecar, "
+	    + " count(*) - sum(tagsEnderecar.enderecar) qtdeEnderecada "
+	    + " from (select a.numero_caixa, b.nivel, b.grupo, b.subgrupo, b.item, b.sequencia, b.deposito, b.endereco, decode(b.endereco,'ENDERECAR',1,0) enderecar "
+	    + " from orion_131 a, pcpc_330 b "
+	    + " where b.periodo_producao = a.periodo_producao "
+	    + " and b.ordem_producao = a.ordem_producao "
+	    + " and b.ordem_confeccao = a.ordem_cofeccao "
+	    + " and b.sequencia = a.sequencia "
+	    + " group by a.numero_caixa, b.nivel, b.grupo, b.subgrupo, b.item, b.sequencia, b.deposito, b.endereco) tagsEnderecar "  
+	    + " where tagsEnderecar.numero_caixa = " + codCaixa
+	    + " group by tagsEnderecar.numero_caixa, tagsEnderecar.nivel, tagsEnderecar.grupo, tagsEnderecar.subgrupo, tagsEnderecar.item, tagsEnderecar.deposito " ;       
+
+		try {
+			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ProdutoEnderecar.class));
+		} catch (Exception e) {
+			produtos = new ArrayList<ProdutoEnderecar>();
+		}
+				
+		return produtos;
+	}
+	
+	public CestoEndereco findEnderecoCesto(String nivel, String referencia, String tamanho, String cor, int deposito) {
+		
+		CestoEndereco cesto;
+		
+		String query = " select enderecos.endereco, enderecos.qtde_capacidade qtdeCapacidade, enderecos.qtde_ocupada qtdeOcupada " 
+		+ " from (select m.nivel, m.grupo, m.subgrupo, m.item, m.deposito, m.endereco, "
+		+ " (select p.quant_pecas_cesto "
+		+ " from basi_030 o, orion_120 p "
+		+ " where o.nivel_estrutura = m.nivel "
+		+ " and o.referencia = m.grupo "
+		+ " and p.artigo = o.artigo) qtde_capacidade, "
+		+ " (select count(*) "
+		+ " from pcpc_330 n "
+		+ " where n.estoque_tag = 1 "
+		+ " and n.endereco = m.endereco) qtde_ocupada "
+		+ " from estq_110 m) enderecos "
+		+ " where enderecos.nivel = '" + nivel + "'" 
+		+ " and enderecos.grupo = '" + referencia + "'"
+		+ " and enderecos.subgrupo = '" + tamanho + "'"
+		+ " and enderecos.item = '" + cor + "'"
+		+ " and enderecos.deposito = " + deposito;
+
+		try {
+			cesto = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(CestoEndereco.class));
+		} catch (Exception e) {
+			cesto = null;
+		}
+		
+		return cesto; 
 	}
 }

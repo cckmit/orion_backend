@@ -18,6 +18,7 @@ import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
+import br.com.live.model.ProdutoEnderecar;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
 import br.com.live.service.ExpedicaoService;
@@ -96,5 +97,10 @@ public class ExpedicaoController {
     public AberturaCaixas fecharCaixa(@RequestBody BodyExpedicao body) {
     	enderecoService.fecharCaixa(body.codCaixa);
     	return aberturaCaixasRepository.findByNumeroCaixa(body.codCaixa);
+    }
+    
+    @RequestMapping(value = "/find-produtos-caixa/{codCaixa}", method = RequestMethod.GET)
+    public List<ProdutoEnderecar> findProdutosEnderecarCaixa (@PathVariable("codCaixa") int codCaixa) {
+    	return enderecoService.findProdutosEnderecarCaixa(codCaixa);
     }
 }
