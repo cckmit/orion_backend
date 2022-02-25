@@ -27,10 +27,12 @@ public class ExpedicaoCustom {
 	public List<EnderecoCount> findReferenciaEnd(int codDeposito) {
 		List<EnderecoCount> dadosEnd;
 
-		String query = " select count(*) totalPecas, a.grupo || '.' || a.subgrupo || '.' || a.item referencia, a.endereco from pcpc_330 a "
-				+ " where a.deposito = " + codDeposito
-				+ " and a.estoque_tag = 1 "
-				+ " group by a.endereco, a.grupo, a.subgrupo, a.item, a.endereco ";
+		String query = " select a.grupo || '.' || a.subgrupo || '.' || a.item referencia, a.endereco from estq_110 a "
+				+ " where a.nivel <> '0' "
+				+ " and a.grupo <> '00000' "
+				+ " and a.subgrupo <> '000' "
+				+ " and a.item <> '000000' "
+				+ " and a.deposito = " + codDeposito;
 		
 		try {
 			dadosEnd = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EnderecoCount.class));
@@ -69,9 +71,8 @@ public class ExpedicaoCustom {
 	public DadosModalEndereco findDadosModalEndereco(int deposito, String endereco) {
 		DadosModalEndereco dadosModal;
 		
-		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, d.qtde_estoque_atu saldo, nvl(e.grupo_embarque, 0) embarque from pcpc_330 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
+		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, d.qtde_estoque_atu saldo, nvl(e.grupo_embarque, 0) embarque from estq_110 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
 				+ " where a.deposito = " + deposito
-				+ " and a.estoque_tag = 1 "
 				+ " and a.endereco = '" + endereco + "'"
 				+ " and b.nivel_estrutura = '1' "
 				+ " and b.referencia = a.grupo "
@@ -80,7 +81,7 @@ public class ExpedicaoCustom {
 				+ " and d.cditem_grupo = a.grupo "
 				+ " and d.cditem_subgrupo = a.subgrupo "
 				+ " and d.cditem_item = a.item "
-				+ " and d.deposito = " + deposito
+				+ " and d.deposito = a.deposito "
 				+ " and e.nivel (+) = '1' "
 				+ " and e.grupo (+) = a.grupo "
 				+ " and e.subgrupo (+) = a.subgrupo "

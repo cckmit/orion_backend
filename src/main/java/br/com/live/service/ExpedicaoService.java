@@ -113,7 +113,9 @@ public class ExpedicaoService {
 
 	public void gerarEnderecosDinamicos(int deposito) {
 		ParametrosMapaEndereco dadosParam = parametrosMapaEndRepository.findByDeposito(deposito);
-
+		
+		enderecosCustom.cleanEnderecos(deposito);
+			
 		for (int blocoAtual = retornaListaLetraNumero(dadosParam.blocoInicio); blocoAtual <= retornaListaLetraNumero(
 				dadosParam.blocoFim); blocoAtual++) {
 			for (int corredorAtual = dadosParam.corredorInicio; corredorAtual <= dadosParam.corredorFim; corredorAtual++) {
