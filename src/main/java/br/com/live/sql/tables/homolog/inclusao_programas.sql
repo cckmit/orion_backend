@@ -108,3 +108,6 @@ values (36, 'Mapa de Endereços de Caixas', 'Expedição', '/mapa-caixas');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (37, 'Endereçar Caixas', 'Expedição', '/enderecar-caixas');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (38, 'Caixas Para Endereçar', 'Expedição', '/caixas-para-enderecar');

@@ -148,7 +148,7 @@ public class EngenhariaCustom {
 
 	public List<ConsultaTabelaConsumo> findAllReferenciasSalvas() {
 		String query = " select o.referencia id, d.descr_referencia descricao from orion_084 o, basi_030 d "
-				+ " where o.referencia = d.referencia group by o.referencia, d.descr_referencia";
+				+ " where d.referencia (+) = o.referencia group by o.referencia, d.descr_referencia";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTabelaConsumo.class));
 	}

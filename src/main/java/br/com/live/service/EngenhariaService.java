@@ -126,9 +126,9 @@ public class EngenhariaService {
 
 			int sequencia = engenhariaCustom.findProxSequenciaTipoPonto(idTipoPonto, referencia);
 
-			consumo = new ConsumoFiosLinhas(referencia, idTipoPonto, sequencia, comprimentoCostura);
+			consumo = new ConsumoFiosLinhas(referencia.toUpperCase(), idTipoPonto, sequencia, comprimentoCostura);
 			consumoFiosLinhasRepository.saveAndFlush(consumo);
-			insertFiosTipoDePonto(idTipoPonto, referencia, sequencia);
+			insertFiosTipoDePonto(idTipoPonto, referencia.toUpperCase(), sequencia);
 		} else {
 			consumo.comprimentoCostura = comprimentoCostura;
 			consumoFiosLinhasRepository.saveAndFlush(consumo);
