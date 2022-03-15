@@ -1,5 +1,7 @@
 package br.com.live.model;
 
+import java.util.Date;
+
 public class OrdemProducao {
 
 	public int ordemProducao;
@@ -7,7 +9,14 @@ public class OrdemProducao {
 	public int periodo;
 	public int qtdePecasProgramada;
 	public int nrAlternativa;
-
+	public int nrRoteiro;
+	public String descrReferencia;
+	public Date dataEmbarque;
+	public int qtdeEstagioCritico;
+	public double tempoProducaoUnit;
+	public double tempoCosturaUnit;	
+	private int qtdeMaxPecasReservaAtende;
+	
 	public int getNrAlternativa() {
 		return nrAlternativa;
 	}
@@ -38,11 +47,69 @@ public class OrdemProducao {
 	public void setQtdePecasProgramada(int qtdePecasProgramada) {
 		this.qtdePecasProgramada = qtdePecasProgramada;
 	}
-
+	public int getNrRoteiro() {
+		return nrRoteiro;
+	}
+	public void setNrRoteiro(int nrRoteiro) {
+		this.nrRoteiro = nrRoteiro;
+	}
+	public String getDescrReferencia() {
+		return descrReferencia;
+	}
+	public void setDescrReferencia(String descrReferencia) {
+		this.descrReferencia = descrReferencia;
+	}
+	public Date getDataEmbarque() {
+		return dataEmbarque;
+	}
+	public void setDataEmbarque(Date dataEmbarque) {
+		this.dataEmbarque = dataEmbarque;
+	}
+	public int getQtdeEstagioCritico() {
+		return qtdeEstagioCritico;
+	}
+	public void setQtdeEstagioCritico(int qtdeEstagioCritico) {
+		this.qtdeEstagioCritico = qtdeEstagioCritico;
+	}
+	public double getTempoProducaoUnit() {
+		return tempoProducaoUnit;
+	}
+	public void setTempoProducaoUnit(double tempoProducaoUnit) {
+		this.tempoProducaoUnit = tempoProducaoUnit;
+	}
+	public double getTempoCosturaUnit() {
+		return tempoCosturaUnit;
+	}
+	public void setTempoCosturaUnit(double tempoCosturaUnit) {
+		this.tempoCosturaUnit = tempoCosturaUnit;
+	}
+	public int getQtdeMaxPecasReservaAtende() {
+		return qtdeMaxPecasReservaAtende;
+	}
+	public void setQtdeMaxPecasReservaAtende(int qtdeMaxPecasReservaAtende) {
+		this.qtdeMaxPecasReservaAtende = qtdeMaxPecasReservaAtende;
+	}
 	public OrdemProducao() {
 		this.ordemProducao = 0;
 		this.referencia = "";
 		this.periodo = 0;
 		this.qtdePecasProgramada = 0;
+		this.nrAlternativa = 0;
+		this.nrRoteiro = 0;
+		this.descrReferencia = "";
+		this.dataEmbarque = new Date();
+		this.qtdeEstagioCritico = 0;
+		this.tempoProducaoUnit = 0;
+		this.tempoCosturaUnit = 0;	
+		this.qtdeMaxPecasReservaAtende = 0;
 	}	
+	public OrdemProducao(int ordemProducao, String referencia, int Periodo, int nrAlternativa, int nrRoteiro, int qtdePecasProgramada) {
+		super();
+		this.ordemProducao = ordemProducao;
+		this.referencia = referencia;
+		this.periodo = Periodo;		
+		this.nrAlternativa = nrAlternativa;
+		this.nrRoteiro = nrRoteiro;
+		this.qtdePecasProgramada = qtdePecasProgramada;
+	}
 }

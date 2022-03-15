@@ -12,6 +12,7 @@ import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
+import br.com.live.model.OrdemProducaoItem;
 
 @Repository
 public class OrdemProducaoCustom {
@@ -601,5 +602,185 @@ public class OrdemProducaoCustom {
 		}
 		
 		return atributo;
-	}	
+	}
+	
+	public List<OrdemProducaoItem> findItensByOrdemProducao(int ordemProducao) {
+		
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.tamanho, b.sortimento cor, b.quantidade qtdePecasProgramada " 
+		+ " from pcpc_020 a, pcpc_021 b "
+		+ " where a.ordem_producao = " + ordemProducao
+		+ " and b.ordem_producao = a.ordem_producao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
+	}
+
+	public List<OrdemProducaoItem> findItensByOrdemProducaoAndCor(int ordemProducao, String cor) {
+		
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.tamanho, b.sortimento cor, b.quantidade qtdePecasProgramada " 
+		+ " from pcpc_020 a, pcpc_021 b "
+		+ " where a.ordem_producao = " + ordemProducao
+		+ " and b.ordem_producao = a.ordem_producao "
+		+ " and b.sortimento = '" + cor + "'" ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
+	}
+	
+	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat) { 
+
+		String query = " select pre_ordens_priorizadas.ordem_producao ordemProducao, "  
+	    + " pre_ordens_priorizadas.periodo_producao periodo, "
+	    + " pre_ordens_priorizadas.referencia, "
+	    + " pre_ordens_priorizadas.descr_referencia descrReferencia, " 
+	    + " pre_ordens_priorizadas.alternativa nrAlternativa, "
+	    + " pre_ordens_priorizadas.roteiro nrRoteiro, "
+	    + " nvl(pre_ordens_priorizadas.data_embarque,sysdate+10000) dataEmbarque, " 
+	    + " pre_ordens_priorizadas.quantidade qtdePecasProgramada, "
+	    + " pre_ordens_priorizadas.qtde_estagio_critico qtdeEstagioCritico, " 
+	    + " pre_ordens_priorizadas.tempo_producao_unit tempoProducaoUnit, "
+	    + " pre_ordens_priorizadas.tempo_costura_unit tempoCosturaUnit "
+	    + " from (select pre_ordens.ordem_producao, " 
+	    + " pre_ordens.periodo_producao, "
+	    + " pre_ordens.referencia, "
+	    + " pre_ordens.descr_referencia, " 
+	    + " pre_ordens.alternativa, "
+	    + " pre_ordens.roteiro, " 
+	    + " min(pre_ordens.data_embarque) data_embarque, " 
+	    + " max(pre_ordens.quantidade) quantidade, "
+	    + " max(pre_ordens.qtde_estagio_critico) qtde_estagio_critico, " 
+	    + " max(pre_ordens.tempo_producao) tempo_producao_unit, "
+	    + " max(pre_ordens.tempo_costura) tempo_costura_unit "
+	    + " from ( "
+	    + " select a.ordem_producao, "  
+  	    + " a.periodo_producao, "
+        + " a.referencia, " 
+        + " a.alternativa, " 
+        + " a.roteiro, "
+        + " min(a.descr_referencia) descr_referencia, "  
+        + " min(c.data_entrega) data_embarque, "
+        + " a.sub, "
+        + " a.item, "      
+        + " max(a.quantidade) quantidade, " 
+        + " (select count(*) from mqop_005 t "  
+        + " where t.live_estagio_critico = 1 "
+        + " and exists (select 1 from mqop_050 m "  
+		+ " where m.nivel_estrutura = '1' "
+        + " and m.grupo_estrutura = a.referencia "  
+		+ " and (m.subgru_estrutura = a.sub or m.subgru_estrutura = '000') "  
+		+ " and (m.item_estrutura = a.item or m.item_estrutura = '000000') "
+		+ " and m.numero_alternati = a.alternativa "
+		+ " and m.numero_roteiro = a.roteiro "
+		+ " and m.codigo_estagio = t.codigo_estagio) " 
+	    + " ) qtde_estagio_critico,  "
+	    + " (select nvl(sum(m.minutos_homem),0) from mqop_050 m "  
+	    + " where m.nivel_estrutura = '1' "  
+	    + " and m.grupo_estrutura = a.referencia "  
+	    + " and (m.subgru_estrutura = a.sub or m.subgru_estrutura = '000') "  
+	    + " and (m.item_estrutura = a.item or m.item_estrutura = '000000') "  
+	    + " and m.numero_alternati = a.alternativa "
+	    + " and m.numero_roteiro = a.roteiro " 
+	    + " ) tempo_producao, "
+	    + " (select nvl(sum(m.minutos_homem),0) from mqop_050 m "  
+	    + " where m.nivel_estrutura = '1' " 
+	    + " and m.grupo_estrutura = a.referencia "  
+	    + " and (m.subgru_estrutura = a.sub or m.subgru_estrutura = '000') "  
+	    + " and (m.item_estrutura = a.item or m.item_estrutura = '000000') "  
+	    + " and m.numero_alternati = a.alternativa " 
+	    + " and m.numero_roteiro = a.roteiro "
+	    + " and m.codigo_estagio = 20 " 
+	    + " ) tempo_costura "
+	    + " from (select aa.ordem_producao, " 
+	    + " aa.periodo_producao, "
+	    + " aa.referencia_peca referencia, " 
+	    + " aa.alternativa_peca alternativa, "
+	    + " aa.roteiro_peca roteiro, "
+	    + " cc.descr_referencia, bb.tamanho sub, bb.sortimento item, " 
+	    + " aa.qtde_programada quantidade "
+	    + " from pcpc_020 aa, pcpc_021 bb, basi_030 cc "
+	    + " where aa.cod_cancelamento = 0 "
+	    + " and bb.ordem_producao = aa.ordem_producao "
+	    + " and cc.nivel_estrutura = '1' "
+	    + " and cc.referencia = aa.referencia_peca "
+	    + " and exists (select 1 from pcpc_040 "
+	    + " where pcpc_040.ordem_producao = aa.ordem_producao "
+	    + " and pcpc_040.codigo_estagio = 1 " // PROGRAMACAO
+	    + " and pcpc_040.qtde_disponivel_baixa > 0)";
+
+		if (periodoInicial > 0 || periodoFinal > 0)
+			query += " and aa.periodo_producao between " + periodoInicial + " and " + periodoFinal;
+
+		if (!referencias.isEmpty())
+			query += " and aa.referencia_peca in (" + referencias + ")";                                                              
+	                               
+		if (!artigos.isEmpty()) 
+			query += " and cc.artigo in (" + artigos + ")";                               
+	                               
+		if (!estagios.isEmpty())
+			query +=" and exists (select 1 from pcpc_040 "
+				  + " where pcpc_040.ordem_producao = aa.ordem_producao "
+	              + " and pcpc_040.codigo_estagio in (" + estagios + "))";
+		
+		if (!tecidos.isEmpty())
+			query += " and exists (select 1 from pcpc_032 w "
+	              + " where w.pcpc0302_orprocor = aa.ordem_producao "
+	              + " and w.tecordco_nivel99 || '.' || w.tecordco_grupo || '.' || w.tecordco_subgrupo || '.' || w.tecordco_item in (" + tecidos + ")";                               
+	                               
+
+		if (isSomenteFlat)
+			query += " and exists ( select 1 from mqop_050 m "  
+	              + " where m.nivel_estrutura = '1' " 
+	              + " and m.grupo_estrutura = aa.referencia_peca "  
+	              + " and (m.subgru_estrutura = bb.tamanho or m.subgru_estrutura = '000') "  
+	              + " and (m.item_estrutura = bb.sortimento or m.item_estrutura = '000000') " 
+	              + " and m.numero_alternati = aa.alternativa_peca "
+	              + " and m.numero_roteiro = aa.roteiro_peca "
+	              + " and m.codigo_operacao in (select y.codigo_operacao from mqop_040 y "
+	              + " where y.nome_operacao like '%FLAT%')) ";
+	                                                                   
+	     query += " ) a, basi_590 c " 
+         + " where c.nivel (+) = '1' " 
+         + " and c.grupo (+) = a.referencia "   
+         + " and c.subgrupo (+) = a.sub " 
+	     + " and c.item (+) = a.item " ;
+	                         
+	     if (!embarques.isEmpty())
+	    	 query += " and c.grupo_embarque in (" + embarques + ")";
+	                         
+	     query += " group by a.ordem_producao, a.periodo_producao, a.referencia, a.alternativa, a.roteiro, a.sub, a.item ) pre_ordens "
+	     + " group by pre_ordens.ordem_producao, pre_ordens.periodo_producao, pre_ordens.referencia, pre_ordens.descr_referencia , pre_ordens.alternativa, pre_ordens.roteiro " 
+	     + " ) pre_ordens_priorizadas "; 
+		
+		String ordenacao = converteSelecaoCamposParaOrdenacao(camposSelParaPriorizacao);
+		
+		System.out.println("ordenacao -> " + ordenacao);
+		
+		query += ordenacao;
+		
+		System.out.println(query);
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class));
+	}
+	
+	private String converteSelecaoCamposParaOrdenacao(List<String> ordenacao) {
+		
+		String order = "";
+		
+		if (ordenacao.size() == 0) order += "order by pre_ordens_priorizadas.data_embarque, pre_ordens_priorizadas.qtde_estagio_critico desc, pre_ordens_priorizadas.tempo_producao_unit desc, pre_ordens_priorizadas.quantidade desc";
+		
+		for (String campo : ordenacao) {
+		
+			if (!order.isEmpty()) order += ", ";
+			else order = "order by ";
+			
+			if (campo.equalsIgnoreCase("PERIODO_PRODUCAO")) order += "pre_ordens_priorizadas.periodo_producao asc";
+			if (campo.equalsIgnoreCase("EMBARQUE")) order += "pre_ordens_priorizadas.data_embarque asc";
+			if (campo.equalsIgnoreCase("ESTAGIOS_CRITICO")) order += "pre_ordens_priorizadas.qtde_estagio_critico desc";
+			if (campo.equalsIgnoreCase("MAIOR_TEMPO_PROD")) order += "pre_ordens_priorizadas.tempo_producao_unit desc";
+			if (campo.equalsIgnoreCase("MENOR_TEMPO_PROD")) order += "pre_ordens_priorizadas.tempo_producao_unit asc";
+			if (campo.equalsIgnoreCase("MAIOR_TEMPO_COST")) order += "pre_ordens_priorizadas.tempo_costura_unit desc";
+			if (campo.equalsIgnoreCase("MENOR_TEMPO_COST")) order += "pre_ordens_priorizadas.tempo_costura_unit asc";
+		}
+		
+		return order;
+	}
+	
 }
