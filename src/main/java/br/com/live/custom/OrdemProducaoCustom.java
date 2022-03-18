@@ -771,6 +771,8 @@ public class OrdemProducaoCustom {
 			if (!order.isEmpty()) order += ", ";
 			else order = "order by ";
 			
+			System.out.println("CAMPO -> " + campo);
+			
 			if (campo.equalsIgnoreCase("PERIODO_PRODUCAO")) order += "pre_ordens_priorizadas.periodo_producao asc";
 			if (campo.equalsIgnoreCase("EMBARQUE")) order += "pre_ordens_priorizadas.data_embarque asc";
 			if (campo.equalsIgnoreCase("ESTAGIOS_CRITICO")) order += "pre_ordens_priorizadas.qtde_estagio_critico desc";
@@ -778,6 +780,9 @@ public class OrdemProducaoCustom {
 			if (campo.equalsIgnoreCase("MENOR_TEMPO_PROD")) order += "pre_ordens_priorizadas.tempo_producao_unit asc";
 			if (campo.equalsIgnoreCase("MAIOR_TEMPO_COST")) order += "pre_ordens_priorizadas.tempo_costura_unit desc";
 			if (campo.equalsIgnoreCase("MENOR_TEMPO_COST")) order += "pre_ordens_priorizadas.tempo_costura_unit asc";
+			if (campo.equalsIgnoreCase("MAIOR_QTDE_PECAS")) order += "pre_ordens_priorizadas.quantidade desc";
+			if (campo.equalsIgnoreCase("MENOR_QTDE_PECAS")) order += "pre_ordens_priorizadas.quantidade asc";
+
 		}
 		
 		return order;

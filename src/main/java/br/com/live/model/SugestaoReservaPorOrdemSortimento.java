@@ -7,7 +7,9 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido 
 	private int sequencia;
 	private double qtdeNecessidadeUnit;
 	private double qtdeNecessidadeRecalculada;
-	private boolean recalculado;
+	private double qtdeDisponivelTecidoSubstituto;
+	private boolean recalculado;	
+	
 	
 	public SugestaoReservaPorOrdemSortimento(long idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
 			String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, double qtdeNecessidadeUnit) {
@@ -16,9 +18,9 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido 
 		this.sortimento = sortimento;
 		this.sequencia = sequencia;
 		this.qtdeNecessidadeUnit = qtdeNecessidadeUnit;
-		this.recalculado = false;
+		this.recalculado = false;		
 	}
-	
+
 	public long getIdOrdem() {
 		return idOrdem;
 	}
@@ -70,7 +72,13 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido 
 	}	
 	
 	private void acertaSaldo() {
-		this.qtdeSaldo = this.qtdeDisponivel - this.qtdeSugerido;
+		double qtdeDispTecido = 0;
+		double qtdeDispSubstituto = 0;
+		
+		if (this.qtdeDisponivel > 0 ) qtdeDispTecido = this.qtdeDisponivel;   
+		if (this.qtdeDisponivelTecidoSubstituto > 0 ) qtdeDispSubstituto = this.qtdeDisponivelTecidoSubstituto;
+		
+		this.qtdeSaldo = (qtdeDispTecido + qtdeDispSubstituto) - this.qtdeSugerido;
 	}
 	
 	public double getQtdeNecessidadeCalculada() {
@@ -84,5 +92,14 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido 
 
 	public void setRecalculado(boolean recalculado) {
 		this.recalculado = recalculado;
+	}
+
+	public double getQtdeDisponivelTecidoSubstituto() {
+		return qtdeDisponivelTecidoSubstituto;		
+	}
+
+	public void setQtdeDisponivelTecidoSubstituto(double qtdeTecidoSubstituto) {
+		this.qtdeDisponivelTecidoSubstituto = qtdeTecidoSubstituto;
+		acertaSaldo();
 	}
 }

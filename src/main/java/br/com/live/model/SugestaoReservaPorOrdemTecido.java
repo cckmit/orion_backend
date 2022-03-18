@@ -4,6 +4,8 @@ public class SugestaoReservaPorOrdemTecido extends SugestaoReservaPorTecido {
 
 	private long idOrdem;
 	private double qtdeNecessidadeUnit;
+	private double qtdeDisponivelTecidoSubstituto;
+	private double qtdeDisponivelTotal;
 	
 	public SugestaoReservaPorOrdemTecido(long idOrdem, String nivel, String grupo, String sub, String item, String descricao,
 			String unidade, double qtdeNecessidadeUnit, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido) {
@@ -32,6 +34,23 @@ public class SugestaoReservaPorOrdemTecido extends SugestaoReservaPorTecido {
 		acertaSaldo();
 	}		
 	private void acertaSaldo() {
-		this.qtdeSaldo = this.qtdeDisponivel - this.qtdeSugerido;
+		double qtdeDispTecido = 0;
+		double qtdeDispSubstituto = 0;
+		
+		if (this.qtdeDisponivel > 0 ) qtdeDispTecido = this.qtdeDisponivel;   
+		if (this.qtdeDisponivelTecidoSubstituto > 0 ) qtdeDispSubstituto = this.qtdeDisponivelTecidoSubstituto;
+		
+		this.qtdeDisponivelTotal = (qtdeDispTecido + qtdeDispSubstituto);		
+		this.qtdeSaldo = this.qtdeDisponivelTotal - this.qtdeSugerido; 
+	}
+	public double getQtdeDisponivelTecidoSubstituto() {
+		return qtdeDisponivelTecidoSubstituto;
+	}
+	public void setQtdeDisponivelTecidoSubstituto(double qtdeDisponivelTecidoSubstituto) {
+		this.qtdeDisponivelTecidoSubstituto = qtdeDisponivelTecidoSubstituto;
+		acertaSaldo();
+	}
+	public double getQtdeDisponivelTotal() {
+		return qtdeDisponivelTotal;
 	}
 }

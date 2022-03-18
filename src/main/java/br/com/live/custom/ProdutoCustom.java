@@ -951,4 +951,50 @@ public class ProdutoCustom {
 		}
 		return tecidos;
 	}
+ 	
+ 	public List<Produto> findTecidosSubstitutos(String nivel, String grupo, String sub, String item) {
+ 		
+ 		List<Produto> substitutos; 	
+ 		
+ 		String query = " select substitutos.nivel, substitutos.grupo_subst grupo, substitutos.sub_subst sub, substitutos.item "
+ 		+ " from (select a.basi030_nivel030 nivel, " 
+ 		+ " a.basi030_referenc grupo, "
+ 		+ " a.tamanho_ref sub, "
+ 		+ " a.grupo_agrupador grupo_subst, " 
+ 		+ " a.sub_agrupador sub_subst, "
+ 		+ " b.item_estrutura item "
+ 		+ " from basi_020 a, basi_010 b "
+ 		+ " where a.basi030_nivel030 in ('2','4') "
+     	+ " and a.basi030_referenc <> a.grupo_agrupador "
+ 		+ " and b.nivel_estrutura = a.basi030_nivel030 "
+ 		+ " and b.grupo_estrutura = a.basi030_referenc "
+ 		+ " and b.subgru_estrutura = a.tamanho_ref "
+ 		+ " union "
+ 		+ " select a.basi030_nivel030 nivel, " 
+        + " a.grupo_agrupador grupo, " 
+        + " a.sub_agrupador sub, "
+        + " a.basi030_referenc grupo_subst, " 
+        + " a.tamanho_ref sub_subst, "
+        + " b.item_estrutura item "
+ 		+ " from basi_020 a, basi_010 b "
+ 		+ " where a.basi030_nivel030 in ('2','4') "
+ 		+ " and a.basi030_referenc <> a.grupo_agrupador "
+ 		+ " and b.nivel_estrutura = a.basi030_nivel030 "
+ 		+ " and b.grupo_estrutura = a.grupo_agrupador "
+ 		+ " and b.subgru_estrutura = a.sub_agrupador "
+ 		+ " ) substitutos "
+ 		+ " where substitutos.nivel = '" + nivel + "'"
+ 		+ " and substitutos.grupo = '" + grupo + "'"
+ 		+ " and substitutos.sub = '" + sub + "'"  
+ 		+ " and substitutos.item = '" + item + "'"
+ 		+ " and (substitutos.grupo_subst <> '00000' and substitutos.sub_subst <> '000') ";
+ 		
+		try {
+			substitutos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			substitutos = new ArrayList<Produto> ();
+		}
+ 		
+ 		return substitutos;
+ 	}
 }

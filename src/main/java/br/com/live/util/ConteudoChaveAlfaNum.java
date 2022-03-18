@@ -35,7 +35,7 @@ public class ConteudoChaveAlfaNum {
 
 		if (listaChaves != null) {
 			for (ConteudoChaveAlfaNum conteudo : listaChaves) {
-				listaStr.add(conteudo.label);
+				listaStr.add(conteudo.value);
 			}
 		}
 
