@@ -16,6 +16,7 @@ import br.com.live.model.Embarque;
 import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Service
 public class ProdutoService {
@@ -84,5 +85,11 @@ public class ProdutoService {
 
 	public boolean existsRoteiroRequisicao(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
 		return produtoRepository.existsRoteiroAltRotMaiorZero(nivel, grupo, sub, item, alternativa, roteiro);
+	}
+	
+	public List<Produto> findProdutosByColecaoAndArtigo(List<ConteudoChaveNumerica> colecoes, List<ConteudoChaveNumerica> artigos, int boxFim, int cestoFim) {
+		int totalRegistros = boxFim * cestoFim;
+		
+		return produtoRepository.findProdutosByColecaoAndArtigo(ConteudoChaveNumerica.parseValueToString(colecoes), ConteudoChaveNumerica.parseValueToString(artigos), totalRegistros);
 	}
 }

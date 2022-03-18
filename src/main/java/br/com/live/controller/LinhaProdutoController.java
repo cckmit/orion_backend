@@ -27,6 +27,5 @@ public class LinhaProdutoController {
     public List<LinhaProduto> findAll() {
           return produtoRepository.findAllLinhasProdutos();
     }
-	
 }
 

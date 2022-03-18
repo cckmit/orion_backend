@@ -1,9 +1,12 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +20,14 @@ import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
+import br.com.live.model.EnderecoCesto;
 import br.com.live.model.EnderecoCount;
+import br.com.live.model.Produto;
 import br.com.live.model.ProdutoEnderecar;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.CapacidadeArtigoEnderecoRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
+import br.com.live.util.ConverteLista;
 
 @Service
 @Transactional
@@ -111,23 +117,36 @@ public class ExpedicaoService {
 		parametrosMapaEndRepository.save(dadosParam);
 	}
 
-	public void gerarEnderecosDinamicos(int deposito) {
+	public List<String> gerarEnderecosDinamicos(int deposito) {
 		ParametrosMapaEndereco dadosParam = parametrosMapaEndRepository.findByDeposito(deposito);
-		
-		enderecosCustom.cleanEnderecos(deposito);
-			
+
+		List<String> enderecos = new ArrayList<String>();
+
 		for (int blocoAtual = retornaListaLetraNumero(dadosParam.blocoInicio); blocoAtual <= retornaListaLetraNumero(
 				dadosParam.blocoFim); blocoAtual++) {
 			for (int corredorAtual = dadosParam.corredorInicio; corredorAtual <= dadosParam.corredorFim; corredorAtual++) {
 				for (int boxAtual = dadosParam.boxInicio; boxAtual <= dadosParam.boxFim; boxAtual++) {
 					for (int cestoAtual = dadosParam.cestoInicio; cestoAtual <= dadosParam.cestoFim; cestoAtual++) {
 						String endereco = "";
+
 						endereco = retornaListaNumeroLetra(blocoAtual) + String.format("%02d", corredorAtual)
 								+ String.format("%02d", boxAtual) + String.format("%02d", cestoAtual);
-						enderecosCustom.inserirEnderecosDeposito(deposito, endereco);
+
+						enderecos.add(endereco);
 					}
 				}
 			}
+		}
+		return enderecos;
+	}
+
+	public void gravarEnderecosDeposito(int deposito) {
+		enderecosCustom.cleanEnderecos(deposito);
+
+		List<String> enderecos = gerarEnderecosDinamicos(deposito);
+
+		for (String endereco : enderecos) {
+			enderecosCustom.inserirEnderecosDeposito(deposito, endereco, "0", "00000", "000", "000000");
 		}
 	}
 
@@ -264,28 +283,103 @@ public class ExpedicaoService {
 			dadosAbertura.situacaoCaixa = 1;
 
 			aberturaCaixasRepository.save(dadosAbertura);
-			
+
 			List<DadosTagProd> dadosCaixasTag = enderecosCustom.findDadosTagCaixas(codCaixa);
-			
+
 			for (DadosTagProd tagLido : dadosCaixasTag) {
-				enderecosCustom.atualizarSituacaoEndereco(tagLido.periodo, tagLido.ordem, tagLido.pacote, tagLido.sequencia);
+				enderecosCustom.atualizarSituacaoEndereco(tagLido.periodo, tagLido.ordem, tagLido.pacote,
+						tagLido.sequencia);
 			}
 		}
 	}
-	
-	public List<ProdutoEnderecar> findProdutosEnderecarCaixa (int codCaixa) {
+
+	public List<ProdutoEnderecar> findProdutosEnderecarCaixa(int codCaixa) {
 		List<ProdutoEnderecar> produtos = enderecosCustom.findProdutosEnderecar(codCaixa);
-		
-		for (ProdutoEnderecar produto : produtos) {			
+
+		for (ProdutoEnderecar produto : produtos) {
 			produto.endereco = ProdutoEnderecar.ENDERECO_INDISPONIVEL;
-			
-			CestoEndereco cesto = enderecosCustom.findEnderecoCesto(produto.nivel, produto.referencia, produto.tamanho, produto.cor, produto.deposito);
-			
+
+			CestoEndereco cesto = enderecosCustom.findEnderecoCesto(produto.nivel, produto.referencia, produto.tamanho,
+					produto.cor, produto.deposito);
+
 			if (cesto != null) {
-				if ((cesto.qtdeCapacidade - cesto.qtdeOcupado) > 0) produto.endereco = cesto.endereco;
+				if ((cesto.qtdeCapacidade - cesto.qtdeOcupado) > 0)
+					produto.endereco = cesto.endereco;
 			}
 		}
-		
+
 		return produtos;
+	}
+
+	public void salvarDadosFacilitador(List<Produto> referencias, int deposito, String bloco, int corredor,
+			int boxInicio, int boxFim, List<String> produtosSel) {
+		List<EnderecoCesto> enderecos = null;
+		List<Produto> newProdutos = new ArrayList<Produto>();
+
+		String referenciasSel = ConverteLista.converteListStrToStr(produtosSel);
+		List<Produto> listRefSel = enderecosCustom.ordenarReferencias(referenciasSel);
+		
+		newProdutos = filtrarListaSelecionados(referencias, listRefSel);
+		List<Produto> produtos = converteListaDeProdutos(newProdutos);
+
+		for (int boxAtual = boxInicio; boxAtual <= boxFim; boxAtual++) {
+			int parImpar = boxAtual % 2;
+
+			enderecos = enderecosCustom.findCestosLivres(deposito, bloco, corredor, boxAtual, parImpar);
+
+			for (EnderecoCesto endereco : enderecos) {
+				if (produtos.size() > 0) {
+					Produto dadosItem = produtos.get(0);
+
+					String[] prodConcat = dadosItem.id.split("[.]");
+
+					String grupo = prodConcat[0];
+					String subGrupo = prodConcat[2];
+					String item = prodConcat[1];
+
+					enderecosCustom.updateEnderecosDeposito(deposito, endereco.endereco, "1", grupo, subGrupo, item);
+
+					produtos.remove(0);
+				}
+			}
+		}
+	}
+
+	public List<Produto> converteListaDeProdutos(List<Produto> referencias) {
+		List<Produto> newProd = new ArrayList<Produto>();
+
+		for (Produto dadosReferencia : referencias) {
+			for (int i = 0; i < dadosReferencia.quantCesto; i++) {
+				newProd.add(dadosReferencia);
+			}
+		}
+		return newProd;
+	}
+
+	public List<Produto> filtrarListaSelecionados(List<Produto> referencias, List<Produto> produtosSel) {
+		List<Produto> newProdutos = new ArrayList<Produto>();
+		
+		for (Produto produtoSel : produtosSel) {
+
+			Stream<Produto> stream = referencias.stream().filter(t -> t.grupo.equals(produtoSel.grupo)
+					&& t.sub.equals(produtoSel.sub) && t.item.equals(produtoSel.item));
+			List<Produto> produtosFiltrados = stream.collect(Collectors.toList());
+			
+			newProdutos.add(produtosFiltrados.get(0));
+		}
+		return newProdutos;
+	}
+
+	public String converteListaProduto(List<Produto> produtos) {
+		String stringProd = "";
+
+		for (Produto dadosProd : produtos) {
+			if (stringProd.equalsIgnoreCase("")) {
+				stringProd = "'" + dadosProd.id + "'";
+			} else {
+				stringProd += ", " + "'" + dadosProd.id + "'";
+			}
+		}
+		return stringProd;
 	}
 }
