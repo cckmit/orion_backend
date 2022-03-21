@@ -73,7 +73,7 @@ public class ExpedicaoCustom {
 	public DadosModalEndereco findDadosModalEndereco(int deposito, String endereco) {
 		DadosModalEndereco dadosModal;
 		
-		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, nvl(d.qtde_estoque_atu, 0) saldo, nvl(e.grupo_embarque, 0) embarque from estq_110 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
+		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, nvl(d.qtde_estoque_atu, 0) saldo, min(nvl(e.grupo_embarque, 0)) embarque from estq_110 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
 				+ " where a.deposito = " + deposito
 				+ " and a.endereco = '" + endereco + "'"
 				+ " and b.nivel_estrutura = '1' "
@@ -88,7 +88,7 @@ public class ExpedicaoCustom {
 				+ " and e.grupo (+) = a.grupo "
 				+ " and e.subgrupo (+) = a.subgrupo "
 				+ " and e.item (+) = a.item "
-				+ " group by a.endereco, a.grupo, a.subgrupo, a.item, b.colecao, c.descr_colecao, d.qtde_estoque_atu, e.grupo_embarque ";
+				+ " group by a.endereco, a.grupo, a.subgrupo, a.item, b.colecao, c.descr_colecao, d.qtde_estoque_atu ";
 		
 		try {
 			dadosModal = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(DadosModalEndereco.class));
@@ -280,8 +280,6 @@ public class ExpedicaoCustom {
 				+ " where h.grupo_estrutura || '.' || h.item_estrutura || '.' || h.subgru_estrutura in (" + referencias + ")"
 				+ " and h.subgru_estrutura = p.tamanho_ref "
 				+ " order by h.grupo_estrutura, h.item_estrutura, p.ordem_tamanho ";
-		
-		System.out.println("QUERY: " + query);
 		
 		try {
 			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));

@@ -89,7 +89,6 @@ public class ProdutoService {
 	
 	public List<Produto> findProdutosByColecaoAndArtigo(List<ConteudoChaveNumerica> colecoes, List<ConteudoChaveNumerica> artigos, int boxFim, int cestoFim) {
 		int totalRegistros = boxFim * cestoFim;
-		
 		return produtoRepository.findProdutosByColecaoAndArtigo(ConteudoChaveNumerica.parseValueToString(colecoes), ConteudoChaveNumerica.parseValueToString(artigos), totalRegistros);
 	}
 }
