@@ -27,7 +27,7 @@ public class ConverteLista {
 			if (listaString.equalsIgnoreCase(""))
 				listaString = "'" + id + "'";
 			else
-				listaString += ", " + id;
+				listaString += ", " + "'" + id + "'";
 		}
 
 		return listaString;

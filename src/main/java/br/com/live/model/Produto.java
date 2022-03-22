@@ -10,6 +10,9 @@ public class Produto {
 	public String unidade;
 	public int qtdePrevisaoVendas;
 	public int seqTamanho;
+	public String id;
+	public String referencia;
+	public int quantCesto;
 	
 	public int getSeqTamanho() {
 		return seqTamanho;
@@ -58,5 +61,23 @@ public class Produto {
 	}
 	public void setQtdePrevisaoVendas(int qtdePrevisaoVendas) {
 		this.qtdePrevisaoVendas = qtdePrevisaoVendas;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getReferencia() {
+		return referencia;
+	}
+	public void setReferencia(String referencia) {
+		this.referencia = referencia;
+	}
+	public int getQuantCesto() {
+		return quantCesto;
+	}
+	public void setQuantCesto(int quantCesto) {
+		this.quantCesto = quantCesto;
 	}
 }

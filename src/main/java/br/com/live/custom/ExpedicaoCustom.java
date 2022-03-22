@@ -12,7 +12,9 @@ import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
+import br.com.live.model.EnderecoCesto;
 import br.com.live.model.EnderecoCount;
+import br.com.live.model.Produto;
 import br.com.live.model.ProdutoEnderecar;
 
 @Repository
@@ -71,7 +73,7 @@ public class ExpedicaoCustom {
 	public DadosModalEndereco findDadosModalEndereco(int deposito, String endereco) {
 		DadosModalEndereco dadosModal;
 		
-		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, nvl(d.qtde_estoque_atu, 0) saldo, nvl(e.grupo_embarque, 0) embarque from estq_110 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
+		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, nvl(d.qtde_estoque_atu, 0) saldo, min(nvl(e.grupo_embarque, 0)) embarque from estq_110 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
 				+ " where a.deposito = " + deposito
 				+ " and a.endereco = '" + endereco + "'"
 				+ " and b.nivel_estrutura = '1' "
@@ -86,7 +88,7 @@ public class ExpedicaoCustom {
 				+ " and e.grupo (+) = a.grupo "
 				+ " and e.subgrupo (+) = a.subgrupo "
 				+ " and e.item (+) = a.item "
-				+ " group by a.endereco, a.grupo, a.subgrupo, a.item, b.colecao, c.descr_colecao, d.qtde_estoque_atu, e.grupo_embarque ";
+				+ " group by a.endereco, a.grupo, a.subgrupo, a.item, b.colecao, c.descr_colecao, d.qtde_estoque_atu ";
 		
 		try {
 			dadosModal = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(DadosModalEndereco.class));
@@ -149,11 +151,20 @@ public class ExpedicaoCustom {
 		jdbcTemplate.update(query, deposito);
 	}
 	
-	public void inserirEnderecosDeposito(int deposito, String endereco) {
+	public void inserirEnderecosDeposito(int deposito, String endereco, String nivel, String grupo, String subGrupo, String item) {
 		String query = " insert into estq_110 "
 		+ " values (?,?,?,?,?,?)";
 		
-		jdbcTemplate.update(query, 0,00000, 000, 000000, deposito, endereco);
+		jdbcTemplate.update(query, nivel,grupo, subGrupo, item, deposito, endereco);
+	}
+	
+	public void updateEnderecosDeposito(int deposito, String endereco, String nivel, String grupo, String subGrupo, String item) {
+		String query = " update estq_110 "
+				+ " set nivel = ?, grupo = ?, subgrupo = ?, item = ? "
+				+ " where estq_110.deposito = ? "
+				+ " and estq_110.endereco = ? ";
+		
+		jdbcTemplate.update(query, nivel,grupo, subGrupo, item, deposito, endereco);
 	}
 	
 	public List<ConsultaCapacidadeArtigosEnderecos> findArtigosEnderecos() {
@@ -261,4 +272,86 @@ public class ExpedicaoCustom {
 		
 		return cesto; 
 	}
+	
+	public List<Produto> ordenarReferencias(String referencias) {
+		List<Produto> produtos;
+		
+		String query = " select h.grupo_estrutura grupo, h.subgru_estrutura sub, h.item_estrutura item, h.grupo_estrutura || '.' || h.subgru_estrutura || '.' || h.item_estrutura referencia, h.grupo_estrutura || '.' || h.item_estrutura || '.' || h.subgru_estrutura id from basi_010 h, basi_220 p "
+				+ " where h.grupo_estrutura || '.' || h.item_estrutura || '.' || h.subgru_estrutura in (" + referencias + ")"
+				+ " and h.subgru_estrutura = p.tamanho_ref "
+				+ " order by h.grupo_estrutura, h.item_estrutura, p.ordem_tamanho ";
+		
+		try {
+			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			produtos = new ArrayList<Produto>();
+		}
+		
+		return produtos;
+	}
+	
+	public String findEnderecoVazio(int deposito, String bloco, int corredor) {
+		String enderecoLivre = "";
+		
+		String query = " select min(j.endereco) from estq_110 j "
+				+ " where j.deposito = " + deposito
+				+ " and j.endereco like '" + bloco + String.format("%02d", corredor) + "%' "
+				+ " and j.nivel = '0' "
+				+ " and j.grupo = '00000' "
+				+ " and j.subgrupo = '000' "
+				+ " and j.item = '000000' "
+				+ " order by j.endereco ";
+
+		try {
+			enderecoLivre = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			enderecoLivre = null;
+		}
+		
+		return enderecoLivre;
+	}
+	
+	public int validaProdutoEnderecado(int deposito, String grupo, String subGrupo, String item) {
+		int existeProd = 0;
+		
+		String query = " select 1 from estq_110 a "
+				+ " and j.nivel = '1' "
+				+ " and j.grupo = " + grupo
+				+ " and j.subgrupo = " + subGrupo
+				+ " and j.item = " + item;
+		try {
+			existeProd = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existeProd = 0;
+		}
+		
+		return existeProd;
+	}
+	
+	public List<EnderecoCesto> findCestosLivres(int deposito, String bloco, int corredor, int box, int ordenacao) {
+		List<EnderecoCesto> enderecos = null;
+		
+		String query = " select blocos.cesto endereco from "
+				+ " ( "
+				+ "  select substr(j.endereco,0,8) cesto from estq_110 j "
+				+ "  where j.deposito = " + deposito
+				+ "  and j.endereco like '" + bloco + String.format("%02d", corredor) + String.format("%02d", box) + "%'" 
+				+ "  and j.nivel = '0' "
+				+ " ) blocos "
+				+ " group by blocos.cesto ";
+				
+				if (ordenacao == 0) {
+					query = query + " order by blocos.cesto desc ";
+				} else {
+					query = query + " order by blocos.cesto ";
+				}
+		try {
+			enderecos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EnderecoCesto.class));
+		} catch (Exception e) {
+			enderecos = new ArrayList<EnderecoCesto>();
+		}
+		
+		return enderecos;
+	}
+	
 }

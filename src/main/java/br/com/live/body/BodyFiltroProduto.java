@@ -12,6 +12,10 @@ public class BodyFiltroProduto  {
 	public List<ConteudoChaveNumerica> colecoesPermanentes ;
 	public List<ConteudoChaveAlfaNum> referencias ; 	
 	public List<ConteudoChaveAlfaNum> cores ;
+	public List<ConteudoChaveNumerica> artigos;
+	
+	public int boxFim;
+	public int cestoFim;
 	
 	private String formata(List<ConteudoChaveNumerica> listConteudo) {
 

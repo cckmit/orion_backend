@@ -69,7 +69,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/gravar-parametros", method = RequestMethod.POST)
     public void gravaParametros(@RequestBody BodyExpedicao body) {
     	enderecoService.salvarParametros(body.deposito, body.blocoInicio, body.blocoFim, body.corredorInicio, body.corredorFim, body.boxInicio, body.boxFim, body.cestoInicio, body.cestoFim);
-    	enderecoService.gerarEnderecosDinamicos(body.deposito);
+    	enderecoService.gravarEnderecosDeposito(body.deposito);
     }
     
     @RequestMapping(value = "/find-all-capacidades-artigos", method = RequestMethod.GET)
@@ -102,5 +102,10 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-produtos-caixa/{codCaixa}", method = RequestMethod.GET)
     public List<ProdutoEnderecar> findProdutosEnderecarCaixa (@PathVariable("codCaixa") int codCaixa) {
     	return enderecoService.findProdutosEnderecarCaixa(codCaixa);
+    }
+    
+    @RequestMapping(value = "/gravar-dados-facilitador", method = RequestMethod.POST)
+    public void gravarDadosFacilitador(@RequestBody BodyExpedicao body) {
+    	enderecoService.salvarDadosFacilitador(body.referencias, body.deposito, body.blocoInicio, body.corredorInicio, body.boxInicio, body.boxFim, body.produtosSel);
     }
 }

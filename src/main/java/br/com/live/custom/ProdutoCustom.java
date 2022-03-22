@@ -997,4 +997,40 @@ public class ProdutoCustom {
  		
  		return substitutos;
  	}
+ 	
+ 	public List<Produto> findProdutosByColecaoAndArtigo(String colecoes, String artigos, int totalRegistros) {
+ 		
+ 		List<Produto> produtos;
+ 		
+ 		String query = " select b.grupo_estrutura || '.' || b.item_estrutura || '.' || b.subgru_estrutura id, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, 1 quantCesto from basi_010 b, basi_030 c, basi_290 d, basi_220 e "
+ 				+ " where c.nivel_estrutura = b.nivel_estrutura "
+ 				+ " and c.referencia = b.grupo_estrutura "
+ 				+ " and d.nivel_estrutura = b.nivel_estrutura "
+ 				+ " and d.artigo = c.artigo "
+ 				+ " and e.tamanho_ref = b.subgru_estrutura "
+ 				+ " and not exists (select 1 from estq_110 f "
+ 				+ "                where f.nivel = b.nivel_estrutura "
+ 				+ "                and f.grupo = b.grupo_estrutura "
+ 				+ "                and f.subgrupo = b.subgru_estrutura "
+ 				+ "                and f.item = b.item_estrutura) "
+ 				+ " and rownum < " + totalRegistros;
+ 				
+ 		if (!artigos.equals("")) {
+ 			query = query + " and d.artigo in (" + artigos + ") ";
+ 		}
+ 		
+ 		if (!colecoes.equals("")) {
+ 			query = query + " and c.colecao in (" + colecoes + ") ";
+ 		}
+ 					
+ 		query = query + " order by b.grupo_estrutura, b.item_estrutura, e.ordem_tamanho ";
+ 		
+ 		try {
+ 			produtos= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+ 		} catch (Exception e) {
+ 			produtos = new ArrayList<Produto> ();
+ 		}
+ 		
+ 		return produtos;
+ 	}
 }
