@@ -954,7 +954,7 @@ public class ProdutoCustom {
  	
  	public List<Produto> findTecidosSubstitutos(String nivel, String grupo, String sub, String item) {
  		
- 		List<Produto> substitutos; 	
+ 		List<Produto> substitutos; 	 
  		
  		String query = " select substitutos.nivel, substitutos.grupo_subst grupo, substitutos.sub_subst sub, substitutos.item "
  		+ " from (select a.basi030_nivel030 nivel, " 
