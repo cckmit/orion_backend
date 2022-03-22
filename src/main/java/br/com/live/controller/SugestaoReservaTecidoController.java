@@ -34,7 +34,7 @@ public class SugestaoReservaTecidoController {
 		return sugestaoReservaTecidoService.findReferenciasEmOrdensParaLiberacao();				
 	}	
 
-	@RequestMapping(value = "/calcular-ordens", method = RequestMethod.POST)
+	@RequestMapping(value = "/calcular", method = RequestMethod.POST)
 	public SugestaoReservaTecidos gerarPreOrdens(@RequestBody BodySugestaoReservaTecidos body) {
 		return sugestaoReservaTecidoService.calcularSugestaoReservaPorOrdem(ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao),body.periodoInicio, body.periodoFim, 
 				ConteudoChaveNumerica.parseValueToString(body.embarques),
@@ -44,5 +44,5 @@ public class SugestaoReservaTecidoController {
 				ConteudoChaveAlfaNum.parseValueToString(body.tecidos), 
 				ConteudoChaveNumerica.parseValueToString(body.depositos), 
 				body.isSomenteFlat, body.percentualMinimoAtender);		
-	}	
+	}
 }

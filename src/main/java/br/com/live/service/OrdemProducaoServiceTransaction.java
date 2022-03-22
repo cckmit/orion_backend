@@ -16,6 +16,7 @@ import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.entity.PlanoMestrePreOrdemItem;
 import br.com.live.model.ConsultaDadosRoteiro;
 import br.com.live.model.NecessidadeTecidos;
+import br.com.live.model.OrdemConfeccao;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
@@ -365,4 +366,13 @@ public class OrdemProducaoServiceTransaction {
 		}		
 		planoMestreRepository.save(planoMestre);
 	}	
+	
+	public void baixarEstagioProducao(int ordemProducao, int estagio) {
+		
+		List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);
+		
+		for (OrdemConfeccao pacote : pacotes) {					
+			ordemProducaoCustom.gravarProducaoEstagio(pacote.ordemProducao, pacote.periodo, pacote.ordemConfeccao, estagio, pacote.qtdePecas);
+		}
+	}
 }

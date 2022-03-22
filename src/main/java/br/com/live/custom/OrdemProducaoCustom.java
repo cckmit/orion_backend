@@ -437,11 +437,12 @@ public class OrdemProducaoCustom {
 		
 		List<OrdemConfeccao> ordensConfeccao = null;
 		
-		String query = " select a.ordem_confeccao ordemConfeccao "
-				+ " from pcpc_040 a, pcpc_020 b "
-				+ " where b.ordem_producao = a.ordem_producao "
-				+ " and a.ordem_producao = " + ordemProducao
-				+ " group by a.ordem_confeccao ";
+		String query = " select a.ordem_producao ordemProducao, a.periodo_producao periodo, a.ordem_confeccao ordemConfeccao, "
+		+ " a.proconf_grupo referencia, a.proconf_subgrupo tamanho, a.proconf_item cor, a.qtde_pecas_prog qtdePecas "  
+		+ " from pcpc_040 a, pcpc_020 b "
+		+ " where b.ordem_producao = a.ordem_producao " 
+		+ " and a.ordem_producao = " + ordemProducao
+		+ " group by a.ordem_producao, a.periodo_producao, a.ordem_confeccao, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, a.qtde_pecas_prog ";
 		
 		try {
 			ordensConfeccao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemConfeccao.class));
@@ -449,8 +450,7 @@ public class OrdemProducaoCustom {
 			ordensConfeccao = new ArrayList<OrdemConfeccao> ();			
 		}
 		
-		return ordensConfeccao;	
-		
+		return ordensConfeccao;			
 	}
 	
 	public List<DadosTagChina> findDadosTagChina(String ordemProducao) {
@@ -788,4 +788,23 @@ public class OrdemProducaoCustom {
 		return order;
 	}
 	
+	public void gravarProducaoEstagio(int ordemProducao, int periodo, int pacote, int estagio, int quantidade) {			
+		int sequencia;
+		
+		// 1338 - USUARIO LUCIANE - PCP
+		
+		String query = " select nvl(max(a.sequencia),0) + 1 "
+		+ " from pcpc_045 a "
+		+ " where a.pcpc040_perconf = " + periodo
+		+ " and a.pcpc040_ordconf = " + pacote
+		+ " and a.pcpc040_estconf = " + estagio ;
+		
+		sequencia = jdbcTemplate.queryForObject(query, Integer.class);
+				
+		String queryInsert = " insert into pcpc_045 (pcpc040_ordconf, pcpc040_perconf, pcpc040_estconf, sequencia, data_producao, hora_producao, qtde_produzida, turno_producao, codigo_usuario, ordem_producao, executa_trigger) " 
+		+ "	values (" + pacote + ", " + periodo + ", " + estagio + ", " + sequencia + ", " + " to_char(sysdate,'dd/mm/yyyy'), to_date('16/11/1989 ' || to_CHAR(sysdate,'hh24:mi'),'dd/mm/yyyy hh24:mi'), "
+		+ quantidade + ", 1, 1338, " + ordemProducao + ", 3) ";  				
+						
+		jdbcTemplate.update(queryInsert);
+	}	
 }

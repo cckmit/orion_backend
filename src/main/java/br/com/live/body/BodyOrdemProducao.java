@@ -7,8 +7,10 @@ import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyOrdemProducao {
 
-	public Long idPlanoMestre;
+	public Long idPlanoMestre; 
 	public List<Long> listaPreOrdens;
+	public List<Integer> listaOrdens;
+	public int estagio;
 	
 	public List<ConteudoChaveNumerica> ordemProducao;
 	
