@@ -35,7 +35,7 @@ public class SugestaoReservaTecidoController {
 	}	
 
 	@RequestMapping(value = "/calcular", method = RequestMethod.POST)
-	public SugestaoReservaTecidos gerarPreOrdens(@RequestBody BodySugestaoReservaTecidos body) {
+	public SugestaoReservaTecidos calcular(@RequestBody BodySugestaoReservaTecidos body) {
 		return sugestaoReservaTecidoService.calcularSugestaoReservaPorOrdem(ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao),body.periodoInicio, body.periodoFim, 
 				ConteudoChaveNumerica.parseValueToString(body.embarques),
 				ConteudoChaveAlfaNum.parseValueToString(body.referencias), 
@@ -44,5 +44,15 @@ public class SugestaoReservaTecidoController {
 				ConteudoChaveAlfaNum.parseValueToString(body.tecidos), 
 				ConteudoChaveNumerica.parseValueToString(body.depositos), 
 				body.isSomenteFlat, body.percentualMinimoAtender);		
+	}
+	
+	@RequestMapping(value = "/liberar", method = RequestMethod.POST)
+	public void liberar(@RequestBody BodySugestaoReservaTecidos body) {
+		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, false);
+	}
+
+	@RequestMapping(value = "/liberar-urgente", method = RequestMethod.POST)
+	public void liberarUrgente(@RequestBody BodySugestaoReservaTecidos body) {
+		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, true);
 	}
 }

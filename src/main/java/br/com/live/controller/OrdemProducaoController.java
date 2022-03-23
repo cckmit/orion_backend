@@ -58,8 +58,4 @@ public class OrdemProducaoController {
 		return ordemProducaoService.excluirOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
 	
-	@RequestMapping(value = "/baixar-estagio-ordens", method = RequestMethod.POST)
-	public void baixarEstagioProducao(@RequestBody BodyOrdemProducao body) {
-		ordemProducaoService.baixarEstagioProducao(body.listaOrdens, body.estagio);
-	}
 }

@@ -2,7 +2,6 @@ package br.com.live.service;
 
 import java.util.List;
 
-import org.hibernate.metamodel.model.convert.internal.OrdinalEnumValueConverter;
 import org.springframework.stereotype.Service;
 
 import br.com.live.body.BodyOrdemProducao;
@@ -80,13 +79,11 @@ public class OrdemProducaoService {
 		return ordemProducaoCustom.findDadosTagChina(ConteudoChaveNumerica.parseValueToString(ordemProducao));
 	}
 	
-	public void baixarEstagioProducao(List<Integer> listaOrdensProducao, int estagio) {
-		for (Integer ordemProducao : listaOrdensProducao) {
-			baixarEstagioProducao(ordemProducao, estagio);
-		}
-	}
-	
 	public void baixarEstagioProducao(int ordemProducao, int estagio) {		
 		ordemProducaoServiceTransaction.baixarEstagioProducao(ordemProducao, estagio);		
+	}
+	
+	public void gravarSeqPrioridadeDia(int ordemProducao, boolean urgente) {
+		ordemProducaoServiceTransaction.gravarSeqPrioridadeDia(ordemProducao, urgente);
 	}
 }

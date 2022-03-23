@@ -2,7 +2,7 @@ package br.com.live.model;
 
 import java.util.Date;
 
-public class OrdemProducao {
+public class OrdemProducao implements Comparable<OrdemProducao> {
 
 	public int ordemProducao;
 	public String referencia;
@@ -16,6 +16,7 @@ public class OrdemProducao {
 	public double tempoProducaoUnit;
 	public double tempoCosturaUnit;	
 	private int qtdeMaxPecasReservaAtende;
+	private int seqPrioridade;
 	
 	public int getNrAlternativa() {
 		return nrAlternativa;
@@ -89,6 +90,12 @@ public class OrdemProducao {
 	public void setQtdeMaxPecasReservaAtende(int qtdeMaxPecasReservaAtende) {
 		this.qtdeMaxPecasReservaAtende = qtdeMaxPecasReservaAtende;
 	}
+	public int getSeqPrioridade() {
+		return seqPrioridade;
+	}
+	public void setSeqPrioridade(int seqPrioridade) {
+		this.seqPrioridade = seqPrioridade;
+	}
 	public OrdemProducao() {
 		this.ordemProducao = 0;
 		this.referencia = "";
@@ -111,5 +118,16 @@ public class OrdemProducao {
 		this.nrAlternativa = nrAlternativa;
 		this.nrRoteiro = nrRoteiro;
 		this.qtdePecasProgramada = qtdePecasProgramada;
+	}
+	
+	@Override
+	public int compareTo(OrdemProducao outraOrdem) {
+		
+		if (outraOrdem.getSeqPrioridade() < getSeqPrioridade())
+			return 1;
+		else if (outraOrdem.getSeqPrioridade() > getSeqPrioridade())
+			return -1;
+		
+		return 0;		
 	}
 }

@@ -987,7 +987,12 @@ public class ProdutoCustom {
  		+ " and substitutos.grupo = '" + grupo + "'"
  		+ " and substitutos.sub = '" + sub + "'"  
  		+ " and substitutos.item = '" + item + "'"
- 		+ " and (substitutos.grupo_subst <> '00000' and substitutos.sub_subst <> '000') ";
+ 		+ " and (substitutos.grupo_subst <> '00000' and substitutos.sub_subst <> '000') " 		
+		+ " and exists (select 1 from basi_010 b "
+		+ " where b.nivel_estrutura = substitutos.nivel " 
+    	+ " and b.grupo_estrutura = substitutos.grupo_subst "
+		+ " and b.subgru_estrutura = substitutos.sub_subst "
+		+ " and b.item_estrutura = substitutos.item) ";
  		
 		try {
 			substitutos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));

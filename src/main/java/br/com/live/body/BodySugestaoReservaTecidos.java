@@ -2,6 +2,7 @@ package br.com.live.body;
 
 import java.util.List;
 
+import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoItem;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -22,5 +23,5 @@ public class BodySugestaoReservaTecidos {
 	public int priorizacao ;
 	public int percentualMinimoAtender;
 	public boolean isSomenteFlat;
-	
+	public List<OrdemProducao> listaOrdensLiberar;	
 }

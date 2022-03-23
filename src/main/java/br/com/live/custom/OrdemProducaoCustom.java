@@ -751,11 +751,11 @@ public class OrdemProducaoCustom {
 		
 		String ordenacao = converteSelecaoCamposParaOrdenacao(camposSelParaPriorizacao);
 		
-		System.out.println("ordenacao -> " + ordenacao);
+		// System.out.println("ordenacao -> " + ordenacao);
 		
 		query += ordenacao;
 		
-		System.out.println(query);
+		// System.out.println(query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class));
 	}
@@ -771,7 +771,7 @@ public class OrdemProducaoCustom {
 			if (!order.isEmpty()) order += ", ";
 			else order = "order by ";
 			
-			System.out.println("CAMPO -> " + campo);
+			//System.out.println("CAMPO -> " + campo);
 			
 			if (campo.equalsIgnoreCase("PERIODO_PRODUCAO")) order += "pre_ordens_priorizadas.periodo_producao asc";
 			if (campo.equalsIgnoreCase("EMBARQUE")) order += "pre_ordens_priorizadas.data_embarque asc";
@@ -806,5 +806,28 @@ public class OrdemProducaoCustom {
 		+ quantidade + ", 1, 1338, " + ordemProducao + ", 3) ";  				
 						
 		jdbcTemplate.update(queryInsert);
+	}	
+	
+	public int findUltimaSeqPrioridadeDia() {
+	
+		String query = " select nvl(max(a.live_seq_dt_liberacao),0) last_seq "
+		+ " from pcpc_020 a "
+		+ " where to_char(a.live_dt_liberacao) = to_char(sysdate) "
+		+ " and not exists (select 1 from pcpc_040 b " 
+		+ " where b.ordem_producao = a.ordem_producao "
+		+ " and b.codigo_estagio = 1 "
+		+ " and b.qtde_a_produzir_pacote > 0) ";
+		
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}	
+	
+	public void gravarSeqPrioridadeDia(int ordemProducao, int sequencia) {
+		
+		String query = " update pcpc_020 a "
+		+ " set a.live_dt_liberacao = sysdate, "
+		+ " a.live_seq_dt_liberacao = " + sequencia
+		+ " where a.ordem_producao = " + ordemProducao;
+		
+		jdbcTemplate.update(query);		
 	}	
 }

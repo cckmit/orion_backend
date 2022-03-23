@@ -15,11 +15,12 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 	private Date dataEmbarque;
 	private int qtdeEstagioCritico;
 	private double tempoProducaoUnit;
+	private double tempoCosturaUnit;
 	private int qtdePrevista;
 	private int qtdeAtendida;	
 	private int seqTamanho;
 	
-	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, int qtdePrevista, int qtdeAtendida) {
+	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, double tempoCosturaUnit, int qtdePrevista, int qtdeAtendida) {
 		this.prioridade = prioridade;
 		this.nivel = nivel; 
 		this.grupo = grupo; 
@@ -30,7 +31,8 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 		this.roteiro = roteiro; 
 		this.dataEmbarque = dataEmbarque; 
 		this.qtdeEstagioCritico = qtdeEstagioCritico; 
-		this.tempoProducaoUnit = tempoProducaoUnit; 
+		this.tempoProducaoUnit = tempoProducaoUnit;
+		this.tempoCosturaUnit = tempoCosturaUnit;
 		this.qtdePrevista = qtdePrevista; 
 		this.qtdeAtendida = qtdeAtendida; 		
 		this.seqTamanho = seqTamanho;
@@ -100,6 +102,12 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 	}
 	public void setTempoProducaoUnit(double tempoProducaoUnit) {
 		this.tempoProducaoUnit = tempoProducaoUnit;
+	}
+	public double getTempoCosturaUnit() {
+		return tempoCosturaUnit;
+	}
+	public void setTempoCosturaUnit(double tempoCosturaUnit) {
+		this.tempoCosturaUnit = tempoCosturaUnit;
 	}
 	public int getQtdePrevista() {
 		return qtdePrevista;

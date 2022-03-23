@@ -375,4 +375,10 @@ public class OrdemProducaoServiceTransaction {
 			ordemProducaoCustom.gravarProducaoEstagio(pacote.ordemProducao, pacote.periodo, pacote.ordemConfeccao, estagio, pacote.qtdePecas);
 		}
 	}
+	
+	public void gravarSeqPrioridadeDia(int ordemProducao, boolean urgente) {
+		int sequencia = 0; 
+		if (!urgente) sequencia = ordemProducaoCustom.findUltimaSeqPrioridadeDia();
+		ordemProducaoCustom.gravarSeqPrioridadeDia(ordemProducao, sequencia++);
+	}
 }
