@@ -39,9 +39,14 @@ public class SugestaoReservaTecidoService {
 	
 	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, boolean urgente) {
 		
+		System.out.println("liberarProducao");
+		
 		if (!urgente) Collections.sort(listaOrdensLiberar);
 		
 		for (OrdemProducao ordem : listaOrdensLiberar) {
+			
+			System.out.println(ordem.ordemProducao + " -> " + urgente);
+			
 			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 1); // Estagio 1 - Programação
 			ordemProducaoService.gravarSeqPrioridadeDia(ordem.ordemProducao, urgente);
 		}
