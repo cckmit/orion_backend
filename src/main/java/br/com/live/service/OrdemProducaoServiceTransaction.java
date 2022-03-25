@@ -378,7 +378,10 @@ public class OrdemProducaoServiceTransaction {
 	
 	public void gravarSeqPrioridadeDia(int ordemProducao, boolean urgente) {
 		int sequencia = 0; 
-		if (!urgente) sequencia = ordemProducaoCustom.findUltimaSeqPrioridadeDia();
-		ordemProducaoCustom.gravarSeqPrioridadeDia(ordemProducao, sequencia++);
+		if (!urgente) { 
+			sequencia = ordemProducaoCustom.findUltimaSeqPrioridadeDia();
+			sequencia++;
+		}		  		
+		ordemProducaoCustom.gravarSeqPrioridadeDia(ordemProducao, sequencia);
 	}
 }

@@ -19,20 +19,26 @@ public class CodigoProduto {
 	public String getCodigo() {
 		return codigo;
 	}
+
+	public String getNivel() {
+		String[] codigoSeparado = codigo.split("[.]");
+		String parte = codigoSeparado [0];
+		return parte;
+	}
 	
-	public String getGrupo(String codigo) {
+	public String getGrupo() {
 		String[] codigoSeparado = codigo.split("[.]");
 		String parte = codigoSeparado [1];
 		return parte;
 	}
 	
-	public String getSub(String codigo) {
+	public String getSub() {
 		String[] codigoSeparado = codigo.split("[.]");
 		String parte = codigoSeparado [2];
 		return parte;
 	}
 
-	public String getItem(String codigo) {
+	public String getItem() {
 		String[] codigoSeparado = codigo.split("[.]");
 		String parte = codigoSeparado [3];
 		return parte;

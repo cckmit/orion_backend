@@ -722,7 +722,7 @@ public class OrdemProducaoCustom {
 		if (!tecidos.isEmpty())
 			query += " and exists (select 1 from pcpc_032 w "
 	              + " where w.pcpc0302_orprocor = aa.ordem_producao "
-	              + " and w.tecordco_nivel99 || '.' || w.tecordco_grupo || '.' || w.tecordco_subgrupo || '.' || w.tecordco_item in (" + tecidos + ")";                               
+	              + " and w.tecordco_nivel99 || '.' || w.tecordco_grupo || '.' || w.tecordco_subgrupo || '.' || w.tecordco_item in (" + tecidos + "))";                               
 	                               
 
 		if (isSomenteFlat)
@@ -751,11 +751,9 @@ public class OrdemProducaoCustom {
 		
 		String ordenacao = converteSelecaoCamposParaOrdenacao(camposSelParaPriorizacao);
 		
-		// System.out.println("ordenacao -> " + ordenacao);
-		
 		query += ordenacao;
 		
-		// System.out.println(query);
+		//System.out.println(query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class));
 	}

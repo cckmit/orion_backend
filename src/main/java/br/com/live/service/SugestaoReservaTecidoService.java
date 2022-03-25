@@ -37,16 +37,9 @@ public class SugestaoReservaTecidoService {
 		return sugestaoReservaTecidoPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositos, isSomenteFlat, percentualMinimoAtender);		
 	}
 	
-	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, boolean urgente) {
-		
-		System.out.println("liberarProducao");
-		
-		if (!urgente) Collections.sort(listaOrdensLiberar);
-		
-		for (OrdemProducao ordem : listaOrdensLiberar) {
-			
-			System.out.println(ordem.ordemProducao + " -> " + urgente);
-			
+	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, boolean urgente) {		
+		if (!urgente) Collections.sort(listaOrdensLiberar);		
+		for (OrdemProducao ordem : listaOrdensLiberar) {			
 			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 1); // Estagio 1 - Programação
 			ordemProducaoService.gravarSeqPrioridadeDia(ordem.ordemProducao, urgente);
 		}
