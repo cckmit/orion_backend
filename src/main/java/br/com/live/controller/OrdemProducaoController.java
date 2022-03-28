@@ -11,13 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyOrdemProducao;
-import br.com.live.body.BodySugestaoReservaTecidos;
 import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
-import br.com.live.model.SugestaoReservaTecidos;
 import br.com.live.service.OrdemProducaoService;
 
 @RestController

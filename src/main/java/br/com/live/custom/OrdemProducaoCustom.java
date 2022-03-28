@@ -703,7 +703,7 @@ public class OrdemProducaoCustom {
 	    + " and exists (select 1 from pcpc_040 "
 	    + " where pcpc_040.ordem_producao = aa.ordem_producao "
 	    + " and pcpc_040.codigo_estagio = 1 " // PROGRAMACAO
-	    + " and pcpc_040.qtde_disponivel_baixa > 0)";
+	    + " and pcpc_040.qtde_a_produzir_pacote > 0)";
 
 		if (periodoInicial > 0 || periodoFinal > 0)
 			query += " and aa.periodo_producao between " + periodoInicial + " and " + periodoFinal;
@@ -753,7 +753,7 @@ public class OrdemProducaoCustom {
 		
 		query += ordenacao;
 		
-		//System.out.println(query);
+		System.out.println(query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class));
 	}

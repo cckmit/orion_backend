@@ -28,7 +28,7 @@ public class SugestaoReservaTecidoCustom {
 		+ " where a.cod_cancelamento = 0 "
 		+ " and b.ordem_producao = a.ordem_producao "
         + " and b.codigo_estagio = 1 " // PROGRAMACAO
-        + " and b.qtde_disponivel_baixa > 0) "
+        + " and b.qtde_a_produzir_pacote > 0) "
 		+ " and m.nivel_estrutura = p.tecordco_nivel99 "
 		+ " and m.grupo_estrutura = p.tecordco_grupo "
 		+ " and m.subgru_estrutura = p.tecordco_subgrupo "
@@ -49,15 +49,16 @@ public class SugestaoReservaTecidoCustom {
 		
 		List<Produto> produtos;
 	
-		String query = " select a.referencia_peca grupo, c.descr_referencia narrativa " 
-		+ " from pcpc_020 a, pcpc_040 b, basi_030 c "
+		String query = " select a.referencia_peca grupo, c.descr_referencia narrativa "  
+		+ " from pcpc_020 a, basi_030 c "
 		+ " where a.cod_cancelamento = 0 "
-	    + " and b.ordem_producao = a.ordem_producao "
-	    + " and b.codigo_estagio = 1 " // PROGRAMACAO
-	    + " and b.qtde_disponivel_baixa > 0 "
-	    + " and c.nivel_estrutura = '1' "
-	    + " and c.referencia = a.referencia_peca "
-		+ " group by a.referencia_peca, c.descr_referencia "
+    	+ " and exists (select 1 from pcpc_040 b "
+        + " where b.ordem_producao = a.ordem_producao " 
+        + " and b.codigo_estagio = 1 "
+        + " and b.qtde_a_produzir_pacote > 0) "
+		+ " and c.nivel_estrutura = '1' "
+		+ " and c.referencia = a.referencia_peca "
+		+ " group by a.referencia_peca, c.descr_referencia " 
 		+ " order by a.referencia_peca, c.descr_referencia ";
 		
 		try {
