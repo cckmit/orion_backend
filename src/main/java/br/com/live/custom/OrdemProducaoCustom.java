@@ -606,21 +606,23 @@ public class OrdemProducaoCustom {
 	
 	public List<OrdemProducaoItem> findItensByOrdemProducao(int ordemProducao) {
 		
-		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.tamanho, b.sortimento cor, b.quantidade qtdePecasProgramada " 
-		+ " from pcpc_020 a, pcpc_021 b "
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, b.qtde_pecas_prog qtdePecasProgramada " 
+		+ " from pcpc_020 a, pcpc_040 b " 
 		+ " where a.ordem_producao = " + ordemProducao
-		+ " and b.ordem_producao = a.ordem_producao ";
-		
+		+ " and b.ordem_producao = a.ordem_producao "
+		+ " and b.codigo_estagio = a.ultimo_estagio ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
 
 	public List<OrdemProducaoItem> findItensByOrdemProducaoAndCor(int ordemProducao, String cor) {
-		
-		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.tamanho, b.sortimento cor, b.quantidade qtdePecasProgramada " 
-		+ " from pcpc_020 a, pcpc_021 b "
+
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, b.qtde_pecas_prog qtdePecasProgramada " 
+		+ " from pcpc_020 a, pcpc_040 b " 
 		+ " where a.ordem_producao = " + ordemProducao
 		+ " and b.ordem_producao = a.ordem_producao "
-		+ " and b.sortimento = '" + cor + "'" ;
+		+ " and b.proconf_item = '" + cor + "'"
+		+ " and b.codigo_estagio = a.ultimo_estagio ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
@@ -693,11 +695,12 @@ public class OrdemProducaoCustom {
 	    + " aa.referencia_peca referencia, " 
 	    + " aa.alternativa_peca alternativa, "
 	    + " aa.roteiro_peca roteiro, "
-	    + " cc.descr_referencia, bb.tamanho sub, bb.sortimento item, " 
+	    + " cc.descr_referencia, bb.proconf_subgrupo sub, bb.proconf_item item, " 
 	    + " aa.qtde_programada quantidade "
-	    + " from pcpc_020 aa, pcpc_021 bb, basi_030 cc "
-	    + " where aa.cod_cancelamento = 0 "
-	    + " and bb.ordem_producao = aa.ordem_producao "
+	    + " from pcpc_020 aa, pcpc_040 bb, basi_030 cc "
+	    + " where aa.cod_cancelamento = 0 "	    
+		+ " and bb.ordem_producao = aa.ordem_producao "  
+		+ " and bb.codigo_estagio = aa.ultimo_estagio "	    
 	    + " and cc.nivel_estrutura = '1' "
 	    + " and cc.referencia = aa.referencia_peca "
 	    + " and exists (select 1 from pcpc_040 "
@@ -753,7 +756,7 @@ public class OrdemProducaoCustom {
 		
 		query += ordenacao;
 		
-		System.out.println(query);
+		//System.out.println(query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class));
 	}

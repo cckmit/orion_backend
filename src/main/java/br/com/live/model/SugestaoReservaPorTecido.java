@@ -8,9 +8,10 @@ public class SugestaoReservaPorTecido implements Comparable<SugestaoReservaPorTe
 	private String item;
 	private String descricao;
 	private String unidade;	
+	private boolean substitutosLocalizados;
 	private Double qtdeNecessidade;
 	private Double qtdeEstoque;
-	private Double qtdeEmpenhada;
+	private Double qtdeEmpenhada;	
 	protected Double qtdeDisponivel;
 	protected Double qtdeSugerido;
 	protected Double qtdeSaldo;
@@ -125,6 +126,13 @@ public class SugestaoReservaPorTecido implements Comparable<SugestaoReservaPorTe
 		this.qtdeSaldo = this.qtdeDisponivel - this.qtdeSugerido;		
 	}
 	
+	public boolean isSubstitutosLocalizados() {
+		return substitutosLocalizados;
+	}
+
+	public void setSubstitutosLocalizados(boolean substitutosLocalizados) {
+		this.substitutosLocalizados = substitutosLocalizados;
+	}
 	@Override
 	public int compareTo(SugestaoReservaPorTecido outroTecido) {
 		
