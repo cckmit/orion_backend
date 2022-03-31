@@ -128,7 +128,6 @@ public class ProdutoController {
 	
 	@RequestMapping(value = "/existe-produto/{nivel}/{grupo}/{sub}/{item}", method = RequestMethod.GET)
 	public boolean existsProduto(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("sub") String sub, @PathVariable("item") String item) {
-		System.out.println(nivel + "." + grupo + "." + sub + "." + item);
 		return produtoService.existeProduto(nivel, grupo, sub, item);
 	}
 }
