@@ -91,4 +91,8 @@ public class ProdutoService {
 		int totalRegistros = boxFim * cestoFim;
 		return produtoRepository.findProdutosByColecaoAndArtigo(ConteudoChaveNumerica.parseValueToString(colecoes), ConteudoChaveNumerica.parseValueToString(artigos), totalRegistros);
 	}
+	
+	public boolean existeProduto(String nivel, String grupo, String subGrupo, String item) {
+		return produtoRepository.existeProduto(nivel, grupo, subGrupo, item);
+	}
 }
