@@ -606,23 +606,25 @@ public class OrdemProducaoCustom {
 	
 	public List<OrdemProducaoItem> findItensByOrdemProducao(int ordemProducao) {
 		
-		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, b.qtde_pecas_prog qtdePecasProgramada " 
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, sum(b.qtde_pecas_prog) qtdePecasProgramada " 
 		+ " from pcpc_020 a, pcpc_040 b " 
 		+ " where a.ordem_producao = " + ordemProducao
 		+ " and b.ordem_producao = a.ordem_producao "
-		+ " and b.codigo_estagio = a.ultimo_estagio ";
+		+ " and b.codigo_estagio = a.ultimo_estagio "
+		+ " group by a.ordem_producao, a.referencia_peca, a.alternativa_peca, a.roteiro_peca, b.proconf_subgrupo, b.proconf_item ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
 
 	public List<OrdemProducaoItem> findItensByOrdemProducaoAndCor(int ordemProducao, String cor) {
 
-		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, b.qtde_pecas_prog qtdePecasProgramada " 
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, sum(b.qtde_pecas_prog) qtdePecasProgramada " 
 		+ " from pcpc_020 a, pcpc_040 b " 
 		+ " where a.ordem_producao = " + ordemProducao
 		+ " and b.ordem_producao = a.ordem_producao "
 		+ " and b.proconf_item = '" + cor + "'"
-		+ " and b.codigo_estagio = a.ultimo_estagio ";
+		+ " and b.codigo_estagio = a.ultimo_estagio "
+		+ " group by a.ordem_producao, a.referencia_peca, a.alternativa_peca, a.roteiro_peca, b.proconf_subgrupo, b.proconf_item ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
@@ -732,14 +734,15 @@ public class OrdemProducaoCustom {
 			query += " and exists ( select 1 from mqop_050 m "  
 	              + " where m.nivel_estrutura = '1' " 
 	              + " and m.grupo_estrutura = aa.referencia_peca "  
-	              + " and (m.subgru_estrutura = bb.tamanho or m.subgru_estrutura = '000') "  
-	              + " and (m.item_estrutura = bb.sortimento or m.item_estrutura = '000000') " 
+	              + " and (m.subgru_estrutura = bb.proconf_subgrupo or m.subgru_estrutura = '000') "  
+	              + " and (m.item_estrutura =  bb.proconf_item or m.item_estrutura = '000000') " 
 	              + " and m.numero_alternati = aa.alternativa_peca "
 	              + " and m.numero_roteiro = aa.roteiro_peca "
 	              + " and m.codigo_operacao in (select y.codigo_operacao from mqop_040 y "
 	              + " where y.nome_operacao like '%FLAT%')) ";
-	                                                                   
-	     query += " ) a, basi_590 c " 
+		
+ 		 query += " group by aa.ordem_producao, aa.periodo_producao, aa.referencia_peca, aa.alternativa_peca, " 
+         + " aa.roteiro_peca, cc.descr_referencia, bb.proconf_subgrupo, bb.proconf_item, aa.qtde_programada ) a, basi_590 c "
          + " where c.nivel (+) = '1' " 
          + " and c.grupo (+) = a.referencia "   
          + " and c.subgrupo (+) = a.sub " 
@@ -756,7 +759,7 @@ public class OrdemProducaoCustom {
 		
 		query += ordenacao;
 		
-		//System.out.println(query);
+		System.out.println(query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class));
 	}
