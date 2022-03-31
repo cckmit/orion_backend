@@ -1038,4 +1038,22 @@ public class ProdutoCustom {
  		
  		return produtos;
  	}
+ 	
+ 	public boolean existeProduto(String nivel, String grupo, String sub, String item) { 
+ 		int encontrou = 0;
+
+ 		String query = " select 1 from basi_010 a " 
+ 		+ " where a.nivel_estrutura = '" + nivel + "' " 
+ 	    + " and a.grupo_estrutura = '" + grupo + "' "
+ 	    + " and a.subgru_estrutura = '" + sub + "' "
+ 	    + " and a.item_estrutura = '" + item + "' ";
+ 	   
+ 		try {
+ 			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
+ 		} catch (Exception e) {
+ 			encontrou = 0;
+ 		}
+ 		
+ 		return !(encontrou == 1);
+ 	}
 }
