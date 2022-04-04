@@ -41,13 +41,22 @@ public class PlanoMestreCustom {
 
 		String query = " select b.nivel_estrutura nivel, b.grupo_estrutura grupo, b.subgru_estrutura sub, b.item_estrutura item, b.narrativa, ";
 
-		query += " 0 qtdePrevisaoVendas " + " from basi_030 a, basi_010 b, basi_590 g, "
-				+ " (select d.referencia grupo, nvl((select 1 from basi_140 c " + " where c.colecao = d.colecao "
-				+ " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente " + " from basi_030 d "
-				+ " where d.nivel_estrutura = '1') ver_permanente " + " where a.nivel_estrutura = '1' "
-				+ " and b.nivel_estrutura = a.nivel_estrutura " + " and b.grupo_estrutura = a.referencia "
-				+ " and b.item_ativo = 0 " + " and g.nivel (+) = a.nivel_estrutura "
-				+ " and g.grupo (+) = a.referencia " + " and ver_permanente.grupo = a.referencia ";
+		query += " 0 qtdePrevisaoVendas " 
+				+ " from basi_030 a, basi_010 b, basi_590 g, "
+				+ " (select d.referencia grupo, nvl((select 1 from basi_140 c " 
+				+ " where c.colecao = d.colecao "
+				+ " and c.descricao_espanhol like '%COLECAO PERMANENTE%'),0) permanente " 
+				+ " from basi_030 d "
+				+ " where d.nivel_estrutura = '1') ver_permanente " 
+				+ " where a.nivel_estrutura = '1' "
+				+ " and b.nivel_estrutura = a.nivel_estrutura " 
+				+ " and b.grupo_estrutura = a.referencia "
+				+ " and b.item_ativo = 0 " 
+				+ " and g.nivel (+) = b.nivel_estrutura "
+				+ " and g.grupo (+) = b.grupo_estrutura "
+				+ " and g.subgrupo (+) = b.subgru_estrutura "
+				+ " and g.item (+) = b.item_estrutura "
+				+ " and ver_permanente.grupo = a.referencia ";
 
 		if (!parametrosFormatados.getColecoes().equalsIgnoreCase("")) {
 			query += " and a.colecao in " + parametrosFormatados.getColecoes();
@@ -125,7 +134,7 @@ public class PlanoMestreCustom {
 
 				+ " nvl((select max(b.grupo_embarque) from basi_590 b " + " where b.nivel = '1' "
 				+ " and b.grupo = a.grupo " + " and b.item = a.item " + " ),0) embarque " + " from orion_016 a ";
-
+		
 		return query;
 	}
 
