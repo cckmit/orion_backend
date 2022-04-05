@@ -994,6 +994,8 @@ public class ProdutoCustom {
 		+ " and b.subgru_estrutura = substitutos.sub_subst "
 		+ " and b.item_estrutura = substitutos.item) ";
  		
+ 		//System.out.println(query);
+ 		
 		try {
 			substitutos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
 		} catch (Exception e) {

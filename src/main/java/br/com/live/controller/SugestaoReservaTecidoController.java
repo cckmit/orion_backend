@@ -48,11 +48,11 @@ public class SugestaoReservaTecidoController {
 	
 	@RequestMapping(value = "/liberar", method = RequestMethod.POST)
 	public void liberar(@RequestBody BodySugestaoReservaTecidos body) {
-		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, false);
+		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, false);
 	}
 
 	@RequestMapping(value = "/liberar-urgente", method = RequestMethod.POST)
 	public void liberarUrgente(@RequestBody BodySugestaoReservaTecidos body) {
-		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, true);
+		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, true);
 	}
 }

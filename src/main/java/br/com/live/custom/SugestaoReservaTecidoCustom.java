@@ -68,5 +68,58 @@ public class SugestaoReservaTecidoCustom {
 		}
 		
 		return produtos;
+	}
+
+	public Double findQtdeReservadaByProduto(String nivel, String grupo, String sub, String item) {
+		
+		String query = " select nvl(sum(reservado.quantidade),0) quantidade "
+		+ " from ( "
+		+ " select nvl(sum(t.qtde_reservada),0) quantidade "
+   	    + " from tmrp_041 t "
+		+ " where t.area_producao = 1 " 
+		+ " and t.nivel_estrutura = '" + nivel + "' "
+		+ " and t.grupo_estrutura = '" + grupo + "' " 
+		+ " and t.subgru_estrutura = '" + sub + "' "
+		+ " and t.item_estrutura = '" + item + "' "    
+		+ " and not exists (select 1 from pcpc_040 p "  
+		+ " where p.ordem_producao = t.nr_pedido_ordem "  
+		+ " and p.codigo_estagio = 1 " // Estagio 1 - Programação 
+		+ " and p.qtde_a_produzir_pacote > 0) "
+		+ " and not exists (select 1 from orion_200 o "
+		+ " where o.ordem_producao = t.nr_pedido_ordem) "
+		+ " union all "
+		+ " select nvl(sum(t.quantidade),0) quantidade "
+		+ " from orion_200 t "
+		+ " where t.nivel_tecido = '" + nivel + "' "
+		+ " and t.grupo_tecido = '" + grupo + "' "
+		+ " and t.sub_tecido = '" + sub + "' "
+		+ " and t.item_tecido = '" + item + "' "
+		+ " and not exists (select 1 from pcpc_040 p "  
+		+ " where p.ordem_producao = t.ordem_producao "  
+		+ " and p.codigo_estagio = 1 " // Estagio 1 - Programação 
+		+ " and p.qtde_a_produzir_pacote > 0) "
+		+ " and exists (select 1 from tmrp_041 o "
+		+ " where o.area_producao = 1 "
+		+ " and o.nr_pedido_ordem = t.ordem_producao) "
+		+ " ) reservado ";		
+		
+		return jdbcTemplate.queryForObject(query, Double.class);		
+	}	
+	
+	public void gravarTecidosReservados(int idOrdem, String nivelTecido, String grupoTecido, String subTecido, String itemTecido, double quantidade) {		
+		String id = idOrdem + "-" + nivelTecido+ "." + grupoTecido+ "." + subTecido+ "." + itemTecido;				
+		String query = " insert into orion_200 (id, ordem_producao, nivel_tecido, grupo_tecido, sub_tecido, item_tecido, quantidade) values (?,?,?,?,?,?,?) "; 
+		
+		try {
+			jdbcTemplate.update(query, id, idOrdem, nivelTecido, grupoTecido, subTecido, itemTecido, quantidade);
+		} catch (Exception e) {
+			query = " update orion_200 set quantidade ? where id = ? ";
+			jdbcTemplate.update(query, quantidade, id);
+		}
+	}
+	
+	public void excluirTecidosReservadosPorOrdem(int idOrdem) {
+		String query = " delete from orion_200 where ordem_producao = ? ";
+		jdbcTemplate.update(query, idOrdem);		
 	}	
 }

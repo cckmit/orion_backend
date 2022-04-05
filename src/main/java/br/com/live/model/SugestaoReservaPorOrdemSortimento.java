@@ -2,7 +2,7 @@ package br.com.live.model;
 
 public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido {
 
-	private long idOrdem;
+	private int idOrdem;
 	private String sortimento;
 	private int sequencia;
 	private double qtdeNecessidadeUnit;
@@ -11,7 +11,7 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido 
 	private boolean recalculado;	
 	
 	
-	public SugestaoReservaPorOrdemSortimento(long idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
+	public SugestaoReservaPorOrdemSortimento(int idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
 			String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, double qtdeNecessidadeUnit) {
 		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido);
 		this.idOrdem = idOrdem;
@@ -21,11 +21,11 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido 
 		this.recalculado = false;		
 	}
 
-	public long getIdOrdem() {
+	public int getIdOrdem() {
 		return idOrdem;
 	}
 
-	public void setIdOrdem(long idOrdem) {
+	public void setIdOrdem(int idOrdem) {
 		this.idOrdem = idOrdem;
 	}
 
