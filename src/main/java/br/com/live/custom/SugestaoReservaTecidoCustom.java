@@ -100,7 +100,8 @@ public class SugestaoReservaTecidoCustom {
 		+ " and p.qtde_a_produzir_pacote > 0) "
 		+ " and exists (select 1 from tmrp_041 o "
 		+ " where o.area_producao = 1 "
-		+ " and o.nr_pedido_ordem = t.ordem_producao) "
+		+ " and o.nr_pedido_ordem = t.ordem_producao "
+		+ " and o.nivel_estrutura = t.nivel_tecido) "
 		+ " ) reservado ";		
 		
 		return jdbcTemplate.queryForObject(query, Double.class);		
