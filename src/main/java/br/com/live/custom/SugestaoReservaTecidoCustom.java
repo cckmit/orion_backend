@@ -86,7 +86,11 @@ public class SugestaoReservaTecidoCustom {
 		+ " and p.codigo_estagio = 1 " // Estagio 1 - Programação 
 		+ " and p.qtde_a_produzir_pacote > 0) "
 		+ " and not exists (select 1 from orion_200 o "
-		+ " where o.ordem_producao = t.nr_pedido_ordem) "
+		+ " where o.ordem_producao = t.nr_pedido_ordem "		
+		+ " and o.nivel_tecido = t.nivel_estrutura "
+		+ " and o.grupo_tecido = t.grupo_estrutura "
+		+ " and o.sub_tecido = t.subgru_estrutura "
+	    + " and o.item_tecido = t.item_estrutura) "
 		+ " union all "
 		+ " select nvl(sum(t.quantidade),0) quantidade "
 		+ " from orion_200 t "
