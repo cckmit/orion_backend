@@ -29,10 +29,12 @@ comment on table orion_120 is 'Tabela de Capacidades do Artigo';
 create table orion_130
 (numero_caixa number(9),
  situacao_caixa number(1) default 0,
- usuario varchar2(100),
+ usuario number(5) default 0,
+ usuario_systextil varchar2(100),
  data_hora_inicio Date,
  data_hora_fim Date,
  repositor varchar2(100),
+ endereco varchar2(20),
  constraint orion_130_pk primary key (numero_caixa));
  
 comment on table orion_130 is 'Tabela de Abertura de Caixas';
@@ -42,11 +44,21 @@ create table orion_131
  numero_caixa number(9),
  periodo_producao number(4) default 0,
  ordem_producao number(9) default 0,
- ordem_cofeccao number(5) default 0,
+ ordem_confeccao number(5) default 0,
  sequencia number(4) default 0,
  constraint orion_131_pk primary key (numero_tag));
  
 comment on table orion_131 is 'Tabela de Tags Lidos por Caixa';
+
+create table orion_132
+(deposito number(9),
+ rua_inicio varchar2(4) default '',
+ rua_fim varchar2(4) default '',
+ box_inicio number(4) default 0,
+ box_fim number(4) default 0,
+ constraint orion_132_pk primary key (deposito));
+ 
+comment on table orion_132 is 'Tabela de Parâmetros para Geração do Mapa do Pré Endereçamento de Caixas';
 
 CREATE INDEX INDX_ORION_131_CAIXAS ON orion_131 (numero_caixa, numero_tag);
 

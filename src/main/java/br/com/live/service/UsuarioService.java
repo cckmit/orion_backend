@@ -31,7 +31,7 @@ public class UsuarioService {
 	public Usuario findUsuarios(long idUsuario) {
 		return usuarioRepository.findByIdUsuario(idUsuario);
 	}
-	public Usuario saveUsuario(long idUsuario, String nome, String usuario, String senha, List <Long> listaIdsProgramas, int situacao, int liberaInspecaoQualidade, String email, int usuarioRepositor) {
+	public Usuario saveUsuario(long idUsuario, String nome, String usuario, String senha, List <Long> listaIdsProgramas, int situacao, int liberaInspecaoQualidade, String email, int usuarioRepositor, String codUsuarioSystextil, int empresaSystextil) {
 		
 		Usuario dadosUsuario = null;
 		
@@ -46,12 +46,14 @@ public class UsuarioService {
 			dadosUsuario.liberaInspecaoQualidade = liberaInspecaoQualidade;
 			dadosUsuario.email = email;
 			dadosUsuario.usuarioRepositor = usuarioRepositor;
+			dadosUsuario.usuarioSystextil = codUsuarioSystextil;
+			dadosUsuario.empresaSystextil = empresaSystextil;
 			
 		// INSERÇÃO
 		} else {
 			idUsuario = usuarioCustom.findNextIdUsuario();
 			
-			dadosUsuario = new Usuario(idUsuario, nome, usuario.toLowerCase(), Criptografia.criptografar(senha), situacao, liberaInspecaoQualidade, email, usuarioRepositor);
+			dadosUsuario = new Usuario(idUsuario, nome, usuario.toLowerCase(), Criptografia.criptografar(senha), situacao, liberaInspecaoQualidade, email, usuarioRepositor, codUsuarioSystextil, empresaSystextil);
 		}
 		
 		usuarioRepository.save(dadosUsuario);
@@ -70,7 +72,6 @@ public class UsuarioService {
 			UsuarioPrograma usuarioPrograma = new UsuarioPrograma (idUsuario, idPrograma);
 			usuarioProgramaRepository.save(usuarioPrograma);
 		}
-		
 	}
 
 	public List <Long> findIdsProgramasByUsuario(long idUsuario) {
@@ -100,7 +101,7 @@ public class UsuarioService {
 	
 	public Usuario findByIdUsuario(long idUsuario) {		
 		Usuario usuario = usuarioRepository.findByIdUsuario(idUsuario);		
-		return new Usuario(usuario.id,usuario.nome,usuario.usuario,Criptografia.descriptografar(usuario.senha),usuario.situacao, usuario.liberaInspecaoQualidade, usuario.email, usuario.usuarioRepositor);
+		return new Usuario(usuario.id,usuario.nome,usuario.usuario,Criptografia.descriptografar(usuario.senha),usuario.situacao, usuario.liberaInspecaoQualidade, usuario.email, usuario.usuarioRepositor, usuario.usuarioSystextil, usuario.empresaSystextil);
 	}
 	
 	public Usuario findByUsuarioSenha(String usuario, String senha) {

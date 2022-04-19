@@ -12,15 +12,18 @@ import br.com.live.entity.AgrupadorColecao;
 import br.com.live.entity.Estacao;
 import br.com.live.entity.EstacaoAgrupador;
 import br.com.live.entity.EstacaoTabelaPreco;
+import br.com.live.entity.MetasCategoria;
 import br.com.live.entity.MetasDaEstacao;
 import br.com.live.entity.MetasPorRepresentante;
 import br.com.live.model.ConsultaColecoesAgrupador;
 import br.com.live.model.ConsultaEstacaoAgrupadores;
+import br.com.live.model.ConsultaMetasCategoria;
 import br.com.live.repository.AgrupadorColecaoRepository;
 import br.com.live.repository.AgrupadorRepository;
 import br.com.live.repository.EstacaoAgrupadorRepository;
 import br.com.live.repository.EstacaoRepository;
 import br.com.live.repository.EstacaoTabelaPrecoRepository;
+import br.com.live.repository.MetasCategoriaRepository;
 import br.com.live.repository.MetasDaEstacaoRepository;
 import br.com.live.repository.MetasPorRepresentanteRepository;
 
@@ -36,10 +39,11 @@ public class EstacaoService {
 	private final AgrupadorRepository agrupadorRepository;
 	private final AgrupadorColecaoRepository agrupadorColecaoRepository;
 	private final EstacaoAgrupadorRepository estacaoAgrupadorRepository;
+	private final MetasCategoriaRepository metasCategoriaRepository;
 
 	public EstacaoService(EstacaoRepository estacaoRepository, MetasDaEstacaoRepository metasDaEstacaoRepository, MetasPorRepresentanteRepository metasPorRepresentanteRepository,
 			EstacaoCustom estacaoCustom, EstacaoTabelaPrecoRepository estacaoTabelaPrecoRepository, AgrupadorRepository agrupadorRepository,
-			AgrupadorColecaoRepository agrupadorColecaoRepository, EstacaoAgrupadorRepository estacaoAgrupadorRepository) {
+			AgrupadorColecaoRepository agrupadorColecaoRepository, EstacaoAgrupadorRepository estacaoAgrupadorRepository, MetasCategoriaRepository metasCategoriaRepository) {
 		this.estacaoRepository = estacaoRepository;		
 		this.metasDaEstacaoRepository = metasDaEstacaoRepository;
 		this.metasPorRepresentanteRepository = metasPorRepresentanteRepository;
@@ -48,6 +52,7 @@ public class EstacaoService {
 		this.agrupadorRepository = agrupadorRepository;
 		this.agrupadorColecaoRepository = agrupadorColecaoRepository;
 		this.estacaoAgrupadorRepository = estacaoAgrupadorRepository;
+		this.metasCategoriaRepository = metasCategoriaRepository;
 	}
 	
 	public Estacao saveEstacao(int codEstacao, String descricao, int catalogo) {
@@ -250,6 +255,7 @@ public class EstacaoService {
 		estacaoTabelaPrecoRepository.deleteByCodEstacao(codEstacao);
 		estacaoAgrupadorRepository.deleteByCodEstacao(codEstacao);
 		estacaoRepository.deleteByCodEstacao(codEstacao);
+		metasCategoriaRepository.deleteByCodEstacao(codEstacao);
 	}
 
 	public void excluirMetas(String id) {
@@ -275,5 +281,46 @@ public class EstacaoService {
 	public void excluirAgrupador(int codAgrupador) {
 		agrupadorColecaoRepository.deleteByCodAgrupador(codAgrupador);
 		agrupadorRepository.deleteById(codAgrupador);
+	}
+	
+	public void excluirMetaCategoria(String idMetasCat) {
+		metasCategoriaRepository.deleteById(idMetasCat);
+	}
+	
+	public void saveMetasCategoria(int codEstacao, int codRepresentante, int tipoMeta) {
+		String idMetCategoria = codEstacao + "-" + codRepresentante + "-" + tipoMeta;
+		
+		MetasCategoria dadosMeta = metasCategoriaRepository.findByIdMetas(idMetCategoria);
+		
+		if (dadosMeta == null) {
+			dadosMeta = new MetasCategoria(codEstacao, codRepresentante, tipoMeta,0,0,0,0,0,0,0,0,0,0);
+			
+			metasCategoriaRepository.save(dadosMeta);
+		}
+	}
+	
+	public void saveValoresMetasCategoria(List<MetasCategoria> listMetas) { 
+		for (MetasCategoria dadosMeta : listMetas) {
+			MetasCategoria categoria = metasCategoriaRepository.findByIdMetas(dadosMeta.id);
+			
+			if (categoria != null) {
+				categoria.valorCategoria1 = dadosMeta.valorCategoria1;
+				categoria.valorCategoria2 = dadosMeta.valorCategoria2;
+				categoria.valorCategoria3 = dadosMeta.valorCategoria3;
+				categoria.valorCategoria4 = dadosMeta.valorCategoria4;
+				categoria.valorCategoria5 = dadosMeta.valorCategoria5;
+				categoria.valorCategoria6 = dadosMeta.valorCategoria6;
+				categoria.valorCategoria7 = dadosMeta.valorCategoria7;
+				categoria.valorCategoria8 = dadosMeta.valorCategoria8;
+				categoria.valorCategoria9 = dadosMeta.valorCategoria9;
+				categoria.valorCategoria10 = dadosMeta.valorCategoria10;
+				
+				metasCategoriaRepository.save(categoria);
+			}
+		}
+	}
+	
+	public List<ConsultaMetasCategoria> findMetasCategoriaGrid(long codEstacao, int tipoMeta){
+		return estacaoCustom.findMetasCategoriaGrid(codEstacao, tipoMeta);
 	}
 }

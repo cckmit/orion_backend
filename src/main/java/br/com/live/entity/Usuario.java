@@ -24,11 +24,17 @@ public class Usuario {
 	@Column(name = "usuario_repositor")	
 	public int usuarioRepositor;
 	
+	@Column(name = "usuario_systextil")	
+	public String usuarioSystextil;
+	
+	@Column(name = "empresa_systextil")	
+	public int empresaSystextil;
+	
 	public Usuario() {
 		
 	}
 	
-	public Usuario(long id, String nome, String usuario, String senha, int situacao, int liberaInspecaoQualidade, String email, int usuarioRepositor) {
+	public Usuario(long id, String nome, String usuario, String senha, int situacao, int liberaInspecaoQualidade, String email, int usuarioRepositor, String usuarioSystextil, int empresaSystextil) {
 		this.id = id;
 		this.nome = nome;
 		this.usuario = usuario;
@@ -37,6 +43,8 @@ public class Usuario {
 		this.liberaInspecaoQualidade = liberaInspecaoQualidade;
 		this.email = email;
 		this.usuarioRepositor = usuarioRepositor;
+		this.usuarioSystextil = usuarioSystextil;
+		this.empresaSystextil = empresaSystextil;
 	}
 	
 }

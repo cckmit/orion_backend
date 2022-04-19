@@ -21,6 +21,7 @@ import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
 import br.com.live.service.ProdutoService;
 import br.com.live.util.CodigoGrupoItem;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
 @CrossOrigin
@@ -129,5 +130,10 @@ public class ProdutoController {
 	@RequestMapping(value = "/existe-produto/{nivel}/{grupo}/{sub}/{item}", method = RequestMethod.GET)
 	public boolean existsProduto(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("sub") String sub, @PathVariable("item") String item) {
 		return produtoService.existeProduto(nivel, grupo, sub, item);
+	}
+	
+	@RequestMapping(value = "/find-categorias", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findCategorias() {
+		return produtoService.findCategorias();
 	}
 }

@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import br.com.live.model.ConsultaColecoesAgrupador;
 import br.com.live.model.ConsultaEstacaoAgrupadores;
 import br.com.live.model.ConsultaEstacaoTabelaPreco;
+import br.com.live.model.ConsultaMetasCategoria;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
@@ -117,5 +119,24 @@ public class EstacaoCustom {
 		
 		jdbcTemplate.update(query);
 	}
-
+	
+	public List<ConsultaMetasCategoria> findMetasCategoriaGrid(long codEstacao, int tipoMeta) {
+		
+		List<ConsultaMetasCategoria> dadosCategoria = null;
+		
+		String query = " select a.id id, a.cod_estacao codEstacao, a.cod_representante codRepresentante, b.nome_rep_cliente descRepresentante, a.tipo_meta tipoMeta, a.valor_categoria_1 valorCategoria1, "
+				+ " a.valor_categoria_2 valorCategoria2, a.valor_categoria_3 valorCategoria3, a.valor_categoria_4 valorCategoria4, a.valor_categoria_5 valorCategoria5, "
+				+ " a.valor_categoria_6 valorCategoria6, a.valor_categoria_7 valorCategoria7, a.valor_categoria_8 valorCategoria8, a.valor_categoria_9 valorCategoria9, "
+				+ " a.valor_categoria_10 valorCategoria10 from orion_140 a, pedi_020 b "
+				+ " where b.cod_rep_cliente = a.cod_representante "
+				+ " and a.tipo_meta = " + tipoMeta
+				+ " and a.cod_estacao = " + codEstacao;
+		
+		try {
+			dadosCategoria = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMetasCategoria.class));
+		} catch (Exception e) {
+			dadosCategoria = new ArrayList<ConsultaMetasCategoria>();
+		}
+		return dadosCategoria;
+	}
 }

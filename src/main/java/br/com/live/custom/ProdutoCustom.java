@@ -29,6 +29,7 @@ import br.com.live.model.NecessidadeTecidos;
 import br.com.live.model.Produto;
 import br.com.live.model.PublicoAlvo;
 import br.com.live.model.Roteiro;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
 public class ProdutoCustom {
@@ -1057,5 +1058,22 @@ public class ProdutoCustom {
  		}
  		
  		return !(encontrou == 1);
+ 	}
+ 	
+ 	public List<ConteudoChaveNumerica> findCategorias() {
+ 		List<ConteudoChaveNumerica> dadosCategoria = null;
+ 		
+ 		String query = " select b.seq_escolha value, b.seq_escolha || ' - ' || b.conteudo_escolha label from basi_542 b "
+ 				+ " where b.familia_atributo = '000001' "
+ 				+ " and b.codigo_atributo = 5 "
+ 				+ " and b.seq_escolha > 0 ";
+ 		
+ 		try {
+ 			dadosCategoria= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+ 		} catch (Exception e) {
+ 			dadosCategoria = new ArrayList<ConteudoChaveNumerica> ();
+ 		}
+ 		
+ 		return dadosCategoria;
  	}
 }

@@ -13,4 +13,6 @@ public class BodyUsuario {
 	public int liberaInspecaoQualidade;
 	public String email;
 	public int usuarioRepositor;
+	public String usuarioSystextil;
+	public int empresaSystextil;
 }

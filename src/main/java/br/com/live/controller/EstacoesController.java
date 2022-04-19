@@ -13,18 +13,22 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.body.BodyAgrupador;
 import br.com.live.body.BodyEstacao;
 import br.com.live.body.BodyMetas;
+import br.com.live.body.BodyMetasCategoria;
 import br.com.live.body.BodyMetasRepresentante;
 import br.com.live.custom.EstacaoCustom;
 import br.com.live.entity.Agrupador;
 import br.com.live.entity.Estacao;
+import br.com.live.entity.MetasCategoria;
 import br.com.live.entity.MetasDaEstacao;
 import br.com.live.entity.MetasPorRepresentante;
 import br.com.live.model.ConsultaColecoesAgrupador;
 import br.com.live.model.ConsultaEstacaoAgrupadores;
 import br.com.live.model.ConsultaEstacaoTabelaPreco;
+import br.com.live.model.ConsultaMetasCategoria;
 import br.com.live.model.TabelaPreco;
 import br.com.live.repository.AgrupadorRepository;
 import br.com.live.repository.EstacaoRepository;
+import br.com.live.repository.MetasCategoriaRepository;
 import br.com.live.repository.MetasDaEstacaoRepository;
 import br.com.live.repository.MetasPorRepresentanteRepository;
 import br.com.live.service.EstacaoService;
@@ -41,16 +45,18 @@ public class EstacoesController {
 	private MetasPorRepresentanteRepository metasPorRepresentanteRepository;
 	private EstacaoCustom estacaoCustom;
 	private AgrupadorRepository agrupadorRepository;
+	private MetasCategoriaRepository metasCategoriaRepository;
 	
     @Autowired
     public EstacoesController(EstacaoRepository estacaoRepository, EstacaoService estacaoService, MetasDaEstacaoRepository metasDaEstacaoRepository, 
-    		MetasPorRepresentanteRepository metasPorRepresentanteRepository, EstacaoCustom estacaoCustom, AgrupadorRepository agrupadorRepository) {
+    		MetasPorRepresentanteRepository metasPorRepresentanteRepository, EstacaoCustom estacaoCustom, AgrupadorRepository agrupadorRepository, MetasCategoriaRepository metasCategoriaRepository) {
     	this.estacaoRepository = estacaoRepository;
     	this.estacaoService = estacaoService;
     	this.metasDaEstacaoRepository = metasDaEstacaoRepository;
     	this.metasPorRepresentanteRepository = metasPorRepresentanteRepository;
     	this.estacaoCustom = estacaoCustom;
     	this.agrupadorRepository = agrupadorRepository;
+    	this.metasCategoriaRepository = metasCategoriaRepository;
     }
 
     @RequestMapping(value = "/find-all", method = RequestMethod.GET)
@@ -159,7 +165,6 @@ public class EstacoesController {
     
     @RequestMapping(value = "/save-agrupadores-colecao", method = RequestMethod.POST)
     public List<ConsultaColecoesAgrupador> saveAgrupadorColecao(@RequestBody BodyAgrupador body) {
-    	System.out.println("teste");
     	return estacaoService.saveColecaoAgrupador(body.codAgrupador, body.colecao, body.subColecao);
     }
     
@@ -203,5 +208,31 @@ public class EstacoesController {
     @RequestMapping(value = "/save-estacao-agrupadores", method = RequestMethod.POST)
     public List<ConsultaEstacaoAgrupadores> saveEstacaoAgrupador(@RequestBody BodyAgrupador body) {
     	return estacaoService.saveEstacaoAgrupador(body.codEstacao, body.codAgrupador);
+    }
+    
+    @RequestMapping(value = "/save-representantes-metas-categoria", method = RequestMethod.POST)
+    public void saveRepresentantesCategoria(@RequestBody BodyMetasCategoria body) {
+    	estacaoService.saveMetasCategoria(body.codEstacao, body.codRepresentante, body.tipoMeta);
+    }
+    
+    @RequestMapping(value = "/save-valores-metas-categoria", method = RequestMethod.POST)
+    public void saveValoresCategoria(@RequestBody BodyMetasCategoria body) {
+    	estacaoService.saveValoresMetasCategoria(body.listMetas);
+    }
+    
+    @RequestMapping(value = "/find-representante-metas-categoria/{codEstacao}/{tipoMeta}", method = RequestMethod.GET)
+    public List<MetasCategoria> findRepMetasCategoria(@PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
+    	return metasCategoriaRepository.findByCodEstacaoAndTipoMeta(codEstacao, tipoMeta);
+    }
+    
+    @RequestMapping(value = "/delete-metas-categoria/{idMetas}/{codEstacao}/{tipoMeta}", method = RequestMethod.DELETE)
+    public List<ConsultaMetasCategoria> deleteMetasCategoria(@PathVariable("idMetas") String idMetas, @PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
+        estacaoService.excluirMetaCategoria(idMetas);
+        return estacaoService.findMetasCategoriaGrid(codEstacao, tipoMeta);
+    }
+    
+    @RequestMapping(value = "/find-metas-categoria-grid/{codEstacao}/{tipoMeta}", method = RequestMethod.GET)
+    public List<ConsultaMetasCategoria> findMetasCategoriaGrid(@PathVariable("codEstacao") long codEstacao, @PathVariable("tipoMeta") int tipoMeta) {                  
+    	return estacaoService.findMetasCategoriaGrid(codEstacao, tipoMeta);
     }
 }

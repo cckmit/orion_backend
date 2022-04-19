@@ -12,14 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyExpedicao;
 import br.com.live.custom.ExpedicaoCustom;
-import br.com.live.entity.AberturaCaixas;
+import br.com.live.entity.CaixasParaEnderecar;
 import br.com.live.entity.ParametrosMapaEndereco;
+import br.com.live.entity.ParametrosMapaEnderecoCaixa;
+import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
 import br.com.live.model.ProdutoEnderecar;
 import br.com.live.repository.AberturaCaixasRepository;
+import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
 import br.com.live.service.ExpedicaoService;
 
@@ -32,13 +35,16 @@ public class ExpedicaoController {
 	private ParametrosMapaEndRepository parametrosMapaEndRepository;
 	private ExpedicaoCustom expedicaoCustom;
 	private AberturaCaixasRepository aberturaCaixasRepository;
+	private ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
 	
     @Autowired
-    public ExpedicaoController(ExpedicaoService enderecoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository) {
+    public ExpedicaoController(ExpedicaoService enderecoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
+    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository) {
     	this.enderecoService = enderecoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
     	this.expedicaoCustom = expedicaoCustom;
     	this.aberturaCaixasRepository = aberturaCaixasRepository;
+    	this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
     }
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
@@ -89,12 +95,12 @@ public class ExpedicaoController {
     }
     
     @RequestMapping(value = "/find-dados-caixa/{codCaixa}", method = RequestMethod.GET)
-    public AberturaCaixas findDadosCaixa(@PathVariable("codCaixa") int codCaixa) {
+    public CaixasParaEnderecar findDadosCaixa(@PathVariable("codCaixa") int codCaixa) {
         return aberturaCaixasRepository.findByNumeroCaixa(codCaixa);
     }
     
     @RequestMapping(value = "/fechar-caixa", method = RequestMethod.POST)
-    public AberturaCaixas fecharCaixa(@RequestBody BodyExpedicao body) {
+    public CaixasParaEnderecar fecharCaixa(@RequestBody BodyExpedicao body) {
     	enderecoService.fecharCaixa(body.codCaixa);
     	return aberturaCaixasRepository.findByNumeroCaixa(body.codCaixa);
     }
@@ -107,5 +113,30 @@ public class ExpedicaoController {
     @RequestMapping(value = "/gravar-dados-facilitador", method = RequestMethod.POST)
     public void gravarDadosFacilitador(@RequestBody BodyExpedicao body) {
     	enderecoService.salvarDadosFacilitador(body.referencias, body.deposito, body.blocoInicio, body.corredorInicio, body.boxInicio, body.boxFim, body.produtosSel);
+    }
+    
+    @RequestMapping(value = "/gravar-endereco-caixa", method = RequestMethod.POST)
+    public String gravarEnderecoCaixa(@RequestBody BodyExpedicao body) {
+    	return enderecoService.gravarEnderecoCaixa(body.codCaixa, body.endereco);
+    }
+    
+    @RequestMapping(value = "/find-caixas-no-endereco/{endereco}", method = RequestMethod.GET)
+    public List<ConsultaCaixasNoEndereco> findCaixasNoEndereco (@PathVariable("endereco") String endereco) {
+    	return enderecoService.consultaCaixasNoEndereco(endereco);
+    }
+    
+    @RequestMapping(value = "/gravar-parametros-endereco-caixa", method = RequestMethod.POST)
+    public void gravarParametrosEnderecoCaixa(@RequestBody BodyExpedicao body) {
+    	enderecoService.salvarParametrosEnderecoCaixa(body.deposito, body.ruaInicio, body.ruaFim, body.boxInicio, body.boxFim);
+    }
+    
+    @RequestMapping(value = "/find-parametros-deposito-caixas/{deposito}", method = RequestMethod.GET)
+    public ParametrosMapaEnderecoCaixa findCaixasNoEndereco (@PathVariable("deposito") int deposito) {
+    	return parametrosEnderecoCaixaRepository.findByDeposito(deposito);
+    }
+    
+    @RequestMapping(value = "/verifica-caixas-endereco", method = RequestMethod.GET)
+    public List<ConsultaCaixasNoEndereco> verificaCaixasNoEndereco () {
+    	return enderecoService.verificarCaixasNoEndereco();
     }
 }

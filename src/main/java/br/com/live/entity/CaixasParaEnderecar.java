@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="orion_130")
-public class AberturaCaixas {
+public class CaixasParaEnderecar {
 	
 	@Id
 	@Column(name = "numero_caixa")	
@@ -18,7 +18,7 @@ public class AberturaCaixas {
 	@Column(name = "situacao_caixa")	
 	public int situacaoCaixa;
 
-	public String usuario;
+	public int usuario;
 	
 	@Column(name = "data_hora_inicio")	
 	public Date dataHoraInicio;
@@ -26,14 +26,21 @@ public class AberturaCaixas {
 	@Column(name = "data_hora_fim")	
 	public Date dataHoraFim;
 	
-	public AberturaCaixas() {
+	public String endereco;
+	
+	@Column(name = "usuario_systextil")	
+	public String usuarioSystextil;
+	
+	public CaixasParaEnderecar() {
 	}
 
-	public AberturaCaixas(int numeroCaixa, int situacaoCaixa, String usuario, Date dataHoraInicio, Date dataHoraFim) {
+	public CaixasParaEnderecar(int numeroCaixa, int situacaoCaixa, int usuario, Date dataHoraInicio, Date dataHoraFim, String usuarioSystextil, String endereco) {
 		this.numeroCaixa = numeroCaixa;
 		this.situacaoCaixa = situacaoCaixa;
 		this.usuario = usuario;
 		this.dataHoraInicio = dataHoraInicio;
 		this.dataHoraFim = dataHoraFim;
+		this.usuarioSystextil = usuarioSystextil;
+		this.endereco = endereco;
 	}
 }

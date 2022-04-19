@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.CestoEndereco;
+import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
@@ -189,7 +190,7 @@ public class ExpedicaoCustom {
 	}
 	
 	public List<DadosTagProd> findDadosTagCaixas(int codCaixa) {
-		String query = " select p.periodo_producao periodo, p.ordem_producao ordem, p.ordem_cofeccao pacote, p.sequencia from orion_131 p "
+		String query = " select p.periodo_producao periodo, p.ordem_producao ordem, p.ordem_confeccao pacote, p.sequencia from orion_131 p "
 				+ "where p.numero_caixa = " + codCaixa;
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosTagProd.class));
@@ -354,4 +355,38 @@ public class ExpedicaoCustom {
 		return enderecos;
 	}
 	
+	public List<ConsultaCaixasNoEndereco> findCaixas(String endereco){
+		
+		List<ConsultaCaixasNoEndereco> caixas = null;
+		
+		String query = " select p.numero_caixa numeroCaixa, l.periodo_producao periodo, l.ordem_producao ordemProducao, l.ordem_confeccao pacote, t.proconf_nivel99 || '.' || t.proconf_grupo || '.' || t.proconf_subgrupo || '.' || t.proconf_item sku from orion_130 p, orion_131 l, pcpc_040 t "
+				+ " where p.endereco = '" + endereco + "' "
+				+ " and l.numero_caixa = p.numero_caixa "
+				+ " and t.periodo_producao = l.periodo_producao "
+				+ " and t.ordem_confeccao = l.ordem_confeccao "
+				+ " and t.ordem_producao = l.ordem_producao "
+				+ " group by p.numero_caixa, l.periodo_producao, l.ordem_producao, l.ordem_confeccao, t.proconf_nivel99, t.proconf_grupo, t.proconf_subgrupo, t.proconf_item ";
+		try {
+			caixas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaCaixasNoEndereco.class));
+		} catch (Exception e) {
+			caixas = new ArrayList<ConsultaCaixasNoEndereco>();
+		}
+		
+		return caixas;
+	}
+	
+	public List<ConsultaCaixasNoEndereco> verificaCaixasNoEndereco() {
+		List<ConsultaCaixasNoEndereco> caixas = null;
+		
+		String query = " select l.endereco endereco, count(*) quantidade from orion_130 l "
+				+ " group by l.endereco ";
+		
+		try {
+			caixas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaCaixasNoEndereco.class));
+		} catch (Exception e) {
+			caixas = new ArrayList<ConsultaCaixasNoEndereco>();
+		}
+		
+		return caixas;
+	}
 }

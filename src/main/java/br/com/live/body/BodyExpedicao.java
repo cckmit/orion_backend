@@ -18,7 +18,9 @@ public class BodyExpedicao {
 	public int cestoInicio;
 	public int cestoFim;
 	public int codCaixa;
-	public String usuario;
+	public int usuario;
+	public String ruaInicio;
+	public String ruaFim;
 	
 	public List<ConsultaCapacidadeArtigosEnderecos> itens;
 	public List<Produto> referencias;

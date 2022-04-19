@@ -95,4 +95,8 @@ public class ProdutoService {
 	public boolean existeProduto(String nivel, String grupo, String subGrupo, String item) {
 		return produtoRepository.existeProduto(nivel, grupo, subGrupo, item);
 	}
+	
+	public List<ConteudoChaveNumerica> findCategorias() {
+		return produtoRepository.findCategorias();
+	}
 }

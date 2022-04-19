@@ -12,10 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.ExpedicaoCustom;
-import br.com.live.entity.AberturaCaixas;
+import br.com.live.entity.CaixasParaEnderecar;
 import br.com.live.entity.CapacidadeArtigoEndereco;
 import br.com.live.entity.ParametrosMapaEndereco;
+import br.com.live.entity.ParametrosMapaEnderecoCaixa;
+import br.com.live.entity.Usuario;
 import br.com.live.model.CestoEndereco;
+import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
@@ -26,7 +29,9 @@ import br.com.live.model.Produto;
 import br.com.live.model.ProdutoEnderecar;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.CapacidadeArtigoEnderecoRepository;
+import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
+import br.com.live.repository.UsuarioRepository;
 import br.com.live.util.ConverteLista;
 
 @Service
@@ -36,14 +41,21 @@ public class ExpedicaoService {
 	private final ParametrosMapaEndRepository parametrosMapaEndRepository;
 	private final CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository;
 	private final AberturaCaixasRepository aberturaCaixasRepository;
+	private final UsuarioRepository usuarioRepository;
+	private final ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
+	
+	public static final int CAIXA_ABERTA = 0;
+	public static final int CAIXA_FECHADA = 1;
 
 	public ExpedicaoService(ExpedicaoCustom enderecosCustom, ParametrosMapaEndRepository parametrosMapaEndRepository,
 			CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository,
-			AberturaCaixasRepository aberturaCaixasRepository) {
+			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository, ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository) {
 		this.enderecosCustom = enderecosCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
 		this.aberturaCaixasRepository = aberturaCaixasRepository;
+		this.usuarioRepository = usuarioRepository;
+		this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -246,7 +258,7 @@ public class ExpedicaoService {
 		}
 	}
 
-	public String abrirCaixa(int codCaixa, String usuario) {
+	public String abrirCaixa(int codCaixa, int codUsuario) {
 		String msgErro = "";
 		int numeroCaixa = 0;
 
@@ -260,12 +272,15 @@ public class ExpedicaoService {
 			return msgErro;
 		}
 
-		AberturaCaixas dadosAbertura;
+		CaixasParaEnderecar dadosAbertura;
 
 		Date dataAtual = new Date();
 		Date dataFinal = null;
 
-		dadosAbertura = new AberturaCaixas(codCaixa, 0, usuario, dataAtual, dataFinal);
+		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(codUsuario);
+
+		dadosAbertura = new CaixasParaEnderecar(codCaixa, 0, codUsuario, dataAtual, dataFinal, dadosUsuario.usuarioSystextil,
+				"");
 
 		aberturaCaixasRepository.save(dadosAbertura);
 
@@ -273,7 +288,7 @@ public class ExpedicaoService {
 	}
 
 	public void fecharCaixa(int codCaixa) {
-		AberturaCaixas dadosAbertura = aberturaCaixasRepository.findByNumeroCaixa(codCaixa);
+		CaixasParaEnderecar dadosAbertura = aberturaCaixasRepository.findByNumeroCaixa(codCaixa);
 
 		if (dadosAbertura.situacaoCaixa != 1) {
 
@@ -291,6 +306,22 @@ public class ExpedicaoService {
 						tagLido.sequencia);
 			}
 		}
+	}
+
+	public String gravarEnderecoCaixa(int numeroCaixa, String endereco) {
+		String msgErro = "";
+		
+		CaixasParaEnderecar dadosCaixa = aberturaCaixasRepository.findByNumeroCaixa(numeroCaixa);
+
+		if (dadosCaixa.situacaoCaixa == CAIXA_FECHADA) {
+			dadosCaixa.endereco = endereco;
+		} else {
+			msgErro = "Não foi possível endereçar a caixa " + numeroCaixa;
+		}
+
+		aberturaCaixasRepository.save(dadosCaixa);
+		
+		return msgErro;
 	}
 
 	public List<ProdutoEnderecar> findProdutosEnderecarCaixa(int codCaixa) {
@@ -318,7 +349,7 @@ public class ExpedicaoService {
 
 		String referenciasSel = ConverteLista.converteListStrToStr(produtosSel);
 		List<Produto> listRefSel = enderecosCustom.ordenarReferencias(referenciasSel);
-		
+
 		newProdutos = filtrarListaSelecionados(referencias, listRefSel);
 		List<Produto> produtos = converteListaDeProdutos(newProdutos);
 
@@ -358,13 +389,13 @@ public class ExpedicaoService {
 
 	public List<Produto> filtrarListaSelecionados(List<Produto> referencias, List<Produto> produtosSel) {
 		List<Produto> newProdutos = new ArrayList<Produto>();
-		
+
 		for (Produto produtoSel : produtosSel) {
 
 			Stream<Produto> stream = referencias.stream().filter(t -> t.grupo.equals(produtoSel.grupo)
 					&& t.sub.equals(produtoSel.sub) && t.item.equals(produtoSel.item));
 			List<Produto> produtosFiltrados = stream.collect(Collectors.toList());
-			
+
 			newProdutos.add(produtosFiltrados.get(0));
 		}
 		return newProdutos;
@@ -381,5 +412,27 @@ public class ExpedicaoService {
 			}
 		}
 		return stringProd;
+	}
+	
+	public List<ConsultaCaixasNoEndereco> consultaCaixasNoEndereco(String endereco) {
+		return enderecosCustom.findCaixas(endereco);
+	}
+	
+	public void salvarParametrosEnderecoCaixa(int deposito, String ruaInicio, String ruaFim, int boxInicio, int boxFim) {
+		ParametrosMapaEnderecoCaixa parametros = parametrosEnderecoCaixaRepository.findByDeposito(deposito);
+		
+		if (parametros == null) {
+			parametros = new ParametrosMapaEnderecoCaixa(deposito, ruaInicio, ruaFim, boxInicio, boxFim);
+		} else {
+			parametros.ruaInicio = ruaInicio;
+			parametros.ruaFim = ruaFim;
+			parametros.boxInicio = boxInicio;
+			parametros.boxFim = boxFim;
+		}
+		parametrosEnderecoCaixaRepository.save(parametros);
+	}
+	
+	public List<ConsultaCaixasNoEndereco> verificarCaixasNoEndereco() {
+		return enderecosCustom.verificaCaixasNoEndereco();
 	}
 }
