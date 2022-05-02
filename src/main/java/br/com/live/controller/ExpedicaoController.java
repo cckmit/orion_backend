@@ -24,6 +24,7 @@ import br.com.live.model.ProdutoEnderecar;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
+import br.com.live.service.AcertoCalculoDepreciacaoService;
 import br.com.live.service.ExpedicaoService;
 
 @RestController
@@ -36,15 +37,17 @@ public class ExpedicaoController {
 	private ExpedicaoCustom expedicaoCustom;
 	private AberturaCaixasRepository aberturaCaixasRepository;
 	private ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
+	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;
 	
     @Autowired
     public ExpedicaoController(ExpedicaoService enderecoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
-    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository) {
+    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService) {
     	this.enderecoService = enderecoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
     	this.expedicaoCustom = expedicaoCustom;
     	this.aberturaCaixasRepository = aberturaCaixasRepository;
     	this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
+    	this.acertoCalculoDepreciacaoService = acertoCalculoDepreciacaoService;
     }
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
@@ -138,5 +141,10 @@ public class ExpedicaoController {
     @RequestMapping(value = "/verifica-caixas-endereco", method = RequestMethod.GET)
     public List<ConsultaCaixasNoEndereco> verificaCaixasNoEndereco () {
     	return enderecoService.verificarCaixasNoEndereco();
+    }
+    
+    @RequestMapping(value = "/acertar-calculo-depreciacao", method = RequestMethod.GET)
+    public void acertarCalculo () {
+    	acertoCalculoDepreciacaoService.inserirMesesCalculo();
     }
 }
