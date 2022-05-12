@@ -130,7 +130,8 @@ public class EstacaoCustom {
 				+ " a.valor_categoria_10 valorCategoria10 from orion_140 a, pedi_020 b "
 				+ " where b.cod_rep_cliente = a.cod_representante "
 				+ " and a.tipo_meta = " + tipoMeta
-				+ " and a.cod_estacao = " + codEstacao;
+				+ " and a.cod_estacao = " + codEstacao
+				+ " order by a.cod_representante ";
 		
 		try {
 			dadosCategoria = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMetasCategoria.class));

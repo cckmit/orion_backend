@@ -175,11 +175,12 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaCapacidadeArtigosEnderecos.class));
 	}
 	
-	public int validarCaixaAberta() {
+	public int validarCaixaAberta(int codUsuario) {
 		int numeroCaixa = 0;
 		
 		String query = " select a.numero_caixa numeroCaixa from orion_130 a "
-				+ " where a.situacao_caixa = 0 ";
+				+ " where a.situacao_caixa = 0 "
+				+ " and a.usuario = " + codUsuario;
 	
 		try {
 			numeroCaixa = jdbcTemplate.queryForObject(query, Integer.class);

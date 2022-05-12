@@ -20,7 +20,7 @@ public class MetasDoOrcamentoCustom {
 
 		String query = " select nvl(l.id,'') id, nvl(l.tipo_meta," + tipoMeta + ") tipoMeta, j.live_agrup_tipo_cliente descricao, nvl(l.valor_mes_1,0) valorMes1, nvl(l.valor_mes_2,0) valorMes2, nvl(l.valor_mes_3,0) valorMes3, nvl(l.valor_mes_4,0) valorMes4, "
 				+ " nvl(l.valor_mes_5,0) valorMes5, nvl(l.valor_mes_6,0) valorMes6, nvl(l.valor_mes_7,0) valorMes7, nvl(l.valor_mes_8,0) valorMes8, nvl(l.valor_mes_9,0) valorMes9, nvl(l.valor_mes_10,0) valorMes10, "
-				+ " nvl(l.valor_mes_11,0) valorMes11, nvl(l.valor_mes_12,0) valorMes12  from pedi_085 j, orion_150 l\r\n"
+				+ " nvl(l.valor_mes_11,0) valorMes11, nvl(l.valor_mes_12,0) valorMes12  from pedi_085 j, orion_150 l "
 				+ " where j.live_agrup_tipo_cliente <> ' ' "
 				+ " and l.descricao (+) = j.live_agrup_tipo_cliente "
 				+ " and l.ano (+) = " + ano

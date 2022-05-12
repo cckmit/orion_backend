@@ -262,7 +262,7 @@ public class ExpedicaoService {
 		String msgErro = "";
 		int numeroCaixa = 0;
 
-		numeroCaixa = enderecosCustom.validarCaixaAberta();
+		numeroCaixa = enderecosCustom.validarCaixaAberta(codUsuario);
 
 		if (numeroCaixa == codCaixa)
 			return msgErro;
@@ -279,8 +279,7 @@ public class ExpedicaoService {
 
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(codUsuario);
 
-		dadosAbertura = new CaixasParaEnderecar(codCaixa, 0, codUsuario, dataAtual, dataFinal, dadosUsuario.usuarioSystextil,
-				"");
+		dadosAbertura = new CaixasParaEnderecar(codCaixa, 0, codUsuario, dataAtual, dataFinal, dadosUsuario.usuarioSystextil,"");
 
 		aberturaCaixasRepository.save(dadosAbertura);
 
