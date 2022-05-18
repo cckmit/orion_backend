@@ -603,7 +603,23 @@ public class OrdemProducaoCustom {
 		
 		return atributo;
 	}
-	
+
+	public String getCoresOrdem(int ordemProducao) {
+		String cores = "";
+		List<String> listaCodigoCores;
+		
+		String query = " select a.proconf_item from pcpc_040 a where a.ordem_producao = ? group by a.proconf_item ";
+		
+		listaCodigoCores = jdbcTemplate.queryForList(query, String.class, ordemProducao);
+		
+		for (String cor : listaCodigoCores) {
+			if (cores.isEmpty()) cores = cor;
+			else cores += "," + cor;
+		}
+		
+		return cores;
+	}	
+
 	public List<OrdemProducaoItem> findItensByOrdemProducao(int ordemProducao) {
 		
 		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, sum(b.qtde_pecas_prog) qtdePecasProgramada " 
@@ -629,7 +645,7 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
 	
-	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat) { 
+	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat, boolean isDiretoCostura) { 
 
 		String query = " select pre_ordens_priorizadas.ordem_producao ordemProducao, "  
 	    + " pre_ordens_priorizadas.periodo_producao periodo, "
@@ -714,7 +730,10 @@ public class OrdemProducaoCustom {
 			query += " and aa.periodo_producao between " + periodoInicial + " and " + periodoFinal;
 
 		if (!referencias.isEmpty())
-			query += " and aa.referencia_peca in (" + referencias + ")";                                                              
+			query += " and aa.referencia_peca in (" + referencias + ")";
+		
+		// Deve desconsiderar referências THERMO		
+		query += " and aa.referencia_peca not like ('TM%')";
 	                               
 		if (!artigos.isEmpty()) 
 			query += " and cc.artigo in (" + artigos + ")";                               
@@ -729,7 +748,9 @@ public class OrdemProducaoCustom {
 	              + " where w.pcpc0302_orprocor = aa.ordem_producao "
 	              + " and w.tecordco_nivel99 || '.' || w.tecordco_grupo || '.' || w.tecordco_subgrupo || '.' || w.tecordco_item in (" + tecidos + "))";                               
 	                               
-
+		// Deve desconsiderar as ordens sem tecidos
+		query += " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = aa.ordem_producao ) ";
+		
 		if (isSomenteFlat)
 			query += " and exists ( select 1 from mqop_050 m "  
 	              + " where m.nivel_estrutura = '1' " 
@@ -740,7 +761,12 @@ public class OrdemProducaoCustom {
 	              + " and m.numero_roteiro = aa.roteiro_peca "
 	              + " and m.codigo_operacao in (select y.codigo_operacao from mqop_040 y "
 	              + " where y.nome_operacao like '%FLAT%')) ";
-		
+				
+		if (isDiretoCostura) 
+			query += " and exists ( select 1 from pcpc_040 pp "		 
+			      + " where pp.ordem_producao = aa.ordem_producao "
+		          + " and pp.codigo_estagio not in (07,24,25,61,10,15,18,53,52,79)) "; 		 
+		 
  		 query += " group by aa.ordem_producao, aa.periodo_producao, aa.referencia_peca, aa.alternativa_peca, " 
          + " aa.roteiro_peca, cc.descr_referencia, bb.proconf_subgrupo, bb.proconf_item, aa.qtde_programada ) a, basi_590 c "
          + " where c.nivel (+) = '1' " 
@@ -792,10 +818,8 @@ public class OrdemProducaoCustom {
 		return order;
 	}
 	
-	public void gravarProducaoEstagio(int ordemProducao, int periodo, int pacote, int estagio, int quantidade) {			
+	public void gravarProducaoEstagio(int ordemProducao, int periodo, int pacote, int estagio, int quantidade, int codUsuario, String usuarioSystextil) {			
 		int sequencia;
-		
-		// 1338 - USUARIO LUCIANE - PCP
 		
 		String query = " select nvl(max(a.sequencia),0) + 1 "
 		+ " from pcpc_045 a "
@@ -805,12 +829,23 @@ public class OrdemProducaoCustom {
 		
 		sequencia = jdbcTemplate.queryForObject(query, Integer.class);
 				
-		String queryInsert = " insert into pcpc_045 (pcpc040_ordconf, pcpc040_perconf, pcpc040_estconf, sequencia, data_producao, hora_producao, qtde_produzida, turno_producao, codigo_usuario, ordem_producao, executa_trigger) " 
+		String queryInsert = " insert into pcpc_045 (pcpc040_ordconf, pcpc040_perconf, pcpc040_estconf, sequencia, data_producao, hora_producao, qtde_produzida, turno_producao, codigo_usuario, usuario_systextil, ordem_producao, executa_trigger) " 
 		+ "	values (" + pacote + ", " + periodo + ", " + estagio + ", " + sequencia + ", " + " to_char(sysdate,'dd/mm/yyyy'), to_date('16/11/1989 ' || to_CHAR(sysdate,'hh24:mi'),'dd/mm/yyyy hh24:mi'), "
-		+ quantidade + ", 1, 1338, " + ordemProducao + ", 3) ";  				
+		+ quantidade + ", 1, " + codUsuario + ", '" + usuarioSystextil + "', " + ordemProducao + ", 3) ";  				
 						
 		jdbcTemplate.update(queryInsert);
 	}	
+	
+	public int findQtdePecasApontadaNoDiaPorUsuario(int codEstagio, int codUsuario, String usuarioSystextil) {
+
+		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p "
+		+ " where p.pcpc040_estconf = " + codEstagio  
+		+ " and p.codigo_usuario = " + codUsuario
+		+ " and to_char(p.data_producao) = to_char(sysdate) ";
+		
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
 	
 	public int findUltimaSeqPrioridadeDia() {
 	

@@ -19,11 +19,13 @@ public class BodySugestaoReservaTecidos {
 	public List<ConteudoChaveNumerica> artigos ;	
 	public List<ConteudoChaveAlfaNum> camposSelParaPriorizacao ;
 	public List<OrdemProducaoItem> listaItensQtdeMaxProgramada ;
+	public long idUsuarioOrion;
 	public int periodoInicio ;
 	public int periodoFim ;	
 	public int priorizacao ;
-	public int percentualMinimoAtender;
+	public int percentualMinimoAtender;	
 	public boolean isSomenteFlat;
+	public boolean isDiretoCostura;
 	public List<OrdemProducao> listaOrdensLiberar;	
 	public List<SugestaoReservaTecidosReservados> listaTecidosReservar;
 }

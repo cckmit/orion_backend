@@ -8,6 +8,7 @@ import br.com.live.body.BodyOrdemProducao;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.PlanoMestreCustom;
 import br.com.live.entity.PlanoMestre;
+import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
@@ -27,12 +28,14 @@ public class OrdemProducaoService {
 	private final PlanoMestreCustom planoMestreCustom;
 	private final PlanoMestreRepository planoMestreRepository;
 	private final OrdemProducaoCustom ordemProducaoCustom; 
+	private final UsuarioService usuarioService;
 		
-	public OrdemProducaoService (OrdemProducaoServiceTransaction ordemProducaoServiceTransaction, PlanoMestreCustom planoMestreCustom, PlanoMestreRepository planoMestreRepository, OrdemProducaoCustom ordemProducaoCustom) {
+	public OrdemProducaoService (OrdemProducaoServiceTransaction ordemProducaoServiceTransaction, PlanoMestreCustom planoMestreCustom, PlanoMestreRepository planoMestreRepository, OrdemProducaoCustom ordemProducaoCustom, UsuarioService usuarioService) {
 		this.ordemProducaoServiceTransaction = ordemProducaoServiceTransaction;
 		this.planoMestreCustom = planoMestreCustom;
 		this.planoMestreRepository = planoMestreRepository;
 		this.ordemProducaoCustom = ordemProducaoCustom;
+		this.usuarioService = usuarioService; 
 	}	
 	
 	public List<EstagioProducao> findAllEstagios() {
@@ -79,11 +82,19 @@ public class OrdemProducaoService {
 		return ordemProducaoCustom.findDadosTagChina(ConteudoChaveNumerica.parseValueToString(ordemProducao));
 	}
 	
-	public void baixarEstagioProducao(int ordemProducao, int estagio) {		
-		ordemProducaoServiceTransaction.baixarEstagioProducao(ordemProducao, estagio);		
+	public void baixarEstagioProducao(int ordemProducao, int estagio, long idUsuarioOrion) {		
+		Usuario usuario = usuarioService.findByIdUsuario(idUsuarioOrion);
+		int codUsuarioSystextil = usuarioService.findCodigoUsuarioSystextil(idUsuarioOrion);		
+		ordemProducaoServiceTransaction.baixarEstagioProducao(ordemProducao, estagio, codUsuarioSystextil, usuario.usuarioSystextil);		
 	}
 	
 	public void gravarSeqPrioridadeDia(int ordemProducao, boolean urgente) {
 		ordemProducaoServiceTransaction.gravarSeqPrioridadeDia(ordemProducao, urgente);
 	}
+	
+	public int findQtdePecasApontadaNoDiaPorEstagioUsuario(int codEstagio, long idUsuarioOrion) {		
+		Usuario usuario = usuarioService.findByIdUsuario(idUsuarioOrion);
+		int codUsuarioSystextil = usuarioService.findCodigoUsuarioSystextil(idUsuarioOrion);		
+		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorUsuario(codEstagio, codUsuarioSystextil, usuario.usuarioSystextil);
+	}	
 }

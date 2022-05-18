@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,6 +35,11 @@ public class SugestaoReservaTecidoController {
 		return sugestaoReservaTecidoService.findReferenciasEmOrdensParaLiberacao();				
 	}	
 
+	@RequestMapping(value = "/qtde-pc-liberada-dia/{idUsuario}", method = RequestMethod.GET)
+	public Integer findQtdePecasLiberadasDia(@PathVariable("idUsuario") long idUsuario) {
+		return sugestaoReservaTecidoService.findQtdePecasLiberadasDia(idUsuario);				
+	}	
+	
 	@RequestMapping(value = "/calcular", method = RequestMethod.POST)
 	public SugestaoReservaTecidos calcular(@RequestBody BodySugestaoReservaTecidos body) {
 		return sugestaoReservaTecidoService.calcularSugestaoReservaPorOrdem(ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao),body.periodoInicio, body.periodoFim, 
@@ -43,16 +49,16 @@ public class SugestaoReservaTecidoController {
 				ConteudoChaveNumerica.parseValueToString(body.artigos), 
 				ConteudoChaveAlfaNum.parseValueToString(body.tecidos), 
 				ConteudoChaveNumerica.parseValueToString(body.depositos), 
-				body.isSomenteFlat, body.percentualMinimoAtender);		
+				body.isSomenteFlat, body.isDiretoCostura, body.percentualMinimoAtender);		
 	}
 	
 	@RequestMapping(value = "/liberar", method = RequestMethod.POST)
 	public void liberar(@RequestBody BodySugestaoReservaTecidos body) {
-		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, false);
+		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, false, body.idUsuarioOrion);
 	}
 
 	@RequestMapping(value = "/liberar-urgente", method = RequestMethod.POST)
 	public void liberarUrgente(@RequestBody BodySugestaoReservaTecidos body) {
-		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, true);
-	}
+		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, true, body.idUsuarioOrion);
+	}	
 }

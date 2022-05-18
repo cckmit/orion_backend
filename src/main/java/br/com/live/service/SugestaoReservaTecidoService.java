@@ -34,18 +34,22 @@ public class SugestaoReservaTecidoService {
 		return sugestaoReservaTecidoCustom.findReferenciasEmOrdensParaLiberacao();				
 	}	
 
-	public SugestaoReservaTecidos calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, int percentualMinimoAtender) {
-		return sugestaoReservaTecidoPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositos, isSomenteFlat, percentualMinimoAtender);		
+	public SugestaoReservaTecidos calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, int percentualMinimoAtender) {
+		return sugestaoReservaTecidoPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositos, isSomenteFlat, isDiretoCostura, percentualMinimoAtender);		
 	}
 	
-	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaTecidosReservados> listaTecidosReservar , boolean urgente) {		
+	public int findQtdePecasLiberadasDia(long idUsuario) {
+		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(1, idUsuario);
+	}	
+	
+	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaTecidosReservados> listaTecidosReservar , boolean urgente, long idUsuarioOrion) {		
 		if (!urgente) Collections.sort(listaOrdensLiberar);		
 
 		System.out.println("LIBERAR ORDENS DE PRODUÇÃO");
 		for (OrdemProducao ordem : listaOrdensLiberar) {
 			System.out.println("ORDEM: " + ordem.ordemProducao);
 			sugestaoReservaTecidoCustom.excluirTecidosReservadosPorOrdem(ordem.ordemProducao);
-			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 1); // Estagio 1 - Programação
+			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 1, idUsuarioOrion); // Estagio 1 - Programação
 			ordemProducaoService.gravarSeqPrioridadeDia(ordem.ordemProducao, urgente);
 		}
 		

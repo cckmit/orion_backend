@@ -56,7 +56,7 @@ public class SugestaoReservaTecidoPorOrdensService {
 		this.ordemProducaoCustom = ordemProducaoCustom;		
 	}
 
-	public SugestaoReservaTecidos calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, int percentualMinimoAtender) {		
+	public SugestaoReservaTecidos calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, int percentualMinimoAtender) {		
 		// System.out.println("calcularSugestaoReserva");		
 
 		System.out.println("Inicio do calculo de sugestao de reserva de tecidos");
@@ -66,7 +66,7 @@ public class SugestaoReservaTecidoPorOrdensService {
 		this.depositosTecidos = depositos;
 		this.percentualMinimoAtender = percentualMinimoAtender;
 		
-		listaPriorizadaOrdens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, isSomenteFlat); 
+		listaPriorizadaOrdens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, isSomenteFlat, isDiretoCostura); 
 		
 		System.out.println("calcularNecessidades");		
 		calcularNecessidades();
@@ -544,6 +544,7 @@ public class SugestaoReservaTecidoPorOrdensService {
 			prioridade++;
 			
 			ordem.setSeqPrioridade(prioridade);
+			ordem.setCores(ordemProducaoCustom.getCoresOrdem(ordem.ordemProducao));			
 			
 			List<OrdemProducaoItem> dadosItensOrdem = ordemProducaoCustom.findItensByOrdemProducao(ordem.ordemProducao);
 

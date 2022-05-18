@@ -129,5 +129,8 @@ public class UsuarioService {
 		return redefiniuSenha;
 	}
 	
-
+	public int findCodigoUsuarioSystextil(long idUsuarioOrion) {	
+		Usuario usuarioOrion = findUsuarios(idUsuarioOrion);		
+		return usuarioCustom.findCodigoUsuarioSystextil(usuarioOrion.usuarioSystextil);
+	}	
 }

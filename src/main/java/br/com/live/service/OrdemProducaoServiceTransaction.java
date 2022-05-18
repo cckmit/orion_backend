@@ -367,12 +367,10 @@ public class OrdemProducaoServiceTransaction {
 		planoMestreRepository.save(planoMestre);
 	}	
 	
-	public void baixarEstagioProducao(int ordemProducao, int estagio) {
-		
-		List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);
-		
-		for (OrdemConfeccao pacote : pacotes) {					
-			ordemProducaoCustom.gravarProducaoEstagio(pacote.ordemProducao, pacote.periodo, pacote.ordemConfeccao, estagio, pacote.qtdePecas);
+	public void baixarEstagioProducao(int ordemProducao, int estagio, int codUsuarioSystextil, String usuarioSystextil) {		
+		List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);		
+		for (OrdemConfeccao pacote : pacotes) {
+			ordemProducaoCustom.gravarProducaoEstagio(pacote.ordemProducao, pacote.periodo, pacote.ordemConfeccao, estagio, pacote.qtdePecas, codUsuarioSystextil, usuarioSystextil);
 		}
 	}
 	

@@ -17,6 +17,7 @@ public class OrdemProducao implements Comparable<OrdemProducao> {
 	public double tempoCosturaUnit;	
 	private int qtdeMaxPecasReservaAtende;
 	private int seqPrioridade;
+	private String cores;
 	
 	public int getNrAlternativa() {
 		return nrAlternativa;
@@ -95,6 +96,12 @@ public class OrdemProducao implements Comparable<OrdemProducao> {
 	}
 	public void setSeqPrioridade(int seqPrioridade) {
 		this.seqPrioridade = seqPrioridade;
+	}
+	public String getCores() {
+		return cores;
+	}
+	public void setCores(String cores) {
+		this.cores = cores;
 	}
 	public OrdemProducao() {
 		this.ordemProducao = 0;

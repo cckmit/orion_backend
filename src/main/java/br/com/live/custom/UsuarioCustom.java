@@ -91,4 +91,13 @@ public class UsuarioCustom {
 		return programaSel;
 	}
 	
+	// Localiza apenas pelas principais empresas da LIVE! Por padrão o código sempre é o mesmo, então busca do primeiro registro que encontrar.
+	public int findCodigoUsuarioSystextil(String usuarioSystextil) {
+		
+		String query = " select h.codigo_usuario from hdoc_030 h "
+		+ " where h.usuario = '" + usuarioSystextil + "'"
+		+ " and h.empresa in (1,500,600) and rownum = 1 ";
+		  
+		return jdbcTemplate.queryForObject(query, Integer.class);		
+	}
 }
