@@ -653,6 +653,7 @@ public class OrdemProducaoCustom {
 	    + " pre_ordens_priorizadas.descr_referencia descrReferencia, " 
 	    + " pre_ordens_priorizadas.alternativa nrAlternativa, "
 	    + " pre_ordens_priorizadas.roteiro nrRoteiro, "
+	    + " pre_ordens_priorizadas.observacao, "
 	    + " nvl(pre_ordens_priorizadas.data_embarque,sysdate+10000) dataEmbarque, " 
 	    + " pre_ordens_priorizadas.quantidade qtdePecasProgramada, "
 	    + " pre_ordens_priorizadas.qtde_estagio_critico qtdeEstagioCritico, " 
@@ -664,6 +665,7 @@ public class OrdemProducaoCustom {
 	    + " pre_ordens.descr_referencia, " 
 	    + " pre_ordens.alternativa, "
 	    + " pre_ordens.roteiro, " 
+	    + " max(pre_ordens.observacao) observacao, "
 	    + " min(pre_ordens.data_embarque) data_embarque, " 
 	    + " max(pre_ordens.quantidade) quantidade, "
 	    + " max(pre_ordens.qtde_estagio_critico) qtde_estagio_critico, " 
@@ -675,6 +677,7 @@ public class OrdemProducaoCustom {
         + " a.referencia, " 
         + " a.alternativa, " 
         + " a.roteiro, "
+        + " max(a.observacao) observacao, "
         + " min(a.descr_referencia) descr_referencia, "  
         + " min(c.data_entrega) data_embarque, "
         + " a.sub, "
@@ -714,7 +717,8 @@ public class OrdemProducaoCustom {
 	    + " aa.alternativa_peca alternativa, "
 	    + " aa.roteiro_peca roteiro, "
 	    + " cc.descr_referencia, bb.proconf_subgrupo sub, bb.proconf_item item, " 
-	    + " aa.qtde_programada quantidade "
+	    + " aa.qtde_programada quantidade, "
+	    + " aa.observacao "
 	    + " from pcpc_020 aa, pcpc_040 bb, basi_030 cc "
 	    + " where aa.cod_cancelamento = 0 "	    
 		+ " and bb.ordem_producao = aa.ordem_producao "  
@@ -768,7 +772,7 @@ public class OrdemProducaoCustom {
 		          + " and pp.codigo_estagio not in (07,24,25,61,10,15,18,53,52,79)) "; 		 
 		 
  		 query += " group by aa.ordem_producao, aa.periodo_producao, aa.referencia_peca, aa.alternativa_peca, " 
-         + " aa.roteiro_peca, cc.descr_referencia, bb.proconf_subgrupo, bb.proconf_item, aa.qtde_programada ) a, basi_590 c "
+         + " aa.roteiro_peca, cc.descr_referencia, bb.proconf_subgrupo, bb.proconf_item, aa.qtde_programada, aa.observacao ) a, basi_590 c "
          + " where c.nivel (+) = '1' " 
          + " and c.grupo (+) = a.referencia "   
          + " and c.subgrupo (+) = a.sub " 
@@ -868,5 +872,10 @@ public class OrdemProducaoCustom {
 		+ " where a.ordem_producao = " + ordemProducao;
 		
 		jdbcTemplate.update(query);		
-	}	
+	}
+	
+	public void gravarObservacao(int ordemProducao, String observacao) {		
+		String query = " update pcpc_020 a set a.observacao = ? where a.ordem_producao = ? ";
+		jdbcTemplate.update(query, observacao, ordemProducao);		
+	}
 }

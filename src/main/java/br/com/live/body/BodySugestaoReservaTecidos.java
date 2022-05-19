@@ -27,6 +27,7 @@ public class BodySugestaoReservaTecidos {
 	public boolean isSomenteFlat;
 	public boolean isDiretoCostura;
 	public List<OrdemProducao> listaOrdensLiberar;
-	public List<OrdemProducao> listaOrdensComLembrete;	
+	public List<OrdemProducao> listaOrdensComLembrete;
+	public List<OrdemProducao> listaOrdensComObservacao;
 	public List<SugestaoReservaTecidosReservados> listaTecidosReservar;
 }

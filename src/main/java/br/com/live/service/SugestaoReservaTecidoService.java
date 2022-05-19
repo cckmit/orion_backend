@@ -65,4 +65,10 @@ public class SugestaoReservaTecidoService {
 			sugestaoReservaTecidoCustom.gravarLembrete(ordem.getOrdemProducao(), ordem.getLembreteSugestao());
 		}
 	}
+	
+	public void gravarObservacaoOP(List<OrdemProducao> listaOrdensComObservacao) {
+		for (OrdemProducao ordem : listaOrdensComObservacao) {
+			ordemProducaoService.gravarObservacao(ordem.getOrdemProducao(), ordem.getObservacao());
+		}
+	}
 }

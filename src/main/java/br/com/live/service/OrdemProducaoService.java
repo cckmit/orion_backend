@@ -97,4 +97,8 @@ public class OrdemProducaoService {
 		int codUsuarioSystextil = usuarioService.findCodigoUsuarioSystextil(idUsuarioOrion);		
 		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorUsuario(codEstagio, codUsuarioSystextil, usuario.usuarioSystextil);
 	}	
+	
+	public void gravarObservacao(int ordemProducao, String observacao) {
+		ordemProducaoCustom.gravarObservacao(ordemProducao, observacao);
+	}
 }

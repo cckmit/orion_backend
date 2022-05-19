@@ -66,4 +66,9 @@ public class SugestaoReservaTecidoController {
 	public void gravarLembrete(@RequestBody BodySugestaoReservaTecidos body) {
 		sugestaoReservaTecidoService.gravarLembrete(body.listaOrdensComLembrete);
 	}		
+	
+	@RequestMapping(value = "/gravar-observacao-op", method = RequestMethod.POST)
+	public void gravarObservacaoOP(@RequestBody BodySugestaoReservaTecidos body) {
+		sugestaoReservaTecidoService.gravarObservacaoOP(body.listaOrdensComObservacao);
+	}		
 }
