@@ -545,6 +545,7 @@ public class SugestaoReservaTecidoPorOrdensService {
 			
 			ordem.setSeqPrioridade(prioridade);
 			ordem.setCores(ordemProducaoCustom.getCoresOrdem(ordem.ordemProducao));			
+			ordem.setLembreteSugestao(sugestaoReservaTecidoCustom.findLembreteByOrdem(ordem.ordemProducao));
 			
 			List<OrdemProducaoItem> dadosItensOrdem = ordemProducaoCustom.findItensByOrdemProducao(ordem.ordemProducao);
 

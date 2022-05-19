@@ -61,4 +61,9 @@ public class SugestaoReservaTecidoController {
 	public void liberarUrgente(@RequestBody BodySugestaoReservaTecidos body) {
 		sugestaoReservaTecidoService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, true, body.idUsuarioOrion);
 	}	
+	
+	@RequestMapping(value = "/gravar-lembrete", method = RequestMethod.POST)
+	public void gravarLembrete(@RequestBody BodySugestaoReservaTecidos body) {
+		sugestaoReservaTecidoService.gravarLembrete(body.listaOrdensComLembrete);
+	}		
 }

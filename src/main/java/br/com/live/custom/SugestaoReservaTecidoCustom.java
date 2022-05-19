@@ -111,6 +111,19 @@ public class SugestaoReservaTecidoCustom {
 		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
 	
+	public String findLembreteByOrdem(int idOrdem) {		
+		String lembrete;
+		String query = " select o.lembrete from orion_210 o where o.ordem_producao = ? ";
+		
+		try {
+			lembrete = jdbcTemplate.queryForObject(query, String.class, idOrdem);
+		} catch (Exception e) {
+			lembrete = "";
+		}
+		
+		return lembrete; 		
+	}
+	
 	public void gravarTecidosReservados(int idOrdem, String nivelTecido, String grupoTecido, String subTecido, String itemTecido, double quantidade) {		
 		String id = idOrdem + "-" + nivelTecido+ "." + grupoTecido+ "." + subTecido+ "." + itemTecido;				
 		String query = " insert into orion_200 (id, ordem_producao, nivel_tecido, grupo_tecido, sub_tecido, item_tecido, quantidade) values (?,?,?,?,?,?,?) "; 
@@ -126,5 +139,15 @@ public class SugestaoReservaTecidoCustom {
 	public void excluirTecidosReservadosPorOrdem(int idOrdem) {
 		String query = " delete from orion_200 where ordem_producao = ? ";
 		jdbcTemplate.update(query, idOrdem);		
-	}	
+	}
+	
+	public void gravarLembrete(int idOrdem, String lembrete) {	
+		String query = " insert into orion_210 (ordem_producao, lembrete) values (?,?) ";
+		try {
+			jdbcTemplate.update(query, idOrdem, lembrete);
+		} catch (Exception e) {
+			query = " update orion_210 o set o.lembrete = ? where o.ordem_producao = ? ";
+			jdbcTemplate.update(query, lembrete, idOrdem);
+		}		
+	}		
 }

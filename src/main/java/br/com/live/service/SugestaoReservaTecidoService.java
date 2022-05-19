@@ -58,5 +58,11 @@ public class SugestaoReservaTecidoService {
 			System.out.println("ORDEM: " + reservar.idOrdem  + " - " + reservar.nivelTecido + "." +  reservar.grupoTecido + "." + reservar.subTecido + "." + reservar.itemTecido + " => " + reservar.qtdeReservado);
 			sugestaoReservaTecidoCustom.gravarTecidosReservados(reservar.idOrdem, reservar.nivelTecido, reservar.grupoTecido, reservar.subTecido, reservar.itemTecido, reservar.qtdeReservado);
 		}
-	}			
+	}		
+	
+	public void gravarLembrete(List<OrdemProducao> listaOrdensComLembrete) {
+		for (OrdemProducao ordem : listaOrdensComLembrete) {
+			sugestaoReservaTecidoCustom.gravarLembrete(ordem.getOrdemProducao(), ordem.getLembreteSugestao());
+		}
+	}
 }
