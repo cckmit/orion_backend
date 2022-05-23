@@ -622,12 +622,13 @@ public class OrdemProducaoCustom {
 
 	public List<OrdemProducaoItem> findItensByOrdemProducao(int ordemProducao) {
 		
-		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, sum(b.qtde_pecas_prog) qtdePecasProgramada " 
-		+ " from pcpc_020 a, pcpc_040 b " 
+		String query = " select a.ordem_producao ordemProducao, a.referencia_peca referencia, a.alternativa_peca nrAlternativa, a.roteiro_peca nrRoteiro, b.proconf_subgrupo tamanho, b.proconf_item cor, sum(b.qtde_pecas_prog) qtdePecasProgramada, c.ordem_tamanho ordemTamanho " 
+		+ " from pcpc_020 a, pcpc_040 b, basi_220 c " 
 		+ " where a.ordem_producao = " + ordemProducao
 		+ " and b.ordem_producao = a.ordem_producao "
 		+ " and b.codigo_estagio = a.ultimo_estagio "
-		+ " group by a.ordem_producao, a.referencia_peca, a.alternativa_peca, a.roteiro_peca, b.proconf_subgrupo, b.proconf_item ";
+		+ " and c.tamanho_ref = b.proconf_subgrupo "
+		+ " group by a.ordem_producao, a.referencia_peca, a.alternativa_peca, a.roteiro_peca, b.proconf_subgrupo, b.proconf_item, c.ordem_tamanho ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
