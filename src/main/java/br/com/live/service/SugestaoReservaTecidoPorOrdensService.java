@@ -476,18 +476,18 @@ public class SugestaoReservaTecidoPorOrdensService {
 	}	
 	
 	private void reservaTecidoParaOrdem(SugestaoReservaPorOrdemSortimento tecidoOrdem) {			
-		// System.out.println("reservaTecidoParaOrdem");
+		//System.out.println("reservaTecidoParaOrdem");
 		
 		double qtdeReservada = 0;
 		double qtdeReservar = tecidoOrdem.getQtdeNecessidadeCalculada();
 		
-		// System.out.println("ORDEM DE PRODUCAO: " + tecidoOrdem.getIdOrdem());
+		//System.out.println("ORDEM DE PRODUCAO: " + tecidoOrdem.getIdOrdem());
 		
 		SugestaoReservaPorTecido tecido = mapDadosPorTecido.get(new CodigoProduto(tecidoOrdem.getNivel(), tecidoOrdem.getGrupo(), tecidoOrdem.getSub(), tecidoOrdem.getItem()).getCodigo());
 				
-		// System.out.println(tecidoOrdem.getSequencia() + " saldo: "+ tecido.getQtdeSaldo() + " - PREVISTO: " + tecidoOrdem.getQtdeNecessidade() + " - RECALC: " + tecidoOrdem.getQtdeNecessidadeRecalculada()); 
-		
-		double qtdeFaltaTecido = tecidoOrdem.getQtdeNecessidade() - tecidoOrdem.getQtdeNecessidadeRecalculada(); 		
+		//System.out.println(tecidoOrdem.getSequencia() + " saldo: "+ tecido.getQtdeSaldo() + " - PREVISTO: " + tecidoOrdem.getQtdeNecessidade() + " CALC: " + tecidoOrdem.getQtdeNecessidadeCalculada() + " - RECALC: " + tecidoOrdem.getQtdeNecessidadeRecalculada()); 
+			
+		double qtdeFaltaTecido = tecidoOrdem.getQtdeNecessidade() - tecidoOrdem.getQtdeNecessidadeCalculada();
 		double qtdeSaldoTecido = tecido.getQtdeSaldo();		
 		double qtdeSaldoSubstitutos = obterQtdeSaldoTecidosSubstitutos(tecidoOrdem.getNivel(), tecidoOrdem.getGrupo(), tecidoOrdem.getSub(), tecidoOrdem.getItem());		
 		
@@ -546,7 +546,7 @@ public class SugestaoReservaTecidoPorOrdensService {
 			//System.out.println("tecido ordem disponivel-> " + tecidoOrdem.getQtdeDisponivel());
 			//System.out.println("tecido ordem sugerido-> " + tecidoOrdem.getQtdeSugerido());
 			//System.out.println("tecido ordem saldo-> " + tecidoOrdem.getQtdeSaldo());
-		}		
+		}				
 		//System.out.println("Qtde falta tecido: " + qtdeFaltaTecido);		
 		// Se ficar um saldo a ser atendido do tecido principal, deve ser considerado também para a reserva, caso contrário ocorrerá erros nos próximos calculos.
 		if (qtdeFaltaTecido > 0.0) guardarDadosTecidosReservados(tecidoOrdem.getIdOrdem(), tecidoOrdem.getNivel(), tecidoOrdem.getGrupo(), tecidoOrdem.getSub(), tecidoOrdem.getItem(), qtdeFaltaTecido);				
