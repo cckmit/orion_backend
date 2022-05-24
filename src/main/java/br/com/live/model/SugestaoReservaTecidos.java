@@ -4,14 +4,14 @@ import java.util.List;
 
 public class SugestaoReservaTecidos {
 
-	public List<OrdemProducao> listaPriorizadaOrdens;
-	public List<SugestaoTecidoDetalhaSortimentos> listaGradeDetPrevistoAtendidoPorSortimento;
-	public List<SugestaoTecidoDetalhaGradeTamanhos> listaGradeDetPrevistoAtendidoPorTamanho;
+	public List<OrdemProducao> listaPriorizadaOrdens; // Aba por ordem
+	public List<SugestaoTecidoDetalhaSortimentos> listaGradeDetPrevistoAtendidoPorSortimento; // Botão grade tamanhos
+	public List<SugestaoTecidoDetalhaGradeTamanhos> listaGradeDetPrevistoAtendidoPorTamanho; // Botão grade tamanhos
 	
-	public List<SugestaoReservaPorOrdemTecido> listaSugestaoReservaPorOrdem;
-	public List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto;
-	public List<SugestaoReservaPorTecido> listaSugestaoReservaPorTecido;	
-	public List<SugestaoReservaTecidosReservados> listaDetalhaTecidosReservados;
+	public List<SugestaoReservaPorOrdemTecido> listaSugestaoReservaPorOrdem; // Grid tecidos da ordem selecionada
+	public List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto; // Aba por produto
+	public List<SugestaoReservaPorTecido> listaSugestaoReservaPorTecido; // Aba por tecido	
+	public List<SugestaoReservaTecidosReservados> listaDetalhaTecidosReservados; // quantidades de tecidos reservados (principal + substitutos)	
 	
 	public SugestaoReservaTecidos(List<OrdemProducao> listaPriorizadaPreOrdens, List<SugestaoTecidoDetalhaSortimentos> listaGradeDetPrevistoAtendidoPorSortimento, List<SugestaoTecidoDetalhaGradeTamanhos> listaGradeDetPrevistoAtendidoPorTamanho, List<SugestaoReservaPorOrdemTecido> listaSugestaoReservaPorOrdem, List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto, List<SugestaoReservaPorTecido> listaSugestaoReservaPorTecido, List<SugestaoReservaTecidosReservados> listaDetalhaTecidosReservados) {
 		this.listaPriorizadaOrdens = listaPriorizadaPreOrdens;

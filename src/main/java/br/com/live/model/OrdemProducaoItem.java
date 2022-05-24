@@ -30,9 +30,10 @@ public class OrdemProducaoItem extends OrdemProducao {
 		this.ordemTamanho = ordemTamanho;
 	}
 
-	public OrdemProducaoItem(int ordemProducao, String referencia, int Periodo, int nrAlternativa, int nrRoteiro, int qtdePecasProgramada, String tamanho, String cor) {
+	public OrdemProducaoItem(int ordemProducao, String referencia, int Periodo, int nrAlternativa, int nrRoteiro, int qtdePecasProgramada, String tamanho, String cor, int ordemTamanho) {
 		super(ordemProducao, referencia, Periodo, nrAlternativa, nrRoteiro, qtdePecasProgramada);
 		this.tamanho = tamanho;
 		this.cor = cor;
+		this.ordemTamanho = ordemTamanho;
 	}
 }

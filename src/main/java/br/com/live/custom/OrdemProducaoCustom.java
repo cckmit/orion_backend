@@ -844,9 +844,12 @@ public class OrdemProducaoCustom {
 	public int findQtdePecasApontadaNoDiaPorUsuario(int codEstagio, int codUsuario, String usuarioSystextil) {
 
 		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p "
-		+ " where p.pcpc040_estconf = " + codEstagio  
-		+ " and p.codigo_usuario = " + codUsuario
-		+ " and to_char(p.data_producao) = to_char(sysdate) ";
+		+ " where p.pcpc040_estconf = " + codEstagio  		
+		+ " and to_char(p.data_producao) = to_char(sysdate) "		
+		+ " and exists (select 1 from pcpc_020 m "
+		+ " where m.ordem_producao = p.ordem_producao "
+		+ " and m.referencia_peca not like ('TM%')) "
+        + " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = p.ordem_producao ) " ; 
 		
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
