@@ -768,9 +768,9 @@ public class OrdemProducaoCustom {
 	              + " where y.nome_operacao like '%FLAT%')) ";
 				
 		if (isDiretoCostura) 
-			query += " and exists ( select 1 from pcpc_040 pp "		 
+			query += " and not exists ( select 1 from pcpc_040 pp "		 
 			      + " where pp.ordem_producao = aa.ordem_producao "
-		          + " and pp.codigo_estagio not in (07,24,25,61,10,15,18,53,52,79)) "; 		 
+		          + " and pp.codigo_estagio in (07,24,25,61,10,15,18,53,52,79)) "; 		 
 		 
  		 query += " group by aa.ordem_producao, aa.periodo_producao, aa.referencia_peca, aa.alternativa_peca, " 
          + " aa.roteiro_peca, cc.descr_referencia, bb.proconf_subgrupo, bb.proconf_item, aa.qtde_programada, aa.observacao ) a, basi_590 c "
