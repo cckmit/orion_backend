@@ -117,3 +117,10 @@ values (39, 'Alteraração de Cor', 'Beneficiamento', '/alteracao-cor');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (40, 'Metas do Orçamento', 'Comercial', '/metas-orcamento');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (40, 'Metas do Orçamento', 'Comercial', '/metas-orcamento');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (41, 'Relatório Horas', 'TI', '/relatorio-horas');
+
