@@ -11,6 +11,9 @@ public class ConsultaHorasLancadas {
 	public int origem;
 	public float tempo;
 	public int sistema;
+	public float horaTotalOrigem;
+	public String origemStr;
+	public float percentual;
 	
 	public String getId() {
 		return id;
@@ -76,12 +79,35 @@ public class ConsultaHorasLancadas {
 		this.sistema = sistema;
 	}
 
+	public float getHoraTotalOrigem() {
+		return horaTotalOrigem;
+	}
+
+	public void setHoraTotalOrigem(float horaTotalOrigem) {
+		this.horaTotalOrigem = horaTotalOrigem;
+	}
+	
+	public String getOrigemStr() {
+		return origemStr;
+	}
+
+	public void setOrigemStr(String origemStr) {
+		this.origemStr = origemStr;
+	}
+
+	public float getPercentual() {
+		return percentual;
+	}
+
+	public void setPercentual(float percentual) {
+		this.percentual = percentual;
+	}
+
 	public ConsultaHorasLancadas() {
 	}
 
 	public ConsultaHorasLancadas(String id, String usuario, Date data, String tarefa, int situacao, int origem,
-			float tempo, int sistema) {
-		super();
+			float tempo, int sistema, float horaTotalOrigem, String origemStr) {
 		this.id = id;
 		this.usuario = usuario;
 		this.data = data;
@@ -90,5 +116,9 @@ public class ConsultaHorasLancadas {
 		this.origem = origem;
 		this.tempo = tempo;
 		this.sistema = sistema;
+		this.horaTotalOrigem = horaTotalOrigem;
+		this.origemStr = origemStr;
 	}
+
+	
 }

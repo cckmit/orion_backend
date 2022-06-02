@@ -7,10 +7,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.entity.MetasPorUsuario;
 import br.com.live.model.ConsultaDadosLancHoras;
 import br.com.live.model.ConsultaGridTarefas;
 import br.com.live.model.ConsultaHorasLancadas;
 import br.com.live.model.ConsultaHorasTarefa;
+import br.com.live.model.ReturnTarefasPrincipais;
 import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.FormataData;
 
@@ -46,6 +48,20 @@ public class TarefasCustom {
 			seqNextLancamento = 0;
 		}
 		return seqNextLancamento;
+	}
+	
+	public float findTotalHorasLancadasMes(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim) {
+		float totalHoras = 0;
+		
+		String query = " select sum(a.tempo_gasto) totalHoras from orion_adm_002 a "
+		 		+ " where a.id_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
+		 		+ " and a.data_lancamento BETWEEN ? and ? ";
+		 try {
+			 totalHoras = jdbcTemplate.queryForObject(query, Float.class, FormataData.parseStringToDate(dataInicio), FormataData.parseStringToDate(dataFim));
+			} catch (Exception e) {
+				totalHoras = 0;
+			}
+			return totalHoras;
 	}
 	
 	public List<ConsultaDadosLancHoras> findAllTarefas(int idUsuario, boolean listarAbertos) {
@@ -128,7 +144,6 @@ public class TarefasCustom {
 			gridTarefas = new ArrayList<ConsultaGridTarefas>();
 		}
 		return gridTarefas;
-		
 	}
 	
 	public List<ConsultaHorasLancadas> findLancamentoHoras(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim) {
@@ -140,4 +155,73 @@ public class TarefasCustom {
 				+ " order by a.data_lancamento desc ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHorasLancadas.class), FormataData.parseStringToDate(dataInicio), FormataData.parseStringToDate(dataFim));
 	}
+	
+	public List<ConsultaHorasLancadas> findTotalHorasOrigemLanc(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim) {
+		String query = " select decode(b.origem, 1, 'PROJETO', 2, 'CHAMADO', 3, 'PROBLEMA', 4, 'MUDANÇA') origemStr, sum(a.tempo_gasto) horaTotalOrigem from orion_adm_002 a, orion_adm_001 b "
+				+ " where a.id_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
+				+ " and a.data_lancamento BETWEEN ? and ? "
+				+ " and b.id = a.id_tarefa "
+				+ " group by b.origem ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHorasLancadas.class), FormataData.parseStringToDate(dataInicio), FormataData.parseStringToDate(dataFim));
+	}
+	
+	public MetasPorUsuario findValoresMetasHorasUsuario(int codUsuario, int tipoMeta) {
+		MetasPorUsuario dadosMetas = null;
+		
+		String query = " select a.id id, a.codigo_usuario codUsuario, a.tipo_meta tipoMeta, nvl(a.mes_1,0) mes1, nvl(a.mes_2,0) mes2, nvl(a.mes_3,0) mes3, nvl(a.mes_4,0) mes4, nvl(a.mes_5,0) mes5 , nvl(a.mes_6,0) mes6, nvl(a.mes_7,0) mes7, "
+				+ " nvl(a.mes_8,0) mes8, nvl(a.mes_9,0) mes9, nvl(a.mes_10,0) mes10, nvl(a.mes_11,0) mes11, nvl(a.mes_12,0) mes12 from orion_004 a "
+				+ " where a.codigo_usuario = " + codUsuario
+				+ " and a.tipo_meta = " + tipoMeta;
+		
+		try {
+			dadosMetas = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(MetasPorUsuario.class));
+		} catch (Exception e) {
+			dadosMetas = null;
+		}
+		return dadosMetas;
+	}
+	
+	public List<ReturnTarefasPrincipais> obterTarefasPrincipais(List<ConteudoChaveNumerica> usuarios) {
+		String query = " select h.id, decode(h.origem, 1, 'PROJETO', 2, 'CHAMADO', 3, 'PROBLEMA', 4, 'MUDANÇA') origem, h.titulo, sum(i.tempo_gasto) horas from orion_adm_001 h, orion_adm_002 i "
+				+ " where h.usuario_atribuido in ( " + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
+				+ " and h.tarefa_principal = 1 "
+				+ " and i.id_tarefa = h.id "
+				// + " and h.situacao = 0 "
+				+ " group by h.id, h.origem, h.titulo "
+				+ " order by h.id desc";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ReturnTarefasPrincipais.class));
+	}
+	
+	public float obterTotalHorasLancadas(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim) {
+		float totalHoras = 0;
+		
+		String query = " select sum(b.tempo_gasto) from orion_adm_002 b "
+				+ " where b.id_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
+				+ " and b.data_lancamento BETWEEN ? and ? ";
+		
+		try {
+			totalHoras = jdbcTemplate.queryForObject(query, Float.class, FormataData.parseStringToDate(dataInicio), FormataData.parseStringToDate(dataFim));
+		} catch (Exception e) {
+			totalHoras = 0;
+		}
+		
+		return totalHoras;
+	}
+	
+	public float obterMetaLancadoMesUsuarioByMes(List<ConteudoChaveNumerica> usuarios, String mes, int tipoMeta) {
+		float totalMeta = 0;
+		
+		String query = " select nvl(sum(a.mes_" + mes + "),0) from orion_004 a "
+				+ " where a.codigo_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
+				+ " and a.tipo_meta = " + tipoMeta;
+		
+		try {
+			totalMeta = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			totalMeta = 0;
+		}
+		
+		return totalMeta;
+	}
+	
 }

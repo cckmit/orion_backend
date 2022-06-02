@@ -40,11 +40,14 @@ public class Tarefas {
 	@Column(name="num_doc_fornecedor")
 	public int numDocFornecedor;
 	
+	@Column(name="tarefa_principal")
+	public boolean tarefaPrincipal;
+	
 	public Tarefas() {
 		
 	}
 	
-	public Tarefas(int id, int sistema, int origem, int usuarioSolicitante, int usuarioAtribuido, String titulo, String assunto, int situacao, long anexo, float tempoEstimado, Date dataPrevista, int numDocInterno, int numDocFornecedor) {
+	public Tarefas(int id, int sistema, int origem, int usuarioSolicitante, int usuarioAtribuido, String titulo, String assunto, int situacao, long anexo, float tempoEstimado, Date dataPrevista, int numDocInterno, int numDocFornecedor, boolean tarefaPrincipal) {
 		this.id = id;
 		this.sistema = sistema;
 		this.origem =origem;
@@ -58,6 +61,7 @@ public class Tarefas {
 		this.dataPrevista = dataPrevista;
 		this.numDocInterno = numDocInterno;
 		this.numDocFornecedor = numDocFornecedor;
+		this.tarefaPrincipal = tarefaPrincipal;
 		
 	}
 }

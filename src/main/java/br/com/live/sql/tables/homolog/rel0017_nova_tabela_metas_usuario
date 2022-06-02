@@ -1,0 +1,22 @@
+create table orion_004
+(id varchar2(100),
+ codigo_usuario number(4),
+ tipo_meta number(1) default 0,
+ mes_1 number(12,4) default 0,
+ mes_2 number(12,4) default 0,
+ mes_3 number(12,4) default 0,
+ mes_4 number(12,4) default 0,
+ mes_5 number(12,4) default 0,
+ mes_6 number(12,4) default 0,
+ mes_7 number(12,4) default 0,
+ mes_8 number(12,4) default 0,
+ mes_9 number(12,4) default 0,
+ mes_10 number(12,4) default 0,
+ mes_11 number(12,4) default 0,
+ mes_12 number(12,4) default 0,
+ constraint orion_004_pk primary key (id));
+ 
+comment on table orion_004_ is 'Tabela de Metas do Usuário';
+
+ALTER TABLE orion_adm_001
+ADD tarefa_principal number(1) default 0;

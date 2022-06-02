@@ -2,6 +2,7 @@ package br.com.live.body;
 
 import java.util.List;
 
+import br.com.live.entity.MetasPorUsuario;
 import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyTarefas {
@@ -20,8 +21,13 @@ public class BodyTarefas {
 	public String dataPrevista;
 	public int numDocInterno;
 	public int numDocFornecedor;
+	public boolean tarefaPrincipal;
+	public int tipoMeta;
 	
 	public List<ConteudoChaveNumerica> usuarios;
 	public String dataInicio;
 	public String dataFim;
+	
+	public int codUsuario;
+	public List<MetasPorUsuario> metas;
 }
