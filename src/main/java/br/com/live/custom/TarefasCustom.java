@@ -157,7 +157,7 @@ public class TarefasCustom {
 	}
 	
 	public List<ConsultaHorasLancadas> findTotalHorasOrigemLanc(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim) {
-		String query = " select decode(b.origem, 1, 'PROJETO', 2, 'CHAMADO', 3, 'PROBLEMA', 4, 'MUDANÇA') origemStr, sum(a.tempo_gasto) horaTotalOrigem from orion_adm_002 a, orion_adm_001 b "
+		String query = " select decode(b.origem, 1, 'PROJETO', 2, 'MELHORIA', 3, 'ATENDIMENTO', 4, 'ATIVIDADE ADM') origemStr, sum(a.tempo_gasto) horaTotalOrigem from orion_adm_002 a, orion_adm_001 b "
 				+ " where a.id_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
 				+ " and a.data_lancamento BETWEEN ? and ? "
 				+ " and b.id = a.id_tarefa "
@@ -182,7 +182,7 @@ public class TarefasCustom {
 	}
 	
 	public List<ReturnTarefasPrincipais> obterTarefasPrincipais(List<ConteudoChaveNumerica> usuarios) {
-		String query = " select h.id, decode(h.origem, 1, 'PROJETO', 2, 'CHAMADO', 3, 'PROBLEMA', 4, 'MUDANÇA') origem, h.titulo, sum(i.tempo_gasto) horas from orion_adm_001 h, orion_adm_002 i "
+		String query = " select h.id, decode(h.origem, 1, 'PROJETO', 2, 'MELHORIA', 3, 'ATENDIMENTO', 4, 'ATIVIDADE ADM') origem, h.titulo, sum(i.tempo_gasto) horas from orion_adm_001 h, orion_adm_002 i "
 				+ " where h.usuario_atribuido in ( " + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
 				+ " and h.tarefa_principal = 1 "
 				+ " and i.id_tarefa = h.id "
@@ -198,6 +198,24 @@ public class TarefasCustom {
 		String query = " select sum(b.tempo_gasto) from orion_adm_002 b "
 				+ " where b.id_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
 				+ " and b.data_lancamento BETWEEN ? and ? ";
+		
+		try {
+			totalHoras = jdbcTemplate.queryForObject(query, Float.class, FormataData.parseStringToDate(dataInicio), FormataData.parseStringToDate(dataFim));
+		} catch (Exception e) {
+			totalHoras = 0;
+		}
+		
+		return totalHoras;
+	}
+	
+	public float obterTotalHorasLancadasEfetivo(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim) {
+		float totalHoras = 0;
+		
+		String query = " select sum(b.tempo_gasto) from orion_adm_002 b, orion_adm_001 a "
+				+ " where b.id_usuario in (" + ConteudoChaveNumerica.parseValueToString(usuarios) + ") "
+				+ " and b.data_lancamento BETWEEN ? and ? "
+				+ " and a.id = b.id_tarefa "
+				+ " and a.origem in (1,2) ";
 		
 		try {
 			totalHoras = jdbcTemplate.queryForObject(query, Float.class, FormataData.parseStringToDate(dataInicio), FormataData.parseStringToDate(dataFim));

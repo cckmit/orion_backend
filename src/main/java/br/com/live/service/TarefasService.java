@@ -84,7 +84,7 @@ public class TarefasService {
 		int sequencia;
 
 		sequencia = tarefasCustom.findNextSequenciaLanc(idTarefa);
-
+		
 		dadosLancamento = new LancamentoHoras(idUsuario, idTarefa, descricao, tempoGasto,
 				FormataData.parseStringToDate(dataLancamento), sequencia);
 
@@ -190,7 +190,13 @@ public class TarefasService {
 	
 	public IndicesMetasUsuario obterMetaLancadoValoresHorasUsuario(List<ConteudoChaveNumerica> usuarios, String dataInicio, String dataFim, int tipoMeta) {
 		
-		float totalHoras = tarefasCustom.obterTotalHorasLancadas(usuarios, dataInicio, dataFim);
+		float totalHoras = 0;
+		
+		if (tipoMeta == 1) {
+			totalHoras = tarefasCustom.obterTotalHorasLancadas(usuarios, dataInicio, dataFim);
+		} else {
+			totalHoras = tarefasCustom.obterTotalHorasLancadasEfetivo(usuarios, dataInicio, dataFim);
+		}
 		
 		String[] dataInicioSplit = dataInicio.split("[-]");
 		String mes = dataInicioSplit [1];
