@@ -124,3 +124,8 @@ values (40, 'Metas do Orçamento', 'Comercial', '/metas-orcamento');
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (41, 'Relatório Horas', 'TI', '/relatorio-horas');
 
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (42, 'Pré-Requisição de Almoxarifado', 'Suprimento', '/pre-req-almox');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (43, 'Cópia de Requisição de Almoxarifado', 'Suprimento', '/copiar-req-almox');

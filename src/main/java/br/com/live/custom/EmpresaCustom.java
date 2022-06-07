@@ -45,4 +45,13 @@ public class EmpresaCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Empresa.class));
 	}
+	
+	public List<Empresa> findEmpresasAtivas() {
+		
+		String query = " select a.codigo_empresa codigo, a.nome_empresa nome, lpad(nvl(a.cgc_9,''),8,0) || lpad(nvl(a.cgc_4,''),4,0) || lpad(nvl(a.cgc_2,''),2,0) cnpjEmpresa " 
+		+ " from fatu_500 a " 
+		+ " where a.nome_empresa not like ('%(IN)%') order by a.codigo_empresa " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Empresa.class));			
+	}
 }

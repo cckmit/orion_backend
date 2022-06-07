@@ -23,6 +23,11 @@ public class DepositoController {
           this.estoqueProdutoCustom = estoqueProdutoCustom;
     }
 	
+    @RequestMapping(value = "all", method = RequestMethod.GET)
+    public List<Deposito> findAllDepositos() {
+          return estoqueProdutoCustom.findAllDepositos();
+    }    
+    
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<Deposito> findAllDepositosPecas() {
           return estoqueProdutoCustom.findAllDepositosPecas();
