@@ -7,14 +7,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.CentroCusto;
-import br.com.live.model.Deposito;
+import br.com.live.model.DivisaoProducao;
 
 @Repository
 public class SuprimentoCustom {
 	
 	private JdbcTemplate jdbcTemplate;
 
-	public EmpresaCustom(JdbcTemplate jdbcTemplate) {
+	public SuprimentoCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
@@ -27,16 +27,15 @@ public class SuprimentoCustom {
 						
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CentroCusto.class));		
 	}
-	
-	/*
-	public List<> findDivisaoProducao() {
+		
+	public List<DivisaoProducao> findDivisaoProducao() {
 		
 		String query = " select b.divisao_producao codigo, b.descricao from basi_180 b "
 		+ " where b.divisao_producao > 0 "
 		+ " order by b.divisao_producao ";
 				
-		return 
-	}*/
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DivisaoProducao.class));
+	}
 	
 	
 	

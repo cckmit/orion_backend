@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class CentroCusto {
+public class DivisaoProducao {
 	private int codigo;
 	private String descricao;
 	
@@ -15,5 +15,5 @@ public class CentroCusto {
 	}
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
-	}
+	}	
 }
