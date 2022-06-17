@@ -11,11 +11,13 @@ import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
 import br.com.live.model.ConsultaItemSugestaoCancelProducao;
+import br.com.live.model.ConsultaTag;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.MarcacaoRisco;
 import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Service
@@ -98,5 +100,27 @@ public class ProdutoService {
 	
 	public List<ConteudoChaveNumerica> findCategorias() {
 		return produtoRepository.findCategorias();
+	}
+
+	public ConsultaTag findDadosByTag(String numeroTag) {
+
+		int periodo = Integer.parseInt(numeroTag.substring(0, 4));
+		int ordem = Integer.parseInt(numeroTag.substring(4, 13));
+		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
+		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
+
+		return produtoRepository.findDadosTagByTagAndDeposito(periodo, ordem, pacote, sequencia);
+	}
+	
+	public ConsultaTag findDadosRefByProdutoAndDeposito(String nivel, String grupo, String subGrupo, String item, int deposito) {
+		return produtoRepository.findDadosTagByReferencia(deposito, nivel, grupo, subGrupo, item);
+	}
+	
+	public List<ConteudoChaveAlfaNum> findTamanhosByGrupo(String nivel, String grupo) {
+		return produtoRepository.findTamanhosByGrupo(nivel, grupo);
+	}
+	
+	public List<ConteudoChaveAlfaNum> findCoresByTamanho(String nivel, String grupo, String subGrupo) {
+		return produtoRepository.findCoresByTamanho(nivel, grupo, subGrupo);
 	}
 }
