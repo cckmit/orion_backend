@@ -15,12 +15,14 @@ import br.com.live.entity.ProdutoReferencia;
 import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.ConsultaItemSugestaoCancelProducao;
+import br.com.live.model.ConsultaTag;
 import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
 import br.com.live.service.ProdutoService;
 import br.com.live.util.CodigoGrupoItem;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
@@ -135,5 +137,25 @@ public class ProdutoController {
 	@RequestMapping(value = "/find-categorias", method = RequestMethod.GET)
 	public List<ConteudoChaveNumerica> findCategorias() {
 		return produtoService.findCategorias();
+	}
+ 
+	@RequestMapping(value = "/find-dados-by-tag/{numeroTag}", method = RequestMethod.GET)
+	public ConsultaTag findDadosTags(@PathVariable("numeroTag") String numeroTag) {
+		return produtoService.findDadosByTag(numeroTag);
+	}
+	
+	@RequestMapping(value = "/find-dados-by-referencia-and-deposito/{nivel}/{grupo}/{subGrupo}/{item}/{deposito}", method = RequestMethod.GET)
+	public ConsultaTag findDadosTags(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("subGrupo") String subGrupo, @PathVariable("item") String item, @PathVariable("deposito") int deposito) {
+		return produtoService.findDadosRefByProdutoAndDeposito(nivel, grupo, subGrupo, item, deposito);
+	}
+	
+	@RequestMapping(value = "/findTamanhosByGrupo/{nivel}/{grupo}", method = RequestMethod.GET)
+	public List<ConteudoChaveAlfaNum> findTamanhosByGrupo(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo) {
+		return produtoService.findTamanhosByGrupo(nivel, grupo);
+	}
+	
+	@RequestMapping(value = "/findCoresByTamanho/{nivel}/{grupo}/{subGrupo}", method = RequestMethod.GET)
+	public List<ConteudoChaveAlfaNum> findCoresByTamanho(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("subGrupo") String subGrupo) {
+		return produtoService.findCoresByTamanho(nivel, grupo, subGrupo);
 	}
 }
