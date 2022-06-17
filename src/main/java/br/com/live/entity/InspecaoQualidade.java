@@ -59,6 +59,12 @@ public class InspecaoQualidade {
 	
 	@Column(name = "usuario_liberacao")
 	public String usuarioLiberacao;
+		
+	@Column(name = "grupo_maq_estamp")
+	public String grupoMaqEstamparia;
+	
+	@Column(name = "subgrupo_maq_estamp")
+	public String subGrupoMaqEstamparia;
 	
 	public void atualizaQuantidadesInpecionadas(int qtdeInspecionarPcs, int qtdeRejeitadaPcs) {
 		this.qtdeInspecionadaPcs = qtdeInspecionarPcs;
@@ -221,4 +227,20 @@ public class InspecaoQualidade {
 	public void setRevisorOrigem(String revisorOrigem) {
 		this.revisorOrigem = revisorOrigem;
 	}
+
+	public String getGrupoMaqEstamparia() {
+		return grupoMaqEstamparia;
+	}
+
+	public void setGrupoMaqEstamparia(String grupoMaqEstamparia) {
+		this.grupoMaqEstamparia = grupoMaqEstamparia;
+	}
+
+	public String getSubGrupoMaqEstamparia() {
+		return subGrupoMaqEstamparia;
+	}
+
+	public void setSubGrupoMaqEstamparia(String subGrupoMaqEstamparia) {
+		this.subGrupoMaqEstamparia = subGrupoMaqEstamparia;
+	}		
 }

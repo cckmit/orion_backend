@@ -108,6 +108,19 @@ public class EngenhariaCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Maquinas.class));
 	}
 
+	public List<Maquinas> findAllMaquinasEstamparia() {
+		String query = " select a.grupo_maquina || '.' || b.subgrupo_maquina codigo, a.nome_grupo_maq || ' - ' || b.nome_sbgrupo_maq descricao"
+		+ " from mqop_010 a, mqop_020 b, mqop_030 c "
+		+ " where b.grupo_maquina = a.grupo_maquina "
+		+ " and c.maq_sub_grupo_mq = b.grupo_maquina "
+		+ " and c.maq_sub_sbgr_maq = b.subgrupo_maquina "
+		+ " and c.letra_agrup = 'E' "
+		+ " group by a.grupo_maquina, b.subgrupo_maquina, a.nome_grupo_maq, b.nome_sbgrupo_maq "
+		+ " order by a.grupo_maquina, b.subgrupo_maquina ";		
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Maquinas.class));
+	}		
+	
 	public List<OptionProduto> findAllFios() {
 		String query = " select n.basi030_nivel030 || '.' || n.basi030_referenc || '.' || n.tamanho_ref codigo, b.descr_referencia || ' ' || n.descr_tam_refer descricao from basi_020 n, basi_030 b "
 				+ " where n.basi030_nivel030 = '9' " + " and b.nivel_estrutura = n.basi030_nivel030 "

@@ -159,6 +159,8 @@ public class InspecaoQualidadeService {
 			inspecao.id = inspecaoQualidadeCustom.findNextIdInspecao();
 			inspecao.tipo = inspecaoQualidadePeca.tipo;
 			inspecao.codEstagio = inspecaoQualidadePeca.codEstagio;
+			inspecao.grupoMaqEstamparia = inspecaoQualidadePeca.grupoMaqEstamparia;
+			inspecao.subGrupoMaqEstamparia = inspecaoQualidadePeca.subGrupoMaqEstamparia;
 			inspecao.data = FormataData.parseStringToDate(data);
 			inspecao.usuario = inspecaoQualidadePeca.usuario;
 			inspecao.revisorOrigem = inspecaoQualidadePeca.revisorOrigem;
