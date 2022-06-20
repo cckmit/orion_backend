@@ -4,6 +4,7 @@ public class ConsultaTag {
     public int deposito;
     public float quantEstoque;
     public float quantEmpenhada;
+    public float quantSugerida;
     public float saldo;
     public String referencia;
     public String numeroTag;
@@ -54,8 +55,7 @@ public class ConsultaTag {
     }
     public void setSituacao(int situacao) {
         this.situacao = situacao;
-    }
-    
+    }    
     public String getNivel() {
         return nivel;
     }
@@ -80,11 +80,19 @@ public class ConsultaTag {
     public void setItem(String item) {
         this.item = item;
     }
-    public ConsultaTag() {
+    public float getQuantSugerida() {
+		return quantSugerida;
+	}
+	public void setQuantSugerida(float quantSugerida) {
+		this.quantSugerida = quantSugerida;
+	}
+	
+	public ConsultaTag() {
 
     }
+	
     public ConsultaTag(int deposito, float quantEstoque, float quantEmpenhada, float saldo, String referencia,
-            String numeroTag, int situacao, String nivel, String grupo, String subGrupo, String item) {
+            String numeroTag, int situacao, String nivel, String grupo, String subGrupo, String item, float quantSugerida) {
         this.deposito = deposito;
         this.quantEstoque = quantEstoque;
         this.quantEmpenhada = quantEmpenhada;
@@ -96,5 +104,6 @@ public class ConsultaTag {
         this.grupo = grupo;
         this.subGrupo = subGrupo;
         this.item = item;
+        this.quantSugerida = quantSugerida;
     }
 }
