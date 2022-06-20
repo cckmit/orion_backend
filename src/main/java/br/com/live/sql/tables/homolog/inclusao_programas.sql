@@ -131,4 +131,4 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (43, 'Cópia de Requisição de Almoxarifado', 'Suprimento', '/copiar-req-almox');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (44, 'Consulta de TAG', 'Suprimento', '/consulta-tag');
+values (44, 'Consulta de TAG', 'Expedição', '/consulta-tag');

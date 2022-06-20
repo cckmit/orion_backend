@@ -86,6 +86,11 @@ public class EngenhariaController {
         return engenhariaCustom.findAllMaquinas();
     }
 
+    @RequestMapping(value = "/find-maquinas-estamp", method = RequestMethod.GET)
+    public List<Maquinas> findAllMaquinasEstamparia() {                  
+        return engenhariaCustom.findAllMaquinasEstamparia();
+    }
+    
     @RequestMapping(value = "/find-all-fios", method = RequestMethod.GET)
     public List<OptionProduto> findAllFios() {                  
         return engenhariaCustom.findAllFios();
