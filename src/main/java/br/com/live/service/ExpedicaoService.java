@@ -82,25 +82,44 @@ public class ExpedicaoService {
 
 		String msgErro = "";
 		String existeEndereco = "";
+		List<DadosTagProd> listTags = new ArrayList<DadosTagProd>();
+		
+		if (numeroTag.length() < 22) {
+			int numeroCaixa = Integer.parseInt(numeroTag);
+			
+			int temProduto = enderecosCustom.validarExistePecaCaixa(numeroCaixa);
+			
+			if (temProduto == 0) {
+				msgErro = "Caixa não passou pelo novo processo de endereçamento! Será necessário endereçar peça a peça!";
+			} else {
+				listTags = enderecosCustom.obterTagsLidosCaixa(numeroCaixa);
+				
+				for (DadosTagProd dadosTag : listTags) {
+					enderecosCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote, dadosTag.sequencia, endereco);
+				}
+				enderecosCustom.limparCaixa(numeroCaixa);
+			}
+		} else {
+			int periodo = Integer.parseInt(numeroTag.substring(0, 4));
+			int ordem = Integer.parseInt(numeroTag.substring(4, 13));
+			int pacote = Integer.parseInt(numeroTag.substring(13, 18));
+			int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
 
-		int periodo = Integer.parseInt(numeroTag.substring(0, 4));
-		int ordem = Integer.parseInt(numeroTag.substring(4, 13));
-		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
-		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
+			int flagEmEstoque = enderecosCustom.validarPecaEmEstoque(periodo, ordem, pacote, sequencia);
+			existeEndereco = enderecosCustom.validarGravacaoEndereco(periodo, ordem, pacote, sequencia);
 
-		int flagEmEstoque = enderecosCustom.validarPecaEmEstoque(periodo, ordem, pacote, sequencia);
-		existeEndereco = enderecosCustom.validarGravacaoEndereco(periodo, ordem, pacote, sequencia);
+			if (flagEmEstoque == 1) {
+				msgErro = "Este TAG já foi faturado!";
+			}
 
-		if (flagEmEstoque == 1) {
-			msgErro = "Este TAG já foi faturado!";
-		}
+			if ((existeEndereco != null) && (!existeEndereco.equals("")) && (!existeEndereco.equals("ENDERECAR"))) {
+				msgErro = "Este TAG já foi endereçado!";
+			}
 
-		if ((existeEndereco != null) && (!existeEndereco.equals("")) && (!existeEndereco.equals("ENDERECAR"))) {
-			msgErro = "Este TAG já foi endereçado!";
-		}
-
-		if (msgErro.equals("")) {
-			enderecosCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco);
+			if (msgErro.equals("")) {
+				enderecosCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco);
+				enderecosCustom.limparTagLidoCaixa(numeroTag);
+			}
 		}
 
 		return msgErro;

@@ -145,6 +145,21 @@ public class ExpedicaoCustom {
 		return flagEstoque; 
 	}
 	
+	public int validarExistePecaCaixa(int numeroCaixa) {
+		int temProduto = 0;
+		
+		String query = " select nvl(max(1),0) from orion_131 v "
+				+ " where v.numero_caixa = " + numeroCaixa;
+		
+		try {
+			temProduto = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			temProduto = 0;
+		}
+				
+		return temProduto;
+	}
+	
 	public void cleanEnderecos(int deposito) {
 		String query = " delete from estq_110 "
 				+ " where estq_110.deposito = ?";
@@ -389,5 +404,32 @@ public class ExpedicaoCustom {
 		}
 		
 		return caixas;
+	}
+
+	public List<DadosTagProd> obterTagsLidosCaixa(int numeroCaixa) {
+		List<DadosTagProd> listTags = new ArrayList<DadosTagProd>();
+		
+		String query = " select v.periodo_producao periodo, v.ordem_producao ordem, v.ordem_confeccao pacote, v.sequencia from orion_131 v "
+				+ " where v.numero_caixa = " + numeroCaixa;
+		
+		try {
+			listTags = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosTagProd.class));
+		} catch (Exception e) {
+			listTags = new ArrayList<DadosTagProd>();
+		}
+		
+		return listTags;
+	}
+	
+	public void limparCaixa(int numeroCaixa) {
+		String query = " delete from orion_131 a "
+				+ " where a.numero_caixa = ? ";
+		jdbcTemplate.update(query, numeroCaixa);
+	}
+	
+	public void limparTagLidoCaixa(String numeroTag) {
+		String query = " delete from orion_131 a "
+				+ " where a.numero_tag = ? ";
+		jdbcTemplate.update(query, numeroTag);
 	}
 }
