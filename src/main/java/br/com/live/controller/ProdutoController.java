@@ -158,4 +158,9 @@ public class ProdutoController {
 	public List<ConteudoChaveAlfaNum> findCoresByTamanho(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("subGrupo") String subGrupo) {
 		return produtoService.findCoresByTamanho(nivel, grupo, subGrupo);
 	}
+	
+	@RequestMapping(value = "/find-produtos-by-leitor/{leitor}", method = RequestMethod.GET)
+	public List<Produto> findProdutosByLeitorProduto(@PathVariable("leitor") String leitor) {
+		return produtoService.findProdutosByLeitorProduto(leitor);
+	}
 }

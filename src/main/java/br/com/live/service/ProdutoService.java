@@ -143,4 +143,8 @@ public class ProdutoService {
 	public List<ConteudoChaveAlfaNum> findCoresByTamanho(String nivel, String grupo, String subGrupo) {
 		return produtoRepository.findCoresByTamanho(nivel, grupo, subGrupo);
 	}
+	
+	public List<Produto> findProdutosByLeitorProduto(String leitor) {
+		return produtoRepository.findProdutosByLeitorProduto(leitor);
+	}
 }
