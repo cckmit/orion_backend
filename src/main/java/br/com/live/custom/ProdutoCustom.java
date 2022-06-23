@@ -1155,4 +1155,30 @@ public class ProdutoCustom {
 				+ " order by a.item_estrutura desc ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
+	
+	public List<Produto> findProdutosByLeitorProduto(String leitor) {
+		List<Produto> produtos;
+		
+		leitor.replaceAll(" ", "%");
+		
+		String query = " select a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  id, "
+		+ " a.nivel_estrutura nivel, " 
+		+ " a.grupo_estrutura grupo, "
+		+ " a.subgru_estrutura sub, "
+		+ " a.item_estrutura item, "
+		+ " a.narrativa	"
+		+ " from basi_010 a " 
+		+ " where a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  || ' - ' || a.narrativa like '" + leitor + "' "
+		+ " and a.item_ativo = 0 "
+		+ " and rownum <= 500 ";
+		
+		try {
+			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			produtos = new ArrayList<Produto>();
+		}
+		
+		return produtos;
+	}	
+	
 }
