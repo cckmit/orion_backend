@@ -1106,7 +1106,7 @@ public class ProdutoCustom {
 
 		ConsultaTag dadosTag = null;
 
-		String query = " select b.nivel, b.grupo, b.subgrupo, b.item, b.estoque_tag situacao,c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from pcpc_330 b, estq_040 c "
+		String query = " select b.nivel, b.grupo, b.subgrupo, b.item, b.estoque_tag situacao,c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_sugerida quantSugerida,c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from pcpc_330 b, estq_040 c "
 				+ " where b.periodo_producao = " + periodo
 				+ " and b.ordem_producao = " + ordemProducao
 				+ " and b.ordem_confeccao = " + pacote
@@ -1126,7 +1126,7 @@ public class ProdutoCustom {
 	}
 
 	public ConsultaTag findDadosTagByReferencia(int deposito, String nivel, String grupo, String subGrupo, String item) {
-		String query = " select c.cditem_nivel99 nivel, c.cditem_grupo grupo, c.cditem_subgrupo subGrupo, c.cditem_item item, c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from estq_040 c "
+		String query = " select c.cditem_nivel99 nivel, c.cditem_grupo grupo, c.cditem_subgrupo subGrupo, c.cditem_item item, c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_sugerida quantSugerida,c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from estq_040 c "
 				+ " where c.cditem_nivel99 = '" + nivel + "' "
 				+ " and c.cditem_grupo = '" + grupo + "' "
 				+ " and c.cditem_subgrupo = '" + subGrupo + "' "
