@@ -1106,7 +1106,7 @@ public class ProdutoCustom {
 
 		ConsultaTag dadosTag = null;
 
-		String query = " select b.nivel, b.grupo, b.subgrupo, b.item, b.estoque_tag situacao,c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_sugerida quantSugerida,c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from pcpc_330 b, estq_040 c "
+		String query = " select b.nivel, b.grupo, b.subgrupo, b.item, b.estoque_tag situacao, b.endereco, c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_sugerida quantSugerida,c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from pcpc_330 b, estq_040 c "
 				+ " where b.periodo_producao = " + periodo
 				+ " and b.ordem_producao = " + ordemProducao
 				+ " and b.ordem_confeccao = " + pacote
@@ -1115,7 +1115,8 @@ public class ProdutoCustom {
 				+ " and c.cditem_grupo = b.grupo "
 				+ " and c.cditem_subgrupo = b.subgrupo "
 				+ " and c.cditem_item = b.item "
-				+ " and c.deposito = b.deposito ";
+				+ " and c.deposito = b.deposito "
+				+ " and b.estoque_tag = 1 ";
 		try {
 			dadosTag = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 		} catch (Exception e) {
@@ -1154,5 +1155,24 @@ public class ProdutoCustom {
 				+ " group by a.item_estrutura "
 				+ " order by a.item_estrutura desc ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public List<ConsultaTag> obterEnderecos(int deposito, String nivel, String grupo, String subGrupo, String item) {
+		String query = " SELECT a.endereco FROM pcpc_330 a, estq_040 b "
+				+ " WHERE a.nivel = b.cditem_nivel99 "
+				+ " AND a.grupo = b.cditem_grupo "
+				+ " AND a.subgrupo = b.cditem_subgrupo "
+				+ " AND a.item = b.cditem_item "
+				+ " AND a.deposito = b.deposito "
+				+ " and a.nivel = '" + nivel + "' "
+				+ " and a.grupo = '" + grupo + "' "
+				+ " and a.subgrupo = '" + subGrupo + "' "
+				+ " and a.item = '" + item + "' "
+				+ " and a.deposito = " + deposito
+				+ " AND a.estoque_tag = 1 "
+				+ " and a.endereco is not null "
+				+ " group by a.endereco "
+				+ " order by a.endereco ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 	}
 }

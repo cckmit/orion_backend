@@ -109,11 +109,31 @@ public class ProdutoService {
 		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
 
-		return produtoRepository.findDadosTagByTagAndDeposito(periodo, ordem, pacote, sequencia);
+		ConsultaTag dadosTag = produtoRepository.findDadosTagByTagAndDeposito(periodo, ordem, pacote, sequencia);
+		
+		if ((dadosTag.endereco == null)) {
+			dadosTag.endereco = " ";
+		}
+		
+		return dadosTag;
 	}
 	
 	public ConsultaTag findDadosRefByProdutoAndDeposito(String nivel, String grupo, String subGrupo, String item, int deposito) {
-		return produtoRepository.findDadosTagByReferencia(deposito, nivel, grupo, subGrupo, item);
+		ConsultaTag dadosTag = produtoRepository.findDadosTagByReferencia(deposito, nivel, grupo, subGrupo, item);
+		List<ConsultaTag> listEnderecos = produtoRepository.obterEnderecos(deposito, nivel, grupo, subGrupo, item);
+		
+		String enderecosConcat = "";
+		
+		for (ConsultaTag endereco : listEnderecos) {
+			if (enderecosConcat.equals("")) {
+				enderecosConcat = endereco.endereco;
+			} else {
+				enderecosConcat = enderecosConcat + ", " + endereco.endereco;
+			}
+		}
+		dadosTag.endereco = enderecosConcat;
+		
+		return dadosTag;
 	}
 	
 	public List<ConteudoChaveAlfaNum> findTamanhosByGrupo(String nivel, String grupo) {

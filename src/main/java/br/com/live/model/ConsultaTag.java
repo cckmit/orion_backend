@@ -13,6 +13,7 @@ public class ConsultaTag {
     public String grupo;
     public String subGrupo;
     public String item;
+    public String endereco;
 
     public int getDeposito() {
         return deposito;
@@ -86,24 +87,31 @@ public class ConsultaTag {
 	public void setQuantSugerida(float quantSugerida) {
 		this.quantSugerida = quantSugerida;
 	}
+	public String getEndereco() {
+		return endereco;
+	}
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
 	
 	public ConsultaTag() {
 
     }
-	
-    public ConsultaTag(int deposito, float quantEstoque, float quantEmpenhada, float saldo, String referencia,
-            String numeroTag, int situacao, String nivel, String grupo, String subGrupo, String item, float quantSugerida) {
-        this.deposito = deposito;
-        this.quantEstoque = quantEstoque;
-        this.quantEmpenhada = quantEmpenhada;
-        this.saldo = saldo;
-        this.referencia = referencia;
-        this.numeroTag = numeroTag;
-        this.situacao = situacao;
-        this.nivel = nivel;
-        this.grupo = grupo;
-        this.subGrupo = subGrupo;
-        this.item = item;
-        this.quantSugerida = quantSugerida;
-    }
+	public ConsultaTag(int deposito, float quantEstoque, float quantEmpenhada, float quantSugerida, float saldo,
+			String referencia, String numeroTag, int situacao, String nivel, String grupo, String subGrupo, String item,
+			String endereco) {
+		this.deposito = deposito;
+		this.quantEstoque = quantEstoque;
+		this.quantEmpenhada = quantEmpenhada;
+		this.quantSugerida = quantSugerida;
+		this.saldo = saldo;
+		this.referencia = referencia;
+		this.numeroTag = numeroTag;
+		this.situacao = situacao;
+		this.nivel = nivel;
+		this.grupo = grupo;
+		this.subGrupo = subGrupo;
+		this.item = item;
+		this.endereco = endereco;
+	}
 }
