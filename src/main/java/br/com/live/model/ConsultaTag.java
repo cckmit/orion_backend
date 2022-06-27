@@ -6,6 +6,7 @@ public class ConsultaTag {
     public float quantEmpenhada;
     public float quantSugerida;
     public float saldo;
+    public int quantEndereco;
     public String referencia;
     public String numeroTag;
     public int situacao;
@@ -93,13 +94,20 @@ public class ConsultaTag {
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
+	public int getQuantEndereco() {
+		return quantEndereco;
+	}
+	public void setQuantEndereco(int quantEndereco) {
+		this.quantEndereco = quantEndereco;
+	}
 	
 	public ConsultaTag() {
 
     }
+	
 	public ConsultaTag(int deposito, float quantEstoque, float quantEmpenhada, float quantSugerida, float saldo,
 			String referencia, String numeroTag, int situacao, String nivel, String grupo, String subGrupo, String item,
-			String endereco) {
+			String endereco, int quantEndereco) {
 		this.deposito = deposito;
 		this.quantEstoque = quantEstoque;
 		this.quantEmpenhada = quantEmpenhada;
@@ -113,5 +121,6 @@ public class ConsultaTag {
 		this.subGrupo = subGrupo;
 		this.item = item;
 		this.endereco = endereco;
+		this.quantEndereco = quantEndereco;
 	}
 }

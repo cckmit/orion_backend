@@ -1115,8 +1115,7 @@ public class ProdutoCustom {
 				+ " and c.cditem_grupo = b.grupo "
 				+ " and c.cditem_subgrupo = b.subgrupo "
 				+ " and c.cditem_item = b.item "
-				+ " and c.deposito = b.deposito "
-				+ " and b.estoque_tag = 1 ";
+				+ " and c.deposito = b.deposito ";
 		try {
 			dadosTag = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 		} catch (Exception e) {
@@ -1180,24 +1179,5 @@ public class ProdutoCustom {
 		}
 		
 		return produtos;
-	}
-	
-	public List<ConsultaTag> obterEnderecos(int deposito, String nivel, String grupo, String subGrupo, String item) {
-		String query = " SELECT a.endereco FROM pcpc_330 a, estq_040 b "
-				+ " WHERE a.nivel = b.cditem_nivel99 "
-				+ " AND a.grupo = b.cditem_grupo "
-				+ " AND a.subgrupo = b.cditem_subgrupo "
-				+ " AND a.item = b.cditem_item "
-				+ " AND a.deposito = b.deposito "
-				+ " and a.nivel = '" + nivel + "' "
-				+ " and a.grupo = '" + grupo + "' "
-				+ " and a.subgrupo = '" + subGrupo + "' "
-				+ " and a.item = '" + item + "' "
-				+ " and a.deposito = " + deposito
-				+ " AND a.estoque_tag = 1 "
-				+ " and a.endereco is not null "
-				+ " group by a.endereco "
-				+ " order by a.endereco ";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 	}
 }
