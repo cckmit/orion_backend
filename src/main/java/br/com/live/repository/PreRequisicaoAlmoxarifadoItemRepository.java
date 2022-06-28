@@ -19,7 +19,7 @@ public interface PreRequisicaoAlmoxarifadoItemRepository extends JpaRepository<P
 	@Query("SELECT p FROM PreRequisicaoAlmoxarifadoItem p where p.idPreRequisicao = :idPreRequisicao and p.sequencia = :sequencia")
 	PreRequisicaoAlmoxarifadoItem findByIdPreRequisicaoAndSequencia(long idPreRequisicao, int sequencia);	
 	
-	@Query("SELECT max(p.sequencia) FROM PreRequisicaoAlmoxarifadoItem p where p.idPreRequisicao = :idPreRequisicao")
+	@Query("SELECT nvl(max(p.sequencia),0) + 1 FROM PreRequisicaoAlmoxarifadoItem p where p.idPreRequisicao = :idPreRequisicao")
 	Integer findNextSequenciaByIdPreRequisicao(long idPreRequisicao);
 	
 	void deleteByIdPreRequisicao(long idPreRequisicao);

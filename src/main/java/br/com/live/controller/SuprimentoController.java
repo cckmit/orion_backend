@@ -16,6 +16,7 @@ import br.com.live.custom.SuprimentoCustom;
 import br.com.live.entity.PreRequisicaoAlmoxarifado;
 import br.com.live.entity.PreRequisicaoAlmoxarifadoItem;
 import br.com.live.model.CentroCusto;
+import br.com.live.model.ConsultaPreRequisicaoAlmoxItem;
 import br.com.live.model.DivisaoProducao;
 import br.com.live.model.Empresa;
 import br.com.live.repository.PreRequisicaoAlmoxarifadoItemRepository;
@@ -61,13 +62,18 @@ public class SuprimentoController {
 	public BodySuprimento findPreRequisicao(@PathVariable("id") long id) {
 		BodySuprimento bodyRetorno = new BodySuprimento();
 		bodyRetorno.preRequisicaoAlmoxarifado = preRequisicaoAlmoxarifadoRepository.findById(id);
-		bodyRetorno.preRequisicaoAlmoxarifadoItens = preRequisicaoAlmoxarifadoRepositoryItem.findByIdPreRequisicao(id);		
+		bodyRetorno.preRequisicaoAlmoxarifadoItens = suprimentoCustom.findItensPreRequisicaoByIdRequisicao(id);
 		return bodyRetorno; 
 	}	
-
+		
 	@RequestMapping(value = "/find-requisicao-item/{id}", method = RequestMethod.GET)	
-	public PreRequisicaoAlmoxarifadoItem findPreRequisicao(@PathVariable("id") String idPreRequisicaoItem) {
+	public PreRequisicaoAlmoxarifadoItem findPreRequisicaoItem(@PathVariable("id") String idPreRequisicaoItem) {
 		return preRequisicaoAlmoxarifadoRepositoryItem.findByIdItemPreRequisicao(idPreRequisicaoItem); 
+	}
+	
+	@RequestMapping(value = "/find-requisicao-itens/{id}", method = RequestMethod.GET)	
+	public List<ConsultaPreRequisicaoAlmoxItem> findPreRequisicaoItens(@PathVariable("id") long idPreRequisicao) {
+		return suprimentoCustom.findItensPreRequisicaoByIdRequisicao(idPreRequisicao); 
 	}	
 	
 	@RequestMapping(value = "/find-all-requisicoes", method = RequestMethod.GET)	
@@ -89,5 +95,11 @@ public class SuprimentoController {
 	public List<PreRequisicaoAlmoxarifado> deletePreRequisicaoAlmoxarifado (@PathVariable("id") long id) {
 		preRequisicaoAlmoxarifadoService.deletePreRequisicaoAlmoxarifado(id);
 		return preRequisicaoAlmoxarifadoRepository.findAll();
+	}
+	
+	@RequestMapping(value = "/requisicao-almox-item/{idPreRequisicao}/{idPreRequisicaoItem}", method = RequestMethod.DELETE)
+	public List<ConsultaPreRequisicaoAlmoxItem> deletePreRequisicaoAlmoxarifadoItem (@PathVariable("idPreRequisicao") long idPreRequisicao, @PathVariable("idPreRequisicaoItem") String idPreRequisicaoItem) {
+		preRequisicaoAlmoxarifadoRepositoryItem.deleteById(idPreRequisicaoItem);		
+		return suprimentoCustom.findItensPreRequisicaoByIdRequisicao(idPreRequisicao);
 	}
 }

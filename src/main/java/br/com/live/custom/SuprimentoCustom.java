@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.CentroCusto;
+import br.com.live.model.ConsultaPreRequisicaoAlmoxItem;
 import br.com.live.model.DivisaoProducao;
 
 @Repository
@@ -37,6 +38,19 @@ public class SuprimentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DivisaoProducao.class));
 	}
 	
-	
+	public List<ConsultaPreRequisicaoAlmoxItem> findItensPreRequisicaoByIdRequisicao(long idRequisicao) {
+		
+		String query = " select a.id, a.sequencia, a.nivel, a.grupo, a.sub, a.item, b.narrativa, a.cod_deposito deposito, c.descricao descDeposito, a.quantidade " 
+		+ " from orion_sup_002 a, basi_010 b, basi_205 c "
+		+ " where b.nivel_estrutura = a.nivel "
+		+ " and b.grupo_estrutura = a.grupo "
+		+ " and b.subgru_estrutura = a.sub "
+		+ " and b.item_estrutura = a.item "
+		+ " and c.codigo_deposito = a.cod_deposito "
+		+ " and a.id_pre_requisicao = " + idRequisicao
+		+ " order by a.sequencia ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPreRequisicaoAlmoxItem.class));
+	}
 	
 }
