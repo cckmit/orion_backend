@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import br.com.live.body.BodyFiltroProduto;
+import br.com.live.custom.ExpedicaoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.ProdutoReferencia;
 import br.com.live.entity.ProdutoReferenciaCor;
@@ -23,10 +24,12 @@ import br.com.live.util.ConteudoChaveNumerica;
 @Service
 public class ProdutoService {
 
-	private final ProdutoCustom produtoRepository;	
+	private final ProdutoCustom produtoRepository;
+	private final ExpedicaoCustom expedicaoCustom;
 
-	public ProdutoService(ProdutoCustom produtoRepository) {
-		this.produtoRepository = produtoRepository;		
+	public ProdutoService(ProdutoCustom produtoRepository, ExpedicaoCustom expedicaoCustom) {
+		this.produtoRepository = produtoRepository;
+		this.expedicaoCustom = expedicaoCustom;
 	}
 	
 	public List<Produto> findProdutosComRoteiroByNiveis(String niveis) {
@@ -109,11 +112,33 @@ public class ProdutoService {
 		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
 
-		return produtoRepository.findDadosTagByTagAndDeposito(periodo, ordem, pacote, sequencia);
+		ConsultaTag dadosTag = produtoRepository.findDadosTagByTagAndDeposito(periodo, ordem, pacote, sequencia);
+		
+		if ((dadosTag.endereco == null)) {
+			dadosTag.endereco = " ";
+		} else {
+			dadosTag.endereco = dadosTag.endereco + " (" + expedicaoCustom.obterQuantidadeEndereco(dadosTag.endereco, dadosTag.nivel, dadosTag.grupo, dadosTag.subGrupo, dadosTag.item, dadosTag.deposito) + ")";
+		}
+		
+		return dadosTag;
 	}
 	
 	public ConsultaTag findDadosRefByProdutoAndDeposito(String nivel, String grupo, String subGrupo, String item, int deposito) {
-		return produtoRepository.findDadosTagByReferencia(deposito, nivel, grupo, subGrupo, item);
+		ConsultaTag dadosTag = produtoRepository.findDadosTagByReferencia(deposito, nivel, grupo, subGrupo, item);
+		List<ConsultaTag> listEnderecos = expedicaoCustom.obterEnderecos(deposito, nivel, grupo, subGrupo, item);
+		
+		String enderecosConcat = "";
+		
+		for (ConsultaTag endereco : listEnderecos) {
+			if (enderecosConcat.equals("")) {
+				enderecosConcat = endereco.endereco + " (" + expedicaoCustom.obterQuantidadeEndereco(endereco.endereco, nivel, grupo, subGrupo, item, deposito) + ")";
+			} else {
+				enderecosConcat = enderecosConcat + ", " + endereco.endereco + " (" + expedicaoCustom.obterQuantidadeEndereco(endereco.endereco, nivel, grupo, subGrupo, item, deposito) + ")";
+			}
+		}
+		dadosTag.endereco = enderecosConcat;
+		
+		return dadosTag;
 	}
 	
 	public Produto findProduto(String nivel, String grupo, String sub, String item) {

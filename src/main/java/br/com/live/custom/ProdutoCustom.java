@@ -1106,7 +1106,7 @@ public class ProdutoCustom {
 
 		ConsultaTag dadosTag = null;
 
-		String query = " select b.nivel, b.grupo, b.subgrupo, b.item, b.estoque_tag situacao,c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_sugerida quantSugerida,c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from pcpc_330 b, estq_040 c "
+		String query = " select b.nivel, b.grupo, b.subgrupo, b.item, b.estoque_tag situacao, b.endereco, c.deposito, c.qtde_empenhada quantEmpenhada, c.qtde_sugerida quantSugerida,c.qtde_estoque_atu quantEstoque, c.qtde_estoque_atu - c.qtde_empenhada saldo from pcpc_330 b, estq_040 c "
 				+ " where b.periodo_producao = " + periodo
 				+ " and b.ordem_producao = " + ordemProducao
 				+ " and b.ordem_confeccao = " + pacote
@@ -1172,6 +1172,5 @@ public class ProdutoCustom {
 		}
 		
 		return produtos;
-	}	
-	
+	}
 }

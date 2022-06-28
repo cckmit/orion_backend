@@ -17,6 +17,7 @@ import br.com.live.entity.ParametrosMapaEndereco;
 import br.com.live.entity.ParametrosMapaEnderecoCaixa;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
+import br.com.live.model.ConsultaTag;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
@@ -146,5 +147,11 @@ public class ExpedicaoController {
     @RequestMapping(value = "/acertar-calculo-depreciacao", method = RequestMethod.GET)
     public void acertarCalculo () {
     	acertoCalculoDepreciacaoService.inserirMesesCalculo();
+    }
+    
+    @RequestMapping(value = "/find-quant-enderecos/{nivel}/{grupo}/{subGrupo}/{item}/{deposito}", method = RequestMethod.GET)
+    public List<ConsultaTag> findQuantEndereco(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("subGrupo") String subGrupo,
+    		@PathVariable("item") String item, @PathVariable("deposito") int deposito) {
+    	return enderecoService.findQuantEnderecos(nivel, grupo, subGrupo, item, deposito);
     }
 }

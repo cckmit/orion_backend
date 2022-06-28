@@ -20,6 +20,7 @@ import br.com.live.entity.Usuario;
 import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
+import br.com.live.model.ConsultaTag;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
@@ -452,5 +453,9 @@ public class ExpedicaoService {
 	
 	public List<ConsultaCaixasNoEndereco> verificarCaixasNoEndereco() {
 		return enderecosCustom.verificaCaixasNoEndereco();
+	}
+	
+	public List<ConsultaTag> findQuantEnderecos(String nivel, String grupo, String subGrupo, String item, int deposito) {
+		return enderecosCustom.obterEnderecos(deposito, nivel, grupo, subGrupo, item);
 	}
 }

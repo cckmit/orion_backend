@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
+import br.com.live.model.ConsultaTag;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
@@ -431,5 +432,37 @@ public class ExpedicaoCustom {
 		String query = " delete from orion_131 a "
 				+ " where a.numero_tag = ? ";
 		jdbcTemplate.update(query, numeroTag);
+	}
+	
+	public List<ConsultaTag> obterEnderecos(int deposito, String nivel, String grupo, String subGrupo, String item) {
+		String query = " SELECT a.endereco, count(*) quantEndereco FROM pcpc_330 a, estq_040 b "
+				+ " WHERE a.nivel = b.cditem_nivel99 "
+				+ " AND a.grupo = b.cditem_grupo "
+				+ " AND a.subgrupo = b.cditem_subgrupo "
+				+ " AND a.item = b.cditem_item "
+				+ " AND a.deposito = b.deposito "
+				+ " and a.nivel = '" + nivel + "' "
+				+ " and a.grupo = '" + grupo + "' "
+				+ " and a.subgrupo = '" + subGrupo + "' "
+				+ " and a.item = '" + item + "' "
+				+ " and a.deposito = " + deposito
+				+ " AND a.estoque_tag = 1 "
+				+ " and a.endereco is not null "
+				+ " group by a.endereco "
+				+ " order by a.endereco ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
+	}
+	
+	public int obterQuantidadeEndereco(String endereco, String nivel, String grupo, String subGrupo, String item, int deposito) {
+		String query = " select count(*) quantEndereco from pcpc_330 b "
+				+ " where b.endereco = '" + endereco + "' "
+				+ " and b.estoque_tag = 1 "
+				+ " and b.nivel = '" + nivel + "' "
+				+ " and b.grupo = '" + grupo + "' "
+				+ " and b.subGrupo = '" + subGrupo + "' "
+				+ " and b.item = '" + item + "' "
+				+ " and b.deposito = " + deposito;
+		
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 }
