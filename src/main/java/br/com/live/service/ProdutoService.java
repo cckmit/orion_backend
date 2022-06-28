@@ -116,6 +116,10 @@ public class ProdutoService {
 		return produtoRepository.findDadosTagByReferencia(deposito, nivel, grupo, subGrupo, item);
 	}
 	
+	public Produto findProduto(String nivel, String grupo, String sub, String item) {
+		return produtoRepository.findProduto(nivel, grupo, sub, item);
+	}
+	
 	public List<ConteudoChaveAlfaNum> findTamanhosByGrupo(String nivel, String grupo) {
 		return produtoRepository.findTamanhosByGrupo(nivel, grupo);
 	}
@@ -124,7 +128,7 @@ public class ProdutoService {
 		return produtoRepository.findCoresByTamanho(nivel, grupo, subGrupo);
 	}
 	
-	public List<Produto> findProdutosByLeitorProduto(String leitor) {
+	public List<ConteudoChaveAlfaNum> findProdutosByLeitorProduto(String leitor) {
 		return produtoRepository.findProdutosByLeitorProduto(leitor);
-	}
+	}	
 }

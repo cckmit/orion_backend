@@ -22,6 +22,7 @@ import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
 import br.com.live.service.ProdutoService;
 import br.com.live.util.CodigoGrupoItem;
+import br.com.live.util.CodigoProduto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -149,6 +150,15 @@ public class ProdutoController {
 		return produtoService.findDadosRefByProdutoAndDeposito(nivel, grupo, subGrupo, item, deposito);
 	}
 	
+	@RequestMapping(value = "/find-produto-to-option/{nivel}/{grupo}/{sub}/{item}", method = RequestMethod.GET)
+	public ConteudoChaveAlfaNum findProdutoToOption(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("sub") String sub, @PathVariable("item") String item) {		
+		Produto produto = produtoService.findProduto(nivel, grupo, nivel, grupo);		
+		ConteudoChaveAlfaNum option = new ConteudoChaveAlfaNum();
+		option.value = new CodigoProduto(nivel, grupo, sub, item).getCodigo();
+		option.label = new CodigoProduto(nivel, grupo, sub, item).getCodigo() + " - " + produto.getNarrativa();		
+		return option;
+	}
+		
 	@RequestMapping(value = "/findTamanhosByGrupo/{nivel}/{grupo}", method = RequestMethod.GET)
 	public List<ConteudoChaveAlfaNum> findTamanhosByGrupo(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo) {
 		return produtoService.findTamanhosByGrupo(nivel, grupo);
@@ -160,7 +170,7 @@ public class ProdutoController {
 	}
 	
 	@RequestMapping(value = "/find-produtos-by-leitor/{leitor}", method = RequestMethod.GET)
-	public List<Produto> findProdutosByLeitorProduto(@PathVariable("leitor") String leitor) {
-		return produtoService.findProdutosByLeitorProduto(leitor);
+	public List<ConteudoChaveAlfaNum> findProdutosByLeitorProduto(@PathVariable("leitor") String leitor) {		
+		return produtoService.findProdutosByLeitorProduto(leitor.toUpperCase());
 	}
 }

@@ -15,4 +15,6 @@ public interface PreRequisicaoAlmoxarifadoRepository extends JpaRepository<PreRe
 	@Query("SELECT p FROM PreRequisicaoAlmoxarifado p where p.id = :id")
 	PreRequisicaoAlmoxarifado findById(long id);	
 
+	@Query("SELECT nvl(max(p.id),0) + 1 FROM PreRequisicaoAlmoxarifado p")
+	Integer findNextId();
 }

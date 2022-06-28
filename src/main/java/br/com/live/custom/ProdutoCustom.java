@@ -1156,26 +1156,19 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
-	public List<Produto> findProdutosByLeitorProduto(String leitor) {
-		List<Produto> produtos;
-		
-		leitor.replaceAll(" ", "%");
-		
-		String query = " select a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  id, "
-		+ " a.nivel_estrutura nivel, " 
-		+ " a.grupo_estrutura grupo, "
-		+ " a.subgru_estrutura sub, "
-		+ " a.item_estrutura item, "
-		+ " a.narrativa	"
+	public List<ConteudoChaveAlfaNum> findProdutosByLeitorProduto(String leitor) {
+		List<ConteudoChaveAlfaNum> produtos;
+				
+		String query = " select a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  value, a.narrativa label "
 		+ " from basi_010 a " 
-		+ " where a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  || ' - ' || a.narrativa like '" + leitor + "' "
+		+ " where a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  || ' - ' || a.narrativa like '%" + leitor + "%' "
 		+ " and a.item_ativo = 0 "
 		+ " and rownum <= 500 ";
 		
 		try {
-			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 		} catch (Exception e) {
-			produtos = new ArrayList<Produto>();
+			produtos = new ArrayList<ConteudoChaveAlfaNum>();
 		}
 		
 		return produtos;

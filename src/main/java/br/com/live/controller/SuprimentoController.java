@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.body.BodyRequisicaoTecidos;
 import br.com.live.body.BodySuprimento;
 import br.com.live.custom.EmpresaCustom;
 import br.com.live.custom.SuprimentoCustom;
 import br.com.live.entity.PreRequisicaoAlmoxarifado;
+import br.com.live.entity.PreRequisicaoAlmoxarifadoItem;
 import br.com.live.model.CentroCusto;
 import br.com.live.model.DivisaoProducao;
 import br.com.live.model.Empresa;
+import br.com.live.repository.PreRequisicaoAlmoxarifadoItemRepository;
 import br.com.live.repository.PreRequisicaoAlmoxarifadoRepository;
 import br.com.live.service.PreRequisicaoAlmoxarifadoService;
 
@@ -29,14 +30,16 @@ public class SuprimentoController {
 	private SuprimentoCustom suprimentoCustom;
 	private EmpresaCustom empresaCustom;
 	private PreRequisicaoAlmoxarifadoService preRequisicaoAlmoxarifadoService;
-	private PreRequisicaoAlmoxarifadoRepository preRequisicaoAlmoxarifadoRepository; 
+	private PreRequisicaoAlmoxarifadoRepository preRequisicaoAlmoxarifadoRepository;
+	private PreRequisicaoAlmoxarifadoItemRepository preRequisicaoAlmoxarifadoRepositoryItem;
 	
 	@Autowired
-    public SuprimentoController (SuprimentoCustom suprimentoCustom, EmpresaCustom empresaCustom, PreRequisicaoAlmoxarifadoService preRequisicaoAlmoxarifadoService, PreRequisicaoAlmoxarifadoRepository preRequisicaoAlmoxarifadoRepository) {
+    public SuprimentoController (SuprimentoCustom suprimentoCustom, EmpresaCustom empresaCustom, PreRequisicaoAlmoxarifadoService preRequisicaoAlmoxarifadoService, PreRequisicaoAlmoxarifadoRepository preRequisicaoAlmoxarifadoRepository, PreRequisicaoAlmoxarifadoItemRepository preRequisicaoAlmoxarifadoRepositoryItem) {
 		this.suprimentoCustom = suprimentoCustom;		
 		this.empresaCustom = empresaCustom;
 		this.preRequisicaoAlmoxarifadoService = preRequisicaoAlmoxarifadoService;
 		this.preRequisicaoAlmoxarifadoRepository = preRequisicaoAlmoxarifadoRepository;
+		this.preRequisicaoAlmoxarifadoRepositoryItem = preRequisicaoAlmoxarifadoRepositoryItem;
 	}
 
 	@RequestMapping(value = "/empresas", method = RequestMethod.GET)	
@@ -54,6 +57,19 @@ public class SuprimentoController {
 		return suprimentoCustom.findDivisaoProducao();
 	}
 	
+	@RequestMapping(value = "/find-requisicao/{id}", method = RequestMethod.GET)	
+	public BodySuprimento findPreRequisicao(@PathVariable("id") long id) {
+		BodySuprimento bodyRetorno = new BodySuprimento();
+		bodyRetorno.preRequisicaoAlmoxarifado = preRequisicaoAlmoxarifadoRepository.findById(id);
+		bodyRetorno.preRequisicaoAlmoxarifadoItens = preRequisicaoAlmoxarifadoRepositoryItem.findByIdPreRequisicao(id);		
+		return bodyRetorno; 
+	}	
+
+	@RequestMapping(value = "/find-requisicao-item/{id}", method = RequestMethod.GET)	
+	public PreRequisicaoAlmoxarifadoItem findPreRequisicao(@PathVariable("id") String idPreRequisicaoItem) {
+		return preRequisicaoAlmoxarifadoRepositoryItem.findByIdItemPreRequisicao(idPreRequisicaoItem); 
+	}	
+	
 	@RequestMapping(value = "/find-all-requisicoes", method = RequestMethod.GET)	
 	public List<PreRequisicaoAlmoxarifado> findAllPreRequisicoes() {
 		return preRequisicaoAlmoxarifadoRepository.findAll();
@@ -68,9 +84,10 @@ public class SuprimentoController {
 	public void savePreRequisicaoAlmoxarifadoItem (@RequestBody BodySuprimento body) {
 		preRequisicaoAlmoxarifadoService.savePreRequisicaoAlmoxarifadoItem(body.preRequisicaoAlmoxarifadoItem.id, body.preRequisicaoAlmoxarifadoItem.idPreRequisicao, body.preRequisicaoAlmoxarifadoItem.sequencia, body.preRequisicaoAlmoxarifadoItem.nivel, body.preRequisicaoAlmoxarifadoItem.grupo, body.preRequisicaoAlmoxarifadoItem.sub, body.preRequisicaoAlmoxarifadoItem.item, body.preRequisicaoAlmoxarifadoItem.deposito, body.preRequisicaoAlmoxarifadoItem.quantidade);		
 	}
-	/*
-	@RequestMapping(value = "/salvar-pre-requisicao-almox", method = RequestMethod.DELETE)
-	public List<PreRequisicaoAlmoxarifado> deletePreRequisicaoAlmoxarifado (@PathVariable("idRequisicao") long idRequisicao) {
-		preRequisicaoAlmoxarifadoService.deletePreRequisicaoAlmoxarifado()
-	}*/
+	
+	@RequestMapping(value = "/requisicao-almox/{id}", method = RequestMethod.DELETE)
+	public List<PreRequisicaoAlmoxarifado> deletePreRequisicaoAlmoxarifado (@PathVariable("id") long id) {
+		preRequisicaoAlmoxarifadoService.deletePreRequisicaoAlmoxarifado(id);
+		return preRequisicaoAlmoxarifadoRepository.findAll();
+	}
 }

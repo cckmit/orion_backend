@@ -23,7 +23,7 @@ public class PreRequisicaoAlmoxarifado {
 	
 	public PreRequisicaoAlmoxarifado (long id, String descricao, int empresa, int divisaoProducao, int centroCusto) {
 		this.id = id; 
-		this.descricao = descricao; 
+		this.descricao = descricao.toUpperCase(); 
 		this.empresa = empresa; 
 		this.divisaoProducao = divisaoProducao;  
 		this.centroCusto = centroCusto;

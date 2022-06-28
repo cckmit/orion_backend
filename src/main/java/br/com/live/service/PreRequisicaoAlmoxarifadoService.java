@@ -1,7 +1,5 @@
 package br.com.live.service;
 
-import javax.persistence.Column;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +25,8 @@ public class PreRequisicaoAlmoxarifadoService {
 		PreRequisicaoAlmoxarifado preRequisicaoAlmoxarifado = preRequisicaoAlmoxarifadoRepository.findById(id);
 		
 		if (preRequisicaoAlmoxarifado == null) {
-			preRequisicaoAlmoxarifado = new PreRequisicaoAlmoxarifado(id, descricao, empresa, divisaoProducao, centroCusto);
+			id = preRequisicaoAlmoxarifadoRepository.findNextId();			
+			preRequisicaoAlmoxarifado = new PreRequisicaoAlmoxarifado(id, descricao.toUpperCase(), empresa, divisaoProducao, centroCusto);
 		} else {
 			preRequisicaoAlmoxarifado.descricao = descricao.toUpperCase();
 			preRequisicaoAlmoxarifado.empresa = empresa;
