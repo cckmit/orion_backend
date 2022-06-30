@@ -1,6 +1,7 @@
 package br.com.live.model;
 
 public class DivisaoProducao {
+	public static final String CAMPOS_BASE_DADOS = "divisao_producao codigo, descricao";
 	private int codigo;
 	private String descricao;
 	

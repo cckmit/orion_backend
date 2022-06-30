@@ -1159,7 +1159,8 @@ public class ProdutoCustom {
 	public List<ConteudoChaveAlfaNum> findProdutosByLeitorProduto(String leitor) {
 		List<ConteudoChaveAlfaNum> produtos;
 				
-		String query = " select a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  value, a.narrativa label "
+		String query = " select a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  value, "
+				+ " a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura || ' - ' || a.narrativa label "
 		+ " from basi_010 a " 
 		+ " where a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura  || ' - ' || a.narrativa like '%" + leitor + "%' "
 		+ " and a.item_ativo = 0 "

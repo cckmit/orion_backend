@@ -1,8 +1,11 @@
 package br.com.live.model;
 
 public class CentroCusto {
+	
+	public static final String CAMPOS_BASE_DADOS = "centro_custo codigo, descricao, local_entrega empresa";
 	private int codigo;
 	private String descricao;
+	private int empresa;
 	
 	public int getCodigo() {
 		return codigo;
@@ -15,5 +18,11 @@ public class CentroCusto {
 	}
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+	public int getEmpresa() {
+		return empresa;
+	}
+	public void setEmpresa(int empresa) {
+		this.empresa = empresa;
 	}
 }
