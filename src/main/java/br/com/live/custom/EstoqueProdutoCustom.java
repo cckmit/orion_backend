@@ -137,6 +137,17 @@ public class EstoqueProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));
 	}
 	
+	public List<Deposito> findAllDepositosPermiteReqAlmox() {
+		
+		String query = " select b.codigo_deposito id, b.descricao from basi_205 b " 
+		+ " where b.descricao not like '(IN)%' " 
+		+ " and b.considera_tmrp = 1 "
+		+ " and b.aceita_req_almox = 1 "
+		+ " order by b.codigo_deposito " ; 
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));
+	}
+	
 	public List<Deposito> findAllDepositosPecas() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "

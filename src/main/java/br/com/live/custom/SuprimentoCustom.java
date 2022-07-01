@@ -180,7 +180,7 @@ public class SuprimentoCustom {
 	public void gravarCapaRequisicao(int numeroRequisicao, int centroCusto, String observacao, String requisitante, int empresa, int divisaoProducao) {
 				
 		String query = "insert into supr_510 (NUM_REQUISICAO, DATA_EMISSAO, CENTRO_CUSTO, OBSERVACAO, REQUISITANTE, CODIGO_EMPRESA, DIVISAO_PRODUCAO, ORDEM_PRODUCAO) "
-		+ " values (?, to_char(sydate), ?, ?, ?, ?, ?, 999999999) ";
+		+ " values (?, to_char(sysdate), ?, ?, ?, ?, ?, 999999999) ";
 		
 		jdbcTemplate.update(query, numeroRequisicao, centroCusto, observacao, requisitante, empresa, divisaoProducao);
 	}

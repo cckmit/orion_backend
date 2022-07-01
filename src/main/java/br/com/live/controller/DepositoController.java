@@ -25,16 +25,21 @@ public class DepositoController {
 	
     @RequestMapping(value = "all", method = RequestMethod.GET)
     public List<Deposito> findAllDepositos() {
-          return estoqueProdutoCustom.findAllDepositos();
+        return estoqueProdutoCustom.findAllDepositos();
     }    
+    
+    @RequestMapping(value = "permite-req-almox", method = RequestMethod.GET)
+    public List<Deposito> findAllDepositosPermiteReqAlmox() {
+    	return estoqueProdutoCustom.findAllDepositosPermiteReqAlmox();
+    }
     
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<Deposito> findAllDepositosPecas() {
-          return estoqueProdutoCustom.findAllDepositosPecas();
+        return estoqueProdutoCustom.findAllDepositosPecas();
     }
     
     @RequestMapping(value = "tecidos", method = RequestMethod.GET)
     public List<Deposito> findAllDepositosTecidos() {
-          return estoqueProdutoCustom.findAllDepositosTecidos();
+        return estoqueProdutoCustom.findAllDepositosTecidos();
     }	
 }

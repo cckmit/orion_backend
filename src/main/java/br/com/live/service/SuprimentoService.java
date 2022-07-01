@@ -24,7 +24,7 @@ public class SuprimentoService {
 	private String validarRequisicaoAlmox(RequisicaoAlmoxarifado requisicao) {		
 		String msgErro = "";		
 		CentroCusto centroCusto = suprimentoCustom.findCentroCustoByCodigo(requisicao.getCentroCusto());
-		if (requisicao.getEmpresa() != centroCusto.getEmpresa()) msgErro = "Empresa do centro de custo é diferente da empresa da requisição! Empresa Req: " + requisicao.getEmpresa() + " - Empresa CC: " + centroCusto.getEmpresa();				
+		if (requisicao.getEmpresa() != centroCusto.getEmpresa()) msgErro = "Empresa do centro de custo é diferente da empresa da requisição! Empresa da Requisição: " + requisicao.getEmpresa() + " - Empresa Centro Custo: " + centroCusto.getEmpresa();				
 		if (!suprimentoCustom.isTemPermissaoRequisitarParaCentroCusto(requisicao.getCentroCusto(), requisicao.getRequisitante())) msgErro = "Requisitante não tem permissão para gerar requisição para esse centro de custo! Requisitante: " + requisicao.getRequisitante();		
 		return msgErro;
 	}
