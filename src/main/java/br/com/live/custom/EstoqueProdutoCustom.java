@@ -140,8 +140,7 @@ public class EstoqueProdutoCustom {
 	public List<Deposito> findAllDepositosPermiteReqAlmox() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b " 
-		+ " where b.descricao not like '(IN)%' " 
-		+ " and b.considera_tmrp = 1 "
+		+ " where b.descricao not like '(IN)%' " 		
 		+ " and b.aceita_req_almox = 1 "
 		+ " order by b.codigo_deposito " ; 
 
