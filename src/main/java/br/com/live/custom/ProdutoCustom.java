@@ -502,7 +502,7 @@ public class ProdutoCustom {
 
 		return (encontrou == 1);
 	}
-
+	
 	public boolean isProdutoComprado(String grupo) {
 
 		int encontrou = 0;
@@ -1082,7 +1082,7 @@ public class ProdutoCustom {
 			encontrou = 0;
 		}
 
-		return !(encontrou == 1);
+		return (encontrou == 1);
 	}
 
 	public List<ConteudoChaveNumerica> findCategorias() {

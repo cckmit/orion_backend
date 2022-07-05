@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.live.custom.ProdutoCustom;
 import br.com.live.custom.SuprimentoCustom;
 import br.com.live.model.CentroCusto;
 import br.com.live.model.RequisicaoAlmoxarifado;
@@ -16,9 +17,11 @@ import br.com.live.util.StatusGravacao;
 public class SuprimentoService {
 
 	private final SuprimentoCustom suprimentoCustom; 
+	private final ProdutoCustom produtoCustom; 
 	
-	public SuprimentoService(SuprimentoCustom suprimentoCustom) {
+	public SuprimentoService(SuprimentoCustom suprimentoCustom, ProdutoCustom produtoCustom) {
 		this.suprimentoCustom = suprimentoCustom;
+		this.produtoCustom = produtoCustom;
 	}
 	
 	private String validarRequisicaoAlmox(RequisicaoAlmoxarifado requisicao) {		
@@ -26,6 +29,12 @@ public class SuprimentoService {
 		CentroCusto centroCusto = suprimentoCustom.findCentroCustoByCodigo(requisicao.getCentroCusto());
 		if (requisicao.getEmpresa() != centroCusto.getEmpresa()) msgErro = "Empresa do centro de custo é diferente da empresa da requisição! Empresa da Requisição: " + requisicao.getEmpresa() + " - Empresa Centro Custo: " + centroCusto.getEmpresa();				
 		if (!suprimentoCustom.isTemPermissaoRequisitarParaCentroCusto(requisicao.getCentroCusto(), requisicao.getRequisitante())) msgErro = "Requisitante não tem permissão para gerar requisição para esse centro de custo! Requisitante: " + requisicao.getRequisitante();		
+		
+		for (RequisicaoAlmoxarifadoItem item : requisicao.getListaItens()) {
+			if (!produtoCustom.existeProduto(item.getNivel(), item.getGrupo(), item.getSub(), item.getItem()))
+				msgErro = "Material não cadastrado! Material: Seq. " + item.getSequencia() + " -> " + item.getNivel() + "." + item.getGrupo() + "." + item.getSub() + "." + item.getItem() + " - " + item.getNarrativa();
+		}
+		
 		return msgErro;
 	}
 	
@@ -40,10 +49,11 @@ public class SuprimentoService {
 			suprimentoCustom.gravarCapaRequisicao(novaRequisicao, requisicao.getCentroCusto(), requisicao.getObservacao(), requisicao.getRequisitante(), requisicao.getEmpresa(), requisicao.getDivisaoProducao());
 			
 			for (RequisicaoAlmoxarifadoItem item : requisicao.getListaItens()) {
-				int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);			
-				suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, item.getDeposito(), requisicao.getCentroCusto(), item.getNarrativa());
-			}	
-			
+				if (item.getQuantidade() > 0) { 
+					int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);			
+					suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, item.getDeposito(), requisicao.getCentroCusto(), item.getNarrativa());
+				}
+			}				
 			status = new StatusGravacao(true, "Gerada a requisição: " + novaRequisicao);
 		} catch (Exception e) {				
 			status = new StatusGravacao(false, e.getMessage());
