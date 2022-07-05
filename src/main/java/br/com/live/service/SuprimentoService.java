@@ -43,14 +43,17 @@ public class SuprimentoService {
 		String msg = validarRequisicaoAlmox(requisicao);
 		if (!msg.isEmpty()) return new StatusGravacao(false, msg);
 			
-		try {	
+		try {				
+			int depositoPadrao = suprimentoCustom.getDepositoPadraoReqComercial(requisicao.getEmpresa());
 			int codTransacaoAlmox = suprimentoCustom.findTransacaoAlmoxarifado(requisicao.getEmpresa());
 			int novaRequisicao = suprimentoCustom.findNextNumeroRequisicao();		
 			suprimentoCustom.gravarCapaRequisicao(novaRequisicao, requisicao.getCentroCusto(), requisicao.getObservacao(), requisicao.getRequisitante(), requisicao.getEmpresa(), requisicao.getDivisaoProducao());
 			
 			for (RequisicaoAlmoxarifadoItem item : requisicao.getListaItens()) {
 				if (item.getQuantidade() > 0) { 
-					int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);			
+					int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);												
+					int deposito = item.getDeposito();
+					if (deposito == 0) deposito = depositoPadrao; 					
 					suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, item.getDeposito(), requisicao.getCentroCusto(), item.getNarrativa());
 				}
 			}				

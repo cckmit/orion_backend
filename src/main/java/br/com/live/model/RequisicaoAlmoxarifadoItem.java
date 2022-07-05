@@ -8,6 +8,7 @@ public class RequisicaoAlmoxarifadoItem {
 	private String sub;
 	private String item;
 	private String narrativa;
+	private String unidade;
 	private int deposito;	
 	private String descDeposito;
 	private double quantidade;
@@ -71,5 +72,11 @@ public class RequisicaoAlmoxarifadoItem {
 	}
 	public void setQuantidade(double quantidade) {
 		this.quantidade = quantidade;
+	}
+	public String getUnidade() {
+		return unidade;
+	}
+	public void setUnidade(String unidade) {
+		this.unidade = unidade;
 	}	
 }

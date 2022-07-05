@@ -26,6 +26,14 @@ public class SuprimentoCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
+	// Regra temporária para o comercial
+	public int getDepositoPadraoReqComercial(int empresa) {
+	    if (empresa == 1) return 190;
+	    else if (empresa == 100) return 491;
+	    else if (empresa == 500) return 599;        
+	    return 0;
+	}
+	
 	public List<CentroCusto> findCentroCusto() {
 				
 		String query = " select " + CentroCusto.CAMPOS_BASE_DADOS + " from basi_185 "
@@ -102,13 +110,15 @@ public class SuprimentoCustom {
 	
 	public List<ConsultaPreRequisicaoAlmoxItem> findItensPreRequisicaoByIdRequisicao(long idPreRequisicao) {
 		
-		String query = " select a.id, a.sequencia, a.nivel, a.grupo, a.sub, a.item, b.narrativa, a.cod_deposito deposito, c.descricao descDeposito, a.quantidade " 
-		+ " from orion_sup_002 a, basi_010 b, basi_205 c "
+		String query = " select a.id, a.sequencia, a.nivel, a.grupo, a.sub, a.item, b.narrativa, a.cod_deposito deposito, d.descricao descDeposito, a.quantidade, c.unidade_medida unidade " 
+		+ " from orion_sup_002 a, basi_010 b, basi_030 c, basi_205 d "
 		+ " where b.nivel_estrutura = a.nivel "
 		+ " and b.grupo_estrutura = a.grupo "
 		+ " and b.subgru_estrutura = a.sub "
-		+ " and b.item_estrutura = a.item "
-		+ " and c.codigo_deposito = a.cod_deposito "
+		+ " and b.item_estrutura = a.item "		
+		+ " and c.nivel_estrutura = a.nivel "
+		+ " and c.referencia = a.grupo "				
+		+ " and d.codigo_deposito = a.cod_deposito "
 		+ " and a.id_pre_requisicao = " + idPreRequisicao
 		+ " order by a.sequencia ";
 
@@ -117,13 +127,15 @@ public class SuprimentoCustom {
 
 	public List<RequisicaoAlmoxarifadoItem> findItensRequisicaoByIdRequisicao(long idRequisicao) {
 		
-		String query = " select a.num_requisicao || '-' || a.sequencia  id, a.sequencia, a.nivel, a.grupo, a.subgrupo sub, a.item, b.narrativa, a.deposito deposito, c.descricao descDeposito, a.qtde_requisitada quantidade "
-		+ " from supr_520 a, basi_010 b, basi_205 c "
+		String query = " select a.num_requisicao || '-' || a.sequencia  id, a.sequencia, a.nivel, a.grupo, a.subgrupo sub, a.item, b.narrativa, a.deposito deposito, d.descricao descDeposito, a.qtde_requisitada quantidade, c.unidade_medida unidade "
+		+ " from supr_520 a, basi_010 b, basi_030 c, basi_205 d "
 		+ " where b.nivel_estrutura = a.nivel "
 		+ " and b.grupo_estrutura = a.grupo "
 		+ " and b.subgru_estrutura = a.subgrupo "
 		+ " and b.item_estrutura = a.item "
-		+ " and c.codigo_deposito = a.deposito "
+		+ " and c.nivel_estrutura = a.nivel "
+		+ " and c.referencia = a.grupo "				
+		+ " and d.codigo_deposito = a.deposito "
 		+ " and a.num_requisicao = " + idRequisicao 
 		+ " order by a.sequencia ";
 
