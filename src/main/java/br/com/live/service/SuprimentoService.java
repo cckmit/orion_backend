@@ -41,6 +41,7 @@ public class SuprimentoService {
 	public StatusGravacao efetuarCopiaRequisicaoAlmox(RequisicaoAlmoxarifado requisicao) {
 		StatusGravacao status;
 		String msg = validarRequisicaoAlmox(requisicao);
+		String msgComplementar = "";
 		if (!msg.isEmpty()) return new StatusGravacao(false, msg);
 			
 		try {				
@@ -53,11 +54,13 @@ public class SuprimentoService {
 				if (item.getQuantidade() > 0) { 
 					int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);												
 					int deposito = item.getDeposito();
-					if (deposito == 0) deposito = depositoPadrao; 					
-					suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, item.getDeposito(), requisicao.getCentroCusto(), item.getNarrativa());
+					if (deposito == 0) deposito = depositoPadrao;
+					suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, deposito, requisicao.getCentroCusto(), item.getNarrativa());					
+				} else {
+					msgComplementar = " (Atenção! Alguns itens não foram gravados na requisição por estarem com quantidades zeradas.)";
 				}
 			}				
-			status = new StatusGravacao(true, "Gerada a requisição: " + novaRequisicao);
+			status = new StatusGravacao(true, "Gerada a requisição: " + novaRequisicao + msgComplementar);
 		} catch (Exception e) {				
 			status = new StatusGravacao(false, e.getMessage());
 		}						
