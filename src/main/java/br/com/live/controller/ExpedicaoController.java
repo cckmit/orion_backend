@@ -154,4 +154,14 @@ public class ExpedicaoController {
     		@PathVariable("item") String item, @PathVariable("deposito") int deposito) {
     	return enderecoService.findQuantEnderecos(nivel, grupo, subGrupo, item, deposito);
     }
+    
+    @RequestMapping(value = "/find-produto-by-tag/{numeroTag}", method = RequestMethod.GET)
+    public String findProdutoByTag (@PathVariable("numeroTag") String numeroTag) {
+    	return enderecoService.findProdutoByTag(numeroTag);
+    }
+    
+    @RequestMapping(value = "/find-historico-by-tag/{numeroTag}", method = RequestMethod.GET)
+    public List<ConsultaTag> findHistoricoByTag (@PathVariable("numeroTag") String numeroTag) {
+    	return enderecoService.findHistoricoTag(numeroTag);
+    }
 }

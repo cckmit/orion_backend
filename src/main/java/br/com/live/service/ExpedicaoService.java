@@ -458,4 +458,22 @@ public class ExpedicaoService {
 	public List<ConsultaTag> findQuantEnderecos(String nivel, String grupo, String subGrupo, String item, int deposito) {
 		return enderecosCustom.obterEnderecos(deposito, nivel, grupo, subGrupo, item);
 	}
+	
+	public String findProdutoByTag(String numeroTag) {
+		int periodo = Integer.parseInt(numeroTag.substring(0, 4));
+		int ordem = Integer.parseInt(numeroTag.substring(4, 13));
+		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
+		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
+		
+		return enderecosCustom.findProdutoByTag(periodo, ordem, pacote, sequencia);
+	}
+	
+	public List<ConsultaTag> findHistoricoTag(String numeroTag) {
+		int periodo = Integer.parseInt(numeroTag.substring(0, 4));
+		int ordem = Integer.parseInt(numeroTag.substring(4, 13));
+		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
+		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
+		
+		return enderecosCustom.findHistoricoTag(periodo, ordem, pacote, sequencia);
+	}
 }
