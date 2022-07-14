@@ -26,6 +26,8 @@ public class ConsultaTag {
     public String hora;
     public String produto;
     public int id;
+    public int pedido;
+    public String programa;
 
     public int getDeposito() {
         return deposito;
@@ -165,6 +167,18 @@ public class ConsultaTag {
 	public void setId(int id) {
 		this.id = id;
 	}
+	public int getPedido() {
+		return pedido;
+	}
+	public void setPedido(int pedido) {
+		this.pedido = pedido;
+	}
+	public String getPrograma() {
+		return programa;
+	}
+	public void setPrograma(String programa) {
+		this.programa = programa;
+	}
 	
 	public ConsultaTag() {
 
@@ -173,7 +187,7 @@ public class ConsultaTag {
 	public ConsultaTag(int deposito, float quantEstoque, float quantEmpenhada, float quantSugerida, float saldo,
 			int quantEndereco, String referencia, String numeroTag, int situacao, String nivel, String grupo,
 			String subGrupo, String item, String endereco, int transacao, String descTransacao, String descDeposito,
-			String usuario, String coletor, Date data, String hora, String produto, int id) {
+			String usuario, String coletor, Date data, String hora, String produto, int id, int pedido, String programa) {
 		this.deposito = deposito;
 		this.quantEstoque = quantEstoque;
 		this.quantEmpenhada = quantEmpenhada;
@@ -197,5 +211,7 @@ public class ConsultaTag {
 		this.hora = hora;
 		this.produto = produto;
 		this.id = id;
+		this.pedido = pedido;
+		this.programa = programa;
 	}
 }

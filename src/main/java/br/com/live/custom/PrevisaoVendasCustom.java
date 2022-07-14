@@ -58,6 +58,30 @@ public class PrevisaoVendasCustom {
 
 		return previsoes;
 	}
+	
+	public List<ConsultaPrevisaoVendasItem> findPrevisaoSemColecao(long idPrevisaoVendas) {
+		List<ConsultaPrevisaoVendasItem> previsoesItens;
+		
+		String query = " select rownum id, a.grupo, a.item, b.descr_referencia descricao, b.linha_produto || '-' || c.descricao_linha linha, "
+				+ " d.artigo || '-' || d.descr_artigo artigo, a.valor_sell_in valorSellIn, a.valor_sell_out valorSellOut, "
+				+ " a.grupo_base grupoBase, a.item_base itemBase, '' descricaoBase, a.qtde_vendida_base qtdeVendidaBase, a.percentual_aplicar percAplicar, "
+				+ " a.qtde_previsao qtdePrevisao, (select min(m.grupo_embarque) embarque from basi_590 m "
+				+ "                                      where m.grupo = a.grupo "
+				+ "                                      and m.item = a.item) embarque"
+				+ " from orion_041 a, basi_030 b, basi_120 c, basi_290 d "
+				+ " where a.id_previsao_vendas = " + idPrevisaoVendas
+				+ " and a.grupo = b.referencia "
+				+ " and b.nivel_estrutura = '1' "
+				+ " and c.linha_produto = b.linha_produto "
+				+ " and b.artigo = d.artigo ";
+		try {
+			previsoesItens = jdbcTemplate.query(query,
+					BeanPropertyRowMapper.newInstance(ConsultaPrevisaoVendasItem.class));
+		} catch (Exception e) {
+			previsoesItens = new ArrayList<ConsultaPrevisaoVendasItem>();
+		}
+		return previsoesItens;
+	}
 
 	public List<ConsultaPrevisaoVendasItem> findPrevisaoVendasItensByIdPrevisaoVendaColecao(long idPrevisaoVendas,
 			int colecao) {
@@ -68,7 +92,8 @@ public class PrevisaoVendasCustom {
 		+ " itens_previsao.artigo, itens_previsao.linha, itens_previsao.embarque, "
 	    + " itens_previsao.valorSellIn, itens_previsao.valorSellOut, "
 	    + " itens_previsao.grupoBase, itens_previsao.itemBase, itens_previsao.descricaoBase, "
-	    + " itens_previsao.percAplicar, itens_previsao.qtdeVendidaBase, itens_previsao.qtdePrevisao "   
+	    + " itens_previsao.percAplicar, itens_pr"
+	    + "evisao.qtdeVendidaBase, itens_previsao.qtdePrevisao "   
 	    + " from ( "
 		+ " select produtos.grupo, produtos.item, produtos.descricao, "
         + " artigo.artigo || '-' || max(artigo.descr_artigo) artigo, "
@@ -83,7 +108,9 @@ public class PrevisaoVendasCustom {
         + " nvl(previsao_item.qtde_vendida_base,0) qtdeVendidaBase, " 
         + " nvl(previsao_item.qtde_previsao,0) qtdePrevisao "
         + " from (select a.referencia grupo, b.item_estrutura item, max(a.descr_referencia) || ' - ' || max(b.descricao_15) descricao, " 
-        + " a.linha_produto linha, a.artigo, max(b.codigo_cliente) embarque, 1 "
+        + " a.linha_produto linha, a.artigo, (select min(m.grupo_embarque) embarque from basi_590 m "
+        + " where m.grupo = a.referencia "
+        + " and m.item = b.item_estrutura) embarque, 1 "
         + " from basi_030 a, basi_010 b  "
         + " where a.nivel_estrutura = '1' " 
         + " and a.colecao = " + colecao
@@ -93,7 +120,9 @@ public class PrevisaoVendasCustom {
         + " group by a.referencia, a.linha_produto, a.artigo, b.item_estrutura "  
         + " union "
         + " select a.referencia grupo, b.item_estrutura item, max(a.descr_referencia) || ' - ' || max(b.descricao_15) descricao, " 
-        + " a.linha_produto linha, a.artigo, max(b.codigo_cliente) embarque, 2 " 
+        + " a.linha_produto linha, a.artigo, (select min(m.grupo_embarque) embarque from basi_590 m "
+        + " where m.grupo = a.referencia "
+        + " and m.item = b.item_estrutura) embarque , 2 " 
         + " from basi_030 a, basi_010 b "
         + " where a.nivel_estrutura = '1' " 
         + " and a.colecao in (select c.colecao from basi_140 c " 
@@ -128,6 +157,7 @@ public class PrevisaoVendasCustom {
 					BeanPropertyRowMapper.newInstance(ConsultaPrevisaoVendasItem.class));
 		} catch (Exception e) {
 			previsoesItens = new ArrayList<ConsultaPrevisaoVendasItem>();
+			System.out.println(e.getMessage());
 		}
 
 		return previsoesItens;

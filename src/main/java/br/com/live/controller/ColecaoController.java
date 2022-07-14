@@ -43,5 +43,10 @@ public class ColecaoController {
     public List<Colecao> findAllColecoesWithPermanentes() {
           return produtoRepository.findAllColecoesWithPermanentes();
     }
+    
+    @RequestMapping(value = "/colecoes-union", method = RequestMethod.GET)
+    public List<Colecao> findColecoesWithSemColecao() {
+          return produtoRepository.findColecoesWithSemColecao();
+    }
 }
 
