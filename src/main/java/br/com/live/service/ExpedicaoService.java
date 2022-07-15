@@ -17,10 +17,12 @@ import br.com.live.entity.CapacidadeArtigoEndereco;
 import br.com.live.entity.ParametrosMapaEndereco;
 import br.com.live.entity.ParametrosMapaEnderecoCaixa;
 import br.com.live.entity.Usuario;
+import br.com.live.entity.VariacaoPesoArtigo;
 import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.ConsultaTag;
+import br.com.live.model.ConsultaVariacaoArtigo;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
@@ -33,6 +35,7 @@ import br.com.live.repository.CapacidadeArtigoEnderecoRepository;
 import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
 import br.com.live.repository.UsuarioRepository;
+import br.com.live.repository.VariacaoPesoArtigoRepository;
 import br.com.live.util.ConverteLista;
 
 @Service
@@ -44,19 +47,22 @@ public class ExpedicaoService {
 	private final AberturaCaixasRepository aberturaCaixasRepository;
 	private final UsuarioRepository usuarioRepository;
 	private final ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
+	private final VariacaoPesoArtigoRepository variacaoPesoArtigoRepository;
 	
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
 
 	public ExpedicaoService(ExpedicaoCustom enderecosCustom, ParametrosMapaEndRepository parametrosMapaEndRepository,
 			CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository,
-			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository, ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository) {
+			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository, ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
+			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository) {
 		this.enderecosCustom = enderecosCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
 		this.aberturaCaixasRepository = aberturaCaixasRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
+		this.variacaoPesoArtigoRepository = variacaoPesoArtigoRepository;
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -475,5 +481,31 @@ public class ExpedicaoService {
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
 		
 		return enderecosCustom.findHistoricoTag(periodo, ordem, pacote, sequencia);
+	}
+	
+	public void deleteVariacaoById(long idVariacao) {
+		variacaoPesoArtigoRepository.deleteById(idVariacao);
+	}
+	
+	public List<ConsultaVariacaoArtigo> findVaricaoArtigo() {
+		return enderecosCustom.findVariacaoArtigo();
+	}
+	
+	public void saveVariacaoPesoArtigo(List<ConsultaVariacaoArtigo> variacoes) {
+		
+		VariacaoPesoArtigo variacaoSave;
+		
+		for (ConsultaVariacaoArtigo variacao : variacoes) {
+			if (variacao.variacao > 0) {
+				variacaoSave = variacaoPesoArtigoRepository.findByIdVariacao(variacao.id);
+				
+				if (variacaoSave != null) {
+					variacaoSave.variacao = variacao.variacao;
+				} else {
+					variacaoSave = new VariacaoPesoArtigo(variacao.id, variacao.variacao);
+				}
+				variacaoPesoArtigoRepository.save(variacaoSave);
+			}
+		}
 	}
 }

@@ -11,6 +11,7 @@ import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.ConsultaTag;
+import br.com.live.model.ConsultaVariacaoArtigo;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
@@ -126,6 +127,19 @@ public class ExpedicaoCustom {
 			endereco = "";
 		}
 		return endereco;
+	}
+	
+	public int findNextIdVariacao() {
+		int nextId = 0;
+		
+		String query = " select nvl((max(b.id)),0)+1 from orion_exp_001 b ";
+		
+		try {
+			nextId = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			nextId = 0;
+		}
+		return nextId;
 	}
 	
 	public int validarPecaEmEstoque(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
@@ -487,5 +501,12 @@ public class ExpedicaoCustom {
 				+ " and a.sequencia = " + sequencia
 				+ " group by a.nivel, a.grupo, a.subgrupo, a.item ";
 		return jdbcTemplate.queryForObject(query, String.class);
+	}
+	
+	public List<ConsultaVariacaoArtigo> findVariacaoArtigo() {
+		String query = " select a.artigo id, a.descr_artigo descricao, nvl(b.variacao, 0) variacao from basi_290 a, orion_exp_001 b "
+				+ " where b.id (+)= a.artigo "
+				+ " order by a.artigo asc ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaVariacaoArtigo.class));
 	}
 }
