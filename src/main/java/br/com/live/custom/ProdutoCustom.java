@@ -1186,4 +1186,47 @@ public class ProdutoCustom {
 		
 		return produtos;
 	}
+	
+	public void atualizaComplemento(String nivel, String grupo, String subGrupo, String item, int complemento) {
+		String query = " update basi_010 "
+				+ " set complemento = ? "
+				+ " where basi_010.nivel_estrutura = ? "
+				+ " and basi_010.grupo_estrutura = ? "
+				+ " and basi_010.subgru_estrutura = ? "
+				+ " and basi_010.item_estrutura = ? ";
+		
+		jdbcTemplate.update(query, Integer.toString(complemento), nivel, grupo, subGrupo, item);
+	}
+	
+	public void atualizaComplementoByColecao(int colecao, int complemento) {
+		String query = " update basi_010 y "
+				+ " set complemento = ? "
+				+ " where exists ( select 1 from (select v.nivel, v.grupo, v.sub, v.item, v.colecao from orion_vi_item_colecao v) itens "
+				+ "                      where itens.colecao = ? "
+				+ "                      and itens.nivel = '1' "
+				+ "                      and itens.grupo = y.grupo_estrutura "
+				+ "                      and itens.sub = y.subgru_estrutura "
+				+ "                      and itens.item = y.item_estrutura "
+				+ "                      )";
+		jdbcTemplate.update(query, Integer.toString(complemento), colecao);
+	}
+	
+	public int findTotalProdutosInColecao(int colecao) {
+		int totalProdutos = 0;
+		
+		String query = " select count(*) from basi_010 y "
+				+ " where exists ( select 1 from (select v.nivel, v.grupo, v.sub, v.item, v.colecao from orion_vi_item_colecao v) itens "
+				+ "                      where itens.colecao = " + colecao
+				+ "                      and itens.nivel = '1' "
+				+ "                      and itens.grupo = y.grupo_estrutura "
+				+ "                      and itens.sub = y.subgru_estrutura "
+				+ "                      and itens.item = y.item_estrutura "
+				+ "                      ) ";
+		try {
+			totalProdutos = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			totalProdutos = 0;
+		}
+		return totalProdutos;
+	}
 }

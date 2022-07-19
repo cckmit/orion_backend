@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyAtualizaComplemento;
 import br.com.live.body.BodyFiltroProduto;
 import br.com.live.entity.ProdutoReferencia;
 import br.com.live.entity.ProdutoReferenciaCor;
@@ -164,4 +165,15 @@ public class ProdutoController {
 	public List<ConteudoChaveAlfaNum> findProdutosByLeitorProduto(@PathVariable("leitor") String leitor) {		
 		return produtoService.findProdutosByLeitorProduto(leitor.toUpperCase());
 	}
+	
+	@RequestMapping(value = "/atualiza-completo-by-arquivo", method = RequestMethod.POST)
+	public int atualizaComplementoByArquivo(@RequestBody BodyAtualizaComplemento body) {
+		return produtoService.atualizaComplemento(body.refsAlterar, body.complemento);
+	}
+	
+	@RequestMapping(value = "/atualiza-completo-by-colecao", method = RequestMethod.POST)
+	public int atualizaComplementoByColecao(@RequestBody BodyAtualizaComplemento body) {
+		return produtoService.atualizaComplementoByColecao(body.colecao, body.complemento);
+	}
+	
 }
