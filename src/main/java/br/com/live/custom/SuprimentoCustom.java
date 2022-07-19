@@ -199,8 +199,8 @@ public class SuprimentoCustom {
 		
 	public void gravarItemRequisicao(int numeroRequisicao, int sequencia, String nivel, String grupo, String sub, String item, double qtdeRequisitada, int codTransacao, int deposito, int centroCustoDestino, String narrativaProduto) {
 	
-		String query = " insert into supr_520 (NUM_REQUISICAO, SEQUENCIA, NIVEL, GRUPO, SUBGRUPO, ITEM, QTDE_REQUISITADA, COD_TRANSACAO, DEPOSITO, CCUSTO_DESTINO, NARRATIVA_PROD, DATA_REQUIS, HORA_REQUIS) "
-		+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+		String query = " insert into supr_520 (NUM_REQUISICAO, SEQUENCIA, NIVEL, GRUPO, SUBGRUPO, ITEM, QTDE_REQUISITADA, COD_TRANSACAO, DEPOSITO, CCUSTO_DESTINO, NARRATIVA_PROD, SITUACAO, DATA_REQUIS, HORA_REQUIS) "
+		+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, "
 		+ "	to_date(sysdate), " 
 		+ "	to_date('16/11/1989 ' || to_CHAR(sysdate,'hh24:mi'),'dd/mm/yyyy hh24:mi')) ";
 		
