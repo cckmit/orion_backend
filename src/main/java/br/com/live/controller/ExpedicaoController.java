@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyExpedicao;
+import br.com.live.body.BodyVariacaoPesoArtigo;
 import br.com.live.custom.ExpedicaoCustom;
 import br.com.live.entity.CaixasParaEnderecar;
 import br.com.live.entity.ParametrosMapaEndereco;
@@ -18,6 +19,7 @@ import br.com.live.entity.ParametrosMapaEnderecoCaixa;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.ConsultaTag;
+import br.com.live.model.ConsultaVariacaoArtigo;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
@@ -154,4 +156,31 @@ public class ExpedicaoController {
     		@PathVariable("item") String item, @PathVariable("deposito") int deposito) {
     	return enderecoService.findQuantEnderecos(nivel, grupo, subGrupo, item, deposito);
     }
+    
+    @RequestMapping(value = "/find-produto-by-tag/{numeroTag}", method = RequestMethod.GET)
+    public String findProdutoByTag (@PathVariable("numeroTag") String numeroTag) {
+    	return enderecoService.findProdutoByTag(numeroTag);
+    }
+    
+    @RequestMapping(value = "/find-historico-by-tag/{numeroTag}", method = RequestMethod.GET)
+    public List<ConsultaTag> findHistoricoByTag (@PathVariable("numeroTag") String numeroTag) {
+    	return enderecoService.findHistoricoTag(numeroTag);
+    }
+    
+    @RequestMapping(value = "/delete-variacao/{idVariacao}", method = RequestMethod.DELETE)
+    public void deleteVariacaoById (@PathVariable("idVariacao") long idVariacao) {
+    	enderecoService.deleteVariacaoById(idVariacao);
+    }
+    
+    @RequestMapping(value = "/find-variacao-artigo", method = RequestMethod.GET)
+    public List<ConsultaVariacaoArtigo> findVariacaoArtigo() {
+    	return enderecoService.findVaricaoArtigo();
+    }
+    
+    @RequestMapping(value = "/save-variacao", method = RequestMethod.POST)
+    public List<ConsultaVariacaoArtigo> saveVariacao(@RequestBody BodyVariacaoPesoArtigo body) {
+    	enderecoService.saveVariacaoPesoArtigo(body.variacoes);
+    	return enderecoService.findVaricaoArtigo();
+    }
+    
 }

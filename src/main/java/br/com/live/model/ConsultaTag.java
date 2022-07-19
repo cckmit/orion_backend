@@ -1,7 +1,9 @@
 package br.com.live.model;
 
+import java.util.Date;
+
 public class ConsultaTag {
-    public int deposito;
+	public int deposito;
     public float quantEstoque;
     public float quantEmpenhada;
     public float quantSugerida;
@@ -15,6 +17,17 @@ public class ConsultaTag {
     public String subGrupo;
     public String item;
     public String endereco;
+    public int transacao;
+    public String descTransacao;
+    public String descDeposito;
+    public String usuario;
+    public String coletor;
+    public Date data;
+    public String hora;
+    public String produto;
+    public int id;
+    public int pedido;
+    public String programa;
 
     public int getDeposito() {
         return deposito;
@@ -99,6 +112,72 @@ public class ConsultaTag {
 	}
 	public void setQuantEndereco(int quantEndereco) {
 		this.quantEndereco = quantEndereco;
+	}	
+	public int getTransacao() {
+		return transacao;
+	}
+	public void setTransacao(int transacao) {
+		this.transacao = transacao;
+	}
+	public String getDescTransacao() {
+		return descTransacao;
+	}
+	public void setDescTransacao(String descTransacao) {
+		this.descTransacao = descTransacao;
+	}
+	public String getDescDeposito() {
+		return descDeposito;
+	}
+	public void setDescDeposito(String descDeposito) {
+		this.descDeposito = descDeposito;
+	}
+	public String getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+	public String getColetor() {
+		return coletor;
+	}
+	public void setColetor(String coletor) {
+		this.coletor = coletor;
+	}
+	public Date getData() {
+		return data;
+	}
+	public void setData(Date data) {
+		this.data = data;
+	}
+	public String getHora() {
+		return hora;
+	}
+	public void setHora(String hora) {
+		this.hora = hora;
+	}
+	public String getProduto() {
+		return produto;
+	}
+	public void setProduto(String produto) {
+		this.produto = produto;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public int getPedido() {
+		return pedido;
+	}
+	public void setPedido(int pedido) {
+		this.pedido = pedido;
+	}
+	public String getPrograma() {
+		return programa;
+	}
+	public void setPrograma(String programa) {
+		this.programa = programa;
 	}
 	
 	public ConsultaTag() {
@@ -106,13 +185,15 @@ public class ConsultaTag {
     }
 	
 	public ConsultaTag(int deposito, float quantEstoque, float quantEmpenhada, float quantSugerida, float saldo,
-			String referencia, String numeroTag, int situacao, String nivel, String grupo, String subGrupo, String item,
-			String endereco, int quantEndereco) {
+			int quantEndereco, String referencia, String numeroTag, int situacao, String nivel, String grupo,
+			String subGrupo, String item, String endereco, int transacao, String descTransacao, String descDeposito,
+			String usuario, String coletor, Date data, String hora, String produto, int id, int pedido, String programa) {
 		this.deposito = deposito;
 		this.quantEstoque = quantEstoque;
 		this.quantEmpenhada = quantEmpenhada;
 		this.quantSugerida = quantSugerida;
 		this.saldo = saldo;
+		this.quantEndereco = quantEndereco;
 		this.referencia = referencia;
 		this.numeroTag = numeroTag;
 		this.situacao = situacao;
@@ -121,6 +202,16 @@ public class ConsultaTag {
 		this.subGrupo = subGrupo;
 		this.item = item;
 		this.endereco = endereco;
-		this.quantEndereco = quantEndereco;
+		this.transacao = transacao;
+		this.descTransacao = descTransacao;
+		this.descDeposito = descDeposito;
+		this.usuario = usuario;
+		this.coletor = coletor;
+		this.data = data;
+		this.hora = hora;
+		this.produto = produto;
+		this.id = id;
+		this.pedido = pedido;
+		this.programa = programa;
 	}
 }

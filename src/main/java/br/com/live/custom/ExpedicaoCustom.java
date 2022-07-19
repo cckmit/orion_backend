@@ -11,6 +11,7 @@ import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.ConsultaTag;
+import br.com.live.model.ConsultaVariacaoArtigo;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
@@ -126,6 +127,19 @@ public class ExpedicaoCustom {
 			endereco = "";
 		}
 		return endereco;
+	}
+	
+	public int findNextIdVariacao() {
+		int nextId = 0;
+		
+		String query = " select nvl((max(b.id)),0)+1 from orion_exp_001 b ";
+		
+		try {
+			nextId = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			nextId = 0;
+		}
+		return nextId;
 	}
 	
 	public int validarPecaEmEstoque(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
@@ -464,5 +478,35 @@ public class ExpedicaoCustom {
 				+ " and b.deposito = " + deposito;
 		
 		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
+	public List<ConsultaTag> findHistoricoTag(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
+		String query = " select rownum id, trunc(b.data_operacao) data, to_char(b.data_operacao, 'HH:MI') hora, b.data_operacao, b.transacao_ent_new transacao, c.descricao descTransacao, b.deposito_new deposito, d.descricao descDeposito, "
+				+ " b.usuario_estq usuario, b.usuario_exped coletor, b.pedido_venda_new pedido, b.estoque_tag_new situacao, b.nome_programa programa from pcpc_330_log b, estq_005 c, basi_205 d "
+				+ " where b.periodo_producao = " + periodo
+				+ " and b.ordem_producao = " + ordemProducao
+				+ " and b.ordem_confeccao = " + ordemConfeccao
+				+ " and b.sequencia = " + sequencia
+				+ " and c.codigo_transacao = b.transacao_ent_new "
+				+ " and d.codigo_deposito = b.deposito_new "
+				+ " order by b.data_operacao desc ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
+	}
+	
+	public String findProdutoByTag(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
+		String query = " select a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item produto from pcpc_330_log a "
+				+ " where a.periodo_producao = " + periodo
+				+ " and a.ordem_producao = " + ordemProducao
+				+ " and a.ordem_confeccao = " + ordemConfeccao
+				+ " and a.sequencia = " + sequencia
+				+ " group by a.nivel, a.grupo, a.subgrupo, a.item ";
+		return jdbcTemplate.queryForObject(query, String.class);
+	}
+	
+	public List<ConsultaVariacaoArtigo> findVariacaoArtigo() {
+		String query = " select a.artigo id, a.descr_artigo descricao, nvl(b.variacao, 0) variacao from basi_290 a, orion_exp_001 b "
+				+ " where b.id (+)= a.artigo "
+				+ " order by a.artigo asc ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaVariacaoArtigo.class));
 	}
 }

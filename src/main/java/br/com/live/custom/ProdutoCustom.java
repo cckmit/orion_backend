@@ -332,6 +332,18 @@ public class ProdutoCustom {
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
 	}
+	
+	public List<Colecao> findColecoesWithSemColecao() {
+		String query = " select colecao.id, colecao.descricao from "
+				+ " ( "
+				+ " select 0 id, 'SEM COLEÇÃO' descricao from dual "
+				+ " union all "
+				+ " select b.colecao id, b.descr_colecao descricao from basi_140 b "
+				+ " where b.descricao_espanhol not like '%COLECAO ANTIGA%') colecao "
+				+ " order by colecao.id ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Colecao.class));
+	}
 
 	public List<Colecao> findAllColecoesPermanentes() {
 

@@ -1,5 +1,6 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -51,7 +52,15 @@ public class PrevisaoVendasService {
 
 	public List<ConsultaPrevisaoVendasItem> findPrevisaoVendasItensByIdPrevisaoVendaColecao(long idPrevisaoVendas,
 			int colecao) {
-		return previsaoVendasCustom.findPrevisaoVendasItensByIdPrevisaoVendaColecao(idPrevisaoVendas, colecao);
+		
+		List<ConsultaPrevisaoVendasItem> previsaoVendasItem = new ArrayList<ConsultaPrevisaoVendasItem>();
+		
+		if (colecao != 0) {
+			previsaoVendasItem = previsaoVendasCustom.findPrevisaoVendasItensByIdPrevisaoVendaColecao(idPrevisaoVendas, colecao);
+		} else {
+			previsaoVendasItem = previsaoVendasCustom.findPrevisaoSemColecao(idPrevisaoVendas);
+		}
+		return previsaoVendasItem;
 	}
 
 	public List<ConsultaPrevisaoVendasItemTam> findPrevisaoVendasItemTamByIdPrevisaoVendasGrupoItem(
