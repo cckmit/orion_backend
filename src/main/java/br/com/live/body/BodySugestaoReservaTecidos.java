@@ -30,4 +30,5 @@ public class BodySugestaoReservaTecidos {
 	public List<OrdemProducao> listaOrdensComLembrete;
 	public List<OrdemProducao> listaOrdensComObservacao;
 	public List<SugestaoReservaTecidosReservados> listaTecidosReservar;
+	public int regraReserva;
 }

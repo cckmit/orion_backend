@@ -33,11 +33,13 @@ import br.com.live.util.CodigoProduto;
 @Transactional
 public class SugestaoReservaTecidoPorOrdensService {
 
+	private static final int RESERVAR_QTDE_RECALCULADA = 0; 
 	private final SugestaoReservaTecidoCustom sugestaoReservaTecidoCustom;
 	private final ProdutoCustom produtoCustom;
 	private final EstoqueProdutoCustom estoqueProdutoCustom;
 	private final OrdemProducaoCustom ordemProducaoCustom;	
 
+	private int regraReserva;
 	private String depositosTecidos;
 	private int percentualMinimoAtender;
 	private List<OrdemProducao> listaPriorizadaOrdens;
@@ -60,13 +62,14 @@ public class SugestaoReservaTecidoPorOrdensService {
 		this.ordemProducaoCustom = ordemProducaoCustom;		
 	}
 
-	public SugestaoReservaTecidos calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, int percentualMinimoAtender) {		
+	public SugestaoReservaTecidos calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, int percentualMinimoAtender, int regraReserva) {		
 		// System.out.println("calcularSugestaoReserva");		
 
 		System.out.println("Inicio do calculo de sugestao de reserva de tecidos");
 		
 		iniciarListasAuxiliares();
 		
+		this.regraReserva = regraReserva;
 		this.depositosTecidos = depositos;
 		this.percentualMinimoAtender = percentualMinimoAtender;
 		
@@ -75,8 +78,11 @@ public class SugestaoReservaTecidoPorOrdensService {
 		listaPriorizadaOrdens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, isSomenteFlat, isDiretoCostura); 
 		
 		System.out.println("calcularNecessidades");		
+		
 		calcularNecessidades();
+		
 		System.out.println("reservarTecidos");
+		
 		reservarTecidos();	
 		
 		SugestaoReservaTecidos sugestao = obterDadosSugestaoReserva();
@@ -479,7 +485,12 @@ public class SugestaoReservaTecidoPorOrdensService {
 		//System.out.println("reservaTecidoParaOrdem");
 		
 		double qtdeReservada = 0;
-		double qtdeReservar = tecidoOrdem.getQtdeNecessidadeCalculada();
+		double qtdeReservar = 0; 
+		
+		if (this.regraReserva == RESERVAR_QTDE_RECALCULADA)
+			qtdeReservar = tecidoOrdem.getQtdeNecessidadeCalculada();
+		else 
+			qtdeReservar = tecidoOrdem.getQtdeNecessidade();		
 		
 		//System.out.println("ORDEM DE PRODUCAO: " + tecidoOrdem.getIdOrdem());
 		
