@@ -11,6 +11,7 @@ import br.com.live.entity.ProdutoReferencia;
 import br.com.live.entity.ProdutoReferenciaCor;
 import br.com.live.model.Alternativa;
 import br.com.live.model.AlternativaRoteiroPadrao;
+import br.com.live.model.AtualizaComplementoRef;
 import br.com.live.model.ConsultaItemSugestaoCancelProducao;
 import br.com.live.model.ConsultaTag;
 import br.com.live.model.CorProduto;
@@ -155,5 +156,24 @@ public class ProdutoService {
 	
 	public List<ConteudoChaveAlfaNum> findProdutosByLeitorProduto(String leitor) {
 		return produtoRepository.findProdutosByLeitorProduto(leitor);
-	}	
+	}
+	
+	public int atualizaComplemento(List<AtualizaComplementoRef> refsAlterar, int complemento) {
+		int quantRefsAlteradas = 0;
+		
+		for (AtualizaComplementoRef dadosRef : refsAlterar ) {
+			if (!dadosRef.referencia.equals("")) {
+				
+				quantRefsAlteradas++;
+				
+				produtoRepository.atualizaComplemento("1", dadosRef.referencia, dadosRef.tamanho, dadosRef.cor, complemento);
+			}
+		}
+		return quantRefsAlteradas;
+	}
+	
+	public int atualizaComplementoByColecao(int colecao, int complemento) {
+		produtoRepository.atualizaComplementoByColecao(colecao, complemento);
+		return produtoRepository.findTotalProdutosInColecao(colecao);
+	}
 }

@@ -137,4 +137,7 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (45, 'Histórico do TAG', 'Expedição', '/historico-tag');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (46, 'Variação de Peso do Artigo', 'Expedição', '/variacao-peso');
+values (46, 'Variação de Peso por Artigo', 'Expedição', '/variacao-peso');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (47, 'Atualizar Complemento', 'Engenharia', '/atualiza-comp');
