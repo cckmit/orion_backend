@@ -480,6 +480,12 @@ public class SugestaoReservaTecidoPorOrdensService {
 			}			
 		}		
 	}	
+		
+	private double getQtdeReservar(double qtdeOriginal, double qtdeRecalculada) {
+		if (this.regraReserva == RESERVAR_QTDE_RECALCULADA) return qtdeRecalculada;
+		if (qtdeRecalculada > 0) return qtdeRecalculada;
+		return qtdeOriginal;
+	}	
 	
 	private void reservaTecidoParaOrdem(SugestaoReservaPorOrdemSortimento tecidoOrdem) {			
 		//System.out.println("reservaTecidoParaOrdem");
@@ -487,10 +493,8 @@ public class SugestaoReservaTecidoPorOrdensService {
 		double qtdeReservada = 0;
 		double qtdeReservar = 0; 
 		
-		if (this.regraReserva == RESERVAR_QTDE_RECALCULADA)
-			qtdeReservar = tecidoOrdem.getQtdeNecessidadeCalculada();
-		else 
-			qtdeReservar = tecidoOrdem.getQtdeNecessidade();		
+		// TODO - DEVE RESERVAR SÓ O QUE CONSEGUE ATENDER
+		qtdeReservar = getQtdeReservar(tecidoOrdem.getQtdeNecessidade(), tecidoOrdem.getQtdeNecessidadeCalculada());
 		
 		//System.out.println("ORDEM DE PRODUCAO: " + tecidoOrdem.getIdOrdem());
 		
@@ -508,14 +512,16 @@ public class SugestaoReservaTecidoPorOrdensService {
 		double qtdeSaldoTotalTecido = qtdeSaldoTecido + qtdeSaldoSubstitutos; 		
 		tecidoOrdem.setQtdeDisponivelTecidoSubstituto(qtdeSaldoSubstitutos);
 		
-		// System.out.println("qtdeSaldoTotalTecido: " + qtdeSaldoTotalTecido + "  - qtdeReservar: " + qtdeReservar);
+		// System.out.println("qtdeSaldoTotalTecido: " + qtdeSaldoTotalTecido + "  - qtdeReservar: " + qtdeReservar);		
+		// if (tecidoOrdem.getIdOrdem() == 343831) System.out.println("qtdeSaldoTotalTecido: " + qtdeSaldoTotalTecido + "  - qtdeReservar: " + qtdeReservar); 
+				
+		tecidoOrdem.setQtdeDisponivel(qtdeSaldoTecido);
 		
 		if (qtdeSaldoTotalTecido > 0) {		
 			if (qtdeReservar < qtdeSaldoTotalTecido)
 				qtdeReservada = qtdeReservar;
 			else qtdeReservada = qtdeSaldoTotalTecido;
-
-			tecidoOrdem.setQtdeDisponivel(qtdeSaldoTecido);
+			
 			tecidoOrdem.setQtdeSugerido(tecidoOrdem.getQtdeSugerido() + qtdeReservada);
 			
 			// System.out.println("qtdeReservada: " + qtdeReservada);
