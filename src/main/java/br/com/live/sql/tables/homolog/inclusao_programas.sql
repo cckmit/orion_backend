@@ -141,3 +141,10 @@ values (46, 'Variação de Peso por Artigo', 'Expedição', '/variacao-peso');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (47, 'Atualizar Complemento', 'Engenharia', '/atualiza-comp');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (48, 'Observação por Op/Pacote', 'Confecção', '/observacao-ordem');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (49, 'Tipo de Observação', 'Confecção', '/tipo-observacao');
+

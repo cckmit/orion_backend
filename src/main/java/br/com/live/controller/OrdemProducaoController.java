@@ -17,6 +17,7 @@ import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.service.OrdemProducaoService;
+import br.com.live.util.ConteudoChaveAlfaNum;
 
 @RestController
 @CrossOrigin
@@ -55,5 +56,10 @@ public class OrdemProducaoController {
 	public List<ConsultaPreOrdemProducao> excluir(@RequestBody BodyOrdemProducao body) {
 		return ordemProducaoService.excluirOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
+	
+    @RequestMapping(value = "/find-tags-async-select/{estagio}/{searchVar}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllTagsAsync(@PathVariable("estagio") int estagio, @PathVariable("searchVar") String searchVar) {
+          return ordemProducaoService.findAllOrdensAsync(estagio, searchVar);
+    }
 	
 }

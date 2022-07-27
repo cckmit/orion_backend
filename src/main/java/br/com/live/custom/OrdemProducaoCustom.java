@@ -13,6 +13,7 @@ import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoItem;
+import br.com.live.util.ConteudoChaveAlfaNum;
 
 @Repository
 public class OrdemProducaoCustom {
@@ -881,5 +882,18 @@ public class OrdemProducaoCustom {
 	public void gravarObservacao(int ordemProducao, String observacao) {		
 		String query = " update pcpc_020 a set a.observacao = ? where a.ordem_producao = ? ";
 		jdbcTemplate.update(query, observacao, ordemProducao);		
+	}
+	
+	public List<ConteudoChaveAlfaNum> findOrdensForAsync(int estagio, String searchVar) { 
+		String query = " select a.ordem_producao value, a.ordem_producao label "
+				+ " from pcpc_040 a, pcpc_020 b "
+				+ " where b.ordem_producao = a.ordem_producao "
+				+ " and b.cod_cancelamento = 0 "
+				+ " and a.qtde_a_produzir_pacote > 0 "
+				+ " and a.codigo_estagio = " + estagio
+				+ " and a.ordem_producao like '%" + searchVar + "%' "
+				+ " and rownum <= 100 "
+				+ " group by a.ordem_producao ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 }

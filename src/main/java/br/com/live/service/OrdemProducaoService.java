@@ -15,6 +15,7 @@ import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.repository.PlanoMestreRepository;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Service
@@ -100,5 +101,9 @@ public class OrdemProducaoService {
 	
 	public void gravarObservacao(int ordemProducao, String observacao) {
 		ordemProducaoCustom.gravarObservacao(ordemProducao, observacao);
+	}
+	
+	public List<ConteudoChaveAlfaNum> findAllOrdensAsync(int estagio, String searchVar) {
+		return ordemProducaoCustom.findOrdensForAsync(estagio, searchVar);
 	}
 }
