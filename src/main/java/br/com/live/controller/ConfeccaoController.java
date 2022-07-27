@@ -49,7 +49,7 @@ public class ConfeccaoController {
 
 	@RequestMapping(value = "/save-tipo-observacao", method = RequestMethod.POST)
 	public TipoObservacao saveTipoObservacao(@RequestBody BodyTipoObservacao body) {
-		return confeccaoService.saveTipoObservacao(body.id, body.descricao, body.necessitaLiberacao);
+		return confeccaoService.saveTipoObservacao(body.id, body.descricao);
 	}
 
 	@RequestMapping(value = "/delete-by-id/{id}", method = RequestMethod.DELETE)

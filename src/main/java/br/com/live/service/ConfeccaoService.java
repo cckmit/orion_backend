@@ -27,15 +27,14 @@ public class ConfeccaoService {
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
 	}
 
-	public TipoObservacao saveTipoObservacao(long id, String descricao, int necessitaLiberacao) {
+	public TipoObservacao saveTipoObservacao(long id, String descricao) {
 
 		TipoObservacao dadosId = tipoObservacaoRepository.findByIdLong(id);
 
 		if (dadosId != null) {
 			dadosId.descricao = descricao;
-			dadosId.necessitaLiberacao = necessitaLiberacao;
 		} else {
-			dadosId = new TipoObservacao(confeccaoCustom.findNextIdOrdem(), descricao, necessitaLiberacao);
+			dadosId = new TipoObservacao(confeccaoCustom.findNextIdOrdem(), descricao);
 		}
 		tipoObservacaoRepository.save(dadosId);
 

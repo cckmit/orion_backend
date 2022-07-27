@@ -14,7 +14,6 @@ comment on table orion_cfc_220 is 'Tabela de Observaçao por Ordem/Pacote';
 create table orion_cfc_221 (
   id number(6), 
   descricao varchar2(200),
-  necessita_liberacao number(1),
   constraint orion_cfc_221_pk primary key (id)
 );
 
