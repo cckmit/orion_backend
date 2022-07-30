@@ -148,3 +148,6 @@ values (48, 'Observação por Op/Pacote', 'Confecção', '/observacao-ordem');
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (49, 'Tipo de Observação', 'Confecção', '/tipo-observacao');
 
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (50, 'Importar Tabela de Preço', 'Comercial', '/importar-tab-preco');
+

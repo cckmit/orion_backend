@@ -23,7 +23,6 @@ import br.com.live.model.Produto;
 import br.com.live.model.Roteiro;
 import br.com.live.service.ProdutoService;
 import br.com.live.util.CodigoGrupoItem;
-import br.com.live.util.CodigoProduto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
