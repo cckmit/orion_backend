@@ -483,7 +483,7 @@ public class SugestaoReservaTecidoPorOrdensService {
 		
 	private double getQtdeReservar(double qtdeOriginal, double qtdeRecalculada) {
 		if (this.regraReserva == RESERVAR_QTDE_RECALCULADA) return qtdeRecalculada;
-		if (qtdeRecalculada > 0) return qtdeRecalculada;
+		//if (qtdeRecalculada > 0) return qtdeRecalculada;
 		return qtdeOriginal;
 	}	
 	
