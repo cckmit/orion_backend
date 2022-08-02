@@ -8,12 +8,14 @@ import br.com.live.custom.EngenhariaCustom;
 import br.com.live.entity.ConsumoFiosLinhas;
 import br.com.live.entity.ConsumoMetragemFio;
 import br.com.live.entity.MarcasFio;
+import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.TipoPonto;
 import br.com.live.entity.TipoPontoFio;
 import br.com.live.entity.TiposFio;
 import br.com.live.repository.ConsumoFiosLinhasRepository;
 import br.com.live.repository.ConsumoMetragemFioRepository;
 import br.com.live.repository.MarcasFioRepository;
+import br.com.live.repository.MicromovimentosRepository;
 import br.com.live.repository.TiposFioRepository;
 import br.com.live.repository.TiposPontoFioRepository;
 import br.com.live.repository.TiposPontoRepository;
@@ -29,11 +31,12 @@ public class EngenhariaService {
 	private final TiposPontoRepository tiposPontoRepository;
 	private final ConsumoFiosLinhasRepository consumoFiosLinhasRepository;
 	private final ConsumoMetragemFioRepository consumoMetragemFioRepository;
+	private final MicromovimentosRepository micromovimentosRepository;
 
 	public EngenhariaService(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository,
 			EngenhariaCustom engenhariaCustom, TiposPontoFioRepository tiposPontoFioRepository,
 			TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository,
-			ConsumoMetragemFioRepository consumoMetragemFioRepository) {
+			ConsumoMetragemFioRepository consumoMetragemFioRepository, MicromovimentosRepository micromovimentosRepository) {
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaCustom = engenhariaCustom;
@@ -41,6 +44,7 @@ public class EngenhariaService {
 		this.tiposPontoRepository = tiposPontoRepository;
 		this.consumoFiosLinhasRepository = consumoFiosLinhasRepository;
 		this.consumoMetragemFioRepository = consumoMetragemFioRepository;
+		this.micromovimentosRepository = micromovimentosRepository;
 	}
 
 	public MarcasFio saveMarcas(int id, String descricao) {
@@ -238,5 +242,46 @@ public class EngenhariaService {
 	public void deleteConsumoFiosLinhas(String idComposto) {
 		engenhariaCustom.deleteConsumoByIdReferencia(idComposto);
 		consumoFiosLinhasRepository.deleteById(idComposto);
+	}
+	
+	public void deleteMicroMovimentoById(String idMicroMov) {
+		micromovimentosRepository.deleteById(idMicroMov);
+	}
+	
+	public List<Micromovimentos> findAllMicromovimentos() {
+		return micromovimentosRepository.findAll();
+	}
+	
+	public Micromovimentos findMicroMovimentoById(String idMicroMov) {
+		return micromovimentosRepository.findByIdMicroMov(idMicroMov);
+	}
+	
+	public String saveMicromovimentos(String codigo, String descricao, float tempo, float interferencia, boolean editMode) {
+		String msgErro = "";
+		
+		Micromovimentos dadosMicromov = micromovimentosRepository.findByIdMicroMov(codigo.toUpperCase());
+		
+		if ((editMode == false) && (dadosMicromov != null)) {
+			msgErro = " Código " + codigo + " já existente!";
+			return msgErro;
+		}
+		
+		if (dadosMicromov == null) {
+			dadosMicromov = new Micromovimentos(codigo.toUpperCase(), descricao, tempo, interferencia);
+		} else {
+			dadosMicromov.descricao = descricao;
+			dadosMicromov.tempo = tempo;
+			dadosMicromov.interferencia = interferencia;
+		}
+		micromovimentosRepository.save(dadosMicromov);
+		
+		return msgErro;
+	}
+	
+	public void importarMicromovimentos(List<Micromovimentos> tabImportar) {
+		for (Micromovimentos micromov : tabImportar) {
+			Micromovimentos newMicromov = new Micromovimentos(micromov.id, micromov.descricao, micromov.tempo, micromov.interferencia);
+			micromovimentosRepository.save(newMicromov);
+		}
 	}
 }

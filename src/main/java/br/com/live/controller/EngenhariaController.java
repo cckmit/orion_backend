@@ -15,6 +15,7 @@ import br.com.live.custom.EngenhariaCustom;
 import br.com.live.entity.ConsumoFiosLinhas;
 import br.com.live.entity.ConsumoMetragemFio;
 import br.com.live.entity.MarcasFio;
+import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.TipoPonto;
 import br.com.live.entity.TipoPontoFio;
 import br.com.live.entity.TiposFio;
@@ -184,6 +185,16 @@ public class EngenhariaController {
     public List<ConsultaConsumoMetragem> ConsultaFiosCalculados(@PathVariable("idComposto") String idComposto) {
         return engenhariaCustom.ConsultaConsumoMetragem(idComposto);
     }
+    
+    @RequestMapping(value = "/find-all-micromovimentos", method = RequestMethod.GET)
+    public List<Micromovimentos> findAllMicromovimentos() {
+        return engenhariaService.findAllMicromovimentos();
+    }
+    
+    @RequestMapping(value = "/find-micromovimento-by-id/{idMicroMov}", method = RequestMethod.GET)
+    public Micromovimentos findMicromovimentoById(@PathVariable("idMicroMov") String idMicroMov) {
+        return engenhariaService.findMicroMovimentoById(idMicroMov);
+    }
 
     @RequestMapping(value = "/save-marcas", method = RequestMethod.POST)
     public MarcasFio saveMarcas(@RequestBody BodyEngenharia body) {                  
@@ -237,6 +248,24 @@ public class EngenhariaController {
     	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet, body.idTipoFio, body.observacao);
     }
     
+    
+    //
+    // Salvar Micromovimentos
+    //
+    @RequestMapping(value = "/save-micromovimentos", method = RequestMethod.POST)
+    public String saveMicromovimentos(@RequestBody BodyEngenharia body) {                  
+    	return engenhariaService.saveMicromovimentos(body.codigo, body.descricao, body.tempo, body.interferencia, body.editMode);
+    }
+    
+    //
+    // Importar Micromovimentos
+    //
+    @RequestMapping(value = "/importar-micromovimentos", method = RequestMethod.POST)
+    public List<Micromovimentos> importarMicromovimentos(@RequestBody BodyEngenharia body) {                  
+    	engenhariaService.importarMicromovimentos(body.tabImportar);
+    	return engenhariaService.findAllMicromovimentos();
+    }
+    
     @RequestMapping(value = "/delete-marcas/{idMarcas}", method = RequestMethod.DELETE)
     public List<MarcasFio> deleteMarcas(@PathVariable("idMarcas") int idMarcas) {                  
     	engenhariaService.deleteMarcas(idMarcas);
@@ -265,5 +294,11 @@ public class EngenhariaController {
     public List<ConsultaTabelaConsumo> deleteConsumoCostura(@PathVariable("idComposto") String idComposto, @PathVariable("referencia") String referencia) {                  
     	engenhariaService.deleteConsumoFiosLinhas(idComposto);
         return engenhariaCustom.findConsumoByReferencia(referencia);
+    }
+    
+    @RequestMapping(value = "/delete-micromovimento/{idMicroMov}", method = RequestMethod.DELETE)
+    public List<Micromovimentos> deleteMicroMov(@PathVariable("idMicroMov") String idMicroMov) {                  
+    	engenhariaService.deleteMicroMovimentoById(idMicroMov);
+        return engenhariaService.findAllMicromovimentos();
     }
 }

@@ -1,5 +1,9 @@
 package br.com.live.body;
 
+import java.util.List;
+
+import br.com.live.entity.Micromovimentos;
+
 public class BodyEngenharia {
 	public int id;
 	public String descricao;
@@ -26,4 +30,11 @@ public class BodyEngenharia {
 	public String observacao;
 
 	public int idTipoFio;
+	
+	public String codigo;
+	public float tempo;
+	public float interferencia;
+	public boolean editMode;
+	
+	public List<Micromovimentos> tabImportar;
 }
