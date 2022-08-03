@@ -21,6 +21,9 @@ public class ConfiguracoesService {
 	@Value("${app.email.senha}")
 	private String senhaEmail;
 	
+	@Value("${app.report.diretorio}")
+	private String diretorioReport;
+	
 	public String getUrlFrontEnd() {		
 		return urlFrontEnd;
 	}
@@ -39,5 +42,9 @@ public class ConfiguracoesService {
 
 	public String getSenhaEmail() {		
 		return senhaEmail;
-	}		
+	}
+	
+	public String getDiretorioReport() {		
+		return diretorioReport;
+	}	
 }
