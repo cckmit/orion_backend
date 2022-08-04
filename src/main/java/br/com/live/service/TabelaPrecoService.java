@@ -51,7 +51,7 @@ public class TabelaPrecoService {
 		return retorno;
 	}
 	
-	public void atualizarPrecoTabela(List<ImportarTabPreco> itensTabela, String tabelaPreco) {
+	public void atualizarPrecoTabela(List<ImportarTabPreco> itensTabela, String tabelaPreco, int nivelImportacao) {
 		List<ConteudoChaveAlfaNum> tamanhos = new ArrayList<ConteudoChaveAlfaNum>();
 		String[] tabPrecoConcat = tabelaPreco.split("[.]");
 
@@ -60,13 +60,15 @@ public class TabelaPrecoService {
 		String sequencia = tabPrecoConcat[2];
 		
 		for (ImportarTabPreco itemPreco : itensTabela) {
-			insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 1, "1", itemPreco.referencia, "000", "000000", 0, itemPreco.valor);
+			
+			if (nivelImportacao != 2) {
+				insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 1, "1", itemPreco.referencia, "000", "000000", 0, itemPreco.valor);
+			}
 			
 			if (!itemPreco.cor.equals("Sem Cor")) {
 				tamanhos = produtoCustom.findTamanhosByGrupo("1", itemPreco.referencia);
-				
 				for (ConteudoChaveAlfaNum tamanho : tamanhos) {
-					insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 2, "1", itemPreco.referencia, tamanho.label, "000000", 0, itemPreco.valor);
+					insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 2, "1", itemPreco.referencia, tamanho.label, "000000", 0, 0);
 					insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 4, "1", itemPreco.referencia, tamanho.label, itemPreco.cor, 0, itemPreco.valor);
 				}
 			}

@@ -7,4 +7,5 @@ import br.com.live.model.ImportarTabPreco;
 public class BodyImportTabPreco {
 	public List<ImportarTabPreco> itensTabela;
 	public String tabelaPreco;
+	public int nivelImportacao;
 }

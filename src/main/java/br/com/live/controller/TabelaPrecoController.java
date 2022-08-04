@@ -53,6 +53,6 @@ public class TabelaPrecoController {
     
     @RequestMapping(value = "/gravar-tabela-import", method = RequestMethod.POST)
     public void atualizarTabPreco(@RequestBody BodyImportTabPreco body) {
-          tabelaPrecoService.atualizarPrecoTabela(body.itensTabela, body.tabelaPreco);
+          tabelaPrecoService.atualizarPrecoTabela(body.itensTabela, body.tabelaPreco, body.nivelImportacao);
     }
 }
