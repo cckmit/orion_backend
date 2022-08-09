@@ -93,12 +93,15 @@ public class TabelaPrecoCustom {
 	public int validarReferenciaCorCadastrada(String referencia, String cor) {
 		int existeRef = 0;
 		
-		String query = " select nvl(max(1), 0) from basi_010 a "
+		String query = " select nvl(max(1), 0) from basi_030 a "
 				+ " where a.nivel_estrutura = '1' "
-				+ " and a.grupo_estrutura = '" + referencia + "' ";
+				+ "and a.referencia = '" + referencia + "'";
 				
 		if (!cor.equalsIgnoreCase("Sem Cor")) {
-			query = query + " and a.item_estrutura = '" + cor + "' ";
+			query = " select nvl(max(1), 0) from basi_010 a "
+					+ " where a.nivel_estrutura = '1' "
+					+ " and a.grupo_estrutura = '" + referencia + "' "
+					+ " and a.item_estrutura = '" + cor + "'";
 		}
 		
 		try {
