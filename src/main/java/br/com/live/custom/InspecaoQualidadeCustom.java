@@ -46,7 +46,7 @@ public class InspecaoQualidadeCustom {
 		+ " from efic_040, mqop_005 "
 		+ " where efic_040.nivel = '1' "     
 		+ " and efic_040.area_producao = 1 "       
-		+ " and efic_040.cod_defeito_agrup not in (0,1) "
+		+ " and efic_040.cod_defeito_agrup not in (0,1,9999) "
 		+ " and mqop_005.codigo_estagio = efic_040.codigo_estagio "
 		+ " group by efic_040.codigo_motivo, efic_040.descricao, efic_040.codigo_estagio, mqop_005.descricao) motivos "
 		+ " order by motivos.codigo_motivo, motivos.desc_motivo, motivos.codigo_estagio, motivos.desc_estagio " ;     
