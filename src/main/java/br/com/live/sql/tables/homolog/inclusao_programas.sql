@@ -154,3 +154,5 @@ values (50, 'Importar Tabela de Preço', 'Comercial', '/importar-tab-preco');
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (51, 'Cadastro de Micromovimentos', 'Engenharia', '/cadastro-micromovimentos');
 
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (52, 'Minuta de Transporte', 'Expedição', '/minuta-transporte');

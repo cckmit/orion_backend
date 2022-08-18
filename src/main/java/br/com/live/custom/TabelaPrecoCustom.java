@@ -113,27 +113,32 @@ public class TabelaPrecoCustom {
 		return existeRef;
 	}
 	
-	public void insereTabelaPreco(int coluna, int mes, int sequencia, int nivelPreco, String nivel, String grupo, String subGrupo, String item, int serie, float valor) {
-		 try {
+	public void insereTabelaPreco(int coluna, int mes, int sequencia, int nivelPreco, String nivel, String grupo, String subGrupo, String item, int serie, float valor, int nivelImportacao) {
+		System.out.println("nivel ref: " + nivelImportacao);
+		
+		try {
 	          String query = " insert into pedi_095(tab_col_tab, tab_mes_tab, tab_seq_tab, nivel_preco, nivel_estrutura, grupo_estrutura, "
 	            + " subgru_estrutura, item_estrutura, serie_cor, val_tabela_preco, desconto_maximo, largura, data_form_preco) " 
 	            + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, sysdate) ";
 	          
 	          jdbcTemplate.update(query, coluna, mes, sequencia, nivelPreco, nivel, grupo, subGrupo, item, serie, valor);
 	        } catch (Exception e) {
-	        	String queryException = " update pedi_095 "
-	            	+ " set val_tabela_preco 	= ?, "
-	                + " data_form_preco 		= sysdate "
-	                	+ " where tab_col_tab 		= ?"
-	                	+ " and tab_mes_tab 		= ? "
-	                	+ " and tab_seq_tab 		= ? "
-	                	+ " and nivel_preco 		= ? "
-	                	+ " and nivel_estrutura 	= ? "
-	                	+ " and grupo_estrutura 	= ? "
-	                	+ " and subgru_estrutura 	= ? "
-	                	+ " and item_estrutura 		= ? "
-	                	+ " and serie_cor 			= ? ";
-	        	jdbcTemplate.update(queryException, valor, coluna, mes, sequencia, nivelPreco, nivel, grupo, subGrupo, item, serie);
+	        	
+	        	if (nivelImportacao == 2) {
+	        		String queryException = " update pedi_095 "
+	    	            	+ " set val_tabela_preco 	= ?, "
+	    	                + " data_form_preco 		= sysdate "
+	    	                	+ " where tab_col_tab 		= ?"
+	    	                	+ " and tab_mes_tab 		= ? "
+	    	                	+ " and tab_seq_tab 		= ? "
+	    	                	+ " and nivel_preco 		= ? "
+	    	                	+ " and nivel_estrutura 	= ? "
+	    	                	+ " and grupo_estrutura 	= ? "
+	    	                	+ " and subgru_estrutura 	= ? "
+	    	                	+ " and item_estrutura 		= ? "
+	    	                	+ " and serie_cor 			= ? ";
+	    	        	jdbcTemplate.update(queryException, valor, coluna, mes, sequencia, nivelPreco, nivel, grupo, subGrupo, item, serie);
+	        	}
 	        }
 	}
 }

@@ -1,5 +1,6 @@
 package br.com.live.service;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,7 +22,9 @@ import br.com.live.entity.VariacaoPesoArtigo;
 import br.com.live.model.CestoEndereco;
 import br.com.live.model.ConsultaCaixasNoEndereco;
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
+import br.com.live.model.ConsultaMinutaTransporte;
 import br.com.live.model.ConsultaTag;
+import br.com.live.model.ConsultaTransportadora;
 import br.com.live.model.ConsultaVariacaoArtigo;
 import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.DadosTagProd;
@@ -36,7 +39,10 @@ import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
 import br.com.live.repository.UsuarioRepository;
 import br.com.live.repository.VariacaoPesoArtigoRepository;
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.ConverteLista;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @Service
 @Transactional
@@ -48,14 +54,16 @@ public class ExpedicaoService {
 	private final UsuarioRepository usuarioRepository;
 	private final ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
 	private final VariacaoPesoArtigoRepository variacaoPesoArtigoRepository;
-	
+	private final ReportService reportService;
+
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
 
 	public ExpedicaoService(ExpedicaoCustom enderecosCustom, ParametrosMapaEndRepository parametrosMapaEndRepository,
 			CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository,
-			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository, ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
-			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository) {
+			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository,
+			ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
+			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService) {
 		this.enderecosCustom = enderecosCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
@@ -63,6 +71,7 @@ public class ExpedicaoService {
 		this.usuarioRepository = usuarioRepository;
 		this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
 		this.variacaoPesoArtigoRepository = variacaoPesoArtigoRepository;
+		this.reportService = reportService;
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -90,19 +99,20 @@ public class ExpedicaoService {
 		String msgErro = "";
 		String existeEndereco = "";
 		List<DadosTagProd> listTags = new ArrayList<DadosTagProd>();
-		
+
 		if (numeroTag.length() < 22) {
 			int numeroCaixa = Integer.parseInt(numeroTag);
-			
+
 			int temProduto = enderecosCustom.validarExistePecaCaixa(numeroCaixa);
-			
+
 			if (temProduto == 0) {
 				msgErro = "Caixa não passou pelo novo processo de endereçamento! Será necessário endereçar peça a peça!";
 			} else {
 				listTags = enderecosCustom.obterTagsLidosCaixa(numeroCaixa);
-				
+
 				for (DadosTagProd dadosTag : listTags) {
-					enderecosCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote, dadosTag.sequencia, endereco);
+					enderecosCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote,
+							dadosTag.sequencia, endereco);
 				}
 				enderecosCustom.limparCaixa(numeroCaixa);
 			}
@@ -305,7 +315,8 @@ public class ExpedicaoService {
 
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(codUsuario);
 
-		dadosAbertura = new CaixasParaEnderecar(codCaixa, 0, codUsuario, dataAtual, dataFinal, dadosUsuario.usuarioSystextil,"");
+		dadosAbertura = new CaixasParaEnderecar(codCaixa, 0, codUsuario, dataAtual, dataFinal,
+				dadosUsuario.usuarioSystextil, "");
 
 		aberturaCaixasRepository.save(dadosAbertura);
 
@@ -335,7 +346,7 @@ public class ExpedicaoService {
 
 	public String gravarEnderecoCaixa(int numeroCaixa, String endereco) {
 		String msgErro = "";
-		
+
 		CaixasParaEnderecar dadosCaixa = aberturaCaixasRepository.findByNumeroCaixa(numeroCaixa);
 
 		if (dadosCaixa.situacaoCaixa == CAIXA_FECHADA) {
@@ -345,7 +356,7 @@ public class ExpedicaoService {
 		}
 
 		aberturaCaixasRepository.save(dadosCaixa);
-		
+
 		return msgErro;
 	}
 
@@ -438,14 +449,15 @@ public class ExpedicaoService {
 		}
 		return stringProd;
 	}
-	
+
 	public List<ConsultaCaixasNoEndereco> consultaCaixasNoEndereco(String endereco) {
 		return enderecosCustom.findCaixas(endereco);
 	}
-	
-	public void salvarParametrosEnderecoCaixa(int deposito, String ruaInicio, String ruaFim, int boxInicio, int boxFim) {
+
+	public void salvarParametrosEnderecoCaixa(int deposito, String ruaInicio, String ruaFim, int boxInicio,
+			int boxFim) {
 		ParametrosMapaEnderecoCaixa parametros = parametrosEnderecoCaixaRepository.findByDeposito(deposito);
-		
+
 		if (parametros == null) {
 			parametros = new ParametrosMapaEnderecoCaixa(deposito, ruaInicio, ruaFim, boxInicio, boxFim);
 		} else {
@@ -456,49 +468,50 @@ public class ExpedicaoService {
 		}
 		parametrosEnderecoCaixaRepository.save(parametros);
 	}
-	
+
 	public List<ConsultaCaixasNoEndereco> verificarCaixasNoEndereco() {
 		return enderecosCustom.verificaCaixasNoEndereco();
 	}
-	
-	public List<ConsultaTag> findQuantEnderecos(String nivel, String grupo, String subGrupo, String item, int deposito) {
+
+	public List<ConsultaTag> findQuantEnderecos(String nivel, String grupo, String subGrupo, String item,
+			int deposito) {
 		return enderecosCustom.obterEnderecos(deposito, nivel, grupo, subGrupo, item);
 	}
-	
+
 	public String findProdutoByTag(String numeroTag) {
 		int periodo = Integer.parseInt(numeroTag.substring(0, 4));
 		int ordem = Integer.parseInt(numeroTag.substring(4, 13));
 		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
-		
+
 		return enderecosCustom.findProdutoByTag(periodo, ordem, pacote, sequencia);
 	}
-	
+
 	public List<ConsultaTag> findHistoricoTag(String numeroTag) {
 		int periodo = Integer.parseInt(numeroTag.substring(0, 4));
 		int ordem = Integer.parseInt(numeroTag.substring(4, 13));
 		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
-		
+
 		return enderecosCustom.findHistoricoTag(periodo, ordem, pacote, sequencia);
 	}
-	
+
 	public void deleteVariacaoById(long idVariacao) {
 		variacaoPesoArtigoRepository.deleteById(idVariacao);
 	}
-	
+
 	public List<ConsultaVariacaoArtigo> findVaricaoArtigo() {
 		return enderecosCustom.findVariacaoArtigo();
 	}
-	
+
 	public void saveVariacaoPesoArtigo(List<ConsultaVariacaoArtigo> variacoes) {
-		
+
 		VariacaoPesoArtigo variacaoSave;
-		
+
 		for (ConsultaVariacaoArtigo variacao : variacoes) {
 			if (variacao.variacao > 0) {
 				variacaoSave = variacaoPesoArtigoRepository.findByIdVariacao(variacao.id);
-				
+
 				if (variacaoSave != null) {
 					variacaoSave.variacao = variacao.variacao;
 				} else {
@@ -507,5 +520,52 @@ public class ExpedicaoService {
 				variacaoPesoArtigoRepository.save(variacaoSave);
 			}
 		}
+	}
+	
+	public Map<String, Object> setParameters(String transportadora) {
+		ConsultaTransportadora transport = enderecosCustom.findDadosTransportadora(transportadora);
+		
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("nome", transport.nome);
+		parameters.put("endereco", transport.endereco);
+		parameters.put("bairro", transport.bairro);
+		parameters.put("complemento", transport.complemento);
+		parameters.put("cep", transport.cep);
+		parameters.put("estado", transport.estado);
+		parameters.put("cidade", transport.cidade);
+		
+		return parameters;
+	}
+
+	public String gerarMinutaTransporteAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni,
+			String dataLibPaypalFim, List<ConteudoChaveNumerica> empresas, List<ConteudoChaveNumerica> localCaixa,
+			String transportadora, int pedido, int nota) throws FileNotFoundException, JRException {
+		String nomeRelatorioGerado = "";
+
+		List<ConsultaMinutaTransporte> itensMinuta = enderecosCustom.findDadosMinutaAtacado(dataEmiInicio, dataEmiFim,
+				dataLibPaypalIni, dataLibPaypalFim, empresas, localCaixa, transportadora, pedido, nota);
+
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itensMinuta);
+		
+		Map<String, Object> parameters = setParameters(transportadora);
+
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
+
+		return nomeRelatorioGerado;
+	}
+	
+	public String gerarMinutaTransporteEcommerce(String dataInicioBox, String dataFimBox, 
+			String horaInicio, String horaFim, int nota, String transportadora) throws FileNotFoundException, JRException {
+		String nomeRelatorioGerado = "";
+
+		List<ConsultaMinutaTransporte> itensMinuta = enderecosCustom.findDadosMinutaEcommerce(dataInicioBox, dataFimBox, horaInicio, horaFim, nota, transportadora);
+
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itensMinuta);
+		
+		Map<String, Object> parameters = setParameters(transportadora);
+
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
+
+		return nomeRelatorioGerado;
 	}
 }

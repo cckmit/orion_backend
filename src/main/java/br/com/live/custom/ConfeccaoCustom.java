@@ -48,7 +48,6 @@ public class ConfeccaoCustom {
 				+ " where c.tipo_observacao = d.id "
 				+ " and e.ordem_producao = c.ordem_producao "
 				+ " and f.ordem_producao = c.ordem_producao "
-				+ " and f.periodo_producao = e.periodo_producao "
 				+ " and (f.ordem_confeccao = c.ordem_confeccao OR c.ordem_confeccao = 0) "
 				+ " and f.codigo_estagio = 35 "
 				+ " and f.qtde_a_produzir_pacote > 0 "

@@ -62,26 +62,29 @@ public class TabelaPrecoService {
 
 		for (ImportarTabPreco itemPreco : itensTabela) {
 
-			if (nivelImportacao != 2) {
+			if (nivelImportacao == 1) {
 				insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 1, "1",
-						itemPreco.referencia, "000", "000000", 0, itemPreco.valor);
+						itemPreco.referencia, "000", "000000", 0, itemPreco.valor, 2);
+			} else {
+				insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 1, "1",
+						itemPreco.referencia, "000", "000000", 0, 0, 1);
 			}
 
-			if (!itemPreco.cor.equals("Sem Cor")) {
+			if ((!itemPreco.cor.equals("Sem Cor")) && (nivelImportacao == 2)) {
 				tamanhos = produtoCustom.findTamanhosByGrupo("1", itemPreco.referencia);
 				for (ConteudoChaveAlfaNum tamanho : tamanhos) {
 					insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 2,
-							"1", itemPreco.referencia, tamanho.label, "000000", 0, 0);
+							"1", itemPreco.referencia, tamanho.label, "000000", 0, 0, nivelImportacao);
 					insereTabelaPreco(Integer.parseInt(coluna), Integer.parseInt(mes), Integer.parseInt(sequencia), 4,
-							"1", itemPreco.referencia, tamanho.label, itemPreco.cor, 0, itemPreco.valor);
+							"1", itemPreco.referencia, tamanho.label, itemPreco.cor, 0, itemPreco.valor, nivelImportacao);
 				}
 			}
 		}
 	}
 
 	public void insereTabelaPreco(int coluna, int mes, int sequencia, int nivelPreco, String nivel, String grupo,
-			String subGrupo, String item, int serie, float valor) {
+			String subGrupo, String item, int serie, float valor, int nivelImportacao) {
 		tabelaPrecoCustom.insereTabelaPreco(coluna, mes, sequencia, nivelPreco, nivel, grupo, subGrupo, item, serie,
-				valor);
+				valor, nivelImportacao);
 	}
 }
