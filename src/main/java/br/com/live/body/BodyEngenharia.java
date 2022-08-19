@@ -37,4 +37,12 @@ public class BodyEngenharia {
 	public boolean editMode;
 	
 	public List<Micromovimentos> tabImportar;
+	
+	public String idTempoMaquina;
+	public String grupoMaquina;
+	public String subGrupoMaquina;
+	public float medidaMaquina;
+	public float tempoMaquina;
+	public float interferenciaMaquina;
+	
 }

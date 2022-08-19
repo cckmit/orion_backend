@@ -156,3 +156,6 @@ values (51, 'Cadastro de Micromovimentos', 'Engenharia', '/cadastro-micromovimen
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (52, 'Minuta de Transporte', 'Expedição', '/minuta-transporte');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (53, 'Tempo Maquina por CM', 'Engenharia', '/tempo-maquina')

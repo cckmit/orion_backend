@@ -9,6 +9,7 @@ import br.com.live.entity.ConsumoFiosLinhas;
 import br.com.live.entity.ConsumoMetragemFio;
 import br.com.live.entity.MarcasFio;
 import br.com.live.entity.Micromovimentos;
+import br.com.live.entity.TempoMaquinaCM;
 import br.com.live.entity.TipoPonto;
 import br.com.live.entity.TipoPontoFio;
 import br.com.live.entity.TiposFio;
@@ -16,6 +17,7 @@ import br.com.live.repository.ConsumoFiosLinhasRepository;
 import br.com.live.repository.ConsumoMetragemFioRepository;
 import br.com.live.repository.MarcasFioRepository;
 import br.com.live.repository.MicromovimentosRepository;
+import br.com.live.repository.TempoMaquinaCMRepository;
 import br.com.live.repository.TiposFioRepository;
 import br.com.live.repository.TiposPontoFioRepository;
 import br.com.live.repository.TiposPontoRepository;
@@ -32,11 +34,13 @@ public class EngenhariaService {
 	private final ConsumoFiosLinhasRepository consumoFiosLinhasRepository;
 	private final ConsumoMetragemFioRepository consumoMetragemFioRepository;
 	private final MicromovimentosRepository micromovimentosRepository;
+	private final TempoMaquinaCMRepository tempoMaquinaCMRepository;
 
 	public EngenhariaService(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository,
 			EngenhariaCustom engenhariaCustom, TiposPontoFioRepository tiposPontoFioRepository,
 			TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository,
-			ConsumoMetragemFioRepository consumoMetragemFioRepository, MicromovimentosRepository micromovimentosRepository) {
+			ConsumoMetragemFioRepository consumoMetragemFioRepository, MicromovimentosRepository micromovimentosRepository,
+			TempoMaquinaCMRepository tempoMaquinaCMRepository) {
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaCustom = engenhariaCustom;
@@ -45,6 +49,7 @@ public class EngenhariaService {
 		this.consumoFiosLinhasRepository = consumoFiosLinhasRepository;
 		this.consumoMetragemFioRepository = consumoMetragemFioRepository;
 		this.micromovimentosRepository = micromovimentosRepository;
+		this.tempoMaquinaCMRepository = tempoMaquinaCMRepository;
 	}
 
 	public MarcasFio saveMarcas(int id, String descricao) {
@@ -284,4 +289,31 @@ public class EngenhariaService {
 			micromovimentosRepository.save(newMicromov);
 		}
 	}
+	public void deleteTempoMaquinaCMById(String idTempoMaqCM) {
+		tempoMaquinaCMRepository.deleteById(idTempoMaqCM);
+	}
+	
+	public List<TempoMaquinaCM> findAllTempoMaquinaCM() {
+		return tempoMaquinaCMRepository.findAllTempMaq();
+	}
+	
+	public TempoMaquinaCM findTempoMaquinaCMById(String idTempoMaqCM) {
+		return tempoMaquinaCMRepository.findByidTempoMaqCM(idTempoMaqCM);
+	}
+	
+	public void saveTempoMaquinaCM(String id, String grupo, String subgrupo, float medida, float tempo) {
+		
+		TempoMaquinaCM dadosTempoMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(id.toUpperCase());
+				
+		if (dadosTempoMaq == null) {
+			dadosTempoMaq = new TempoMaquinaCM(grupo, subgrupo, medida, tempo);
+		} else {
+			dadosTempoMaq.grupo = grupo;
+			dadosTempoMaq.subgrupo = subgrupo;
+			dadosTempoMaq.medida = medida;
+			dadosTempoMaq.tempo = tempo;
+		}
+		tempoMaquinaCMRepository.save(dadosTempoMaq);
+	}
+	
 }

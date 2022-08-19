@@ -8,11 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaConsumoMetragem;
 import br.com.live.model.ConsultaTabelaConsumo;
+import br.com.live.model.ConsultaTempoMaquinaCM;
 import br.com.live.model.ConsultaTipoPonto;
 import br.com.live.model.ConsultaTipoPontoFio;
 import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.Maquinas;
 import br.com.live.model.OptionProduto;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 @Repository
 public class EngenhariaCustom {
@@ -208,5 +211,25 @@ public class EngenhariaCustom {
 				+ " select 0 codigo, 'NENHUM' descricao from dual ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OptionProduto.class));
+	}
+	
+	public List<ConteudoChaveAlfaNum> findOptiosGrupo() {
+		String query = "SELECT a.grupo_maquina || '.' || a.subgrupo_maquina || ' - ' || a.nome_sbgrupo_maq || ' ' || b.nome_grupo_maq LABEL, "
+				+ "a.grupo_maquina || '.' || a.subgrupo_maquina VALUE FROM mqop_020 a, mqop_010 b "
+				+ "WHERE b.grupo_maquina = a.grupo_maquina";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public List<ConsultaTempoMaquinaCM> findAllTempoMaquinaCM(){
+		
+		String query = "select a.id, a.grupo, b.nome_grupo_maq nomeGrupoMaq, a.subgrupo, c.nome_sbgrupo_maq nomeSbgrupoMaq, a.medida, a.tempo, c.interferencia "
+			+ " FROM orion_eng_240 a, mqop_010 b, mqop_020 c "
+			+ " WHERE b.grupo_maquina = a.grupo "
+			+ " AND c.grupo_maquina = a.grupo "
+			+ " AND c.subgrupo_maquina = a.subgrupo "
+			+ " ORDER BY a.grupo, a.subgrupo";
+	
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTempoMaquinaCM.class));
 	}
 }

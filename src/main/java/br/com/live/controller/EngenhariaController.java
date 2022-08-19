@@ -16,11 +16,13 @@ import br.com.live.entity.ConsumoFiosLinhas;
 import br.com.live.entity.ConsumoMetragemFio;
 import br.com.live.entity.MarcasFio;
 import br.com.live.entity.Micromovimentos;
+import br.com.live.entity.TempoMaquinaCM;
 import br.com.live.entity.TipoPonto;
 import br.com.live.entity.TipoPontoFio;
 import br.com.live.entity.TiposFio;
 import br.com.live.model.ConsultaConsumoMetragem;
 import br.com.live.model.ConsultaTabelaConsumo;
+import br.com.live.model.ConsultaTempoMaquinaCM;
 import br.com.live.model.ConsultaTipoPonto;
 import br.com.live.model.ConsultaTipoPontoFio;
 import br.com.live.model.ConsultaTiposFio;
@@ -29,10 +31,12 @@ import br.com.live.model.OptionProduto;
 import br.com.live.repository.ConsumoFiosLinhasRepository;
 import br.com.live.repository.ConsumoMetragemFioRepository;
 import br.com.live.repository.MarcasFioRepository;
+import br.com.live.repository.TempoMaquinaCMRepository;
 import br.com.live.repository.TiposFioRepository;
 import br.com.live.repository.TiposPontoFioRepository;
 import br.com.live.repository.TiposPontoRepository;
 import br.com.live.service.EngenhariaService;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
@@ -48,10 +52,12 @@ public class EngenhariaController {
     private TiposPontoRepository tiposPontoRepository;
     private ConsumoFiosLinhasRepository consumoFiosLinhasRepository;
     private ConsumoMetragemFioRepository consumoMetragemFioRepository;
+    private TempoMaquinaCMRepository tempoMaquinaCMRepository;
 
 	@Autowired
 	public EngenhariaController(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository, EngenhariaService engenhariaService, EngenhariaCustom engenhariaCustom,
-    TiposPontoFioRepository tiposPontoFioRepository, TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository, ConsumoMetragemFioRepository consumoMetragemFioRepository) {
+    TiposPontoFioRepository tiposPontoFioRepository, TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository, ConsumoMetragemFioRepository consumoMetragemFioRepository,
+    TempoMaquinaCMRepository tempoMaquinaCMRepository) {
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaService = engenhariaService;
@@ -60,6 +66,7 @@ public class EngenhariaController {
         this.tiposPontoFioRepository = tiposPontoFioRepository;
         this.consumoFiosLinhasRepository = consumoFiosLinhasRepository;
         this.consumoMetragemFioRepository = consumoMetragemFioRepository;
+        this.tempoMaquinaCMRepository = tempoMaquinaCMRepository;
 	}
 	
 	@RequestMapping(value = "/find-all-marcas", method = RequestMethod.GET)
@@ -167,7 +174,13 @@ public class EngenhariaController {
     public List<ConteudoChaveNumerica> returnOptionPacotes(@PathVariable("tipoFio") int tipoFio) {
         return engenhariaService.makeListOptionPackages(tipoFio);
     }
-
+    //
+    // Return Option Grupo Máquinas
+    //
+    @RequestMapping(value = "/option-grupo-maquinas", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findOptiosGrupo() {
+        return engenhariaCustom.findOptiosGrupo();
+    }
     //
     // Consulta Resumo por Tipo de Fio
     //
@@ -195,6 +208,17 @@ public class EngenhariaController {
     public Micromovimentos findMicromovimentoById(@PathVariable("idMicroMov") String idMicroMov) {
         return engenhariaService.findMicroMovimentoById(idMicroMov);
     }
+    
+    @RequestMapping(value = "/find-all-tempo-maquina", method = RequestMethod.GET)
+    public List<ConsultaTempoMaquinaCM> findAllTempoMaquinaCM() {
+    	return engenhariaCustom.findAllTempoMaquinaCM();
+    }
+    
+    @RequestMapping(value = "/find-tempo-maquinacm-by-id/{idTempoMaqCM}", method = RequestMethod.GET)
+    public TempoMaquinaCM findByidTempoMaqCM(@PathVariable("idTempoMaqCM") String idTempoMaqCM) {
+        return engenhariaService.findTempoMaquinaCMById(idTempoMaqCM);
+    }    
+    
 
     @RequestMapping(value = "/save-marcas", method = RequestMethod.POST)
     public MarcasFio saveMarcas(@RequestBody BodyEngenharia body) {                  
@@ -301,4 +325,17 @@ public class EngenhariaController {
     	engenhariaService.deleteMicroMovimentoById(idMicroMov);
         return engenhariaService.findAllMicromovimentos();
     }
+    
+    @RequestMapping(value = "/salvar-tempo-maq", method = RequestMethod.POST)
+    public List<ConsultaTempoMaquinaCM> salvarTempoMaquina(@RequestBody BodyEngenharia body) {                  
+    	engenhariaService.saveTempoMaquinaCM(body.idTempoMaquina, body.grupoMaquina, body.subGrupoMaquina, body.medidaMaquina, body.tempoMaquina);
+    	return engenhariaCustom.findAllTempoMaquinaCM();
+    }
+    
+    @RequestMapping(value = "/delete-tempo-maquina-cm/{idTempoMaqCM}", method = RequestMethod.DELETE)
+    public List<ConsultaTempoMaquinaCM> deleteTempoMaquina(@PathVariable("idTempoMaqCM") String idTempoMaqCM) {                  
+    	engenhariaService.deleteTempoMaquinaCMById(idTempoMaqCM);
+        return engenhariaCustom.findAllTempoMaquinaCM();
+    }
+    
 }
