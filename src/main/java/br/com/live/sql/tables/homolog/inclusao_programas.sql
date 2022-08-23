@@ -159,3 +159,9 @@ values (52, 'Minuta de Transporte', 'Expedição', '/minuta-transporte');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (53, 'Tempo Maquina por CM', 'Engenharia', '/tempo-maquina')
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (54, 'Envio de Produtos e-commerce', 'Comercial', '/envio-de-produtos-e-commerce')
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (55, 'Relacionamento Operação X Micromovimentos', 'Engenharia', '/relacionamento-operacao-x-micromovimentos')

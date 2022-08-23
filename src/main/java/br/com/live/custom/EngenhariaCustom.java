@@ -232,4 +232,11 @@ public class EngenhariaCustom {
 	
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTempoMaquinaCM.class));
 	}
+	
+	public long nextId() {
+	
+		String query = "select NVL((MAX(a.id)), 0) + 1 from orion_eng_240 a";
+				
+		return jdbcTemplate.queryForObject(query, Long.class);
+	}
 }

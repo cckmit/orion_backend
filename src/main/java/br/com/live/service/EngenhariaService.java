@@ -289,7 +289,7 @@ public class EngenhariaService {
 			micromovimentosRepository.save(newMicromov);
 		}
 	}
-	public void deleteTempoMaquinaCMById(String idTempoMaqCM) {
+	public void deleteTempoMaquinaCMById(long idTempoMaqCM) {
 		tempoMaquinaCMRepository.deleteById(idTempoMaqCM);
 	}
 	
@@ -297,16 +297,15 @@ public class EngenhariaService {
 		return tempoMaquinaCMRepository.findAllTempMaq();
 	}
 	
-	public TempoMaquinaCM findTempoMaquinaCMById(String idTempoMaqCM) {
+	public TempoMaquinaCM findTempoMaquinaCMById(long idTempoMaqCM) {
 		return tempoMaquinaCMRepository.findByidTempoMaqCM(idTempoMaqCM);
 	}
 	
-	public void saveTempoMaquinaCM(String id, String grupo, String subgrupo, float medida, float tempo) {
-		
-		TempoMaquinaCM dadosTempoMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(id.toUpperCase());
+	public void saveTempoMaquinaCM(long id, String grupo, String subgrupo, float medida, float tempo) {
+		TempoMaquinaCM dadosTempoMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(id);
 				
-		if (dadosTempoMaq == null) {
-			dadosTempoMaq = new TempoMaquinaCM(grupo, subgrupo, medida, tempo);
+		if (dadosTempoMaq == null) { 
+			dadosTempoMaq = new TempoMaquinaCM(engenhariaCustom.nextId(), grupo, subgrupo, medida, tempo);
 		} else {
 			dadosTempoMaq.grupo = grupo;
 			dadosTempoMaq.subgrupo = subgrupo;
@@ -316,4 +315,10 @@ public class EngenhariaService {
 		tempoMaquinaCMRepository.save(dadosTempoMaq);
 	}
 	
+	public void importarTempoMaquinaCM(List<TempoMaquinaCM> tabImportarTempoMaq) {
+		for (TempoMaquinaCM dados : tabImportarTempoMaq) {
+			TempoMaquinaCM dadosSave = new TempoMaquinaCM(engenhariaCustom.nextId(), dados.grupo, dados.subgrupo, dados.medida, dados.tempo);
+			tempoMaquinaCMRepository.save(dadosSave);
+		}
+	}
 }

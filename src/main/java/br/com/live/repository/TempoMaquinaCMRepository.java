@@ -9,13 +9,13 @@ import org.springframework.stereotype.Repository;
 import br.com.live.entity.TempoMaquinaCM;
 
 @Repository
-public interface TempoMaquinaCMRepository extends JpaRepository<TempoMaquinaCM, String> {
+public interface TempoMaquinaCMRepository extends JpaRepository<TempoMaquinaCM, Long> {
 	
 	@Query("SELECT t FROM TempoMaquinaCM t")
 	List<TempoMaquinaCM> findAllTempMaq();
 	
 	@Query("SELECT t FROM TempoMaquinaCM t where t.id = :idTempoMaqCM")
-	TempoMaquinaCM findByidTempoMaqCM(String idTempoMaqCM);
+	TempoMaquinaCM findByidTempoMaqCM(long idTempoMaqCM);
 	
 	void deleteById(String idTempoMaqCM);
 }

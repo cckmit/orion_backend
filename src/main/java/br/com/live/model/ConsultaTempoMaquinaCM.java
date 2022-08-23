@@ -2,7 +2,7 @@ package br.com.live.model;
 
 public class ConsultaTempoMaquinaCM {
 
-	private String id;
+	private long id;
 	private String grupo;
 	private String nomeGrupoMaq;
 	private String subgrupo;
@@ -10,10 +10,10 @@ public class ConsultaTempoMaquinaCM {
 	private float medida;
 	private float tempo;
 	private float interferencia;
-	public String getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getGrupo() {

@@ -1,5 +1,5 @@
 CREATE TABLE orion_eng_240 (
-             id VARCHAR2(100),
+             id long (4),
              grupo VARCHAR2(100),
              subgrupo VARCHAR2(100),
              medida number(12, 4),

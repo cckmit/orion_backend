@@ -9,17 +9,17 @@ import javax.persistence.Table;
 public class TempoMaquinaCM {
 
 	@Id
-	public String id;
+	public long id;
 	public String grupo;
 	public String subgrupo;
 	public float medida;
 	public float tempo;
 
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -59,8 +59,8 @@ public class TempoMaquinaCM {
 
 	}
 
-	public TempoMaquinaCM(String grupo, String subgrupo, float medida, float tempo) {
-		this.id = grupo + "-" + subgrupo;
+	public TempoMaquinaCM(long id, String grupo, String subgrupo, float medida, float tempo) {
+		this.id = id;
 		this.grupo = grupo;
 		this.subgrupo = subgrupo;
 		this.medida = medida;

@@ -3,6 +3,7 @@ package br.com.live.body;
 import java.util.List;
 
 import br.com.live.entity.Micromovimentos;
+import br.com.live.entity.TempoMaquinaCM;
 
 public class BodyEngenharia {
 	public int id;
@@ -38,11 +39,13 @@ public class BodyEngenharia {
 	
 	public List<Micromovimentos> tabImportar;
 	
-	public String idTempoMaquina;
+	public long idTempoMaquina;
 	public String grupoMaquina;
 	public String subGrupoMaquina;
 	public float medidaMaquina;
 	public float tempoMaquina;
 	public float interferenciaMaquina;
+	
+	public List<TempoMaquinaCM> tabImportarTempoMaq;
 	
 }

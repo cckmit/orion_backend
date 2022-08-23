@@ -215,7 +215,7 @@ public class EngenhariaController {
     }
     
     @RequestMapping(value = "/find-tempo-maquinacm-by-id/{idTempoMaqCM}", method = RequestMethod.GET)
-    public TempoMaquinaCM findByidTempoMaqCM(@PathVariable("idTempoMaqCM") String idTempoMaqCM) {
+    public TempoMaquinaCM findByidTempoMaqCM(@PathVariable("idTempoMaqCM") long idTempoMaqCM) {
         return engenhariaService.findTempoMaquinaCMById(idTempoMaqCM);
     }    
     
@@ -329,11 +329,18 @@ public class EngenhariaController {
     @RequestMapping(value = "/salvar-tempo-maq", method = RequestMethod.POST)
     public List<ConsultaTempoMaquinaCM> salvarTempoMaquina(@RequestBody BodyEngenharia body) {                  
     	engenhariaService.saveTempoMaquinaCM(body.idTempoMaquina, body.grupoMaquina, body.subGrupoMaquina, body.medidaMaquina, body.tempoMaquina);
+    	System.out.println("saveTempoMaquina " + body.idTempoMaquina);
+    	return engenhariaCustom.findAllTempoMaquinaCM();
+    }
+    
+    @RequestMapping(value = "/importar-tempo-maq", method = RequestMethod.POST)
+    public List<ConsultaTempoMaquinaCM> imporarTempoMaquina(@RequestBody BodyEngenharia body) {                  
+    	engenhariaService.importarTempoMaquinaCM(body.tabImportarTempoMaq);
     	return engenhariaCustom.findAllTempoMaquinaCM();
     }
     
     @RequestMapping(value = "/delete-tempo-maquina-cm/{idTempoMaqCM}", method = RequestMethod.DELETE)
-    public List<ConsultaTempoMaquinaCM> deleteTempoMaquina(@PathVariable("idTempoMaqCM") String idTempoMaqCM) {                  
+    public List<ConsultaTempoMaquinaCM> deleteTempoMaquina(@PathVariable("idTempoMaqCM") long idTempoMaqCM) {                  
     	engenhariaService.deleteTempoMaquinaCMById(idTempoMaqCM);
         return engenhariaCustom.findAllTempoMaquinaCM();
     }
