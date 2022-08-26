@@ -1,6 +1,7 @@
 package br.com.live.service;
 
 import net.sf.jasperreports.engine.*;
+
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -28,7 +29,7 @@ public class ReportService {
         
         int fileName = hashName.nextInt(999999999);
         
-    	File file = ResourceUtils.getFile("classpath:\\reports\\" + layout + ".jrxml");
+    	File file = ResourceUtils.getFile(configuracoesService.getDiretorioJasper() + layout + ".jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         	
         parameters.put("CollectionBeanParam", dataSource);
@@ -36,7 +37,7 @@ public class ReportService {
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
         
         if (reportFormat.equalsIgnoreCase("pdf")) {
-            JasperExportManager.exportReportToPdfFile(jasperPrint, configuracoesService.getDiretorioReport() + fileName + ".pdf");
+            JasperExportManager.exportReportToPdfFile(jasperPrint, configuracoesService.getDiretorioTemp() + fileName + ".pdf");
         }
         
         String arquivoGerado = fileName + "." + reportFormat;

@@ -3,7 +3,6 @@ package br.com.live.controller;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -213,7 +212,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-dados-minuta-atacado", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(@RequestBody BodyMinutaTransporte body) {
     	return expedicaoCustom.findDadosMinutaAtacado(body.dataEmiInicio, body.dataEmiFim, body.dataLibPaypalIni, body.dataLibPaypalFim,
-    			body.empresas, body.localCaixa, body.transportadora, body.pedido, body.nota);
+    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota, body.consideraPedidosCD);
     }
     
     @RequestMapping(value = "/find-dados-minuta-ecommerce", method = RequestMethod.POST)
@@ -224,7 +223,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/gerar-minuta-atacado", method = RequestMethod.POST)
     public String gerarMinutaAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
     	return enderecoService.gerarMinutaTransporteAtacado(body.dataEmiInicio, body.dataEmiFim, body.dataLibPaypalIni, body.dataLibPaypalFim,
-    			body.empresas, body.localCaixa, body.transportadora, body.pedido, body.nota);
+    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota, body.consideraPedidosCD);
     }
     
     @RequestMapping(value = "/gerar-minuta-ecommerce", method = RequestMethod.POST)
@@ -239,6 +238,6 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/find-volumes-sem-leitura-atacado", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findVolumesSemLeituraAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return expedicaoCustom.findVolumesSemLeituraAtac(body.dataEmiInicio, body.dataEmiFim, body.empresas, body.transportadora, body.pedido, body.nota);
+    	return expedicaoCustom.findVolumesSemLeituraAtac(body.dataEmiInicio, body.dataEmiFim, body.codEmpresa, body.transportadora, body.pedido, body.nota, body.consideraPedidosCD);
     }
 }

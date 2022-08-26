@@ -538,12 +538,12 @@ public class ExpedicaoService {
 	}
 
 	public String gerarMinutaTransporteAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni,
-			String dataLibPaypalFim, List<ConteudoChaveNumerica> empresas, List<ConteudoChaveNumerica> localCaixa,
-			String transportadora, int pedido, int nota) throws FileNotFoundException, JRException {
+			String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
+			String transportadora, int pedido, int nota, boolean consideraCD) throws FileNotFoundException, JRException {
 		String nomeRelatorioGerado = "";
 
 		List<ConsultaMinutaTransporte> itensMinuta = enderecosCustom.findDadosMinutaAtacado(dataEmiInicio, dataEmiFim,
-				dataLibPaypalIni, dataLibPaypalFim, empresas, localCaixa, transportadora, pedido, nota);
+				dataLibPaypalIni, dataLibPaypalFim, empresa, localCaixa, transportadora, pedido, nota, consideraCD);
 
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itensMinuta);
 		

@@ -42,7 +42,7 @@ public class ReportController {
 		
 		try {
 			BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
-			FileInputStream fis = new FileInputStream(configuracoesService.getDiretorioReport() + nomeArquivo);
+			FileInputStream fis = new FileInputStream(configuracoesService.getDiretorioTemp() + nomeArquivo);
 			int len;
 			byte[] buf = new byte[1024];
 			while((len = fis.read(buf)) > 0) {

@@ -21,8 +21,11 @@ public class ConfiguracoesService {
 	@Value("${app.email.senha}")
 	private String senhaEmail;
 	
-	@Value("${app.report.diretorio}")
-	private String diretorioReport;
+	@Value("${app.report.temp}")
+	private String diretorioTemp;
+	
+	@Value("${app.report.jasper}")
+	private String diretorioJasper;
 	
 	public String getUrlFrontEnd() {		
 		return urlFrontEnd;
@@ -44,7 +47,11 @@ public class ConfiguracoesService {
 		return senhaEmail;
 	}
 	
-	public String getDiretorioReport() {		
-		return diretorioReport;
+	public String getDiretorioTemp() {		
+		return diretorioTemp;
+	}
+	
+	public String getDiretorioJasper() {		
+		return diretorioJasper;
 	}	
 }

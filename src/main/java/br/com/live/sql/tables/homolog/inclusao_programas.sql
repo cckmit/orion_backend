@@ -165,3 +165,6 @@ values (54, 'Envio de Produtos e-commerce', 'Comercial', '/envio-de-produtos-e-c
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (55, 'Relacionamento Operação X Micromovimentos', 'Engenharia', '/relacionamento-operacao-x-micromovimentos')
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (56, 'Bloquear/Liberar Títulos de Fornecedor', 'Comercial', '/bloquear-liberar-titulos')

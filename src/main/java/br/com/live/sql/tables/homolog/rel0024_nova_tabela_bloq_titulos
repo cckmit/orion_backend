@@ -1,0 +1,9 @@
+CREATE TABLE orion_com_250 (
+			 id number(20),
+             cnpj_fornecedor_9 number(9),
+             cnpj_fornecedor_4 number(4),
+             cnpj_fornecedor_2 number(2),
+             data_bloqueio Date,
+             data_desbloqueio Date,
+             motivo varchar2(200),
+             constraint orion_com_250_pk PRIMARY KEY(id));

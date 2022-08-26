@@ -21,4 +21,7 @@ public class BodyMinutaTransporte {
 	public String dataFimBox;
 	public String horaInicio;
 	public String horaFim;
+	
+	public int codEmpresa;
+	public boolean consideraPedidosCD;
 }

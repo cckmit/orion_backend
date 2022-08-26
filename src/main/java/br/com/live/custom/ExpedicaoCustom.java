@@ -23,7 +23,6 @@ import br.com.live.model.Produto;
 import br.com.live.model.ProdutoEnderecar;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
-import br.com.live.util.FormataData;
 
 @Repository
 public class ExpedicaoCustom {
@@ -516,9 +515,8 @@ public class ExpedicaoCustom {
 	}
 	
 	public List<ConteudoChaveAlfaNum> findAllTranspAsync(String leitor) {
-		String query = " select c.fornecedor9 || '.' || c.fornecedor4 || '.' || c.fornecedor2 value, c.fornecedor9 || '.' || c.fornecedor4 || '.' || c.fornecedor2 || ' - ' || c.nome_fornecedor label from supr_010 c "
-				+ " where c.tipo_fornecedor in (20, 0) "
-				+ " and c.fornecedor9 || '.' || c.fornecedor4 || '.' || c.fornecedor2 || ' - ' || c.nome_fornecedor like '%" + leitor + "%' "
+		String query = " select c.fornecedor9 || '.' || c.fornecedor4 || '.' || c.fornecedor2 value, c.fornecedor9 || '/' || LPAD(c.fornecedor4,4,0) || '-' || c.fornecedor2 || ' - ' || c.nome_fornecedor label from supr_010 c "
+				+ " where c.fornecedor9 || c.fornecedor4 || c.fornecedor2 || upper(c.nome_fornecedor) like '%" + leitor.toUpperCase() + "%' "
 				+ " and c.sit_fornecedor = 1 ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
@@ -583,16 +581,18 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
 	
-	public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, List<ConteudoChaveNumerica> empresas, List<ConteudoChaveNumerica> localCaixa, String transportadora, int pedido, int nota) {
-		String query = " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
+	public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa, 
+			String transportadora, int pedido, int nota, boolean consideraCD) {
+		
+		String query = " select minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
+				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
+		
+		query += " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
 				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
 				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g "
 				+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
-				+ " 	      and a.codigo_empresa in (" + ConteudoChaveNumerica.parseValueToString(empresas) + ") "
 				+ "           and a.pedido_venda = b.pedido_venda "
-				+ " 		  and b.cli_ped_cgc_cli9 <> 35303139 "
-				+ "		      and b.cli_ped_cgc_cli4 <> 1 "
-				+ "			  and b.cli_ped_cgc_cli2 <> 99 "
+				+ " 		  and a.codigo_empresa in (" + empresa + ") "
 				+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
 				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
@@ -603,7 +603,10 @@ public class ExpedicaoCustom {
 				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
 				+ " 		  and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T'))) "
 				+ "  		  and g.cod_cidade = c.cod_cidade ";
-				
+		
+				if (!consideraCD) {
+					query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
+				}
 				if (nota > 0) {
 					query += " and a.num_nota_fiscal = " + nota;
 				}
@@ -627,11 +630,8 @@ public class ExpedicaoCustom {
 						+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
 						+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g "
 						+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
-						+ " 	      and a.codigo_empresa in (" + ConteudoChaveNumerica.parseValueToString(empresas) + ") "
 						+ "           and a.pedido_venda = b.pedido_venda "
-						+ "			  and b.cli_ped_cgc_cli9 <> 35303139 "
-						+ "			  and b.cli_ped_cgc_cli4 <> 1 "
-						+ "			  and b.cli_ped_cgc_cli2 <> 99 "
+						+ " 		  and a.codigo_empresa in (" + empresa + ") "
 						+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
 						+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
 						+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
@@ -642,6 +642,9 @@ public class ExpedicaoCustom {
 						+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
 						+ " 		  and g.cod_cidade = c.cod_cidade ";
 						
+						if (!consideraCD) {
+							query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
+						}
 						if (nota > 0) {
 							query += " and a.num_nota_fiscal = " + nota;
 						}
@@ -658,6 +661,8 @@ public class ExpedicaoCustom {
 							query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
 						}
 						query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
+						
+						query += ") minuta order by minuta.nota ";
 						
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
@@ -694,16 +699,14 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
 	
-	public List<ConsultaMinutaTransporte> findVolumesSemLeituraAtac(String dataEmiInicio, String dataEmiFim, List<ConteudoChaveNumerica> empresas, String transportadora, int pedido, int nota) {
+	public List<ConsultaMinutaTransporte> findVolumesSemLeituraAtac(String dataEmiInicio, String dataEmiFim, int empresa, String transportadora, int pedido, int nota, boolean consideraCD) {
 		String query = " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
 				+ " e.numero_volume caixa, decode(e.local_caixa,0, '0 - NÃO ENDEREÇADO', 1,'1 - NO ENDEREÇO',2, '2 - COM NOTA EMITIDA', 3,'3 - INDEFINIDA', 6,'6 - LIST IMPRESSA/PRÉ FATURADA', 7,'7 - TRANSPORTADORA', 9,'9 - FATURADA') local "
 				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e "
 				+ " where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
-				+ " and a.codigo_empresa in (" + ConteudoChaveNumerica.parseValueToString(empresas) + ") "
+				+ " and a.codigo_empresa in (" + empresa + ") "
 				+ " and a.pedido_venda = b.pedido_venda "
-				+ " and b.cli_ped_cgc_cli9 <> 35303139 "
-				+ " and b.cli_ped_cgc_cli4 <> 1 "
-				+ " and b.cli_ped_cgc_cli2 <> 99 "
+				+ " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 "
 				+ " and c.cgc_9 = b.cli_ped_cgc_cli9 "
 				+ " and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ " and c.cgc_2 = b.cli_ped_cgc_cli2 "
@@ -712,6 +715,11 @@ public class ExpedicaoCustom {
 				+ " and a.cod_rep_cliente <> 162 "
 				+ " and e.local_caixa not in (9) ";
 		
+		if (consideraCD) {
+			query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 = 35303139199 ";
+		} else {
+			query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
+		}
 		if (nota > 0) {
 			query += " and a.num_nota_fiscal = " + nota;
 		}
