@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.model.Colecao;
 import br.com.live.model.ConsultaConsumoMetragem;
 import br.com.live.model.ConsultaTabelaConsumo;
 import br.com.live.model.ConsultaTempoMaquinaCM;
@@ -15,6 +16,7 @@ import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.Maquinas;
 import br.com.live.model.OptionProduto;
 import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 import ch.qos.logback.core.net.SyslogOutputStream;
 
 @Repository
@@ -239,4 +241,13 @@ public class EngenhariaCustom {
 				
 		return jdbcTemplate.queryForObject(query, Long.class);
 	}
+	
+	public List<ConteudoChaveNumerica> findAllCodOperacao(String codOp) {
+		String query = "select a.codigo_operacao value, a.codigo_operacao || ' - ' || a.nome_operacao label from mqop_040 a "
+				+ " where a.codigo_operacao || a.nome_operacao LIKE '%" + codOp + "%'"
+				+ " order by a.codigo_operacao";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
 }

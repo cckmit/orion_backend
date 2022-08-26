@@ -302,8 +302,12 @@ public class EngenhariaService {
 	}
 	
 	public void saveTempoMaquinaCM(long id, String grupo, String subgrupo, float medida, float tempo) {
-		TempoMaquinaCM dadosTempoMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(id);
-				
+		
+		TempoMaquinaCM dadosTempoMaq = null;
+		
+		if (id > 0) dadosTempoMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(id);
+		else dadosTempoMaq = tempoMaquinaCMRepository.findByMaqSubMaquinaCM(grupo, subgrupo, medida);
+		
 		if (dadosTempoMaq == null) { 
 			dadosTempoMaq = new TempoMaquinaCM(engenhariaCustom.nextId(), grupo, subgrupo, medida, tempo);
 		} else {
@@ -317,8 +321,7 @@ public class EngenhariaService {
 	
 	public void importarTempoMaquinaCM(List<TempoMaquinaCM> tabImportarTempoMaq) {
 		for (TempoMaquinaCM dados : tabImportarTempoMaq) {
-			TempoMaquinaCM dadosSave = new TempoMaquinaCM(engenhariaCustom.nextId(), dados.grupo, dados.subgrupo, dados.medida, dados.tempo);
-			tempoMaquinaCMRepository.save(dadosSave);
+			saveTempoMaquinaCM(0, dados.grupo, dados.subgrupo, dados.medida, dados.tempo);			
 		}
 	}
 }

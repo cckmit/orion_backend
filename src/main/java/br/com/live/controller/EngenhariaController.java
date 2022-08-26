@@ -217,11 +217,17 @@ public class EngenhariaController {
     @RequestMapping(value = "/find-tempo-maquinacm-by-id/{idTempoMaqCM}", method = RequestMethod.GET)
     public TempoMaquinaCM findByidTempoMaqCM(@PathVariable("idTempoMaqCM") long idTempoMaqCM) {
         return engenhariaService.findTempoMaquinaCMById(idTempoMaqCM);
-    }    
-    
+    }
+    //
+    // Return Codigo de Operação
+    //
+    @RequestMapping(value = "/codigo-operacao/{codOp}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllCodOperacao(@PathVariable("codOp") String codOp) {
+    	return engenhariaCustom.findAllCodOperacao(codOp.toUpperCase());
+    }    	
 
     @RequestMapping(value = "/save-marcas", method = RequestMethod.POST)
-    public MarcasFio saveMarcas(@RequestBody BodyEngenharia body) {                  
+    public MarcasFio saveMarcas(@RequestBody BodyEngenharia body) {
     	return engenhariaService.saveMarcas(body.id, body.descricao);
     }
     
@@ -344,5 +350,6 @@ public class EngenhariaController {
     	engenhariaService.deleteTempoMaquinaCMById(idTempoMaqCM);
         return engenhariaCustom.findAllTempoMaquinaCM();
     }
+    
     
 }
