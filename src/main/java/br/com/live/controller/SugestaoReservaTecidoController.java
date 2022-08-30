@@ -49,7 +49,7 @@ public class SugestaoReservaTecidoController {
 				ConteudoChaveNumerica.parseValueToString(body.artigos), 
 				ConteudoChaveAlfaNum.parseValueToString(body.tecidos), 
 				ConteudoChaveNumerica.parseValueToString(body.depositos), 
-				body.isSomenteFlat, body.isDiretoCostura, body.percentualMinimoAtender, body.regraReserva);		
+				body.isSomenteFlat, body.isDiretoCostura, body.isOrdensSemTecido, body.percentualMinimoAtender, body.regraReserva);		
 	}
 	
 	@RequestMapping(value = "/liberar", method = RequestMethod.POST)

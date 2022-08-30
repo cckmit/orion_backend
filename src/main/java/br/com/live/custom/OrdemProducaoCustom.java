@@ -647,7 +647,7 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
 	
-	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat, boolean isDiretoCostura) { 
+	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido) { 
 
 		String query = " select pre_ordens_priorizadas.ordem_producao ordemProducao, "  
 	    + " pre_ordens_priorizadas.periodo_producao periodo, "
@@ -754,8 +754,8 @@ public class OrdemProducaoCustom {
 	              + " where w.pcpc0302_orprocor = aa.ordem_producao "
 	              + " and w.tecordco_nivel99 || '.' || w.tecordco_grupo || '.' || w.tecordco_subgrupo || '.' || w.tecordco_item in (" + tecidos + "))";                               
 	                               
-		// Deve desconsiderar as ordens sem tecidos
-		query += " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = aa.ordem_producao ) ";
+		if (!isOrdensSemTecido)
+			query += " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = aa.ordem_producao ) ";
 		
 		if (isSomenteFlat)
 			query += " and exists ( select 1 from mqop_050 m "  

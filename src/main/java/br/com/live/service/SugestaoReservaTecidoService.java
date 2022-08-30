@@ -34,8 +34,8 @@ public class SugestaoReservaTecidoService {
 		return sugestaoReservaTecidoCustom.findReferenciasEmOrdensParaLiberacao();				
 	}	
 
-	public SugestaoReservaTecidos calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, int percentualMinimoAtender, int regraReserva) {
-		return sugestaoReservaTecidoPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositos, isSomenteFlat, isDiretoCostura, percentualMinimoAtender, regraReserva);		
+	public SugestaoReservaTecidos calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {
+		return sugestaoReservaTecidoPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, percentualMinimoAtender, regraReserva);		
 	}
 	
 	public int findQtdePecasLiberadasDia(long idUsuario) {
