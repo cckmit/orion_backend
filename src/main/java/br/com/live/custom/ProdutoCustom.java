@@ -1229,4 +1229,20 @@ public class ProdutoCustom {
 		}
 		return totalProdutos;
 	}
+	
+	public String findNarrativaProduto(String nivel, String grupo, String sub, String item) {
+		String narrativa = "";
+		
+		String query = " select a.narrativa from basi_010 a "
+				+ " where a.nivel_estrutura = '" + nivel + "' "
+				+ " and a.grupo_estrutura = '" + grupo + "' "
+				+ " and a.subgru_estrutura = '" + sub + "' "
+				+ " and a.item_estrutura = '" + item + "' ";
+		try {
+			narrativa = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			narrativa = "";
+		}
+		return narrativa;
+	}
 }
