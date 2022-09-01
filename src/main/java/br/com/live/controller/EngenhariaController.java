@@ -17,27 +17,32 @@ import br.com.live.entity.ConsumoMetragemFio;
 import br.com.live.entity.MarcasFio;
 import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.TempoMaquinaCM;
+import br.com.live.entity.OperacaoXMicromovimentos;
 import br.com.live.entity.TipoPonto;
 import br.com.live.entity.TipoPontoFio;
 import br.com.live.entity.TiposFio;
 import br.com.live.model.ConsultaConsumoMetragem;
+import br.com.live.model.ConsultaOperacaoXMicromovimentos;
 import br.com.live.model.ConsultaTabelaConsumo;
 import br.com.live.model.ConsultaTempoMaquinaCM;
 import br.com.live.model.ConsultaTipoPonto;
 import br.com.live.model.ConsultaTipoPontoFio;
 import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.Maquinas;
+import br.com.live.model.Operacao;
 import br.com.live.model.OptionProduto;
 import br.com.live.repository.ConsumoFiosLinhasRepository;
 import br.com.live.repository.ConsumoMetragemFioRepository;
 import br.com.live.repository.MarcasFioRepository;
 import br.com.live.repository.TempoMaquinaCMRepository;
+import br.com.live.repository.OperXMicromvRepository;
 import br.com.live.repository.TiposFioRepository;
 import br.com.live.repository.TiposPontoFioRepository;
 import br.com.live.repository.TiposPontoRepository;
 import br.com.live.service.EngenhariaService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.StatusGravacao;
 
 @RestController
 @CrossOrigin
@@ -53,11 +58,12 @@ public class EngenhariaController {
     private ConsumoFiosLinhasRepository consumoFiosLinhasRepository;
     private ConsumoMetragemFioRepository consumoMetragemFioRepository;
     private TempoMaquinaCMRepository tempoMaquinaCMRepository;
+    private OperXMicromvRepository operXMicromvRepository;
 
 	@Autowired
 	public EngenhariaController(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository, EngenhariaService engenhariaService, EngenhariaCustom engenhariaCustom,
     TiposPontoFioRepository tiposPontoFioRepository, TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository, ConsumoMetragemFioRepository consumoMetragemFioRepository,
-    TempoMaquinaCMRepository tempoMaquinaCMRepository) {
+    TempoMaquinaCMRepository tempoMaquinaCMRepository, OperXMicromvRepository operXMicromvRepository) {
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaService = engenhariaService;
@@ -67,6 +73,7 @@ public class EngenhariaController {
         this.consumoFiosLinhasRepository = consumoFiosLinhasRepository;
         this.consumoMetragemFioRepository = consumoMetragemFioRepository;
         this.tempoMaquinaCMRepository = tempoMaquinaCMRepository;
+        this.operXMicromvRepository = operXMicromvRepository;
 	}
 	
 	@RequestMapping(value = "/find-all-marcas", method = RequestMethod.GET)
@@ -150,6 +157,15 @@ public class EngenhariaController {
     public OptionProduto getDadosReferencia(@PathVariable("referencia") String referencia) {
         return engenhariaCustom.findReferenciaById(referencia);
     }
+    
+    
+    //
+    // Obter Dados Operação
+    //
+    @RequestMapping(value = "/obter-maquina-por-operacao/{operacao}", method = RequestMethod.GET)
+    public Operacao obterMaqPorOperacao(@PathVariable("operacao") int operacao) {
+        return engenhariaCustom.findOperacaoByCodOperacao(operacao);
+    }   
 
     //
     // Consulta Tipo de Ponto por Referencia
@@ -214,6 +230,11 @@ public class EngenhariaController {
     	return engenhariaCustom.findAllTempoMaquinaCM();
     }
     
+    @RequestMapping(value = "/find-all-operacao-x-micromv/{operacao}", method = RequestMethod.GET)
+    public List<ConsultaOperacaoXMicromovimentos> findAllOperacaoXMicromv(@PathVariable("operacao") int operacao) {
+    	return engenhariaCustom.findAllOperacaoXMicromv(operacao);
+    } 
+    
     @RequestMapping(value = "/find-tempo-maquinacm-by-id/{idTempoMaqCM}", method = RequestMethod.GET)
     public TempoMaquinaCM findByidTempoMaqCM(@PathVariable("idTempoMaqCM") long idTempoMaqCM) {
         return engenhariaService.findTempoMaquinaCMById(idTempoMaqCM);
@@ -224,7 +245,15 @@ public class EngenhariaController {
     @RequestMapping(value = "/codigo-operacao/{codOp}", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findAllCodOperacao(@PathVariable("codOp") String codOp) {
     	return engenhariaCustom.findAllCodOperacao(codOp.toUpperCase());
-    }    	
+    }
+    
+    //
+    // Return Codigo de Operação
+    //
+    @RequestMapping(value = "/find-next-seq-operacao/{codOp}", method = RequestMethod.GET)
+    public int findNextSequencia(@PathVariable("codOp") int codOp) {
+    	return engenhariaCustom.findNextSequecia(codOp);
+    } 
 
     @RequestMapping(value = "/save-marcas", method = RequestMethod.POST)
     public MarcasFio saveMarcas(@RequestBody BodyEngenharia body) {
@@ -327,15 +356,13 @@ public class EngenhariaController {
     }
     
     @RequestMapping(value = "/delete-micromovimento/{idMicroMov}", method = RequestMethod.DELETE)
-    public List<Micromovimentos> deleteMicroMov(@PathVariable("idMicroMov") String idMicroMov) {                  
-    	engenhariaService.deleteMicroMovimentoById(idMicroMov);
-        return engenhariaService.findAllMicromovimentos();
+    public StatusGravacao deleteMicroMov(@PathVariable("idMicroMov") String idMicroMov) {                  
+    	return engenhariaService.deleteMicroMovimentoById(idMicroMov);        
     }
     
     @RequestMapping(value = "/salvar-tempo-maq", method = RequestMethod.POST)
     public List<ConsultaTempoMaquinaCM> salvarTempoMaquina(@RequestBody BodyEngenharia body) {                  
     	engenhariaService.saveTempoMaquinaCM(body.idTempoMaquina, body.grupoMaquina, body.subGrupoMaquina, body.medidaMaquina, body.tempoMaquina);
-    	System.out.println("saveTempoMaquina " + body.idTempoMaquina);
     	return engenhariaCustom.findAllTempoMaquinaCM();
     }
     
@@ -346,10 +373,20 @@ public class EngenhariaController {
     }
     
     @RequestMapping(value = "/delete-tempo-maquina-cm/{idTempoMaqCM}", method = RequestMethod.DELETE)
-    public List<ConsultaTempoMaquinaCM> deleteTempoMaquina(@PathVariable("idTempoMaqCM") long idTempoMaqCM) {                  
-    	engenhariaService.deleteTempoMaquinaCMById(idTempoMaqCM);
-        return engenhariaCustom.findAllTempoMaquinaCM();
+    public StatusGravacao deleteTempoMaquina(@PathVariable("idTempoMaqCM") long idTempoMaqCM) {                  
+        return engenhariaService.deleteTempoMaquina(idTempoMaqCM);
     }
     
+    @RequestMapping(value = "/salvar-oper-x-micromv", method = RequestMethod.POST)
+    public List<OperacaoXMicromovimentos> salvarOperXMicromv(@RequestBody BodyEngenharia body) { 
+    	engenhariaService.saveOperXMicromovimento(body.idOperXMicroMovimento, body.codOperacao, body.sequencia, body.tipo, body.idMicromovimento, body.idTpMaquina);
+    	return operXMicromvRepository.findAll();
+    }
     
+    @RequestMapping(value = "/delete-oper-x-micromv/{codOp}/{id}", method = RequestMethod.DELETE)
+    public List<ConsultaOperacaoXMicromovimentos> deleteOperXMicromv(@PathVariable("codOp") int codOp, @PathVariable("id") long id) {
+    	engenhariaService.deleteOperXMicromvById(id);
+    	return engenhariaCustom.findAllOperacaoXMicromv(codOp);
+    }
+
 }

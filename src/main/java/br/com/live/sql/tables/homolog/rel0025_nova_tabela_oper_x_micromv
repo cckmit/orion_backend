@@ -1,0 +1,9 @@
+CREATE TABLE orion_eng_260 (
+          id number(9),
+          cod_operacao number(20),           
+          sequencia number(20),
+          tipo number(20),
+          id_micromovimento varchar2(10),
+          id_tempo_maquina number(6),
+          constraint orion_eng_260_pk PRIMARY KEY(id));
+          
