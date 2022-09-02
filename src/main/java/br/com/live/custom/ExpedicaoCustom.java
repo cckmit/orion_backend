@@ -582,7 +582,7 @@ public class ExpedicaoCustom {
 	}
 	
 	public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
-																 String transportadora, int pedido, int nota, boolean consideraCD) {
+												 String transportadora, int pedido, int nota, boolean consideraCD) {
 		String query = "";
 
 		if (empresa == 1) {
@@ -590,9 +590,6 @@ public class ExpedicaoCustom {
 		} else {
 			query = retornaQueryPedidosEmpresa100(dataEmiInicio, dataEmiFim, dataLibPaypalIni, dataLibPaypalFim, empresa, localCaixa, transportadora, pedido, nota, consideraCD);
 		}
-
-		System.out.println("QUERY: " + query);
-
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
 	
