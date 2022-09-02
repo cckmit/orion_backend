@@ -753,8 +753,10 @@ public class OrdemProducaoCustom {
 			query += " and exists (select 1 from pcpc_032 w "
 	              + " where w.pcpc0302_orprocor = aa.ordem_producao "
 	              + " and w.tecordco_nivel99 || '.' || w.tecordco_grupo || '.' || w.tecordco_subgrupo || '.' || w.tecordco_item in (" + tecidos + "))";                               
-	                               
-		if (!isOrdensSemTecido)
+	         
+		if (isOrdensSemTecido)
+			query += " and not exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = aa.ordem_producao ) ";
+		else 
 			query += " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = aa.ordem_producao ) ";
 		
 		if (isSomenteFlat)
