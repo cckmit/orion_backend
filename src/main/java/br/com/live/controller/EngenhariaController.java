@@ -141,7 +141,6 @@ public class EngenhariaController {
     public List<ConsultaTipoPontoFio> findTiposPontoFioById(@PathVariable("idTipoPonto") int idTipoPonto) {                  
         return engenhariaCustom.findTipoPontoFio(idTipoPonto);
     }
-
     //
     // Consulta Tipo de Ponto por Referencia
     //
@@ -307,6 +306,11 @@ public class EngenhariaController {
     	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet, body.idTipoFio, body.observacao);
     }
     
+    
+    @RequestMapping(value = "/atualiza-tempo-homem/{operacao}", method = RequestMethod.GET)
+    public void atualizarTempoHomem(@PathVariable("operacao") int operacao) {
+    	engenhariaService.atualizaTempoOperacao(operacao);
+    }
     
     //
     // Salvar Micromovimentos

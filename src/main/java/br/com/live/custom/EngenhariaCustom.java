@@ -327,4 +327,12 @@ public class EngenhariaCustom {
 		}
 		return sequencia;
 	}
+	
+	public void atualizarTempoHomem(int operacao, float tempoTotal) {
+		
+		String query = " UPDATE mqop_040 a SET a.tempo_homem = ? "
+				+ " WHERE a.codigo_operacao = ? ";		
+		
+		jdbcTemplate.update(query, tempoTotal, operacao);
+	}
 }

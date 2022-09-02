@@ -372,4 +372,28 @@ public class EngenhariaService {
 		}
 		operXMicromvRepository.save(dadosOperXMicromv);
 	}
+	public void atualizaTempoOperacao(int operacao) {
+		float tempoTotal = 0;
+		float tempoHomem = 0;
+		
+		List<OperacaoXMicromovimentos> listaSequencia = operXMicromvRepository.findByCodOper(operacao);
+		
+		for (OperacaoXMicromovimentos dadosSeq : listaSequencia) {
+			
+			if (dadosSeq.tipo == MICROMOVIMENTO) {
+				//Buscar Total de Tempo do Micromovimento
+				Micromovimentos dadosMicromv = micromovimentosRepository.findByIdMicroMov(dadosSeq.idMicromovimento);
+				if (dadosMicromv != null);
+					tempoHomem = dadosMicromv.tempo;
+			} else {
+				// Buscar Total de Tempo Máquina
+				TempoMaquinaCM dadosMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(dadosSeq.idTempoMaquina);
+				if (dadosMaq != null);
+					tempoHomem = dadosMaq.tempo;
+			}
+			tempoTotal = tempoTotal + tempoHomem;	
+		}
+		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
+		
+	}
 }
