@@ -48,4 +48,11 @@ public class BodyEngenharia {
 	
 	public List<TempoMaquinaCM> tabImportarTempoMaq;
 	
+	public long idOperXMicroMovimento;
+	public int codOperacao;
+	public int tipo;
+	public String idMicromovimento;
+	public int idTpMaquina;
+
+	
 }

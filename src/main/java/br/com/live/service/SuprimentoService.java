@@ -55,7 +55,15 @@ public class SuprimentoService {
 					int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);												
 					int deposito = item.getDeposito();
 					if (deposito == 0) deposito = depositoPadrao;
-					suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, deposito, requisicao.getCentroCusto(), item.getNarrativa());					
+					
+					String descricaoProduto = produtoCustom.findNarrativaProduto(item.getNivel(), item.getGrupo(), item.getSub(), item.getItem());
+					
+					if (descricaoProduto.equals("")) {
+						descricaoProduto = item.getNarrativa();
+					}
+					
+					suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, deposito, requisicao.getCentroCusto(), 
+							descricaoProduto);					
 				} else {
 					msgComplementar = " (Atenção! Alguns itens não foram gravados na requisição por estarem com quantidades zeradas.)";
 				}

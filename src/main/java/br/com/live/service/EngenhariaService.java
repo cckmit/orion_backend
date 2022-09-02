@@ -3,12 +3,15 @@ package br.com.live.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 import br.com.live.custom.EngenhariaCustom;
 import br.com.live.entity.ConsumoFiosLinhas;
 import br.com.live.entity.ConsumoMetragemFio;
 import br.com.live.entity.MarcasFio;
 import br.com.live.entity.Micromovimentos;
+import br.com.live.entity.OperacaoXMicromovimentos;
 import br.com.live.entity.TempoMaquinaCM;
 import br.com.live.entity.TipoPonto;
 import br.com.live.entity.TipoPontoFio;
@@ -17,15 +20,20 @@ import br.com.live.repository.ConsumoFiosLinhasRepository;
 import br.com.live.repository.ConsumoMetragemFioRepository;
 import br.com.live.repository.MarcasFioRepository;
 import br.com.live.repository.MicromovimentosRepository;
+import br.com.live.repository.OperXMicromvRepository;
 import br.com.live.repository.TempoMaquinaCMRepository;
 import br.com.live.repository.TiposFioRepository;
 import br.com.live.repository.TiposPontoFioRepository;
 import br.com.live.repository.TiposPontoRepository;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.StatusGravacao;
 
+@Transactional
 @Service
 public class EngenhariaService {
 
+	private static final int MICROMOVIMENTO = 1;
+	private static final int TEMPO_MAQUINA = 2;
 	private final MarcasFioRepository marcasFioRepository;
 	private final TiposFioRepository tiposFioRepository;
 	private final EngenhariaCustom engenhariaCustom;
@@ -35,12 +43,13 @@ public class EngenhariaService {
 	private final ConsumoMetragemFioRepository consumoMetragemFioRepository;
 	private final MicromovimentosRepository micromovimentosRepository;
 	private final TempoMaquinaCMRepository tempoMaquinaCMRepository;
+	private final OperXMicromvRepository operXMicromvRepository;
 
 	public EngenhariaService(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository,
 			EngenhariaCustom engenhariaCustom, TiposPontoFioRepository tiposPontoFioRepository,
 			TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository,
 			ConsumoMetragemFioRepository consumoMetragemFioRepository, MicromovimentosRepository micromovimentosRepository,
-			TempoMaquinaCMRepository tempoMaquinaCMRepository) {
+			TempoMaquinaCMRepository tempoMaquinaCMRepository, OperXMicromvRepository operXMicromvRepository) {
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaCustom = engenhariaCustom;
@@ -50,6 +59,7 @@ public class EngenhariaService {
 		this.consumoMetragemFioRepository = consumoMetragemFioRepository;
 		this.micromovimentosRepository = micromovimentosRepository;
 		this.tempoMaquinaCMRepository = tempoMaquinaCMRepository;
+		this.operXMicromvRepository = operXMicromvRepository;
 	}
 
 	public MarcasFio saveMarcas(int id, String descricao) {
@@ -249,12 +259,32 @@ public class EngenhariaService {
 		consumoFiosLinhasRepository.deleteById(idComposto);
 	}
 	
-	public void deleteMicroMovimentoById(String idMicroMov) {
+	public StatusGravacao deleteMicroMovimentoById(String idMicroMov) {
+		if (engenhariaCustom.existsMicromovimento(idMicroMov)) 
+			return new StatusGravacao(false, "Não é possível excluir o Micromovimento, pois o mesmo está em uso no cadastro de Relacionamento Operação X Micromovimentos!", findAllMicromovimentos()); 
 		micromovimentosRepository.deleteById(idMicroMov);
+		return new StatusGravacao(true, "Excluído com sucesso!", findAllMicromovimentos());
+	}
+	
+	public StatusGravacao deleteTempoMaquina(long idTempoMaqCM) {
+		System.out.println("Entrou " + idTempoMaqCM);
+		if (engenhariaCustom.existsTempoMaquina(idTempoMaqCM)) 
+			return new StatusGravacao(false, "Não é possível excluir o Tempo Máquina, pois o mesmo está em uso no cadastro de Relacionamento Operação X Micromovimentos!", engenhariaCustom.findAllTempoMaquinaCM()); 
+		tempoMaquinaCMRepository.deleteById(idTempoMaqCM);
+		tempoMaquinaCMRepository.flush();
+		return new StatusGravacao(true, "Excluído com sucesso!", engenhariaCustom.findAllTempoMaquinaCM());
+	}
+	
+	public void deleteOperXMicromvById(long id) {
+		operXMicromvRepository.deleteById(id);
 	}
 	
 	public List<Micromovimentos> findAllMicromovimentos() {
 		return micromovimentosRepository.findAll();
+	}
+	
+	public List<OperacaoXMicromovimentos> findAllOperMicromovimentos() {
+		return operXMicromvRepository.findAll();
 	}
 	
 	public Micromovimentos findMicroMovimentoById(String idMicroMov) {
@@ -323,5 +353,47 @@ public class EngenhariaService {
 		for (TempoMaquinaCM dados : tabImportarTempoMaq) {
 			saveTempoMaquinaCM(0, dados.grupo, dados.subgrupo, dados.medida, dados.tempo);			
 		}
+	}
+	
+	public void saveOperXMicromovimento(long id, int codOperacao, int sequencia, int tipo, String idMicromovimento, int idTempoMaquina) {
+		
+		OperacaoXMicromovimentos dadosOperXMicromv = operXMicromvRepository.findById(id);
+		
+		if (dadosOperXMicromv == null) { 
+			id = operXMicromvRepository.findNextID();
+			dadosOperXMicromv = new OperacaoXMicromovimentos(id, codOperacao, sequencia, tipo, idMicromovimento, idTempoMaquina);
+		} else {
+			dadosOperXMicromv.sequencia = sequencia;
+			dadosOperXMicromv.tipo = tipo;
+			dadosOperXMicromv.idMicromovimento = "";
+			dadosOperXMicromv.idTempoMaquina = 0;				
+			if (tipo == MICROMOVIMENTO) dadosOperXMicromv.idMicromovimento = idMicromovimento;
+			if (tipo == TEMPO_MAQUINA) dadosOperXMicromv.idTempoMaquina = idTempoMaquina;				
+		}
+		operXMicromvRepository.save(dadosOperXMicromv);
+	}
+	public void atualizaTempoOperacao(int operacao) {
+		float tempoTotal = 0;
+		float tempoHomem = 0;
+		
+		List<OperacaoXMicromovimentos> listaSequencia = operXMicromvRepository.findByCodOper(operacao);
+		
+		for (OperacaoXMicromovimentos dadosSeq : listaSequencia) {
+			
+			if (dadosSeq.tipo == MICROMOVIMENTO) {
+				//Buscar Total de Tempo do Micromovimento
+				Micromovimentos dadosMicromv = micromovimentosRepository.findByIdMicroMov(dadosSeq.idMicromovimento);
+				if (dadosMicromv != null);
+					tempoHomem = dadosMicromv.tempo;
+			} else {
+				// Buscar Total de Tempo Máquina
+				TempoMaquinaCM dadosMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(dadosSeq.idTempoMaquina);
+				if (dadosMaq != null);
+					tempoHomem = dadosMaq.tempo;
+			}
+			tempoTotal = tempoTotal + tempoHomem;	
+		}
+		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
+		
 	}
 }

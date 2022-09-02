@@ -8,12 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.model.Colecao;
 import br.com.live.model.ConsultaConsumoMetragem;
+import br.com.live.model.ConsultaOperacaoXMicromovimentos;
 import br.com.live.model.ConsultaTabelaConsumo;
 import br.com.live.model.ConsultaTempoMaquinaCM;
 import br.com.live.model.ConsultaTipoPonto;
 import br.com.live.model.ConsultaTipoPontoFio;
 import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.Maquinas;
+import br.com.live.model.Operacao;
 import br.com.live.model.OptionProduto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -242,6 +244,18 @@ public class EngenhariaCustom {
 		return jdbcTemplate.queryForObject(query, Long.class);
 	}
 	
+	public Operacao findOperacaoByCodOperacao (int operacao) {
+	
+		String query = " select a.codigo_operacao codigo,a.nome_operacao descricao,a.grupo_maquinas grupoMaquina,a.sub_maquina subMaquina,b.nome_grupo_maq || ' ' || c.nome_sbgrupo_maq descMaquina,c.interferencia "
+				+ " from mqop_040 a, mqop_010 b, mqop_020 c "
+				+ " where a.codigo_operacao = " + operacao  
+				+ " and b.grupo_maquina (+) = a.grupo_maquinas "
+				+ " and c.grupo_maquina (+) = a.grupo_maquinas "
+				+ " and c.subgrupo_maquina (+) = a.sub_maquina ";
+		
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(Operacao.class));
+	}	
+	
 	public List<ConteudoChaveNumerica> findAllCodOperacao(String codOp) {
 		String query = "select a.codigo_operacao value, a.codigo_operacao || ' - ' || a.nome_operacao label from mqop_040 a "
 				+ " where a.codigo_operacao || a.nome_operacao LIKE '%" + codOp + "%'"
@@ -250,4 +264,75 @@ public class EngenhariaCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
+	
+	public List<ConsultaOperacaoXMicromovimentos> findAllOperacaoXMicromv(int operacao){
+			
+		String query = "select a.id, "
+				+ " a.sequencia, "
+				+ " a.tipo, "
+				+ " decode(a.tipo,1,b.id || ' - ' || b.descricao,c.grupo || '.' || c.subgrupo || ' - ' || d.nome_grupo_maq || ' ' || e.nome_sbgrupo_maq || ' - MEDIDA: ' || c.medida || ' CM') informacao, "
+				+ " nvl(decode(a.tipo,1,b.tempo,c.tempo), 0) tempo, "
+				+ " nvl(decode(a.tipo,1,b.interferencia, e.interferencia), 0) interferencia, "
+				+ " a.id_micromovimento idMicromovimento, "
+				+ " a.id_tempo_maquina idTempoMaquina "
+				+ " from orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_010 d, mqop_020 e "
+				+ " where a.cod_operacao = " + operacao
+				+ " and b.id (+) = a.id_micromovimento "
+				+ " and c.id (+) = a.id_tempo_maquina "
+				+ " and d.grupo_maquina (+) = c.grupo "
+				+ " and e.grupo_maquina (+) = c.grupo "
+				+ " and e.subgrupo_maquina (+) = c.subgrupo "
+				+ " order by a.sequencia";
+	
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaOperacaoXMicromovimentos.class));
+	}
+	
+	public boolean existsMicromovimento(String idMicromovimento) {
+		int encontrou = 0;
+		
+		String query = " SELECT 1 FROM orion_eng_260 b WHERE b.id_micromovimento = ? ";
+		
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class, idMicromovimento);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+		
+		return (encontrou == 1);		
+	}
+	
+	public boolean existsTempoMaquina(long idtempoMaquina) {
+		int encontrou = 0;
+		
+		String query = " SELECT 1 FROM orion_eng_260 b WHERE b.id_tempo_maquina = ? ";
+		
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class, idtempoMaquina);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+		
+		return (encontrou == 1);		
+	}
+	
+	public int findNextSequecia(int operacao) {
+		int sequencia = 0;
+		
+		String query = "select NVL(MAX(a.sequencia), 0) + 5 from orion_eng_260 a "
+				+ " where a.cod_operacao = " + operacao;
+		try {
+			sequencia = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			sequencia = 0;
+		}
+		return sequencia;
+	}
+	
+	public void atualizarTempoHomem(int operacao, float tempoTotal) {
+		
+		String query = " UPDATE mqop_040 a SET a.tempo_homem = ? "
+				+ " WHERE a.codigo_operacao = ? ";		
+		
+		jdbcTemplate.update(query, tempoTotal, operacao);
+	}
 }

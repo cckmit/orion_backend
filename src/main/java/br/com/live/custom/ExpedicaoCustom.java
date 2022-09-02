@@ -581,89 +581,15 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
 	
-	public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa, 
-			String transportadora, int pedido, int nota, boolean consideraCD) {
-		
-		String query = " select minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
-				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
-		
-		query += " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
-				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
-				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g "
-				+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
-				+ "           and a.pedido_venda = b.pedido_venda "
-				+ " 		  and a.codigo_empresa in (" + empresa + ") "
-				+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
-				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
-				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
-				+ "           and e.pedido_venda = a.pedido_venda "
-				+ "           and e.situacao_volume = 2 "
-				+ "           and a.cod_rep_cliente <> 162 "
-				+ "           and f.cod_empresa (+) = a.codigo_empresa "
-				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
-				+ " 		  and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T'))) "
-				+ "  		  and g.cod_cidade = c.cod_cidade ";
-		
-				if (!consideraCD) {
-					query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
-				}
-				if (nota > 0) {
-					query += " and a.num_nota_fiscal = " + nota;
-				}
-				if (pedido > 0) {
-					query += " and a.pedido_venda = " + pedido; 
-				}
-				if (localCaixa.size() > 0) {
-					query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
-				}
-				if (!transportadora.equals("")) {
-					query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
-				}
-				if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
-					query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
-				}
-				query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
-				
-				query += " UNION ";
-				
-				query += " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
-						+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
-						+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g "
-						+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
-						+ "           and a.pedido_venda = b.pedido_venda "
-						+ " 		  and a.codigo_empresa in (" + empresa + ") "
-						+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
-						+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
-						+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
-						+ "           and e.pedido_venda = a.pedido_venda "
-						+ "           and e.situacao_volume = 2 "
-						+ "           and a.cod_rep_cliente <> 162 "
-						+ "           and f.cod_empresa (+) = a.codigo_empresa "
-						+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
-						+ " 		  and g.cod_cidade = c.cod_cidade ";
-						
-						if (!consideraCD) {
-							query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
-						}
-						if (nota > 0) {
-							query += " and a.num_nota_fiscal = " + nota;
-						}
-						if (pedido > 0) {
-							query += " and a.pedido_venda = " + pedido; 
-						}
-						if (localCaixa.size() > 0) {
-							query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
-						}
-						if (!transportadora.equals("")) {
-							query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
-						}
-						if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
-							query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
-						}
-						query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
-						
-						query += ") minuta order by minuta.nota ";
-						
+	public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
+												 String transportadora, int pedido, int nota, boolean consideraCD) {
+		String query = "";
+
+		if (empresa == 1) {
+			query = retornaQueryPedidosEmpresa1(dataEmiInicio, dataEmiFim, dataLibPaypalIni, dataLibPaypalFim, empresa, localCaixa, transportadora, pedido, nota, consideraCD);
+		} else {
+			query = retornaQueryPedidosEmpresa100(dataEmiInicio, dataEmiFim, dataLibPaypalIni, dataLibPaypalFim, empresa, localCaixa, transportadora, pedido, nota, consideraCD);
+		}
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
 	
@@ -730,5 +656,175 @@ public class ExpedicaoCustom {
 			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
 		}
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
+	}
+
+	public String retornaQueryPedidosEmpresa1(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
+										String transportadora, int pedido, int nota, boolean consideraCD) {
+		String query = " select minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
+				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
+
+		query += " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
+				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
+				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g "
+				+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
+				+ "           and a.pedido_venda = b.pedido_venda "
+				+ " 		  and a.codigo_empresa in (" + empresa + ") "
+				+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
+				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
+				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
+				+ "           and e.pedido_venda = a.pedido_venda "
+				+ "           and e.situacao_volume = 2 "
+				+ "           and a.cod_rep_cliente <> 162 "
+				+ "           and f.cod_empresa (+) = a.codigo_empresa "
+				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
+				+ " 		  and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T'))) "
+				+ "  		  and g.cod_cidade = c.cod_cidade ";
+
+		if (!consideraCD) {
+			query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
+		}
+		if (nota > 0) {
+			query += " and a.num_nota_fiscal = " + nota;
+		}
+		if (pedido > 0) {
+			query += " and a.pedido_venda = " + pedido;
+		}
+		if (localCaixa.size() > 0) {
+			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
+		}
+		if (!transportadora.equals("")) {
+			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+		}
+		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
+			query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
+		}
+		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
+
+		query += " UNION ";
+
+		query += " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
+				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
+				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g "
+				+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
+				+ "           and a.pedido_venda = b.pedido_venda "
+				+ " 		  and a.codigo_empresa in (" + empresa + ") "
+				+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
+				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
+				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
+				+ "           and e.pedido_venda = a.pedido_venda "
+				+ "           and e.situacao_volume = 2 "
+				+ "           and a.cod_rep_cliente <> 162 "
+				+ "           and f.cod_empresa (+) = a.codigo_empresa "
+				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
+				+ " 		  and g.cod_cidade = c.cod_cidade ";
+
+		if (!consideraCD) {
+			query += " and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
+		}
+		if (nota > 0) {
+			query += " and a.num_nota_fiscal = " + nota;
+		}
+		if (pedido > 0) {
+			query += " and a.pedido_venda = " + pedido;
+		}
+		if (localCaixa.size() > 0) {
+			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
+		}
+		if (!transportadora.equals("")) {
+			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+		}
+		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
+			query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
+		}
+		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
+
+		query += ") minuta order by minuta.nota ";
+
+		return query;
+	}
+
+	public String retornaQueryPedidosEmpresa100(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
+										 String transportadora, int pedido, int nota, boolean consideraCD) {
+		String query = " select minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
+				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
+
+		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
+				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
+				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g, obrf_782 h, obrf_831 i "
+				+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
+				+ "           and a.pedido_venda = b.pedido_venda "
+				+ " 		  and a.codigo_empresa in (1) "
+				+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
+				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
+				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
+				+ "           and e.pedido_venda = a.pedido_venda "
+				+ "           and e.situacao_volume = 2 "
+				+ "           and a.cod_rep_cliente <> 162 "
+				+ "           and f.cod_empresa (+) = a.codigo_empresa "
+				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
+				+ " 		  and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T'))) "
+				+ "  		  and g.cod_cidade = c.cod_cidade "
+				+ " 		  and h.num_nota_fiscal = a.num_nota_fiscal "
+				+ "			  and i.numero_solicitacao = h.numero_solicitacao "
+				+ " 		  and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 = 35303139199 ";
+
+		if (nota > 0) {
+			query += " and a.num_nota_fiscal = " + nota;
+		}
+		if (pedido > 0) {
+			query += " and a.pedido_venda = " + pedido;
+		}
+		if (localCaixa.size() > 0) {
+			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
+		}
+		if (!transportadora.equals("")) {
+			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+		}
+		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
+			query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
+		}
+		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
+
+		query += " UNION ";
+
+		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
+				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
+				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g, obrf_782 h, obrf_831 i "
+				+ "     where a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') "
+				+ "           and a.pedido_venda = b.pedido_venda "
+				+ " 		  and a.codigo_empresa in (1) "
+				+ "           and c.cgc_9 = b.cli_ped_cgc_cli9 "
+				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
+				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
+				+ "           and e.pedido_venda = a.pedido_venda "
+				+ "           and e.situacao_volume = 2 "
+				+ "           and a.cod_rep_cliente <> 162 "
+				+ "           and f.cod_empresa (+) = a.codigo_empresa "
+				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
+				+ " 		  and g.cod_cidade = c.cod_cidade "
+				+ "			  and h.num_nota_fiscal = a.num_nota_fiscal "
+				+ "			  and i.numero_solicitacao = h.numero_solicitacao "
+				+ " 		  and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 = 35303139199 ";
+
+		if (nota > 0) {
+			query += " and a.num_nota_fiscal = " + nota;
+		}
+		if (pedido > 0) {
+			query += " and a.pedido_venda = " + pedido;
+		}
+		if (localCaixa.size() > 0) {
+			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
+		}
+		if (!transportadora.equals("")) {
+			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+		}
+		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
+			query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
+		}
+		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
+
+		query += ") minuta order by minuta.nota ";
+
+		return query;
 	}
 }
