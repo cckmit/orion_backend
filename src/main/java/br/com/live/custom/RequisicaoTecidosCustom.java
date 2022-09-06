@@ -21,8 +21,8 @@ public class RequisicaoTecidosCustom {
 		
 		List<ConsultaRequisicaoTecidosItem> itens;
 		
-		String query = " select a.id, a.sequencia, a.nivel, a.grupo, a.sub, a.item, b.narrativa, a.alternativa, a.roteiro, a.quantidade " 
-		+ " from orion_091 a, basi_010 b "
+		String query = " select a.id, a.sequencia, a.nivel, a.grupo, a.sub, a.item, b.narrativa, a.alternativa, a.roteiro, a.quantidade, a.observacao " 
+		+ " from orion_cfc_091 a, basi_010 b "
 		+ " where b.nivel_estrutura = a.nivel "
 		+ " and b.grupo_estrutura = a.grupo "
 		+ " and b.subgru_estrutura = a.sub "

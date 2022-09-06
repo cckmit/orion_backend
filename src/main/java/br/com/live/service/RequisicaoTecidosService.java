@@ -95,14 +95,14 @@ public class RequisicaoTecidosService {
 	}
 
 	public void saveRequisicaoItem(long id, long idRequisicao, String nivel, String grupo, String sub, String item,
-			int alternativa, int roteiro, double quantidade) {
+			int alternativa, int roteiro, double quantidade, String observacao) {
 
 		if (produtoCustom.existsRoteiroAltRotMaiorZero(nivel, grupo, sub, item, alternativa, roteiro)) {
 			RequisicaoTecidosItem requisicaoItem = requisicaoTecidosItemRepository.findById(id);
 			if (requisicaoItem == null) {
 				requisicaoItem = new RequisicaoTecidosItem(requisicaoTecidosItemRepository.findNextId(), idRequisicao,
 						requisicaoTecidosItemRepository.findNextSequencia(idRequisicao), nivel, grupo, sub, item,
-						alternativa, roteiro, quantidade);
+						alternativa, roteiro, quantidade, observacao);
 			} else {
 				requisicaoItem.nivel = nivel;
 				requisicaoItem.grupo = grupo;
@@ -111,6 +111,7 @@ public class RequisicaoTecidosService {
 				requisicaoItem.alternativa = alternativa;
 				requisicaoItem.roteiro = roteiro;
 				requisicaoItem.quantidade = quantidade;
+				requisicaoItem.observacao = observacao;
 			}
 			requisicaoTecidosItemRepository.save(requisicaoItem);
 		}

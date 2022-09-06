@@ -12,6 +12,7 @@ public class ConsultaRequisicaoTecidosItem {
 	private int alternativa;
 	private int roteiro;
 	private double quantidade;
+	private String observacao;
 	
 	public long getId() {
 		return id;
@@ -73,4 +74,10 @@ public class ConsultaRequisicaoTecidosItem {
 	public void setSequencia(int sequencia) {
 		this.sequencia = sequencia;
 	}
+	public String getObservacao() {
+		return observacao;
+	}
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
+	}	
 }

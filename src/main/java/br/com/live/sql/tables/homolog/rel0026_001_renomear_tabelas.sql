@@ -1,0 +1,2 @@
+ALTER TABLE orion_090 RENAME TO orion_cfc_090;
+ALTER TABLE orion_091 RENAME TO orion_cfc_091;

@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="orion_090")
+@Table(name="orion_cfc_090")
 public class RequisicaoTecidos {
 
 	@Id

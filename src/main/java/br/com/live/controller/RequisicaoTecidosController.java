@@ -90,7 +90,7 @@ public class RequisicaoTecidosController {
 				body.requisicaoTecidosItem.idRequisicao, body.requisicaoTecidosItem.nivel,
 				body.requisicaoTecidosItem.grupo, body.requisicaoTecidosItem.sub, body.requisicaoTecidosItem.item,
 				body.requisicaoTecidosItem.alternativa, body.requisicaoTecidosItem.roteiro,
-				body.requisicaoTecidosItem.quantidade);
+				body.requisicaoTecidosItem.quantidade, body.requisicaoTecidosItem.observacao);
 		return requisicaoTecidosCustom.findItensByIdRequisicao(body.requisicaoTecidosItem.idRequisicao);
 	}
 

@@ -1,0 +1,2 @@
+ALTER TABLE orion_cfc_091 
+add observacao varchar2(1000);
