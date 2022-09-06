@@ -25,6 +25,7 @@ import br.com.live.repository.TempoMaquinaCMRepository;
 import br.com.live.repository.TiposFioRepository;
 import br.com.live.repository.TiposPontoFioRepository;
 import br.com.live.repository.TiposPontoRepository;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.StatusGravacao;
 
@@ -355,6 +356,20 @@ public class EngenhariaService {
 		}
 	}
 	
+	
+	public void saveOperXMultiplosMicromovimento(int codOperacao, int tipo, List<ConteudoChaveAlfaNum> listIdMicromovimento, List<Integer> listIdTempoMaquina) {		
+		int sequencia = 0;		
+		for (ConteudoChaveAlfaNum idMicromovimento : listIdMicromovimento) {
+			sequencia = engenhariaCustom.findNextSequecia(codOperacao);			
+			saveOperXMicromovimento(0, codOperacao, sequencia, tipo, idMicromovimento.value, 0);
+			
+		}		
+		for (Integer IdTempoMaquina : listIdTempoMaquina) {
+			sequencia = engenhariaCustom.findNextSequecia(codOperacao);			
+			saveOperXMicromovimento(0, codOperacao, sequencia, tipo, "", IdTempoMaquina);			
+		}
+	}
+	
 	public void saveOperXMicromovimento(long id, int codOperacao, int sequencia, int tipo, String idMicromovimento, int idTempoMaquina) {
 		
 		OperacaoXMicromovimentos dadosOperXMicromv = operXMicromvRepository.findById(id);
@@ -366,15 +381,17 @@ public class EngenhariaService {
 			dadosOperXMicromv.sequencia = sequencia;
 			dadosOperXMicromv.tipo = tipo;
 			dadosOperXMicromv.idMicromovimento = "";
-			dadosOperXMicromv.idTempoMaquina = 0;				
+			dadosOperXMicromv.idTempoMaquina = 0;
 			if (tipo == MICROMOVIMENTO) dadosOperXMicromv.idMicromovimento = idMicromovimento;
 			if (tipo == TEMPO_MAQUINA) dadosOperXMicromv.idTempoMaquina = idTempoMaquina;				
 		}
 		operXMicromvRepository.save(dadosOperXMicromv);
+		operXMicromvRepository.flush();
 	}
 	public void atualizaTempoOperacao(int operacao) {
 		float tempoTotal = 0;
-		float tempoHomem = 0;
+		float tempoMicromv = 0;
+		float tempoMaquina = 0;
 		
 		List<OperacaoXMicromovimentos> listaSequencia = operXMicromvRepository.findByCodOper(operacao);
 		
@@ -384,14 +401,16 @@ public class EngenhariaService {
 				//Buscar Total de Tempo do Micromovimento
 				Micromovimentos dadosMicromv = micromovimentosRepository.findByIdMicroMov(dadosSeq.idMicromovimento);
 				if (dadosMicromv != null);
-					tempoHomem = dadosMicromv.tempo;
+					tempoMicromv = (float) (((dadosMicromv.interferencia / 100) * dadosMicromv.tempo) + dadosMicromv.tempo);
+					tempoTotal = tempoTotal + tempoMicromv;	
 			} else {
 				// Buscar Total de Tempo Máquina
 				TempoMaquinaCM dadosMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(dadosSeq.idTempoMaquina);
+				float interfMaq = engenhariaCustom.findInterferenciaTempoMaq(dadosMaq.grupo, dadosMaq.subgrupo);
 				if (dadosMaq != null);
-					tempoHomem = dadosMaq.tempo;
-			}
-			tempoTotal = tempoTotal + tempoHomem;	
+					tempoMaquina = (float) (((interfMaq * dadosMaq.tempo) / 100) + dadosMaq.tempo);					
+					tempoTotal = tempoTotal + tempoMaquina;
+			}		
 		}
 		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
 		

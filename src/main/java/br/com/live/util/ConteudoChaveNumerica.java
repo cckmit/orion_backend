@@ -1,5 +1,6 @@
 package br.com.live.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConteudoChaveNumerica {
@@ -47,5 +48,18 @@ public class ConteudoChaveNumerica {
 		}
 
 		return texto;
+	}	
+	
+	public static List<Integer> parseValueToListInt(List<ConteudoChaveNumerica> listaChaves) {
+
+		List<Integer> listaInt = new ArrayList<Integer>();
+
+		if (listaChaves != null) {
+			for (ConteudoChaveNumerica conteudo : listaChaves) {
+				listaInt.add(conteudo.value);
+			}
+		}
+
+		return listaInt;
 	}	
 }

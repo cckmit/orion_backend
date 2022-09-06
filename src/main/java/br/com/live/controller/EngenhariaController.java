@@ -381,8 +381,13 @@ public class EngenhariaController {
         return engenhariaService.deleteTempoMaquina(idTempoMaqCM);
     }
     
-    @RequestMapping(value = "/salvar-oper-x-micromv", method = RequestMethod.POST)
-    public List<OperacaoXMicromovimentos> salvarOperXMicromv(@RequestBody BodyEngenharia body) { 
+    @RequestMapping(value = "/insert-oper-x-micromv", method = RequestMethod.POST)
+    public void insertOperXMicromv(@RequestBody BodyEngenharia body) { 
+    	engenhariaService.saveOperXMultiplosMicromovimento(body.codOperacao, body.tipo, body.listIdMicromovimento, ConteudoChaveNumerica.parseValueToListInt(body.listIdTempoMaquina));
+    }
+    
+    @RequestMapping(value = "/update-oper-x-micromv", method = RequestMethod.POST)
+    public List<OperacaoXMicromovimentos> updateOperXMicromv(@RequestBody BodyEngenharia body) { 
     	engenhariaService.saveOperXMicromovimento(body.idOperXMicroMovimento, body.codOperacao, body.sequencia, body.tipo, body.idMicromovimento, body.idTpMaquina);
     	return operXMicromvRepository.findAll();
     }

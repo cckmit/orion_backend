@@ -267,22 +267,23 @@ public class EngenhariaCustom {
 	
 	public List<ConsultaOperacaoXMicromovimentos> findAllOperacaoXMicromv(int operacao){
 			
-		String query = "select a.id, "
+		String query = "SELECT a.id, "
 				+ " a.sequencia, "
 				+ " a.tipo, "
-				+ " decode(a.tipo,1,b.id || ' - ' || b.descricao,c.grupo || '.' || c.subgrupo || ' - ' || d.nome_grupo_maq || ' ' || e.nome_sbgrupo_maq || ' - MEDIDA: ' || c.medida || ' CM') informacao, "
-				+ " nvl(decode(a.tipo,1,b.tempo,c.tempo), 0) tempo, "
-				+ " nvl(decode(a.tipo,1,b.interferencia, e.interferencia), 0) interferencia, "
+				+ " DECODE(a.tipo, 1, b.id || ' - ' || b.descricao,c.grupo || '.' || c.subgrupo || ' - ' || d.nome_grupo_maq || ' ' || e.nome_sbgrupo_maq || ' - MEDIDA: ' || c.medida || ' CM') informacao, "
+				+ " NVL(DECODE(a.tipo, 1, b.tempo, c.tempo), 0) tempo, "
+				+ " NVL(DECODE(a.tipo, 1, b.interferencia, e.interferencia), 0) interferencia, "
 				+ " a.id_micromovimento idMicromovimento, "
-				+ " a.id_tempo_maquina idTempoMaquina "
-				+ " from orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_010 d, mqop_020 e "
-				+ " where a.cod_operacao = " + operacao
-				+ " and b.id (+) = a.id_micromovimento "
-				+ " and c.id (+) = a.id_tempo_maquina "
-				+ " and d.grupo_maquina (+) = c.grupo "
-				+ " and e.grupo_maquina (+) = c.grupo "
-				+ " and e.subgrupo_maquina (+) = c.subgrupo "
-				+ " order by a.sequencia";
+				+ " a.id_tempo_maquina idTempoMaquina, "
+				+ " NVL(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((e.interferencia / 100) * c.tempo) + c.tempo), 0) tempo_total "
+				+ " FROM orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_010 d, mqop_020 e "
+				+ " WHERE a.cod_operacao = " + operacao
+				+ " AND b.id (+) = a.id_micromovimento "
+				+ " AND c.id (+) = a.id_tempo_maquina "
+				+ " AND d.grupo_maquina (+) = c.grupo "
+				+ " AND e.grupo_maquina (+) = c.grupo "
+				+ " AND e.subgrupo_maquina (+) = c.subgrupo "
+				+ " ORDER BY a.sequencia ";
 	
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaOperacaoXMicromovimentos.class));
 	}
@@ -334,5 +335,17 @@ public class EngenhariaCustom {
 				+ " WHERE a.codigo_operacao = ? ";		
 		
 		jdbcTemplate.update(query, tempoTotal, operacao);
+	}
+	
+	public float findInterferenciaTempoMaq(String grupoMaquina, String subGrupoMaquina) {
+		float interferencia = 0;
+		
+		String query = " SELECT m.interferencia FROM mqop_020 m "
+				+ " WHERE m.grupo_maquina = ? "
+				+ " AND m.subgrupo_maquina = ? ";
+		
+		interferencia = jdbcTemplate.queryForObject(query, Float.class, grupoMaquina, subGrupoMaquina);
+		
+		return interferencia;
 	}
 }

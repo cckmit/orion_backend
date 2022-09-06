@@ -4,6 +4,8 @@ import java.util.List;
 
 import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.TempoMaquinaCM;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyEngenharia {
 	public int id;
@@ -53,6 +55,8 @@ public class BodyEngenharia {
 	public int tipo;
 	public String idMicromovimento;
 	public int idTpMaquina;
-
+	public List<ConteudoChaveAlfaNum> listIdMicromovimento;
+	public List<ConteudoChaveNumerica> listIdTempoMaquina;
+	public float total;
 	
 }
