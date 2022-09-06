@@ -18,7 +18,7 @@ public class ComercialCustom {
 	}
 	
 	public void gravaEnvioProdEcommerce(String produto) {
-		String query = "insert into ecom_005 (sku, disponivel, preco, controle, data) values (?, 0, 0, 3, sysdate)";
+		String query = "insert into ecom_005 (sku, disponivel, preco, controle, data) values (?, 0, 0, 0, sysdate)";
 		
 		jdbcTemplate.update(query, produto);
 	}
