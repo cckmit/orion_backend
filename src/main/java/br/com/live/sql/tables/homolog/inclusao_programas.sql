@@ -174,3 +174,6 @@ values (57, 'Cadastro de Restrições', 'Confecção', '/cadastro-restricoes')
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (58, 'Cadastro de Restrições por Rolo', 'Confecção', '/cadastro-restricoes-rolo')
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (59, 'Cadastro de Metas', 'Confecção', '/cadastro-de-metas')
