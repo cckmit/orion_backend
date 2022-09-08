@@ -168,3 +168,9 @@ values (55, 'Relacionamento Operação X Micromovimentos', 'Engenharia', '/relac
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (56, 'Bloquear/Liberar Títulos de Fornecedor', 'Comercial', '/bloquear-liberar-titulos')
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (57, 'Cadastro de Restrições', 'Confecção', '/cadastro-restricoes')
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (58, 'Cadastro de Restrições por Rolo', 'Confecção', '/cadastro-restricoes-rolo')
