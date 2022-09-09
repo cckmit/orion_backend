@@ -415,4 +415,10 @@ public class EngenhariaService {
 		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
 		
 	}
+	
+	public void atualizarFichaDigital(List<String> referencias) {		
+		for (String referencia : referencias) {			
+			engenhariaCustom.atualizarFichaDigital(referencia);
+		}		
+	}
 }

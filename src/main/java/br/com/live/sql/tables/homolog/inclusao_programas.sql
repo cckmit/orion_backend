@@ -179,4 +179,4 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (59, 'Cadastro de Metas', 'Confecção', '/cadastro-de-metas')
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (60, 'Atualizar Ficha Digital', 'Engenharia', '/atualizar-ficha-digital')
+values (60, 'Atualizar Ficha Técnica Digital', 'Engenharia', '/atualizar-ficha-digital')
