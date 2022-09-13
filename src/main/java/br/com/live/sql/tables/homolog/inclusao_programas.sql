@@ -158,25 +158,25 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (52, 'Minuta de Transporte', 'Expedição', '/minuta-transporte');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (53, 'Tempo Maquina por CM', 'Engenharia', '/tempo-maquina')
+values (53, 'Tempo Maquina por CM', 'Engenharia', '/tempo-maquina');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (54, 'Envio de Produtos e-commerce', 'Comercial', '/envio-de-produtos-e-commerce')
+values (54, 'Envio de Produtos e-commerce', 'Comercial', '/envio-de-produtos-e-commerce');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (55, 'Relacionamento Operação X Micromovimentos', 'Engenharia', '/relacionamento-operacao-x-micromovimentos')
+values (55, 'Relacionamento Operação X Micromovimentos', 'Engenharia', '/relacionamento-operacao-x-micromovimentos');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (56, 'Bloquear/Liberar Títulos de Fornecedor', 'Comercial', '/bloquear-liberar-titulos')
+values (56, 'Bloquear/Liberar Títulos de Fornecedor', 'Comercial', '/bloquear-liberar-titulos');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (57, 'Cadastro de Restrições', 'Confecção', '/cadastro-restricoes')
+values (57, 'Cadastro de Restrições', 'Confecção', '/cadastro-restricoes');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (58, 'Cadastro de Restrições por Rolo', 'Confecção', '/cadastro-restricoes-rolo')
+values (58, 'Cadastro de Restrições por Rolo', 'Confecção', '/cadastro-restricoes-rolo');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (59, 'Cadastro de Metas', 'Confecção', '/cadastro-de-metas')
+values (59, 'Cadastro de Metas', 'Confecção', '/cadastro-de-metas');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (60, 'Atualizar Ficha Técnica Digital', 'Engenharia', '/atualizar-ficha-digital')
+values (60, 'Atualizar Ficha Técnica Digital', 'Engenharia', '/atualizar-ficha-digital');

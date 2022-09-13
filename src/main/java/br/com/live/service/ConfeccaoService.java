@@ -2,6 +2,11 @@ package br.com.live.service;
 
 import java.util.List;
 
+import br.com.live.entity.Restricoes;
+import br.com.live.entity.RestricoesRolo;
+import br.com.live.model.ConsultaRestricoesRolo;
+import br.com.live.repository.RestricoesRepository;
+import br.com.live.repository.RestricoesRoloRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +24,16 @@ public class ConfeccaoService {
 	private final TipoObservacaoRepository tipoObservacaoRepository;
 	private final ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository;
 	private final ConfeccaoCustom confeccaoCustom;
+	private final RestricoesRepository restricoesRepository;
+	private final RestricoesRoloRepository restricoesRoloRepository;
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
-			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository) {
+			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
+		this.restricoesRepository = restricoesRepository;
+		this.restricoesRoloRepository = restricoesRoloRepository;
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -70,5 +79,61 @@ public class ConfeccaoService {
 	
 	public List<ConsultaObservacaoOrdemPacote> findAllObsWithQuantidade() {
 		return confeccaoCustom.findAllObsWithQuantidade();
+	}
+
+	public List<Restricoes> findAllRestricoes() {
+		return restricoesRepository.findAll();
+	}
+
+	public Restricoes findRestricaoById(long idRestricao) {
+		return restricoesRepository.findByIdRestricao(idRestricao);
+	}
+
+	public void saveRestricoes(long idRestricao, String descricao) {
+		Restricoes dadosRestricao = restricoesRepository.findByIdRestricao(idRestricao);
+
+		if (dadosRestricao == null) {
+			dadosRestricao = new Restricoes(confeccaoCustom.findNextIdRestricao(), descricao);
+		} else {
+			dadosRestricao.descricao = descricao;
+		}
+		restricoesRepository.save(dadosRestricao);
+	}
+
+	public void deleteByIdRestricao(long idRestricao) {
+		restricoesRepository.deleteById(idRestricao);
+	}
+
+	public void deleteBySeqRestricao(long idSeq) {
+		restricoesRoloRepository.deleteById(idSeq);
+	}
+
+	public void proxySaveRestricoesPorOrdemBenef(List<ConteudoChaveNumerica> ordens, List<ConteudoChaveNumerica> restricoes) {
+		for (ConteudoChaveNumerica dadosOrdens : ordens) {
+			List<Integer> rolos = confeccaoCustom.findRolosByOrdem(dadosOrdens.value);
+			for (Integer rolo : rolos) {
+				for (ConteudoChaveNumerica dadosRestricao : restricoes) {
+					saveRestricaoRolo(rolo, dadosRestricao.value);
+				}
+			}
+		}
+	}
+
+	public void proxySaveRestricoesRolo(List<ConteudoChaveNumerica> rolos, List<ConteudoChaveNumerica> restricoes) {
+		for (ConteudoChaveNumerica dadosRolo : rolos) {
+			for ( ConteudoChaveNumerica dadosRestricao : restricoes) {
+				saveRestricaoRolo(dadosRolo.value, dadosRestricao.value);
+			}
+		}
+	}
+
+	public void saveRestricaoRolo(int codigoRolo, int restricao) {
+		int existeRestricao = confeccaoCustom.validarRestricaoRolo(codigoRolo, restricao);
+
+		if (existeRestricao == 1) return;
+
+		RestricoesRolo dadosSave = new RestricoesRolo(confeccaoCustom.findNextIdRestricaoRolo(), codigoRolo, restricao);
+		restricoesRoloRepository.save(dadosSave);
+		restricoesRoloRepository.flush();
 	}
 }

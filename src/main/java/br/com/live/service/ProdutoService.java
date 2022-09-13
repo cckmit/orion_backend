@@ -163,9 +163,7 @@ public class ProdutoService {
 		
 		for (AtualizaComplementoRef dadosRef : refsAlterar ) {
 			if (!dadosRef.referencia.equals("")) {
-				
 				quantRefsAlteradas++;
-				
 				produtoRepository.atualizaComplemento("1", dadosRef.referencia, dadosRef.tamanho, dadosRef.cor, complemento);
 			}
 		}
