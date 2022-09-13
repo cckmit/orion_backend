@@ -10,7 +10,7 @@ import br.com.live.entity.TipoObservacao;
 public interface TipoObservacaoRepository extends JpaRepository<TipoObservacao, Long> {
 
 	@Query("SELECT u FROM TipoObservacao u where u.id = :id")
-	TipoObservacao findById(int id);
+	TipoObservacao findByIdObs(int id);
 	
 	@Query("SELECT u FROM TipoObservacao u where u.id = :id")
 	TipoObservacao findByIdLong(long id);

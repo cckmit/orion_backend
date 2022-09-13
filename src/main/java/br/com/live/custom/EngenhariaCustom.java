@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -17,6 +18,7 @@ import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.Maquinas;
 import br.com.live.model.Operacao;
 import br.com.live.model.OptionProduto;
+import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 import ch.qos.logback.core.net.SyslogOutputStream;
@@ -347,5 +349,33 @@ public class EngenhariaCustom {
 		interferencia = jdbcTemplate.queryForObject(query, Float.class, grupoMaquina, subGrupoMaquina);
 		
 		return interferencia;
+	}
+	
+	public List<Produto> findProdutosEnviarFichaDigital() {
+		List<Produto> listaProdutos = null;
+		
+		String query = " select a.referencia , b.descr_referencia narrativa "
+		+ " from quantich.ftecnica_referencia_integra a, basi_030 b "
+		+ " where b.nivel_estrutura = a.nivel "
+  	    + " and b.referencia = a.referencia "
+  	    + " and a.flag_integra = 0 "
+		+ " order by a.referencia "
+  	    ;
+		
+		try {
+			listaProdutos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			listaProdutos = new ArrayList<Produto>();
+		}
+		
+		return listaProdutos;
+	}
+	
+	public void atualizarFichaDigital(String referencia) {		
+		String query = " update quantich.ftecnica_referencia_integra a set a.flag_integra = 1 "
+		+ " where nivel = '1' "
+		+ " and referencia = ? ";
+		
+		jdbcTemplate.update(query, referencia);
 	}
 }

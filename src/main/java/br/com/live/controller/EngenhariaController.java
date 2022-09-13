@@ -32,6 +32,7 @@ import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.Maquinas;
 import br.com.live.model.Operacao;
 import br.com.live.model.OptionProduto;
+import br.com.live.model.Produto;
 import br.com.live.repository.ConsumoFiosLinhasRepository;
 import br.com.live.repository.ConsumoMetragemFioRepository;
 import br.com.live.repository.MarcasFioRepository;
@@ -400,4 +401,14 @@ public class EngenhariaController {
     	return engenhariaCustom.findAllOperacaoXMicromv(codOp);
     }
 
+    @RequestMapping(value = "/find-produtos-enviar-ficha-digital", method = RequestMethod.GET)
+	public List<Produto> findProdutosEnviarFichaDigital() {		
+    	return engenhariaCustom.findProdutosEnviarFichaDigital();
+	}    
+    
+    @RequestMapping(value = "/atualizar-ficha-digital", method = RequestMethod.POST)
+	public List<Produto> atualizarFichaDigital(@RequestBody BodyEngenharia body) {
+    	engenhariaService.atualizarFichaDigital(body.listaRefenciasFtDigital);
+    	return engenhariaCustom.findProdutosEnviarFichaDigital();
+	}        
 }

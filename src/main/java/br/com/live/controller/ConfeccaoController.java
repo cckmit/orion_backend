@@ -1,7 +1,12 @@
 package br.com.live.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import br.com.live.body.BodyConfeccao;
+import br.com.live.custom.ConfeccaoCustom;
+import br.com.live.entity.Restricoes;
+import br.com.live.model.ConsultaRestricoesRolo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,13 +33,15 @@ public class ConfeccaoController {
 	private ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository;
 	private TipoObservacaoRepository tipoObservacaoRepository;
 	private ConfeccaoService confeccaoService;
+	private ConfeccaoCustom confeccaoCustom;
 
 	@Autowired
 	public ConfeccaoController(ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository,
-			TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoService confeccaoService) {
+			TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoService confeccaoService, ConfeccaoCustom confeccaoCustom) {
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoService = confeccaoService;
+		this.confeccaoCustom = confeccaoCustom;
 	}
 
 	@RequestMapping(value = "/find-all-tipo-obs", method = RequestMethod.GET)
@@ -82,5 +89,63 @@ public class ConfeccaoController {
 	public List<ConsultaObservacaoOrdemPacote> deleteObservacaoById(@PathVariable("id") String id) {
 		confeccaoService.deleteObservacaoById(id);
 		return confeccaoService.findAllObsWithQuantidade();
+	}
+
+	@RequestMapping(value = "/find-all-restricoes", method = RequestMethod.GET)
+	public List<Restricoes> findAllRestricoes() {
+		return confeccaoService.findAllRestricoes();
+	}
+
+	@RequestMapping(value = "/find-restricoes-by-id/{idRestricao}", method = RequestMethod.GET)
+	public Restricoes findAllRestricoes(@PathVariable("idRestricao") long idRestricao) {
+		return confeccaoService.findRestricaoById(idRestricao);
+	}
+
+	@RequestMapping(value = "/save-restricoes", method = RequestMethod.POST)
+	public List<Restricoes> saveRestricoes(@RequestBody BodyConfeccao body) {
+		confeccaoService.saveRestricoes(body.id, body.descricao);
+		return confeccaoService.findAllRestricoes();
+	}
+
+	@RequestMapping(value = "/delete-restricoes-by-id/{idRestricao}", method = RequestMethod.DELETE)
+	public List<Restricoes> deleteRestricao(@PathVariable("idRestricao") long idRestricao) {
+		confeccaoService.deleteByIdRestricao(idRestricao);
+		return confeccaoService.findAllRestricoes();
+	}
+
+	@RequestMapping(value = "/delete-restricoes-rolo-by-id/{idSeq}", method = RequestMethod.DELETE)
+	public List<ConsultaRestricoesRolo> deleteRestricaoRolo(@PathVariable("idSeq") long idSeq) {
+		confeccaoService.deleteBySeqRestricao(idSeq);
+		return confeccaoCustom.findAllRestricoesPorRolo();
+	}
+
+	@RequestMapping(value = "/find-options-restricao", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findOptionRestricao() {
+		return confeccaoCustom.findOptionsRestricao();
+	}
+
+	@RequestMapping(value = "/find-option-leitor-ordens/{leitor}", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findOrdensLeitor(@PathVariable("leitor") String leitor) {
+		return confeccaoCustom.findOptionLeitorOrdensBeneficiamento(leitor);
+	}
+
+	@RequestMapping(value = "/find-option-leitor-rolos/{leitor}", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findRolosLeitor(@PathVariable("leitor") String leitor) {
+		return confeccaoCustom.findOptionLeitorRolos(leitor);
+	}
+
+	@RequestMapping(value = "/consulta-restricoes-teste", method = RequestMethod.GET)
+		public List<ConsultaRestricoesRolo> consultaRestricoesRolos() {
+		return confeccaoCustom.findAllRestricoesPorRolo();
+	}
+
+	@RequestMapping(value = "/save-restricoes-por-rolo", method = RequestMethod.POST)
+	public void saveRestricoesPorRolo(@RequestBody BodyConfeccao body) {
+		confeccaoService.proxySaveRestricoesRolo(body.rolos, body.restricoes);
+	}
+
+	@RequestMapping(value = "/save-restricoes-por-ordens", method = RequestMethod.POST)
+	public void saveRestricoesPorOrdens(@RequestBody BodyConfeccao body) {
+		confeccaoService.proxySaveRestricoesPorOrdemBenef(body.ordens, body.restricoes);
 	}
 }

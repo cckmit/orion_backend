@@ -61,7 +61,6 @@ public class CalendarioProducaoService {
 
 			configEstagiosRepository.save(estagioSave);
 		}
-
 	}
 
 	public List<EstagiosConfigurados> findAllEstagiosConfig() {

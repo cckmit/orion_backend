@@ -2,6 +2,7 @@ package br.com.live.custom;
 
 import java.util.List;
 
+import br.com.live.model.ConsultaRestricoesRolo;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -59,6 +60,80 @@ public class ConfeccaoCustom {
 				+ " and g.codigo_estagio = c.estagio "
 				+ " group by c.id, c.estagio, c.ordem_producao, c.ordem_confeccao, c.tipo_observacao, d.descricao, c.observacao_adicional, g.descricao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaObservacaoOrdemPacote.class));
+	}
+
+	public long findNextIdRestricao() {
+		long nextId = 0;
+
+		String query = " select nvl(max(a.id), 0) + 1 from orion_cfc_270 a ";
+		try {
+			nextId = jdbcTemplate.queryForObject(query, Long.class);
+		} catch (Exception e) {
+			nextId = 0;
+		}
+		return nextId;
+	}
+
+	public long findNextIdRestricaoRolo() {
+		long nextId = 0;
+
+		String query = " select nvl(max(a.id), 0) + 1 from orion_cfc_271 a ";
+		try {
+			nextId = jdbcTemplate.queryForObject(query, Long.class);
+		} catch (Exception e) {
+			nextId = 0;
+		}
+		return nextId;
+	}
+
+	public int validarRestricaoRolo(int codigoRolo, int restricao) {
+		int existeDados = 0;
+
+		String query = " select 1 from orion_cfc_271 b "
+				+ " where b.codigo_rolo = " + codigoRolo
+				+ " and b.restricao = " + restricao;
+		try {
+			existeDados = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existeDados = 0;
+		}
+		return existeDados;
+	}
+
+	public List<ConteudoChaveNumerica> findOptionsRestricao() {
+		String query = " select a.id value, a.id || ' - ' || a.descricao label from orion_cfc_270 a "
+				+ " order by a.id ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+
+	public List<Integer> findRolosByOrdem(int ordermProducao) {
+		String query = " select b.codigo_rolo from pcpt_020 b " +
+				" where b.ordem_producao = " + ordermProducao;
+		return jdbcTemplate.queryForList(query, Integer.class);
+	}
+
+	public List<ConteudoChaveNumerica> findOptionLeitorOrdensBeneficiamento(String leitor) {
+		String query = " select e.ordem_producao value, e.ordem_producao label from pcpt_020 e, pcpb_010 m " +
+				" where e.ordem_producao is not null " +
+				" and m.ordem_producao = e.ordem_producao " +
+				" and m.situacao_ordem = 1 " +
+				" and e.ordem_producao like '%" + leitor + "%' " +
+				" group by e.ordem_producao ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+
+	public List<ConteudoChaveNumerica> findOptionLeitorRolos(String leitor) {
+		String query = " select a.codigo_rolo value, a.codigo_rolo label from pcpt_020 a " +
+				"where a.codigo_rolo like '%" + leitor + "%' ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+
+	public List<ConsultaRestricoesRolo> findAllRestricoesPorRolo() {
+		String query = " select a.id, b.ordem_producao ordemProd, b.codigo_rolo rolo, b.codigo_deposito deposito, c.id || ' - ' || c.descricao restricao " +
+				" from orion_cfc_271 a, pcpt_020 b, orion_cfc_270 c " +
+				" where a.codigo_rolo = b.codigo_rolo " +
+				" and c.id = a.restricao ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaRestricoesRolo.class));
 	}
 	
 	public List<EstagioProducao> findAllEstagio() {

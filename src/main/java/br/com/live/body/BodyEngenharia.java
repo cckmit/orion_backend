@@ -59,4 +59,5 @@ public class BodyEngenharia {
 	public List<ConteudoChaveNumerica> listIdTempoMaquina;
 	public float total;
 	
+	public List<String> listaRefenciasFtDigital;
 }
