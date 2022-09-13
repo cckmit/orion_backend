@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class FormataData {
 
@@ -99,4 +100,18 @@ public class FormataData {
 		calendar.add(Calendar.DATE, nrDay);
 		return calendar.getTime();		
 	}
+	
+	public static Date getStartingDay(int month, int year) {				
+		Calendar cal = new GregorianCalendar(year, month-1, 1);
+		int startingDay = cal.getActualMinimum(Calendar.DAY_OF_MONTH); 
+		String strDate = String.format("%02d",startingDay) + "-" + String.format("%02d",month)  + "-" + year;
+		return parseStringToDate(strDate);		
+	}
+
+	public static Date getFinalDay(int month, int year) {		
+		Calendar cal = new GregorianCalendar(year, month-1, 1);
+		int finalDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		String strDate = String.format("%02d",finalDay) + "-" + String.format("%02d",month)  + "-" + year;
+		return parseStringToDate(strDate);		
+	}	
 }
