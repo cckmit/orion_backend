@@ -254,7 +254,7 @@ public class EngenhariaCustom {
 				+ " and c.subgrupo_maquina (+) = a.sub_maquina ";
 		
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(Operacao.class));
-	}	
+	}
 	
 	public List<ConteudoChaveNumerica> findAllCodOperacao(String codOp) {
 		String query = "select a.codigo_operacao value, a.codigo_operacao || ' - ' || a.nome_operacao label from mqop_040 a "
