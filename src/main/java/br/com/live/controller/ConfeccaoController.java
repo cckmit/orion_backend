@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyObservacaoPorOp;
 import br.com.live.body.BodyTipoObservacao;
+import br.com.live.entity.MetasProducao;
 import br.com.live.entity.ObservacaoOrdemPacote;
 import br.com.live.entity.TipoObservacao;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
@@ -148,4 +149,27 @@ public class ConfeccaoController {
 	public void saveRestricoesPorOrdens(@RequestBody BodyConfeccao body) {
 		confeccaoService.proxySaveRestricoesPorOrdemBenef(body.ordens, body.restricoes);
 	}
+
+	@RequestMapping(value = "/find-dias-uteis", method = RequestMethod.POST)
+	public int findDiasUteis(@RequestBody BodyConfeccao body) {
+		return confeccaoCustom.findDiasUteis(body.dataMeta);
+	}
+	
+	@RequestMapping(value = "/find-metas-producao/{idMeta}", method = RequestMethod.GET)
+    public List<MetasProducao> findMetasProducao(@PathVariable("idMeta") String idMeta) {
+    	return confeccaoCustom.findMetasProducao(idMeta);
+    }
+	
+	@RequestMapping(value = "/save-meta-producao", method = RequestMethod.POST)
+	public String saveMetaProducao(@RequestBody BodyConfeccao body) {
+		return confeccaoService.saveMetaProducao(body.idMetaMes, body.mes, body.ano, body.codEstagio, body.metaMes, body.diasUteis, body.metaDiaria, body.metaAjustada);
+		
+	}
+	
+	@RequestMapping(value = "/save-meta-producao-semana", method = RequestMethod.POST)
+	public long saveMetaSemana(@RequestBody BodyConfeccao body) {
+		return confeccaoService.saveMetaSemana(body.idMetaSemana, body.idMes, body.nrSemana, body.diasUteis, body.dataInicio, body.dataFim, body.metaReal, body.metaRealTurno, body.metaAjustada, body.metaAjustadaTurno);
+		
+	}       
+	
 }

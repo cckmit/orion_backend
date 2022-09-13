@@ -18,9 +18,10 @@ public class ComercialCustom {
 	}
 	
 	public void gravaEnvioProdEcommerce(String produto) {
-		String query = "insert into ecom_005 (sku, disponivel, preco, controle, data) values (?, 0, 0, 0, sysdate)";
-		
-		jdbcTemplate.update(query, produto);
+		String query = "insert into ecom_005 (sku, disponivel, preco, controle, data) values (?, 0, 0, 3, sysdate)";		
+		jdbcTemplate.update(query, produto);		
+		query = " update ecom_005 set controle = 0 where ecom_005.controle = 3 ";		
+		jdbcTemplate.update(query);				
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllTitulosBloqForn() {
