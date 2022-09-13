@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyEngenharia;
+import br.com.live.custom.ConfeccaoCustom;
 import br.com.live.custom.EngenhariaCustom;
 import br.com.live.entity.ConsumoFiosLinhas;
 import br.com.live.entity.ConsumoMetragemFio;
@@ -64,6 +65,7 @@ public class EngenhariaController {
 	public EngenhariaController(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository, EngenhariaService engenhariaService, EngenhariaCustom engenhariaCustom,
     TiposPontoFioRepository tiposPontoFioRepository, TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository, ConsumoMetragemFioRepository consumoMetragemFioRepository,
     TempoMaquinaCMRepository tempoMaquinaCMRepository, OperXMicromvRepository operXMicromvRepository) {
+		
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaService = engenhariaService;
@@ -125,7 +127,7 @@ public class EngenhariaController {
     public TipoPontoFio findTipoPontoFioById(@PathVariable("idRegistro") String idRegistro) {                  
         return tiposPontoFioRepository.findByIdTipoPontoFio(idRegistro);
     }
-
+    
     //
     // Consulta Tipo Ponto By Id
     //
