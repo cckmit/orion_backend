@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.live.body.BodyConfeccao;
+import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.ConfeccaoCustom;
 import br.com.live.entity.Restricoes;
 import br.com.live.model.ConsultaRestricoesRolo;
+import br.com.live.model.EstagioProducao;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,14 +38,17 @@ public class ConfeccaoController {
 	private TipoObservacaoRepository tipoObservacaoRepository;
 	private ConfeccaoService confeccaoService;
 	private ConfeccaoCustom confeccaoCustom;
+	private CalendarioCustom calendarioCustom; 
 
 	@Autowired
 	public ConfeccaoController(ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository,
-			TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoService confeccaoService, ConfeccaoCustom confeccaoCustom) {
+			TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoService confeccaoService, ConfeccaoCustom confeccaoCustom,
+			CalendarioCustom calendarioCustom) {
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoService = confeccaoService;
 		this.confeccaoCustom = confeccaoCustom;
+		this.calendarioCustom = calendarioCustom;
 	}
 
 	@RequestMapping(value = "/find-all-tipo-obs", method = RequestMethod.GET)
@@ -85,6 +91,11 @@ public class ConfeccaoController {
 	public List<ConteudoChaveNumerica> findObsByIdComposto(@PathVariable("ordemProducao") int ordemProducao) {
 		return confeccaoService.findAllPacotesOrdem(ordemProducao);
 	}
+	
+	@RequestMapping(value = "/find-all-estagio", method = RequestMethod.GET)
+    public List<EstagioProducao> findAllEstagio() {                  
+        return confeccaoCustom.findAllEstagio();
+    }
 	
 	@RequestMapping(value = "/delete-obs-by-id/{id}", method = RequestMethod.DELETE)
 	public List<ConsultaObservacaoOrdemPacote> deleteObservacaoById(@PathVariable("id") String id) {
@@ -150,9 +161,9 @@ public class ConfeccaoController {
 		confeccaoService.proxySaveRestricoesPorOrdemBenef(body.ordens, body.restricoes);
 	}
 
-	@RequestMapping(value = "/find-dias-uteis", method = RequestMethod.POST)
-	public int findDiasUteis(@RequestBody BodyConfeccao body) {
-		return confeccaoCustom.findDiasUteis(body.dataMeta);
+	@RequestMapping(value = "/find-dias-uteis/{mes}/{ano}", method = RequestMethod.GET)
+	public int findDiasUteis(@PathVariable("mes") int mes, @PathVariable("ano") int ano) {
+		return calendarioCustom.findDiasUteis(mes, ano);
 	}
 	
 	@RequestMapping(value = "/find-metas-producao/{idMeta}", method = RequestMethod.GET)
@@ -162,14 +173,12 @@ public class ConfeccaoController {
 	
 	@RequestMapping(value = "/save-meta-producao", method = RequestMethod.POST)
 	public String saveMetaProducao(@RequestBody BodyConfeccao body) {
-		return confeccaoService.saveMetaProducao(body.idMetaMes, body.mes, body.ano, body.codEstagio, body.metaMes, body.diasUteis, body.metaDiaria, body.metaAjustada);
-		
+		return confeccaoService.saveMetaProducao(body.idMetaMes, body.mesMeta, body.anoMeta, body.codEstagio, body.metaMes, body.diasUteis, body.metaDiaria, body.metaAjustada);		
 	}
-	
+	/*
 	@RequestMapping(value = "/save-meta-producao-semana", method = RequestMethod.POST)
 	public long saveMetaSemana(@RequestBody BodyConfeccao body) {
-		return confeccaoService.saveMetaSemana(body.idMetaSemana, body.idMes, body.nrSemana, body.diasUteis, body.dataInicio, body.dataFim, body.metaReal, body.metaRealTurno, body.metaAjustada, body.metaAjustadaTurno);
-		
-	}       
-	
+		return confeccaoService.saveMetaSemana(body.idMetaSemana, body.idMes, body.nrSemana, body.diasUteis, body.dataInicio, body.dataFim, body.metaReal, body.metaRealTurno, body.metaAjustada, body.metaAjustadaTurno);		
+	}   
+	*/    	
 }

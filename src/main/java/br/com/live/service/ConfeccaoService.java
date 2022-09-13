@@ -11,11 +11,13 @@ import br.com.live.repository.RestricoesRoloRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.ConfeccaoCustom;
 import br.com.live.entity.MetasProducao;
 import br.com.live.entity.MetasProducaoSemana;
 import br.com.live.entity.ObservacaoOrdemPacote;
 import br.com.live.entity.TipoObservacao;
+import br.com.live.model.CalendarioSemana;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.repository.MetasProducaoRepository;
 import br.com.live.repository.MetasProducaoSemanaRepository;
@@ -33,11 +35,11 @@ public class ConfeccaoService {
 	private final RestricoesRoloRepository restricoesRoloRepository;
 	private final MetasProducaoRepository metasProducaoRepository;
 	private final MetasProducaoSemanaRepository metasProducaoSemanaRepository;
-
+	private final CalendarioCustom calendarioCustom; 
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
 			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository,
-			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository) {
+			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
@@ -45,6 +47,7 @@ public class ConfeccaoService {
 		this.restricoesRoloRepository = restricoesRoloRepository;
 		this.metasProducaoRepository = metasProducaoRepository;
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
+		this.calendarioCustom = calendarioCustom;
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -159,11 +162,38 @@ public class ConfeccaoService {
 			dadosMeta.metaDiaria = metaDiaria;
 			dadosMeta.metaAjustada = metaAjustada; 					
 		}						
-		metasProducaoRepository.save(dadosMeta);
-		
+		metasProducaoRepository.save(dadosMeta);		
+		saveMetaSemana(dadosMeta.id, mes, ano, metaDiaria, metaAjustada);		
 		return id;
 	}
 	
+	public void saveMetaSemana(String idMesAno, int mes, int ano, int qtdePecasMetaDiaria, int qtdePecasMetaAjustDiaria) {
+		
+		metasProducaoSemanaRepository.deleteByIdMes(idMesAno);
+		
+		List<CalendarioSemana> semanas = calendarioCustom.getSemanasByMes(mes, ano);
+		
+		long id = 0;
+		int numSemanaMes = 0;
+		int qtdePecasMetaSemana = 0;
+		int qtdePecasMetaAjustSemana = 0;
+		int qtdePecasMetaTurno = 0;
+		int qtdePecasMetaAjustTurno = 0;
+		
+		for (CalendarioSemana semana : semanas) {
+			numSemanaMes++;			
+			qtdePecasMetaSemana = semana.getQtdeDiasUteis() * qtdePecasMetaDiaria;
+			qtdePecasMetaAjustSemana = semana.getQtdeDiasUteis() * qtdePecasMetaAjustDiaria;
+			// DIVIDE POR 2 TURNOS DE PRODUÇÃO (ATUALMENTE SÓ EXISTEM 2 TURNOS)
+			qtdePecasMetaTurno = (int) qtdePecasMetaSemana / 2; 
+			qtdePecasMetaAjustTurno = (int) qtdePecasMetaAjustSemana / 2; 
+			id = metasProducaoSemanaRepository.findNextId();
+			MetasProducaoSemana metaProducaoSemana = new MetasProducaoSemana(id, idMesAno, numSemanaMes, semana.getQtdeDiasUteis(), semana.getDataInicio(), semana.getDataFim(), qtdePecasMetaSemana, qtdePecasMetaTurno, qtdePecasMetaAjustSemana, qtdePecasMetaAjustTurno);
+			metasProducaoSemanaRepository.save(metaProducaoSemana);
+		}				
+	}	
+	
+	/*
 	public long saveMetaSemana(long id, String idMes, int nrSemana, int diasUteis, Date dataInicio, Date dataFim, int metaReal, int metaRealTurno, int metaAjustada, int metaAjustadaTurno) {
 		MetasProducaoSemana dadosSemana = null; //metasProducaoSemanaRepository.findByIdMetaSemana(id);
 		
@@ -184,5 +214,5 @@ public class ConfeccaoService {
 		metasProducaoSemanaRepository.save(dadosSemana);
 		
 		return id;
-	}
+	}*/
 }

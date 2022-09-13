@@ -141,18 +141,10 @@ public class ConfeccaoCustom {
 				+ " ORDER BY a.codigo_estagio ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
 	}
-	
-	public int findDiasUteis(String dataMeta) {
-		String query = " select COUNT(a.dia_util) from basi_260 a where a.data_calendario between (trunc(to_date(?, 'dd-MM-YYYY'),'MM')) "
-				+ " AND (trunc(LAST_DAY(to_date(?, 'dd-MM-YYYY')))) "
-				+ " AND a.dia_util = 0 ";
-		return jdbcTemplate.queryForObject(query, Integer.class, dataMeta, dataMeta);
-	}
-	
+		
 	public List<MetasProducao> findMetasProducao(String idMeta) {
 		String query = " SELECT a.nr_semana numSemana, a.dias_uteis diasUteis, a.meta_real metaReal, a.meta_real_turno metaRealTurno, a.meta_ajustada metaAjustada, a.meta_ajustada_turno metaAjustadaTurno "
 				+ " FROM orion_cfc_240 a WHERE a.id_mes = " + idMeta;
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MetasProducao.class));
-		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MetasProducao.class));	
 	}
 }
