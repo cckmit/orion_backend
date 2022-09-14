@@ -871,6 +871,33 @@ public class ProdutoCustom {
 		return produto;
 	}
 
+	public List<Produto> findProdutos(String nivel, String grupo, String sub, String item) {
+
+		List<Produto> produtos;
+		
+		if (sub == null) sub = "";
+		if (item == null) item = "";
+
+		String query = " select a.nivel_estrutura nivel, a.grupo_estrutura grupo, a.subgru_estrutura sub, a.item_estrutura item, a.narrativa, b.unidade_medida unidade, nvl(c.ordem_tamanho,0) seqTamanho"
+				+ " from basi_010 a, basi_030 b, basi_220 c "
+				+ " where a.nivel_estrutura = '" + nivel + "' "
+				+ " and a.grupo_estrutura = '" + grupo + "' ";				
+				if (!sub.equalsIgnoreCase("")) query += " and a.subgru_estrutura = '" + sub + "' "; 
+				if (!item.equalsIgnoreCase("")) query += " and a.item_estrutura = '" + item + "' ";				
+				query += " and b.nivel_estrutura = a.nivel_estrutura "
+				+ " and b.referencia = a.grupo_estrutura "
+				+ " and c.tamanho_ref (+) = a.subgru_estrutura "
+				+ " order by a.nivel_estrutura , a.grupo_estrutura , c.ordem_tamanho";
+
+		try {
+			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+		} catch (Exception e) {
+			produtos = new ArrayList<Produto>();
+		}
+
+		return produtos;
+	}
+	
 	public List<Produto> findProdutosComRoteiroByNiveis(String niveis) {
 
 		List<Produto> produtos;
