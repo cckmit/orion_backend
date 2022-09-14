@@ -167,8 +167,7 @@ public class ConfeccaoController {
 	}
 	
 	@RequestMapping(value = "/save-meta-producao-semana", method = RequestMethod.POST)
-	public long saveMetaSemana(@RequestBody BodyConfeccao body) {
-		System.out.println("TESTE");
+	public long saveMetaSemana(@RequestBody BodyConfeccao body) {		
 		return confeccaoService.saveMetaSemana(body.idMetaSemana, body.idMes, body.nrSemana, body.diasUteis, body.dataInicio, body.dataFim, body.metaReal, body.metaRealTurno, body.metaAjustada, body.metaAjustadaTurno);
 		
 	}       
