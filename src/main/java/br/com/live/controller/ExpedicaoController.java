@@ -212,7 +212,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-dados-minuta-atacado", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(@RequestBody BodyMinutaTransporte body) {
     	return expedicaoCustom.findDadosMinutaAtacado(body.dataEmiInicio, body.dataEmiFim, body.dataLibPaypalIni, body.dataLibPaypalFim,
-    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota, body.consideraPedidosCD);
+    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota);
     }
     
     @RequestMapping(value = "/find-dados-minuta-ecommerce", method = RequestMethod.POST)
@@ -223,7 +223,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/gerar-minuta-atacado", method = RequestMethod.POST)
     public String gerarMinutaAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
     	return enderecoService.gerarMinutaTransporteAtacado(body.dataEmiInicio, body.dataEmiFim, body.dataLibPaypalIni, body.dataLibPaypalFim,
-    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota, body.consideraPedidosCD);
+    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota);
     }
     
     @RequestMapping(value = "/gerar-minuta-ecommerce", method = RequestMethod.POST)
@@ -238,6 +238,6 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/find-volumes-sem-leitura-atacado", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findVolumesSemLeituraAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return expedicaoCustom.findVolumesSemLeituraAtac(body.dataEmiInicio, body.dataEmiFim, body.codEmpresa, body.transportadora, body.pedido, body.nota, body.consideraPedidosCD);
+    	return expedicaoCustom.findVolumesSemLeituraAtac(body.dataEmiInicio, body.dataEmiFim, body.codEmpresa, body.transportadora, body.pedido, body.nota);
     }
 }
