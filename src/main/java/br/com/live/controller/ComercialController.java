@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyComercial;
-import br.com.live.custom.ComercialCustom;
 import br.com.live.entity.BloqueioTitulosForn;
 import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.service.ComercialService;
@@ -23,17 +22,15 @@ import br.com.live.service.ComercialService;
 public class ComercialController {
 	
 	private ComercialService comercialService;
-	private ComercialCustom comercialCustom;
 	
 	@Autowired
-	public ComercialController(ComercialCustom comercialCustom, ComercialService comercialService) {
-		this.comercialCustom = comercialCustom;
+	public ComercialController(ComercialService comercialService) {
 		this.comercialService = comercialService;
 	}
 	
 	@RequestMapping(value = "/save-envio-produtos-e-commerce", method = RequestMethod.POST)
     public void gravarEnvioProdEcommerce(@RequestBody BodyComercial body) {
-		comercialCustom.gravaEnvioProdEcommerce(body.produto);
+		comercialService.saveProdutosIntegracaoEcom(body.referencia, body.tamanho, body.cor);
 	}
 	
 	@RequestMapping(value = "/save-bloqueio-fornecedor", method = RequestMethod.POST)

@@ -877,7 +877,7 @@ public class ProdutoCustom {
 		
 		if (sub == null) sub = "";
 		if (item == null) item = "";
-
+		
 		String query = " select a.nivel_estrutura nivel, a.grupo_estrutura grupo, a.subgru_estrutura sub, a.item_estrutura item, a.narrativa, b.unidade_medida unidade, nvl(c.ordem_tamanho,0) seqTamanho"
 				+ " from basi_010 a, basi_030 b, basi_220 c "
 				+ " where a.nivel_estrutura = '" + nivel + "' "
@@ -1212,6 +1212,21 @@ public class ProdutoCustom {
 		}
 		
 		return produtos;
+	}
+	
+	public List<ConteudoChaveAlfaNum> findGruposByLeitorProduto(String leitor) {
+		List<ConteudoChaveAlfaNum> grupos;
+				
+		String query = " select a.referencia value, a.referencia || ' - ' || a.descr_referencia label from basi_030 a "
+				+ " where a.referencia || a.descr_referencia like '%" + leitor + "%' "
+				+ " and rownum <= 500 ";
+		
+		try {
+			grupos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+		} catch (Exception e) {
+			grupos = new ArrayList<ConteudoChaveAlfaNum>();
+		}
+		return grupos;
 	}
 	
 	public void atualizaComplemento(String nivel, String grupo, String subGrupo, String item, int complemento) {

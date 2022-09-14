@@ -1,6 +1,5 @@
 package br.com.live.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.live.body.BodyConfeccao;
@@ -167,7 +166,7 @@ public class ConfeccaoController {
 	}
 	
 	@RequestMapping(value = "/save-meta-producao-semana", method = RequestMethod.POST)
-	public long saveMetaSemana(@RequestBody BodyConfeccao body) {		
+	public long saveMetaSemana(@RequestBody BodyConfeccao body) {
 		return confeccaoService.saveMetaSemana(body.idMetaSemana, body.idMes, body.nrSemana, body.diasUteis, body.dataInicio, body.dataFim, body.metaReal, body.metaRealTurno, body.metaAjustada, body.metaAjustadaTurno);
 		
 	}       

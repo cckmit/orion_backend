@@ -175,4 +175,8 @@ public class ProdutoController {
 		return produtoService.atualizaComplementoByColecao(body.colecao, body.complemento);
 	}
 	
+	@RequestMapping(value = "/find-grupos-by-leitor/{leitor}", method = RequestMethod.GET)
+	public List<ConteudoChaveAlfaNum> findGruposByLeitorProduto(@PathVariable("leitor") String leitor) {		
+		return produtoService.findGruposByLeitorProduto(leitor.toUpperCase());
+	}
 }
