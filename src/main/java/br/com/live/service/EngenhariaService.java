@@ -268,7 +268,6 @@ public class EngenhariaService {
 	}
 	
 	public StatusGravacao deleteTempoMaquina(long idTempoMaqCM) {
-		System.out.println("Entrou " + idTempoMaqCM);
 		if (engenhariaCustom.existsTempoMaquina(idTempoMaqCM)) 
 			return new StatusGravacao(false, "Não é possível excluir o Tempo Máquina, pois o mesmo está em uso no cadastro de Relacionamento Operação X Micromovimentos!", engenhariaCustom.findAllTempoMaquinaCM()); 
 		tempoMaquinaCMRepository.deleteById(idTempoMaqCM);

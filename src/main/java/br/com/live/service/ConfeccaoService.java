@@ -68,6 +68,16 @@ public class ConfeccaoService {
 		tipoObservacaoRepository.deleteById(id);
 	}
 	
+	public String deleteMetasById(String idMeta) {
+		metasProducaoRepository.deleteById(idMeta);
+		return idMeta;
+	}
+	
+	public String deleteMetasSemanaById(String idMeta) {
+		metasProducaoSemanaRepository.deleteByIdMes(idMeta);
+		return idMeta;
+	}
+	
 	public void deleteObservacaoById(String id) {
 		observacaoOrdemPacoteRepository.deleteById(id);
 	}
@@ -97,6 +107,10 @@ public class ConfeccaoService {
 
 	public List<Restricoes> findAllRestricoes() {
 		return restricoesRepository.findAll();
+	}
+	
+	public List<MetasProducao> findAllMetasProducao() {
+		return metasProducaoRepository.findAll();
 	}
 
 	public Restricoes findRestricaoById(long idRestricao) {
@@ -163,8 +177,9 @@ public class ConfeccaoService {
 			dadosMeta.metaAjustada = metaAjustada; 					
 		}						
 		metasProducaoRepository.save(dadosMeta);		
-		saveMetaSemana(dadosMeta.id, mes, ano, metaDiaria, metaAjustada);		
-		return id;
+		saveMetaSemana(dadosMeta.id, mes, ano, metaDiaria, metaAjustada);	
+		
+		return dadosMeta.id;
 	}
 	
 	public void saveMetaSemana(String idMesAno, int mes, int ano, int qtdePecasMetaDiaria, int qtdePecasMetaAjustDiaria) {
@@ -192,27 +207,4 @@ public class ConfeccaoService {
 			metasProducaoSemanaRepository.save(metaProducaoSemana);
 		}				
 	}	
-	
-	/*
-	public long saveMetaSemana(long id, String idMes, int nrSemana, int diasUteis, Date dataInicio, Date dataFim, int metaReal, int metaRealTurno, int metaAjustada, int metaAjustadaTurno) {
-		MetasProducaoSemana dadosSemana = null; //metasProducaoSemanaRepository.findByIdMetaSemana(id);
-		
-		if (dadosSemana == null) {
-			dadosSemana = new MetasProducaoSemana(id, idMes, nrSemana, diasUteis, dataInicio, dataFim, metaReal, metaRealTurno, metaAjustada, metaAjustadaTurno);
-		} else {
-			dadosSemana.id = id;
-			dadosSemana.idMes = idMes; 
-			dadosSemana.nrSemana = nrSemana;
-			dadosSemana.diasUteis = diasUteis;
-			dadosSemana.dataInicio = dataInicio;
-			dadosSemana.dataFim = dataFim;
-			dadosSemana.metaReal = metaReal; 
-			dadosSemana.metaRealTurno = metaRealTurno;
-			dadosSemana.metaAjustada = metaAjustada;
-			dadosSemana.metaAjustadaTurno = metaAjustadaTurno; 					
-		}						
-		metasProducaoSemanaRepository.save(dadosSemana);
-		
-		return id;
-	}*/
 }

@@ -3,11 +3,14 @@ package br.com.live.custom;
 import java.util.List;
 
 import br.com.live.model.ConsultaRestricoesRolo;
+import br.com.live.model.ConsultaTipoPonto;
+
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.MetasProducao;
+import br.com.live.entity.MetasProducaoSemana;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.DiasUteis;
@@ -140,11 +143,5 @@ public class ConfeccaoCustom {
 		String query = " SELECT a.codigo_estagio estagio, a.descricao FROM mqop_005 a GROUP BY a.codigo_estagio, a.descricao "
 				+ " ORDER BY a.codigo_estagio ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
-	}
-		
-	public List<MetasProducao> findMetasProducao(String idMeta) {
-		String query = " SELECT a.nr_semana numSemana, a.dias_uteis diasUteis, a.meta_real metaReal, a.meta_real_turno metaRealTurno, a.meta_ajustada metaAjustada, a.meta_ajustada_turno metaAjustadaTurno "
-				+ " FROM orion_cfc_240 a WHERE a.id_mes = " + idMeta;
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MetasProducao.class));	
 	}
 }

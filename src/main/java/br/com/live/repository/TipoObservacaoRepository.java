@@ -15,5 +15,5 @@ public interface TipoObservacaoRepository extends JpaRepository<TipoObservacao, 
 	@Query("SELECT u FROM TipoObservacao u where u.id = :id")
 	TipoObservacao findByIdLong(long id);
 	
-	void deleteById(long id);
+	void deleteById(String idMeta);
 }
