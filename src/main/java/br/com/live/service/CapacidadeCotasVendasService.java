@@ -33,7 +33,7 @@ public class CapacidadeCotasVendasService {
 			int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes, String depositos, List<CapacidadeCotasVendas> itens) {		
 		for (CapacidadeCotasVendas item : itens) {						
 			item.setTempoUnitario(capacidadeCotasVendasCustom.findTempoUnitarioByReferenciaColecao(item.getReferencia(),colecoes));			
-			item.setQtdeSaldo(item.getQtdeEstoque() + item.getQtdeProcesso() - item.getQtdeDemanda());
+			item.setQtdeSaldo(item.getQtdeEstoque() + item.getQtdeProcesso() - item.getQtdeDemanda() - item.getQtdeDemandaAtual());
 			item.setQtdeMinutosDemandaAtual(item.getQtdeDemandaAtual() * item.getTempoUnitario());									
 		}
 		return itens;
