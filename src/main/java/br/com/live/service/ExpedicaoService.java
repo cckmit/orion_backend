@@ -537,15 +537,10 @@ public class ExpedicaoService {
 		return parameters;
 	}
 
-	public String gerarMinutaTransporteAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni,
-			String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
-			String transportadora, int pedido, int nota) throws FileNotFoundException, JRException {
+	public String gerarMinutaTransporteAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, String transportadora) throws FileNotFoundException, JRException {
 		String nomeRelatorioGerado = "";
-
-		List<ConsultaMinutaTransporte> itensMinuta = enderecosCustom.findDadosMinutaAtacado(dataEmiInicio, dataEmiFim,
-				dataLibPaypalIni, dataLibPaypalFim, empresa, localCaixa, transportadora, pedido, nota);
-
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itensMinuta);
+		
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(notasSelecionadas);
 		
 		Map<String, Object> parameters = setParameters(transportadora);
 
@@ -554,13 +549,10 @@ public class ExpedicaoService {
 		return nomeRelatorioGerado;
 	}
 	
-	public String gerarMinutaTransporteEcommerce(String dataInicioBox, String dataFimBox, 
-			String horaInicio, String horaFim, int nota, String transportadora) throws FileNotFoundException, JRException {
+	public String gerarMinutaTransporteEcommerce(List<ConsultaMinutaTransporte> notasSelecionadas, String transportadora) throws FileNotFoundException, JRException {
 		String nomeRelatorioGerado = "";
 
-		List<ConsultaMinutaTransporte> itensMinuta = enderecosCustom.findDadosMinutaEcommerce(dataInicioBox, dataFimBox, horaInicio, horaFim, nota, transportadora);
-
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(itensMinuta);
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(notasSelecionadas);
 		
 		Map<String, Object> parameters = setParameters(transportadora);
 

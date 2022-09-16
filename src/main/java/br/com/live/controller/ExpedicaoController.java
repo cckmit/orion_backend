@@ -222,13 +222,12 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/gerar-minuta-atacado", method = RequestMethod.POST)
     public String gerarMinutaAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return enderecoService.gerarMinutaTransporteAtacado(body.dataEmiInicio, body.dataEmiFim, body.dataLibPaypalIni, body.dataLibPaypalFim,
-    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota);
+    	return enderecoService.gerarMinutaTransporteAtacado(body.notasSelecionadas, body.transportadora);
     }
     
     @RequestMapping(value = "/gerar-minuta-ecommerce", method = RequestMethod.POST)
     public String gerarMinutaTransporteEcommerce(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return enderecoService.gerarMinutaTransporteEcommerce(body.dataInicioBox, body.dataFimBox, body.horaInicio, body.horaFim, body.nota, body.transportadora);
+    	return enderecoService.gerarMinutaTransporteEcommerce(body.notasSelecionadas, body.transportadora);
     }
     
     @RequestMapping(value = "/find-volumes-sem-leitura-ecommerce", method = RequestMethod.POST)

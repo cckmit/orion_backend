@@ -723,7 +723,7 @@ public class ExpedicaoCustom {
 				+ "           and f.cod_empresa (+) = a.codigo_empresa "
 				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
 				+ " 		  and g.cod_cidade = c.cod_cidade "
-				+ " 		  and a.cond_pgto_venda not in (200,67,267) "
+				//+ " 		  and a.cond_pgto_venda not in (200,67,267) "
 				+ " 		  and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 "
 				+ "	 		  and a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') "
 				+ " 		  and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') ";

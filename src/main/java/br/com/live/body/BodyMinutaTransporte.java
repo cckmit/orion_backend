@@ -2,6 +2,7 @@ package br.com.live.body;
 
 import java.util.List;
 
+import br.com.live.model.ConsultaMinutaTransporte;
 import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyMinutaTransporte {
@@ -24,4 +25,6 @@ public class BodyMinutaTransporte {
 	
 	public int codEmpresa;
 	public boolean consideraPedidosCD;
+	
+	public List<ConsultaMinutaTransporte> notasSelecionadas;
 }
