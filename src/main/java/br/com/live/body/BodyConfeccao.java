@@ -11,10 +11,11 @@ public class BodyConfeccao {
     public List<ConteudoChaveNumerica> restricoes;
     public List<ConteudoChaveNumerica> rolos;
     public List<ConteudoChaveNumerica> ordens;
-	public int mesMeta;
-	public int anoMeta;
+	public String dataMeta;
 	public String idMetaMes;
 	public long idMetaSemana;
+	public int mes;
+	public int ano;
 	public int codEstagio;
 	public int metaMes;
 	public int diasUteis;

@@ -354,18 +354,20 @@ public class EngenhariaService {
 			saveTempoMaquinaCM(0, dados.grupo, dados.subgrupo, dados.medida, dados.tempo);			
 		}
 	}
-	
-	
-	public void saveOperXMultiplosMicromovimento(int codOperacao, int tipo, List<ConteudoChaveAlfaNum> listIdMicromovimento, List<Integer> listIdTempoMaquina) {		
-		int sequencia = 0;		
-		for (ConteudoChaveAlfaNum idMicromovimento : listIdMicromovimento) {
-			sequencia = engenhariaCustom.findNextSequecia(codOperacao);			
-			saveOperXMicromovimento(0, codOperacao, sequencia, tipo, idMicromovimento.value, 0);
-			
-		}		
-		for (Integer IdTempoMaquina : listIdTempoMaquina) {
-			sequencia = engenhariaCustom.findNextSequecia(codOperacao);			
-			saveOperXMicromovimento(0, codOperacao, sequencia, tipo, "", IdTempoMaquina);			
+		
+	public void saveOperXMultiplosMicromovimento(int codOperacao, int tipo, List<String> listIdMicromovimento, List<Integer> listIdTempoMaquina, int seqInserir) {		
+		if (tipo == MICROMOVIMENTO) {
+			for (String idMicromovimento : listIdMicromovimento) {				
+				// Se for inserido mais que 1 registro, deve alocá-los ao final, caso contrário deixa inserir na sequência informada.
+				if (listIdMicromovimento.size() > 1) seqInserir = engenhariaCustom.findNextSequecia(codOperacao);					
+				saveOperXMicromovimento(0, codOperacao, seqInserir, tipo, idMicromovimento, 0);			
+			}		
+		} else {		
+			for (Integer IdTempoMaquina : listIdTempoMaquina) {						
+				// Se for inserido mais que 1 registro, deve alocá-los ao final, caso contrário deixa inserir na sequência informada.
+				if (listIdTempoMaquina.size() > 1) seqInserir = engenhariaCustom.findNextSequecia(codOperacao);
+				saveOperXMicromovimento(0, codOperacao, seqInserir, tipo, "", IdTempoMaquina);			
+			}
 		}
 	}
 	

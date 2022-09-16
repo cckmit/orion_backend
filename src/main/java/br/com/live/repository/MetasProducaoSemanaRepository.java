@@ -18,7 +18,5 @@ public interface MetasProducaoSemanaRepository extends JpaRepository<MetasProduc
 	
 	@Query(" SELECT nvl(max(a.id),0) + 1 FROM MetasProducaoSemana a ")
 	long findNextId();
-	
 	void deleteById(String idMeta);
-	void deleteByIdMes(String idMes);
 }

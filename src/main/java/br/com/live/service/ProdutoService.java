@@ -158,6 +158,10 @@ public class ProdutoService {
 		return produtoRepository.findProdutosByLeitorProduto(leitor);
 	}
 	
+	public List<ConteudoChaveAlfaNum> findGruposByLeitorProduto(String leitor) {
+		return produtoRepository.findGruposByLeitorProduto(leitor);
+	}
+	
 	public int atualizaComplemento(List<AtualizaComplementoRef> refsAlterar, int complemento) {
 		int quantRefsAlteradas = 0;
 		

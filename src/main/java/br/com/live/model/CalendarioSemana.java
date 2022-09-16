@@ -10,14 +10,7 @@ public class CalendarioSemana {
 	private Date dataInicio;
 	private Date dataFim;
 	private int qtdeDias;
-	private int qtdeDiasUteis;
 		
-	public int getQtdeDiasUteis() {
-		return qtdeDiasUteis;
-	}
-	public void setQtdeDiasUteis(int qtdeDiasUteis) {
-		this.qtdeDiasUteis = qtdeDiasUteis;
-	}
 	public int getMes() {
 		return mes;
 	}
