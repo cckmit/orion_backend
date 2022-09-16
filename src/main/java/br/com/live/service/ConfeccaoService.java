@@ -11,11 +11,13 @@ import br.com.live.repository.RestricoesRoloRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.ConfeccaoCustom;
 import br.com.live.entity.MetasProducao;
 import br.com.live.entity.MetasProducaoSemana;
 import br.com.live.entity.ObservacaoOrdemPacote;
 import br.com.live.entity.TipoObservacao;
+import br.com.live.model.CalendarioSemana;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.repository.MetasProducaoRepository;
 import br.com.live.repository.MetasProducaoSemanaRepository;
@@ -33,11 +35,12 @@ public class ConfeccaoService {
 	private final RestricoesRoloRepository restricoesRoloRepository;
 	private final MetasProducaoRepository metasProducaoRepository;
 	private final MetasProducaoSemanaRepository metasProducaoSemanaRepository;
+	private final CalendarioCustom calendarioCustom;
 
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
 			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository,
-			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository) {
+			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
@@ -45,6 +48,7 @@ public class ConfeccaoService {
 		this.restricoesRoloRepository = restricoesRoloRepository;
 		this.metasProducaoRepository = metasProducaoRepository;
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
+		this.calendarioCustom = calendarioCustom;
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -176,6 +180,8 @@ public class ConfeccaoService {
 		metasProducaoRepository.save(dadosMeta);		
 		saveMetaSemana(dadosMeta.id, mes, ano, metaDiaria, metaAjustada);	
 		
+		System.out.println("DADOS: " + mes + "/" + ano);
+		
 		return dadosMeta.id;
 	}
 	
@@ -196,7 +202,11 @@ public class ConfeccaoService {
 			numSemanaMes++;			
 			qtdePecasMetaSemana = semana.getQtdeDiasUteis() * qtdePecasMetaDiaria;
 			qtdePecasMetaAjustSemana = semana.getQtdeDiasUteis() * qtdePecasMetaAjustDiaria;
-			// DIVIDE POR 2 TURNOS DE PRODUÇÃO (ATUALMENTE SÓ EXISTEM 2 TURNOS)
+			
+			System.out.println("SEMANA - " + numSemanaMes);
+			System.out.println("QUANT  - " + semana.getQtdeDiasUteis() + " --- " + qtdePecasMetaDiaria + " / " + qtdePecasMetaAjustDiaria);
+			
+			// DIVIDE POR 2 TURNOS DE PRODUï¿½ï¿½O (ATUALMENTE Sï¿½ EXISTEM 2 TURNOS)
 			qtdePecasMetaTurno = (int) qtdePecasMetaSemana / 2; 
 			qtdePecasMetaAjustTurno = (int) qtdePecasMetaAjustSemana / 2; 
 			id = metasProducaoSemanaRepository.findNextId();

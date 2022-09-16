@@ -14,8 +14,8 @@ public class BodyConfeccao {
 	public String dataMeta;
 	public String idMetaMes;
 	public long idMetaSemana;
-	public int mes;
-	public int ano;
+	public int mesMeta;
+	public int anoMeta;
 	public int codEstagio;
 	public int metaMes;
 	public int diasUteis;

@@ -3,9 +3,12 @@ package br.com.live.controller;
 import java.util.List;
 
 import br.com.live.body.BodyConfeccao;
+import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.ConfeccaoCustom;
 import br.com.live.entity.Restricoes;
 import br.com.live.model.ConsultaRestricoesRolo;
+import br.com.live.model.EstagioProducao;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +30,6 @@ import br.com.live.repository.ObservacaoOrdemPacoteRepository;
 import br.com.live.repository.TipoObservacaoRepository;
 import br.com.live.service.ConfeccaoService;
 import br.com.live.util.ConteudoChaveNumerica;
-import br.com.live.util.StatusGravacao;
 
 @RestController
 @CrossOrigin
@@ -40,16 +42,20 @@ public class ConfeccaoController {
 	private ConfeccaoCustom confeccaoCustom;
 	private MetasProducaoRepository metasProducaoRepository;
 	private MetasProducaoSemanaRepository metasProducaoSemanaRepository;
+	private CalendarioCustom calendarioCustom;
 
 	@Autowired
 	public ConfeccaoController(ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository,
-			CalendarioCustom calendarioCustom, MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository) {
+			CalendarioCustom calendarioCustom, MetasProducaoRepository metasProducaoRepository, 
+			MetasProducaoSemanaRepository metasProducaoSemanaRepository, ConfeccaoService confeccaoService, ConfeccaoCustom confeccaoCustom,
+			TipoObservacaoRepository tipoObservacaoRepository ) {
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoService = confeccaoService;
 		this.confeccaoCustom = confeccaoCustom;
 		this.metasProducaoRepository = metasProducaoRepository;
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
+		this.calendarioCustom = calendarioCustom;
 	}
 
 	@RequestMapping(value = "/find-all-tipo-obs", method = RequestMethod.GET)
@@ -160,11 +166,11 @@ public class ConfeccaoController {
 	@RequestMapping(value = "/save-restricoes-por-ordens", method = RequestMethod.POST)
 	public void saveRestricoesPorOrdens(@RequestBody BodyConfeccao body) {
 		confeccaoService.proxySaveRestricoesPorOrdemBenef(body.ordens, body.restricoes);
-	}
+	} 
 
-	@RequestMapping(value = "/find-dias-uteis", method = RequestMethod.POST)
-	public int findDiasUteis(@RequestBody BodyConfeccao body) {
-		return confeccaoCustom.findDiasUteis(body.dataMeta);
+	@RequestMapping(value = "/find-dias-uteis/{mes}/{ano}", method = RequestMethod.GET)
+	public int findDiasUteis(@PathVariable("mes") int mes, @PathVariable("ano") int ano) {
+		return calendarioCustom.findDiasUteis(mes, ano);
 	}
 	
 	@RequestMapping(value = "/find-metas-producao/{idMeta}", method = RequestMethod.GET)
@@ -179,16 +185,15 @@ public class ConfeccaoController {
 	
 	@RequestMapping(value = "/save-meta-producao", method = RequestMethod.POST)
 	public String saveMetaProducao(@RequestBody BodyConfeccao body) {
-		return confeccaoService.saveMetaProducao(body.idMetaMes, body.mes, body.ano, body.codEstagio, body.metaMes, body.diasUteis, body.metaDiaria, body.metaAjustada);
-		
+		return confeccaoService.saveMetaProducao(body.idMetaMes, body.mesMeta, body.anoMeta , body.codEstagio, body.metaMes, body.diasUteis, body.metaDiaria, body.metaAjustada);
 	}
-	*/    	
+		
 	@RequestMapping(value = "/save-meta-producao-semana", method = RequestMethod.POST)
-	public long saveMetaSemana(@RequestBody BodyConfeccao body) {
-		return confeccaoService.saveMetaSemana(body.idMetaSemana, body.idMes, body.nrSemana, body.diasUteis, body.dataInicio, body.dataFim, body.metaReal, body.metaRealTurno, body.metaAjustada, body.metaAjustadaTurno);
+	public void saveMetaSemana(@RequestBody BodyConfeccao body) {
+		confeccaoService.saveMetaSemana(body.idMes, body.mesMeta, body.anoMeta, body.metaReal, body.metaAjustada);
 		
 	}       
-@RequestMapping(value = "/delete-meta/{idMeta}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/delete-meta/{idMeta}", method = RequestMethod.DELETE)
     public String deleteMetasById(@PathVariable("idMeta") String idMeta) {                  
         return confeccaoService.deleteMetasById(idMeta);
     }
@@ -196,4 +201,10 @@ public class ConfeccaoController {
 	@RequestMapping(value = "/delete-meta-semana/{idMeta}", method = RequestMethod.DELETE)
     public String deleteMetasSemanaById(@PathVariable("idMeta") String idMeta) {                  
         return confeccaoService.deleteMetasSemanaById(idMeta);
-    }}
+    }
+	
+	@RequestMapping(value = "/find-all-estagios", method = RequestMethod.GET)
+	public List<EstagioProducao> findAllEstagios() {
+		return confeccaoCustom.findAllEstagio();
+	}
+}
