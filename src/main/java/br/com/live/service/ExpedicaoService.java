@@ -47,7 +47,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @Service
 @Transactional
 public class ExpedicaoService {
-	private final ExpedicaoCustom enderecosCustom;
+	private final ExpedicaoCustom expedicaoCustom;
 	private final ParametrosMapaEndRepository parametrosMapaEndRepository;
 	private final CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository;
 	private final AberturaCaixasRepository aberturaCaixasRepository;
@@ -59,12 +59,12 @@ public class ExpedicaoService {
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
 
-	public ExpedicaoService(ExpedicaoCustom enderecosCustom, ParametrosMapaEndRepository parametrosMapaEndRepository,
+	public ExpedicaoService(ExpedicaoCustom expedicaoCustom, ParametrosMapaEndRepository parametrosMapaEndRepository,
 			CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository,
 			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository,
 			ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
 			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService) {
-		this.enderecosCustom = enderecosCustom;
+		this.expedicaoCustom = expedicaoCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
 		this.aberturaCaixasRepository = aberturaCaixasRepository;
@@ -75,7 +75,7 @@ public class ExpedicaoService {
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
-		return enderecosCustom.findReferenciaEnd(codDeposito);
+		return expedicaoCustom.findReferenciaEnd(codDeposito);
 	}
 
 	public Embarque findGrupoEmbarque(String numeroTag) {
@@ -87,11 +87,11 @@ public class ExpedicaoService {
 		ordem = Integer.parseInt(numeroTag.substring(4, 13));
 		pacote = Integer.parseInt(numeroTag.substring(13, 18));
 
-		return enderecosCustom.findEmbarque(periodo, ordem, pacote);
+		return expedicaoCustom.findEmbarque(periodo, ordem, pacote);
 	}
 
 	public DadosModalEndereco findDadosModalEnd(int deposito, String endereco) {
-		return enderecosCustom.findDadosModalEndereco(deposito, endereco);
+		return expedicaoCustom.findDadosModalEndereco(deposito, endereco);
 	}
 
 	public String gravarEndereco(String numeroTag, String endereco) {
@@ -103,18 +103,18 @@ public class ExpedicaoService {
 		if (numeroTag.length() < 22) {
 			int numeroCaixa = Integer.parseInt(numeroTag);
 
-			int temProduto = enderecosCustom.validarExistePecaCaixa(numeroCaixa);
+			int temProduto = expedicaoCustom.validarExistePecaCaixa(numeroCaixa);
 
 			if (temProduto == 0) {
 				msgErro = "Caixa não passou pelo novo processo de endereçamento! Será necessário endereçar peça a peça!";
 			} else {
-				listTags = enderecosCustom.obterTagsLidosCaixa(numeroCaixa);
+				listTags = expedicaoCustom.obterTagsLidosCaixa(numeroCaixa);
 
 				for (DadosTagProd dadosTag : listTags) {
-					enderecosCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote,
+					expedicaoCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote,
 							dadosTag.sequencia, endereco);
 				}
-				enderecosCustom.limparCaixa(numeroCaixa);
+				expedicaoCustom.limparCaixa(numeroCaixa);
 			}
 		} else {
 			int periodo = Integer.parseInt(numeroTag.substring(0, 4));
@@ -122,8 +122,8 @@ public class ExpedicaoService {
 			int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 			int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
 
-			int flagEmEstoque = enderecosCustom.validarPecaEmEstoque(periodo, ordem, pacote, sequencia);
-			existeEndereco = enderecosCustom.validarGravacaoEndereco(periodo, ordem, pacote, sequencia);
+			int flagEmEstoque = expedicaoCustom.validarPecaEmEstoque(periodo, ordem, pacote, sequencia);
+			existeEndereco = expedicaoCustom.validarGravacaoEndereco(periodo, ordem, pacote, sequencia);
 
 			if (flagEmEstoque == 1) {
 				msgErro = "Este TAG já foi faturado!";
@@ -134,8 +134,8 @@ public class ExpedicaoService {
 			}
 
 			if (msgErro.equals("")) {
-				enderecosCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco);
-				enderecosCustom.limparTagLidoCaixa(numeroTag);
+				expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco);
+				expedicaoCustom.limparTagLidoCaixa(numeroTag);
 			}
 		}
 
@@ -189,12 +189,12 @@ public class ExpedicaoService {
 	}
 
 	public void gravarEnderecosDeposito(int deposito) {
-		enderecosCustom.cleanEnderecos(deposito);
+		expedicaoCustom.cleanEnderecos(deposito);
 
 		List<String> enderecos = gerarEnderecosDinamicos(deposito);
 
 		for (String endereco : enderecos) {
-			enderecosCustom.inserirEnderecosDeposito(deposito, endereco, "0", "00000", "000", "000000");
+			expedicaoCustom.inserirEnderecosDeposito(deposito, endereco, "0", "00000", "000", "000000");
 		}
 	}
 
@@ -298,7 +298,7 @@ public class ExpedicaoService {
 		String msgErro = "";
 		int numeroCaixa = 0;
 
-		numeroCaixa = enderecosCustom.validarCaixaAberta(codUsuario);
+		numeroCaixa = expedicaoCustom.validarCaixaAberta(codUsuario);
 
 		if (numeroCaixa == codCaixa)
 			return msgErro;
@@ -335,10 +335,10 @@ public class ExpedicaoService {
 
 			aberturaCaixasRepository.save(dadosAbertura);
 
-			List<DadosTagProd> dadosCaixasTag = enderecosCustom.findDadosTagCaixas(codCaixa);
+			List<DadosTagProd> dadosCaixasTag = expedicaoCustom.findDadosTagCaixas(codCaixa);
 
 			for (DadosTagProd tagLido : dadosCaixasTag) {
-				enderecosCustom.atualizarSituacaoEndereco(tagLido.periodo, tagLido.ordem, tagLido.pacote,
+				expedicaoCustom.atualizarSituacaoEndereco(tagLido.periodo, tagLido.ordem, tagLido.pacote,
 						tagLido.sequencia);
 			}
 		}
@@ -361,12 +361,12 @@ public class ExpedicaoService {
 	}
 
 	public List<ProdutoEnderecar> findProdutosEnderecarCaixa(int codCaixa) {
-		List<ProdutoEnderecar> produtos = enderecosCustom.findProdutosEnderecar(codCaixa);
+		List<ProdutoEnderecar> produtos = expedicaoCustom.findProdutosEnderecar(codCaixa);
 
 		for (ProdutoEnderecar produto : produtos) {
 			produto.endereco = ProdutoEnderecar.ENDERECO_INDISPONIVEL;
 
-			CestoEndereco cesto = enderecosCustom.findEnderecoCesto(produto.nivel, produto.referencia, produto.tamanho,
+			CestoEndereco cesto = expedicaoCustom.findEnderecoCesto(produto.nivel, produto.referencia, produto.tamanho,
 					produto.cor, produto.deposito);
 
 			if (cesto != null) {
@@ -384,7 +384,7 @@ public class ExpedicaoService {
 		List<Produto> newProdutos = new ArrayList<Produto>();
 
 		String referenciasSel = ConverteLista.converteListStrToStr(produtosSel);
-		List<Produto> listRefSel = enderecosCustom.ordenarReferencias(referenciasSel);
+		List<Produto> listRefSel = expedicaoCustom.ordenarReferencias(referenciasSel);
 
 		newProdutos = filtrarListaSelecionados(referencias, listRefSel);
 		List<Produto> produtos = converteListaDeProdutos(newProdutos);
@@ -392,7 +392,7 @@ public class ExpedicaoService {
 		for (int boxAtual = boxInicio; boxAtual <= boxFim; boxAtual++) {
 			int parImpar = boxAtual % 2;
 
-			enderecos = enderecosCustom.findCestosLivres(deposito, bloco, corredor, boxAtual, parImpar);
+			enderecos = expedicaoCustom.findCestosLivres(deposito, bloco, corredor, boxAtual, parImpar);
 
 			for (EnderecoCesto endereco : enderecos) {
 				if (produtos.size() > 0) {
@@ -404,7 +404,7 @@ public class ExpedicaoService {
 					String subGrupo = prodConcat[2];
 					String item = prodConcat[1];
 
-					enderecosCustom.updateEnderecosDeposito(deposito, endereco.endereco, "1", grupo, subGrupo, item);
+					expedicaoCustom.updateEnderecosDeposito(deposito, endereco.endereco, "1", grupo, subGrupo, item);
 
 					produtos.remove(0);
 				}
@@ -451,7 +451,7 @@ public class ExpedicaoService {
 	}
 
 	public List<ConsultaCaixasNoEndereco> consultaCaixasNoEndereco(String endereco) {
-		return enderecosCustom.findCaixas(endereco);
+		return expedicaoCustom.findCaixas(endereco);
 	}
 
 	public void salvarParametrosEnderecoCaixa(int deposito, String ruaInicio, String ruaFim, int boxInicio,
@@ -470,12 +470,12 @@ public class ExpedicaoService {
 	}
 
 	public List<ConsultaCaixasNoEndereco> verificarCaixasNoEndereco() {
-		return enderecosCustom.verificaCaixasNoEndereco();
+		return expedicaoCustom.verificaCaixasNoEndereco();
 	}
 
 	public List<ConsultaTag> findQuantEnderecos(String nivel, String grupo, String subGrupo, String item,
 			int deposito) {
-		return enderecosCustom.obterEnderecos(deposito, nivel, grupo, subGrupo, item);
+		return expedicaoCustom.obterEnderecos(deposito, nivel, grupo, subGrupo, item);
 	}
 
 	public String findProdutoByTag(String numeroTag) {
@@ -484,7 +484,7 @@ public class ExpedicaoService {
 		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
 
-		return enderecosCustom.findProdutoByTag(periodo, ordem, pacote, sequencia);
+		return expedicaoCustom.findProdutoByTag(periodo, ordem, pacote, sequencia);
 	}
 
 	public List<ConsultaTag> findHistoricoTag(String numeroTag) {
@@ -493,7 +493,7 @@ public class ExpedicaoService {
 		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
 
-		return enderecosCustom.findHistoricoTag(periodo, ordem, pacote, sequencia);
+		return expedicaoCustom.findHistoricoTag(periodo, ordem, pacote, sequencia);
 	}
 
 	public void deleteVariacaoById(long idVariacao) {
@@ -501,7 +501,7 @@ public class ExpedicaoService {
 	}
 
 	public List<ConsultaVariacaoArtigo> findVaricaoArtigo() {
-		return enderecosCustom.findVariacaoArtigo();
+		return expedicaoCustom.findVariacaoArtigo();
 	}
 
 	public void saveVariacaoPesoArtigo(List<ConsultaVariacaoArtigo> variacoes) {
@@ -523,7 +523,7 @@ public class ExpedicaoService {
 	}
 	
 	public Map<String, Object> setParameters(String transportadora) {
-		ConsultaTransportadora transport = enderecosCustom.findDadosTransportadora(transportadora);
+		ConsultaTransportadora transport = expedicaoCustom.findDadosTransportadora(transportadora);
 		
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("nome", transport.nome);
@@ -559,5 +559,14 @@ public class ExpedicaoService {
 		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
 
 		return nomeRelatorioGerado;
+	}
+	
+	public void changeAllocationTAG(String numberTag, String newAllocation) {
+		int periodo = Integer.parseInt(numberTag.substring(0, 4));
+		int ordem = Integer.parseInt(numberTag.substring(4, 13));
+		int pacote = Integer.parseInt(numberTag.substring(13, 18));
+		int sequencia = Integer.parseInt(numberTag.substring(18, 22));
+		
+		expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation);
 	}
 }

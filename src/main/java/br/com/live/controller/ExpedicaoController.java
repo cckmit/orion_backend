@@ -41,7 +41,7 @@ import net.sf.jasperreports.engine.JRException;
 @RequestMapping("/endereco")
 public class ExpedicaoController {
 	
-	private ExpedicaoService enderecoService;
+	private ExpedicaoService expedicaoService;
 	private ParametrosMapaEndRepository parametrosMapaEndRepository;
 	private ExpedicaoCustom expedicaoCustom;
 	private AberturaCaixasRepository aberturaCaixasRepository;
@@ -49,9 +49,9 @@ public class ExpedicaoController {
 	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;
 	
     @Autowired
-    public ExpedicaoController(ExpedicaoService enderecoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
+    public ExpedicaoController(ExpedicaoService expedicaoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
     		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService) {
-    	this.enderecoService = enderecoService;
+    	this.expedicaoService = expedicaoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
     	this.expedicaoCustom = expedicaoCustom;
     	this.aberturaCaixasRepository = aberturaCaixasRepository;
@@ -61,17 +61,17 @@ public class ExpedicaoController {
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
     public List<EnderecoCount> findEnderecoRef(@PathVariable("deposito") int deposito) {
-        return enderecoService.findEnderecoRef(deposito);
+        return expedicaoService.findEnderecoRef(deposito);
     }
     
     @RequestMapping(value = "/find-dados-embarque/{numeroTag}", method = RequestMethod.GET)
     public Embarque findEnderecoRef(@PathVariable("numeroTag") String numeroTag) {
-        return enderecoService.findGrupoEmbarque(numeroTag);
+        return expedicaoService.findGrupoEmbarque(numeroTag);
     }
     
     @RequestMapping(value = "/find-dados-modal-endereco/{deposito}/{endereco}", method = RequestMethod.GET)
     public DadosModalEndereco findDadosModalEnd(@PathVariable("deposito") int deposito, @PathVariable("endereco") String endereco) {
-        return enderecoService.findDadosModalEnd(deposito, endereco);
+        return expedicaoService.findDadosModalEnd(deposito, endereco);
     }
     
     @RequestMapping(value = "/find-parametros/{deposito}", method = RequestMethod.GET)
@@ -81,13 +81,13 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/gravar-endereco", method = RequestMethod.POST)
     public String findEnderecoRef(@RequestBody BodyExpedicao body) {
-    	return enderecoService.gravarEndereco(body.numeroTag, body.endereco);
+    	return expedicaoService.gravarEndereco(body.numeroTag, body.endereco);
     }
     
     @RequestMapping(value = "/gravar-parametros", method = RequestMethod.POST)
     public void gravaParametros(@RequestBody BodyExpedicao body) {
-    	enderecoService.salvarParametros(body.deposito, body.blocoInicio, body.blocoFim, body.corredorInicio, body.corredorFim, body.boxInicio, body.boxFim, body.cestoInicio, body.cestoFim);
-    	enderecoService.gravarEnderecosDeposito(body.deposito);
+    	expedicaoService.salvarParametros(body.deposito, body.blocoInicio, body.blocoFim, body.corredorInicio, body.corredorFim, body.boxInicio, body.boxFim, body.cestoInicio, body.cestoFim);
+    	expedicaoService.gravarEnderecosDeposito(body.deposito);
     }
     
     @RequestMapping(value = "/find-all-capacidades-artigos", method = RequestMethod.GET)
@@ -97,13 +97,13 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/gravar-capacidades", method = RequestMethod.POST)
     public List<ConsultaCapacidadeArtigosEnderecos> gravarCapacidades(@RequestBody BodyExpedicao body) {
-    	enderecoService.gravarCapacidades(body.itens);
+    	expedicaoService.gravarCapacidades(body.itens);
     	return expedicaoCustom.findArtigosEnderecos();
     }
     
     @RequestMapping(value = "/abrir-caixa", method = RequestMethod.POST)
     public String abrirCaixa(@RequestBody BodyExpedicao body) {
-    	return enderecoService.abrirCaixa(body.codCaixa, body.usuario);
+    	return expedicaoService.abrirCaixa(body.codCaixa, body.usuario);
     }
     
     @RequestMapping(value = "/find-dados-caixa/{codCaixa}", method = RequestMethod.GET)
@@ -113,33 +113,33 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/fechar-caixa", method = RequestMethod.POST)
     public CaixasParaEnderecar fecharCaixa(@RequestBody BodyExpedicao body) {
-    	enderecoService.fecharCaixa(body.codCaixa);
+    	expedicaoService.fecharCaixa(body.codCaixa);
     	return aberturaCaixasRepository.findByNumeroCaixa(body.codCaixa);
     }
     
     @RequestMapping(value = "/find-produtos-caixa/{codCaixa}", method = RequestMethod.GET)
     public List<ProdutoEnderecar> findProdutosEnderecarCaixa (@PathVariable("codCaixa") int codCaixa) {
-    	return enderecoService.findProdutosEnderecarCaixa(codCaixa);
+    	return expedicaoService.findProdutosEnderecarCaixa(codCaixa);
     }
     
     @RequestMapping(value = "/gravar-dados-facilitador", method = RequestMethod.POST)
     public void gravarDadosFacilitador(@RequestBody BodyExpedicao body) {
-    	enderecoService.salvarDadosFacilitador(body.referencias, body.deposito, body.blocoInicio, body.corredorInicio, body.boxInicio, body.boxFim, body.produtosSel);
+    	expedicaoService.salvarDadosFacilitador(body.referencias, body.deposito, body.blocoInicio, body.corredorInicio, body.boxInicio, body.boxFim, body.produtosSel);
     }
     
     @RequestMapping(value = "/gravar-endereco-caixa", method = RequestMethod.POST)
     public String gravarEnderecoCaixa(@RequestBody BodyExpedicao body) {
-    	return enderecoService.gravarEnderecoCaixa(body.codCaixa, body.endereco);
+    	return expedicaoService.gravarEnderecoCaixa(body.codCaixa, body.endereco);
     }
     
     @RequestMapping(value = "/find-caixas-no-endereco/{endereco}", method = RequestMethod.GET)
     public List<ConsultaCaixasNoEndereco> findCaixasNoEndereco (@PathVariable("endereco") String endereco) {
-    	return enderecoService.consultaCaixasNoEndereco(endereco);
+    	return expedicaoService.consultaCaixasNoEndereco(endereco);
     }
     
     @RequestMapping(value = "/gravar-parametros-endereco-caixa", method = RequestMethod.POST)
     public void gravarParametrosEnderecoCaixa(@RequestBody BodyExpedicao body) {
-    	enderecoService.salvarParametrosEnderecoCaixa(body.deposito, body.ruaInicio, body.ruaFim, body.boxInicio, body.boxFim);
+    	expedicaoService.salvarParametrosEnderecoCaixa(body.deposito, body.ruaInicio, body.ruaFim, body.boxInicio, body.boxFim);
     }
     
     @RequestMapping(value = "/find-parametros-deposito-caixas/{deposito}", method = RequestMethod.GET)
@@ -149,7 +149,7 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/verifica-caixas-endereco", method = RequestMethod.GET)
     public List<ConsultaCaixasNoEndereco> verificaCaixasNoEndereco () {
-    	return enderecoService.verificarCaixasNoEndereco();
+    	return expedicaoService.verificarCaixasNoEndereco();
     }
     
     @RequestMapping(value = "/acertar-calculo-depreciacao", method = RequestMethod.GET)
@@ -160,33 +160,33 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-quant-enderecos/{nivel}/{grupo}/{subGrupo}/{item}/{deposito}", method = RequestMethod.GET)
     public List<ConsultaTag> findQuantEndereco(@PathVariable("nivel") String nivel, @PathVariable("grupo") String grupo, @PathVariable("subGrupo") String subGrupo,
     		@PathVariable("item") String item, @PathVariable("deposito") int deposito) {
-    	return enderecoService.findQuantEnderecos(nivel, grupo, subGrupo, item, deposito);
+    	return expedicaoService.findQuantEnderecos(nivel, grupo, subGrupo, item, deposito);
     }
     
     @RequestMapping(value = "/find-produto-by-tag/{numeroTag}", method = RequestMethod.GET)
     public String findProdutoByTag (@PathVariable("numeroTag") String numeroTag) {
-    	return enderecoService.findProdutoByTag(numeroTag);
+    	return expedicaoService.findProdutoByTag(numeroTag);
     }
     
     @RequestMapping(value = "/find-historico-by-tag/{numeroTag}", method = RequestMethod.GET)
     public List<ConsultaTag> findHistoricoByTag (@PathVariable("numeroTag") String numeroTag) {
-    	return enderecoService.findHistoricoTag(numeroTag);
+    	return expedicaoService.findHistoricoTag(numeroTag);
     }
     
     @RequestMapping(value = "/delete-variacao/{idVariacao}", method = RequestMethod.DELETE)
     public void deleteVariacaoById (@PathVariable("idVariacao") long idVariacao) {
-    	enderecoService.deleteVariacaoById(idVariacao);
+    	expedicaoService.deleteVariacaoById(idVariacao);
     }
     
     @RequestMapping(value = "/find-variacao-artigo", method = RequestMethod.GET)
     public List<ConsultaVariacaoArtigo> findVariacaoArtigo() {
-    	return enderecoService.findVaricaoArtigo();
+    	return expedicaoService.findVaricaoArtigo();
     }
     
     @RequestMapping(value = "/save-variacao", method = RequestMethod.POST)
     public List<ConsultaVariacaoArtigo> saveVariacao(@RequestBody BodyVariacaoPesoArtigo body) {
-    	enderecoService.saveVariacaoPesoArtigo(body.variacoes);
-    	return enderecoService.findVaricaoArtigo();
+    	expedicaoService.saveVariacaoPesoArtigo(body.variacoes);
+    	return expedicaoService.findVaricaoArtigo();
     }
     
     @RequestMapping(value = "/find-all-transp-async/{leitor}", method = RequestMethod.GET)
@@ -222,12 +222,12 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/gerar-minuta-atacado", method = RequestMethod.POST)
     public String gerarMinutaAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return enderecoService.gerarMinutaTransporteAtacado(body.notasSelecionadas, body.transportadora);
+    	return expedicaoService.gerarMinutaTransporteAtacado(body.notasSelecionadas, body.transportadora);
     }
     
     @RequestMapping(value = "/gerar-minuta-ecommerce", method = RequestMethod.POST)
     public String gerarMinutaTransporteEcommerce(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return enderecoService.gerarMinutaTransporteEcommerce(body.notasSelecionadas, body.transportadora);
+    	return expedicaoService.gerarMinutaTransporteEcommerce(body.notasSelecionadas, body.transportadora);
     }
     
     @RequestMapping(value = "/find-volumes-sem-leitura-ecommerce", method = RequestMethod.POST)
@@ -238,5 +238,10 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-volumes-sem-leitura-atacado", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findVolumesSemLeituraAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
     	return expedicaoCustom.findVolumesSemLeituraAtac(body.dataEmiInicio, body.dataEmiFim, body.codEmpresa, body.transportadora, body.pedido, body.nota);
+    }
+    
+    @RequestMapping(value = "/trocar-endereco", method = RequestMethod.POST)
+    public void changeEndereco(@RequestBody BodyExpedicao body) {
+    	expedicaoService.changeAllocationTAG(body.numeroTag, body.endereco);
     }
 }

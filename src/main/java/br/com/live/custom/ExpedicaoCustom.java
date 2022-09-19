@@ -753,15 +753,8 @@ public class ExpedicaoCustom {
 										 String transportadora, int pedido, int nota) {
 		String filtroDataLib = "";
 
-		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
-			filtroDataLib = "and ((a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') " +
-					" and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY')) or " +
-					" (to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') " +
-					" and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY')) ";
-		} else {
-			filtroDataLib = " and ((a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') " +
-					" and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY')) ";
-		}
+		filtroDataLib = " and ((a.data_emissao between TO_DATE('" + dataEmiInicio.replace("-", "/") + "', 'DD/MM/YYYY') " +
+				" and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY'))) ";
 
 		String query = " select minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
 				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
@@ -845,5 +838,15 @@ public class ExpedicaoCustom {
 		query += ") minuta order by minuta.nota ";
 
 		return query;
+	}
+	
+	public void changeEnderecoTAG(int periodo, int ordemProd, int pacote, int sequencia, String newEndereco) {
+		String query = " update pcpc_330 a "
+				+ " set endereco = ? "
+				+ " where a.periodo_producao = ? "
+				+ " and a.ordem_producao = ? "
+				+ " and a.ordem_confeccao = ? "
+				+ " and a.sequencia = ? ";
+		jdbcTemplate.update(query, newEndereco, periodo, ordemProd, pacote, sequencia);
 	}
 }
