@@ -39,8 +39,8 @@ import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
 import br.com.live.repository.UsuarioRepository;
 import br.com.live.repository.VariacaoPesoArtigoRepository;
-import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.ConverteLista;
+import br.com.live.util.StatusGravacao;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
@@ -94,11 +94,12 @@ public class ExpedicaoService {
 		return expedicaoCustom.findDadosModalEndereco(deposito, endereco);
 	}
 
-	public String gravarEndereco(String numeroTag, String endereco) {
-
+	public String gravarEndereco(String numeroTag, String endereco, int idUsuario) {
 		String msgErro = "";
 		String existeEndereco = "";
 		List<DadosTagProd> listTags = new ArrayList<DadosTagProd>();
+		
+		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
 
 		if (numeroTag.length() < 22) {
 			int numeroCaixa = Integer.parseInt(numeroTag);
@@ -112,7 +113,7 @@ public class ExpedicaoService {
 
 				for (DadosTagProd dadosTag : listTags) {
 					expedicaoCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote,
-							dadosTag.sequencia, endereco);
+							dadosTag.sequencia, endereco, dadosUsuario.usuarioSystextil);
 				}
 				expedicaoCustom.limparCaixa(numeroCaixa);
 			}
@@ -130,11 +131,12 @@ public class ExpedicaoService {
 			}
 
 			if ((existeEndereco != null) && (!existeEndereco.equals("")) && (!existeEndereco.equals("ENDERECAR"))) {
-				msgErro = "Este TAG já foi endereçado!";
+				msgErro = existeEndereco;
 			}
 
 			if (msgErro.equals("")) {
-				expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco);
+				expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
+				insertProductInEstq110(periodo, ordem, pacote, sequencia, endereco);
 				expedicaoCustom.limparTagLidoCaixa(numeroTag);
 			}
 		}
@@ -561,12 +563,75 @@ public class ExpedicaoService {
 		return nomeRelatorioGerado;
 	}
 	
-	public void changeAllocationTAG(String numberTag, String newAllocation) {
-		int periodo = Integer.parseInt(numberTag.substring(0, 4));
-		int ordem = Integer.parseInt(numberTag.substring(4, 13));
-		int pacote = Integer.parseInt(numberTag.substring(13, 18));
-		int sequencia = Integer.parseInt(numberTag.substring(18, 22));
+	public void changeAllocationTAG(String tagNumber, String newAllocation, int idUsuario) {
+		int periodo = Integer.parseInt(tagNumber.substring(0, 4));
+		int ordem = Integer.parseInt(tagNumber.substring(4, 13));
+		int pacote = Integer.parseInt(tagNumber.substring(13, 18));
+		int sequencia = Integer.parseInt(tagNumber.substring(18, 22));
 		
-		expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation);
+		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
+		
+		expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation, dadosUsuario.usuarioSystextil);
+		insertProductInEstq110(periodo, ordem, pacote, sequencia, newAllocation);
+	}
+	
+	public int showQuantPartAllocation(String allocation) {
+		return expedicaoCustom.showCountPartsAllocation(allocation);
+	}
+	
+	public void clearAllocation(String allocation) {
+		expedicaoCustom.clearAllocation(allocation);
+	}
+	
+	public void clearMultiAllocation(String allocation, int deposito) {
+		expedicaoCustom.clearAllocationEstq110(allocation, deposito);
+	}
+	
+	public void clearMultiAllocations(List<String> allocations) {
+		int deposito = 0;
+		
+		for (String allocation : allocations) {
+			String bloco = allocation.substring(0, 1);
+			
+			if (retornaListaLetraNumero(bloco) >= 6) {
+				deposito = 111;
+			} else {
+				deposito = 4;
+			}
+			clearAllocation(allocation);
+			clearMultiAllocation(allocation, deposito);
+		}
+	}
+	
+	public StatusGravacao validateWarehouse(String allocation, String tagNumber) {
+		StatusGravacao status = null;
+		int allocationWarehouse = 0;
+		
+		int period = Integer.parseInt(tagNumber.substring(0, 4));
+		int order = Integer.parseInt(tagNumber.substring(4, 13));
+		int orderPackage = Integer.parseInt(tagNumber.substring(13, 18));
+		int sequence = Integer.parseInt(tagNumber.substring(18, 22));
+		
+		int tagWarehouse = expedicaoCustom.findWarehouseTAG(period, order, orderPackage, sequence);
+		
+		String block = allocation.substring(0, 1);
+		
+		if (retornaListaLetraNumero(block) >= 6) {
+			allocationWarehouse = 111;
+		} else {
+			allocationWarehouse = 4;
+		}
+		
+		if (tagWarehouse != allocationWarehouse) {
+			status = new StatusGravacao(false, "Depósito do TAG diferente do depósito do endereço!");
+		} else {
+			status = new StatusGravacao(true, "Validado Com Sucesso!");
+		}
+		return status;
+	}
+	
+	public void insertProductInEstq110(int period, int order, int orderPackage, int sequence, String endereco) {
+		ConsultaTag dataTag = expedicaoCustom.findDataTAGNumber(period, order, orderPackage, sequence);
+		expedicaoCustom.insertProductInEstq110(dataTag.nivel, dataTag.grupo, dataTag.subGrupo, dataTag.item, dataTag.deposito, endereco);
 	}
 }

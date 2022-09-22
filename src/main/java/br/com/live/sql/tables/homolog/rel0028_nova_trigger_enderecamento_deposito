@@ -1,0 +1,87 @@
+create or replace trigger "LIVE_TR_PCPC_330_4"
+     after update of endereco, estoque_tag on pcpc_330 for each row
+begin
+     if ( ((:old.endereco is null) and (:new.endereco is not null)) and (:new.endereco <> :old.endereco))
+     then
+        begin
+          insert into orion_exp_300 values (:new.periodo_producao, :new.ordem_producao, :new.ordem_confeccao, :new.sequencia,
+                 :new.nivel, :new.grupo, :new.subgrupo, :new.item, sysdate, 'E', :new.live_user_endereco, :new.endereco);
+        end;
+     end if;
+     
+     if ( ((:old.endereco is not null) and (:new.endereco is not null)) and (:new.endereco <> :old.endereco))
+     then
+        begin
+          insert into orion_exp_300 values (:old.periodo_producao, :old.ordem_producao, :old.ordem_confeccao, :old.sequencia,
+                 :old.nivel, :old.grupo, :old.subgrupo, :old.item, sysdate, 'S', :old.live_user_endereco, :old.endereco);
+                 
+          insert into orion_exp_300 values (:new.periodo_producao, :new.ordem_producao, :new.ordem_confeccao, :new.sequencia,
+                 :new.nivel, :new.grupo, :new.subgrupo, :new.item, sysdate, 'E', :new.live_user_endereco, :new.endereco);
+        end;
+     end if;
+     
+     if ((:new.endereco = :old.endereco) and (:new.estoque_tag <> 1))
+     then
+        begin
+             insert into orion_exp_300 values (:old.periodo_producao, :old.ordem_producao, :old.ordem_confeccao, :old.sequencia,
+                 :old.nivel, :old.grupo, :old.subgrupo, :old.item, sysdate, 'S', :old.live_user_endereco, :old.endereco);
+        end;
+     end if;
+end live_tr_pcpc_330_4;
+
+-------------------------------------------------------------------------------------------------------------------------
+ALTER TABLE pcpc_330
+ADD LIVE_USER_ENDERECO VARCHAR2(100);
+-------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE orion_exp_300 (
+			 periodo number(4),
+             ordem_producao number(6),
+             ordem_confeccao number(5),
+             sequencia number(5),
+             nivel varchar2(1),
+             grupo varchar2(5),
+             subgrupo varchar2(3),
+             item varchar2(6),
+             data_hora Date,
+             tipo varchar2(1),
+             usuario varchar2(100),
+             endereco varchar2(7));
+comment on table orion_exp_300 is 'Tabela de Log dos Tag's endereçados';
+
+CREATE INDEX INDX_ORION_EXP_300_ENDERECO ON orion_exp_300 (endereco);
+CREATE INDEX INDX_ORION_EXP_300_TAG ON orion_exp_300 (periodo, ordem_producao, ordem_confeccao, sequencia);
+-------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE "LIVE_PR_ATU_ENDERECO_PRODUTO"
+IS
+   cursor cur_endereco is
+     select a.endereco from estq_110 a
+            where not exists (
+                  select 1 from pcpc_330 b
+                  where b.estoque_tag = 1
+                  and b.endereco = a.endereco);
+
+quant_tags number(2);
+
+-- João L. -> Projeto Endereçamento
+-- Limpar os endereços se não existirem mais tags em situação 1 (Em Estoque)
+
+begin
+
+   for reg_endereco in cur_endereco
+   loop
+      begin
+        UPDATE pcpc_330
+             SET pcpc_330.endereco = ''
+           WHERE pcpc_330.endereco = reg_endereco.endereco;
+          EXCEPTION
+             WHEN OTHERS THEN NULL;
+      end;
+       
+      begin
+        DELETE from estq_110
+        where estq_110.endereco = reg_endereco.endereco;
+      end;
+      
+      COMMIT;
+   end loop;
+END LIVE_PR_ATU_ENDERECO_PRODUTO;

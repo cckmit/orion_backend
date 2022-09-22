@@ -105,9 +105,9 @@ public class ExpedicaoCustom {
 		return dadosModal;
 	}
 	
-	public void gravarEnderecos(int periodo, int ordemProducao, int ordemConfeccao, int sequencia, String endereco) {
+	public void gravarEnderecos(int periodo, int ordemProducao, int ordemConfeccao, int sequencia, String endereco, String usuarioSystextil) {
 		String queryUpdate = " update pcpc_330 "
-				+ " set endereco = '" + endereco + "'"
+				+ " set endereco = '" + endereco + "', live_user_endereco = '" + usuarioSystextil + "' "
 				+ " where pcpc_330.periodo_producao = " + periodo
 				+ " and pcpc_330.ordem_producao = " + ordemProducao
 				+ " and pcpc_330.ordem_confeccao = " + ordemConfeccao
@@ -557,6 +557,7 @@ public class ExpedicaoCustom {
 				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ "           and e.pedido_venda = a.pedido_venda "
+				+ " 		  and e.nota_fiscal = a.num_nota_fiscal "
 				+ "           and e.local_caixa = 9 "
 				+ "           and e.situacao_volume = 2 "
 				+ "           and a.cod_rep_cliente = 162 "
@@ -610,6 +611,7 @@ public class ExpedicaoCustom {
 				+ " and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ " and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ " and e.pedido_venda = a.pedido_venda "
+				+ " and e.nota_fiscal = a.num_nota_fiscal "
 				+ " and e.local_caixa <> 9 "
 				+ " and e.situacao_volume = 2 "
 				+ " and a.cod_rep_cliente = 162 ";
@@ -637,6 +639,7 @@ public class ExpedicaoCustom {
 				+ " and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ " and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ " and e.pedido_venda = a.pedido_venda "
+				+ " and e.nota_fiscal = a.num_nota_fiscal "
 				+ " and e.situacao_volume = 2 "
 				+ " and a.cod_rep_cliente <> 162 "
 				+ " and e.local_caixa not in (9) ";
@@ -684,6 +687,7 @@ public class ExpedicaoCustom {
 				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ "           and e.pedido_venda = a.pedido_venda "
+				+ " 		  and e.nota_fiscal = a.num_nota_fiscal "
 				+ " 		  and a.cod_canc_nfisc = 0 "
 				+ "           and e.situacao_volume = 2 "
 				+ "           and a.cod_rep_cliente <> 162 "
@@ -708,7 +712,7 @@ public class ExpedicaoCustom {
 		if (!transportadora.equals("")) {
 			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
 		}
-
+		
 		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 		query += " UNION ";
 		query += " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
@@ -720,6 +724,7 @@ public class ExpedicaoCustom {
 				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ "           and e.pedido_venda = a.pedido_venda "
+				+ " 		  and e.nota_fiscal = a.num_nota_fiscal "
 				+ "           and e.situacao_volume = 2 "
 				+ "           and a.cod_rep_cliente <> 162 "
 				+ "           and f.cod_empresa (+) = a.codigo_empresa "
@@ -770,6 +775,7 @@ public class ExpedicaoCustom {
 				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ "           and e.pedido_venda = a.pedido_venda "
+				+ "           and e.nota_fiscal = a.num_nota_fiscal "
 				+ "           and e.situacao_volume = 2 "
 				+ "           and a.cod_rep_cliente <> 162 "
 				+ "           and f.cod_empresa (+) = a.codigo_empresa "
@@ -793,10 +799,9 @@ public class ExpedicaoCustom {
 		if (!transportadora.equals("")) {
 			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
 		}
+		
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
-
 		query += " UNION ";
-
 		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
 				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, "
 				+ " (select w.valor_itens_nfis from fatu_050 w where w.num_nota_fiscal = i.num_nota_fiscal and w.codigo_empresa = 100) valorNota, g.cidade, g.estado "
@@ -808,6 +813,7 @@ public class ExpedicaoCustom {
 				+ "           and c.cgc_4 = b.cli_ped_cgc_cli4 "
 				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ "           and e.pedido_venda = a.pedido_venda "
+				+ "			  and e.nota_fiscal = a.num_nota_fiscal "
 				+ "           and e.situacao_volume = 2 "
 				+ "           and a.cod_rep_cliente <> 162 "
 				+ "           and f.cod_empresa (+) = a.codigo_empresa "
@@ -840,13 +846,105 @@ public class ExpedicaoCustom {
 		return query;
 	}
 	
-	public void changeEnderecoTAG(int periodo, int ordemProd, int pacote, int sequencia, String newEndereco) {
+	public void changeEnderecoTAG(int periodo, int ordemProd, int pacote, int sequencia, String newEndereco, String usuarioSystextil) {
 		String query = " update pcpc_330 a "
-				+ " set endereco = ? "
+				+ " set endereco = ?, live_user_endereco = ? "
 				+ " where a.periodo_producao = ? "
 				+ " and a.ordem_producao = ? "
 				+ " and a.ordem_confeccao = ? "
 				+ " and a.sequencia = ? ";
-		jdbcTemplate.update(query, newEndereco, periodo, ordemProd, pacote, sequencia);
+		jdbcTemplate.update(query, newEndereco, usuarioSystextil, periodo, ordemProd, pacote, sequencia);
+	}
+	
+	public int showCountPartsAllocation(String allocation) {
+		int countParts = 0;
+		
+		String query = " select count(*) from pcpc_330 l "
+				+ " where l.endereco = '" + allocation + "' ";
+		try {
+			countParts = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			countParts = 0;
+		}
+		return countParts;
+	}
+	
+	public int findWarehouseTAG(int periodo, int ordemProd, int pacote, int sequencia) {
+		int warehouse = 0;
+		
+		String query = " select a.deposito from pcpc_330 a "
+				+ " where a.periodo_producao = " + periodo
+				+ " and a.ordem_producao = " + ordemProd
+				+ " and a.ordem_confeccao = " + pacote
+				+ " and a.sequencia = " + sequencia;
+		try {
+			warehouse = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			warehouse = 0;
+		}
+		return warehouse;
+	}
+	
+	public void clearAllocation(String oldAllocation) {
+		String query = " update pcpc_330 a "
+				+ " set endereco = ? "
+				+ " where a.endereco = ? ";
+		jdbcTemplate.update(query, "", oldAllocation);
+	}
+	
+	public List<ConsultaTag> findAllocations(String startAllocation, String endAllocation) {
+		List<ConsultaTag> enderecos = new ArrayList<ConsultaTag>();
+		
+		String query = " select a.endereco from pcpc_330 a "
+				+ " where a.endereco between '" + startAllocation + "' and '" + endAllocation + "' "
+				+ " group by a.endereco ";
+		try {
+			enderecos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
+		} catch (Exception e) {
+			enderecos = new ArrayList<ConsultaTag>();
+		}
+		return enderecos;
+	}
+	
+	public void clearAllocationEstq110(String oldAllocation, int deposito) {
+		String query = " delete estq_110 a "
+				+ " where a.endereco = ? "
+				+ " and a.deposito = ? ";
+		jdbcTemplate.update(query, oldAllocation, deposito);
+	}
+	
+	public void insertProductInEstq110(String nivel, String grupo, String subGrupo, String item, int deposito, String endereco) {
+		String query = " insert into estq_110 values (?, ?, ?, ?, ?, ?) ";
+		try {
+			jdbcTemplate.update(query, nivel, grupo, subGrupo, item, deposito, endereco);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	public ConsultaTag findDataTAGNumber(int period, int order, int packageOrder, int sequence) {
+		String query = " select a.nivel, a.grupo, a.subgrupo subGrupo, a.item, a.deposito from pcpc_330 a "
+				+ " where a.periodo_producao = " + period
+				+ " and a.ordem_producao = " + order
+				+ " and a.ordem_confeccao = " + packageOrder
+				+ " and a.sequencia = " + sequence;
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
+	}
+	
+	public List<ConsultaTag> findMovsEnderecos(String endereco, String dataInicio, String dataFim) {
+		List<ConsultaTag> historicoEnderecos = new ArrayList<ConsultaTag>();
+		
+		String query = " select a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) numeroTag, "
+				+ " a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item produto, a.data_hora data, a.tipo, a.usuario, a.endereco "
+				+ " from orion_exp_300 a "
+				+ " where a.endereco = '" + endereco + "' "
+				+ " and trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') "
+				+ " order by a.data_hora ";
+		try {
+			historicoEnderecos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
+		} catch (Exception e) {
+			historicoEnderecos = new ArrayList<ConsultaTag>();
+		}
+		return historicoEnderecos;
 	}
 }

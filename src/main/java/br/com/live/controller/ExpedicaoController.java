@@ -34,6 +34,7 @@ import br.com.live.service.AcertoCalculoDepreciacaoService;
 import br.com.live.service.ExpedicaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.StatusGravacao;
 import net.sf.jasperreports.engine.JRException;
 
 @RestController
@@ -81,7 +82,7 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/gravar-endereco", method = RequestMethod.POST)
     public String findEnderecoRef(@RequestBody BodyExpedicao body) {
-    	return expedicaoService.gravarEndereco(body.numeroTag, body.endereco);
+    	return expedicaoService.gravarEndereco(body.numeroTag, body.endereco, body.usuario);
     }
     
     @RequestMapping(value = "/gravar-parametros", method = RequestMethod.POST)
@@ -242,6 +243,36 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/trocar-endereco", method = RequestMethod.POST)
     public void changeEndereco(@RequestBody BodyExpedicao body) {
-    	expedicaoService.changeAllocationTAG(body.numeroTag, body.endereco);
+    	expedicaoService.changeAllocationTAG(body.numeroTag, body.endereco, body.usuario);
+    }
+    
+    @RequestMapping(value = "/limpar-endereco", method = RequestMethod.POST)
+    public void cleanEndereco(@RequestBody BodyExpedicao body) {
+    	expedicaoService.clearAllocation(body.endereco);
+    }
+    
+    @RequestMapping(value = "/count-parts-allocation/{allocation}", method = RequestMethod.GET)
+    public int countPartsAllocation(@PathVariable("allocation") String allocation) {
+    	return expedicaoCustom.showCountPartsAllocation(allocation);
+    }
+    
+    @RequestMapping(value = "/find-allocations/{startAllocation}/{endAllocation}", method = RequestMethod.GET)
+    public List<ConsultaTag> findAllocations(@PathVariable("startAllocation") String startAllocation, @PathVariable("endAllocation") String endAllocation) {
+    	return expedicaoCustom.findAllocations(startAllocation.toUpperCase(), endAllocation.toUpperCase());
+    }
+    
+    @RequestMapping(value = "/clear-multi-allocations", method = RequestMethod.POST)
+    public void cleanMultiAllocations(@RequestBody BodyExpedicao body) {
+    	expedicaoService.clearMultiAllocations(body.enderecos);
+    }
+    
+    @RequestMapping(value = "/validate-warehouse", method = RequestMethod.POST)
+    public StatusGravacao validateWarehouse(@RequestBody BodyExpedicao body) {
+    	return expedicaoService.validateWarehouse(body.endereco, body.numeroTag);
+    }
+    
+    @RequestMapping(value = "/find-history-mov-allocation/{allocation}/{startDate}/{endDate}", method = RequestMethod.GET)
+    public List<ConsultaTag> findHistoryMovAllocation(@PathVariable("allocation") String allocation, @PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate) {
+    	return expedicaoCustom.findMovsEnderecos(allocation.toUpperCase(), startDate, endDate);
     }
 }

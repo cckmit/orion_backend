@@ -25,4 +25,5 @@ public class BodyExpedicao {
 	public List<ConsultaCapacidadeArtigosEnderecos> itens;
 	public List<Produto> referencias;
 	public List<String> produtosSel;
+	public List<String> enderecos;
 }

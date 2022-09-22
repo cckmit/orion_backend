@@ -180,3 +180,12 @@ values (59, 'Cadastro de Metas', 'Confecção', '/cadastro-de-metas');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (60, 'Atualizar Ficha Técnica Digital', 'Engenharia', '/atualizar-ficha-digital');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (61, 'Limpar Endereço', 'Expedição', '/limpar-endereco');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (62, 'Limpar Intervalo de Endereços', 'Expedição', '/limpar-intervalo-enderecos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (63, 'Historico de Movimentação dos Endereços', 'Expedição', '/historico-mov-enderecos');
