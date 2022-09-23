@@ -60,8 +60,6 @@ IS
                   where b.estoque_tag = 1
                   and b.endereco = a.endereco);
 
-quant_tags number(2);
-
 -- João L. -> Projeto Endereçamento
 -- Limpar os endereços se não existirem mais tags em situação 1 (Em Estoque)
 
