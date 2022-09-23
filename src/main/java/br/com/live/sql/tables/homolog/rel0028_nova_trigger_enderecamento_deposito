@@ -83,3 +83,30 @@ begin
       COMMIT;
    end loop;
 END LIVE_PR_ATU_ENDERECO_PRODUTO;
+------------------------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE "LIVE_PR_IMPORTAR_ENDERECO_PRODUTO" (p_deposito in number)
+is
+   cursor cur_importar is
+    select a.nivel, a.grupo, a.subgrupo, a.item, a.endereco from pcpc_330 a
+           where a.deposito = p_deposito
+           and a.estoque_tag = 1
+           and a.endereco is not null
+           group by a.nivel, a.grupo, a.subgrupo, a.item, a.endereco;
+
+-- João L. -> Projeto Endereçamento
+-- Atualizar Estq_110 conforme pcpc_330
+
+begin
+   begin
+     delete from estq_110
+     where estq_110.deposito = 111;
+   end;
+
+   for reg_endereco in cur_importar
+   loop
+      begin
+       insert into estq_110 values (reg_endereco.nivel, reg_endereco.grupo, reg_endereco.subgrupo, reg_endereco.item, p_deposito, reg_endereco.endereco);
+      end;
+      COMMIT;
+   end loop;
+END LIVE_PR_IMPORTAR_ENDERECO_PRODUTO;
