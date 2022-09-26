@@ -135,9 +135,17 @@ public class ExpedicaoService {
 			}
 
 			if (msgErro.equals("")) {
-				expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
-				insertProductInEstq110(periodo, ordem, pacote, sequencia, endereco);
-				expedicaoCustom.limparTagLidoCaixa(numeroTag);
+				
+				String block = endereco.substring(0, 1);
+				
+				if (retornaListaLetraNumero(block) >= 6) {
+					expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
+					insertProductInEstq110(periodo, ordem, pacote, sequencia, endereco);
+					expedicaoCustom.limparTagLidoCaixa(numeroTag);
+				} else {
+					expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
+					expedicaoCustom.limparTagLidoCaixa(numeroTag);
+				}
 			}
 		}
 
@@ -570,9 +578,14 @@ public class ExpedicaoService {
 		int sequencia = Integer.parseInt(tagNumber.substring(18, 22));
 		
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
+		String block = newAllocation.substring(0, 1);
 		
-		expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation, dadosUsuario.usuarioSystextil);
-		insertProductInEstq110(periodo, ordem, pacote, sequencia, newAllocation);
+		if (retornaListaLetraNumero(block) >= 6) {
+			expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation, dadosUsuario.usuarioSystextil);
+			insertProductInEstq110(periodo, ordem, pacote, sequencia, newAllocation);
+		} else {
+			expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation, dadosUsuario.usuarioSystextil);
+		}
 	}
 	
 	public int showQuantPartAllocation(String allocation) {
