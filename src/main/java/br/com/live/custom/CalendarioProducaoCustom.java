@@ -120,7 +120,8 @@ public class CalendarioProducaoCustom {
 		List<EstagiosConfigCalend> estagiosParam;
 
 		String query = " select a.estagio, a.lead, a.data_inicio dataInicioDate, a.data_fim dataFimDate from orion_062 a "
-				+ " where a.ano_calendario = " + anoCalendario;
+				+ " where a.ano_calendario = " + anoCalendario
+				+ " order by a.sequencia ";
 
 		try {
 			estagiosParam = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagiosConfigCalend.class));
