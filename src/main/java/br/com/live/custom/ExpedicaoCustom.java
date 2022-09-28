@@ -569,7 +569,7 @@ public class ExpedicaoCustom {
 					query = query + " and to_char(e.live_dt_hr_local_9, 'HH24:MI') between '" + horaInicio + "' and '" + horaFim + "' ";
 				}
 				if (!dataInicioBox.equals("")) {
-					query = query + " and e.live_dt_hr_local_9 between TO_DATE('" + dataInicioBox.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataFimBox.replace("-", "/") + "', 'DD/MM/YYYY') ";
+					query = query + " and trunc(e.live_dt_hr_local_9) between TO_DATE('" + dataInicioBox.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataFimBox.replace("-", "/") + "', 'DD/MM/YYYY') ";
 				}
 				if (!transportadora.equals("")) {
 					query = query + " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
@@ -616,7 +616,7 @@ public class ExpedicaoCustom {
 				+ " and e.situacao_volume = 2 "
 				+ " and a.cod_rep_cliente = 162 ";
 		if (!dataInicioBox.equals("")) {
-			query = query + " and e.data_montagem between TO_DATE('" + dataInicioBox.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataFimBox.replace("-", "/") + "', 'DD/MM/YYYY') ";
+			query = query + " and trunc(e.live_dt_hr_local_9) between TO_DATE('" + dataInicioBox.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataFimBox.replace("-", "/") + "', 'DD/MM/YYYY') ";
 		}
 		if (!transportadora.equals("")) {
 			query = query + " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
