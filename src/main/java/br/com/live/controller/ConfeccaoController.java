@@ -207,4 +207,9 @@ public class ConfeccaoController {
 	public List<EstagioProducao> findAllEstagios() {
 		return confeccaoCustom.findAllEstagio();
 	}
+	
+	@RequestMapping(value = "/find-all-estagios-metas", method = RequestMethod.GET)
+	public List<EstagioProducao> findAllEstagiosMetas() {
+		return confeccaoCustom.findAllEstagioMetas();
+	}
 }
