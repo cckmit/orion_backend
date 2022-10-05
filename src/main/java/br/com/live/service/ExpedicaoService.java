@@ -647,4 +647,41 @@ public class ExpedicaoService {
 		ConsultaTag dataTag = expedicaoCustom.findDataTAGNumber(period, order, orderPackage, sequence);
 		expedicaoCustom.insertProductInEstq110(dataTag.nivel, dataTag.grupo, dataTag.subGrupo, dataTag.item, dataTag.deposito, endereco);
 	}
+	
+	public StatusGravacao allocateBox(String allocation, int volume, int notaFiscal) {
+		StatusGravacao status = null;
+		
+		status = validateVolume(volume, notaFiscal);
+		
+		if (status == null) {
+			expedicaoCustom.updateBox(volume, allocation);
+			status = new StatusGravacao(true, "Endereçado Com Sucesso!");
+		}
+		return status;
+	}
+	
+	public StatusGravacao validateVolume(int volume, int notaFiscal) {
+		StatusGravacao status = null;
+		int notaFiscalVolume = 0;
+		int openOrClose = 0;
+		String volumeAllocated = "";
+		
+		volumeAllocated = expedicaoCustom.validateVolumeIsAllocated(volume);
+		if (!volumeAllocated.equalsIgnoreCase("")) {
+			status = new StatusGravacao(false, "Volume " + volume + " já está endereçado! Deseja limpar o endereço " + volumeAllocated + "?", 1);
+		}
+		openOrClose = expedicaoCustom.validateOrdered(volume);
+		if (openOrClose != 1) {
+			status = new StatusGravacao(false, "Pedido do volume " + volume + " não foi faturado!", 2);
+		}
+		notaFiscalVolume = expedicaoCustom.validateNotaFiscall(volume, notaFiscal);
+		if (notaFiscalVolume != 1) {
+			status = new StatusGravacao(false, "Nota fiscal informada é diferente da Nota fiscal do volume " + volume + "!", 3);
+		}
+		return status;
+	}
+	
+	public void cleanAllocationVolume(int volume) {
+		expedicaoCustom.cleanAllocationVolume(volume);
+	}
 }

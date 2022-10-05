@@ -1,0 +1,1 @@
+alter table pcpc_320 add live_endereco_volume varchar2(10);

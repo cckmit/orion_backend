@@ -21,6 +21,8 @@ public class BodyExpedicao {
 	public int usuario;
 	public String ruaInicio;
 	public String ruaFim;
+	public int volume;
+	public String notaFiscal;
 	
 	public List<ConsultaCapacidadeArtigosEnderecos> itens;
 	public List<Produto> referencias;

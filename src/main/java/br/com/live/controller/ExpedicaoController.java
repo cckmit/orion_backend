@@ -210,6 +210,11 @@ public class ExpedicaoController {
     	return expedicaoCustom.findAllNotasAsync(leitor);
     }
     
+    @RequestMapping(value = "/find-all-enderecos-ecom-async/{leitor}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllEnderecosEcommerce(@PathVariable("leitor") String leitor) {
+    	return expedicaoCustom.findEnderecosVolumes(leitor);
+    }
+    
     @RequestMapping(value = "/find-dados-minuta-atacado", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(@RequestBody BodyMinutaTransporte body) {
     	return expedicaoCustom.findDadosMinutaAtacado(body.dataEmiInicio, body.dataEmiFim, body.dataLibPaypalIni, body.dataLibPaypalFim,
@@ -218,7 +223,8 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/find-dados-minuta-ecommerce", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findDadosMinutaEcommerce(@RequestBody BodyMinutaTransporte body) {
-    	return expedicaoCustom.findDadosMinutaEcommerce(body.dataInicioBox, body.dataFimBox, body.horaInicio, body.horaFim, body.nota, body.transportadora);
+    	return expedicaoCustom.findDadosMinutaEcommerce(body.dataInicioBox, body.dataFimBox, body.horaInicio, body.horaFim, body.nota, 
+    			body.transportadora, ConteudoChaveAlfaNum.parseValueToString(body.enderecos));
     }
     
     @RequestMapping(value = "/gerar-minuta-atacado", method = RequestMethod.POST)
@@ -274,5 +280,24 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-history-mov-allocation/{allocation}/{startDate}/{endDate}", method = RequestMethod.GET)
     public List<ConsultaTag> findHistoryMovAllocation(@PathVariable("allocation") String allocation, @PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate) {
     	return expedicaoCustom.findMovsEnderecos(allocation.toUpperCase(), startDate, endDate);
+    }
+    
+    @RequestMapping(value = "/volume-allocation", method = RequestMethod.POST)
+    public StatusGravacao volumeAllocation(@RequestBody BodyExpedicao body) {
+    	String chaveNFe = body.notaFiscal;
+    	int notaFiscal = Integer.parseInt(chaveNFe.substring(28,34));
+    	return expedicaoService.allocateBox(body.endereco, body.volume, notaFiscal);
+    }
+    
+    @RequestMapping(value = "/clean-allocation-volume", method = RequestMethod.POST)
+    public void cleanAllocationVolume(@RequestBody BodyExpedicao body) {
+    	expedicaoCustom.cleanAllocationVolume(body.volume);
+    }
+    
+    @RequestMapping(value = "/count-volumes-sem-enderecar/{chaveNFe}", method = RequestMethod.GET)
+    public int countVolumesSemEndereco(@PathVariable("chaveNFe") String chaveNFe) {
+    	int notaFiscal = Integer.parseInt(chaveNFe.substring(28,34));
+    	String transportadora = expedicaoCustom.findTransportadoraNotaFiscal(notaFiscal);
+    	return expedicaoCustom.countVolumeSemEndereco(notaFiscal, transportadora);
     }
 }

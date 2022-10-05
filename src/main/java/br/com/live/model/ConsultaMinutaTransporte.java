@@ -16,6 +16,7 @@ public class ConsultaMinutaTransporte {
 	public String estado;
 	public int caixa;
 	public String local;
+	public String endereco;
 	
 	public int getNota() {
 		return nota;
@@ -95,13 +96,19 @@ public class ConsultaMinutaTransporte {
 	public void setLocal(String local) {
 		this.local = local;
 	}
+	public String getEndereco() {
+		return endereco;
+	}
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
 	
 	public ConsultaMinutaTransporte() {
 		
 	}
 	
 	public ConsultaMinutaTransporte(int nota, int serie, Date emissao, int pedido, String cliente, int caixas,
-			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local) {
+			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco) {
 		this.nota = nota;
 		this.serie = serie;
 		this.emissao = emissao;
@@ -115,5 +122,6 @@ public class ConsultaMinutaTransporte {
 		this.estado = estado;
 		this.caixa = caixa;
 		this.local = local;
+		this.endereco = endereco;
 	}	
 }

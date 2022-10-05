@@ -546,9 +546,9 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
-	public List<ConsultaMinutaTransporte> findDadosMinutaEcommerce(String dataInicioBox, String dataFimBox, String horaInicio, String horaFim, int nota, String transportadora) {
+	public List<ConsultaMinutaTransporte> findDadosMinutaEcommerce(String dataInicioBox, String dataFimBox, String horaInicio, String horaFim, int nota, String transportadora, String enderecos) {
 		String query = " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
-				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado "
+				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, a.valor_itens_nfis valorNota, g.cidade, g.estado, e.live_endereco_volume endereco "
 				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g "
 				+ "           where a.codigo_empresa = 1 "
 				+ "           and a.cod_canc_nfisc = 0 "
@@ -564,7 +564,9 @@ public class ExpedicaoCustom {
 				+ "           and f.cod_empresa (+) = a.codigo_empresa "
 				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
 				+ " 		  and g.cod_cidade = c.cod_cidade ";
-		
+				if (!enderecos.equalsIgnoreCase("")) {
+					query = query + " and e.live_endereco_volume in (" + enderecos + ") ";
+				}
 				if (!horaInicio.equals("")) {
 					query = query + " and to_char(e.live_dt_hr_local_9, 'HH24:MI') between '" + horaInicio + "' and '" + horaFim + "' ";
 				}
@@ -577,7 +579,7 @@ public class ExpedicaoCustom {
 				if (nota > 0) {
 					query = query + " and a.num_nota_fiscal = " + nota;
 				}
-				query = query + " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado "
+				query = query + " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado, e.live_endereco_volume "
 						+ " order by a.num_nota_fiscal ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
@@ -946,5 +948,106 @@ public class ExpedicaoCustom {
 			historicoEnderecos = new ArrayList<ConsultaTag>();
 		}
 		return historicoEnderecos;
+	}
+	
+	public int validateOrdered(int volume) {
+		int openOrClose = 0;
+		
+		String query = " select 1 from pcpc_320 a, pedi_100 b "
+				+ " where a.pedido_venda = b.pedido_venda "
+				+ " and a.numero_volume = " + volume
+				+ " and b.situacao_venda = 10 "
+				+ " group by 1 ";
+		try {
+			openOrClose = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			openOrClose = 0;
+		}
+		return openOrClose;
+	}
+	
+	public int validateNotaFiscall(int volume, int notaFiscal) {
+		int notaFiscalVolume = 0;
+		
+		String query = " select 1 from pcpc_320 a "
+				+ " where a.numero_volume = " + volume
+				+ " and a.nota_fiscal = " + notaFiscal;
+		try {
+			notaFiscalVolume = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			notaFiscalVolume = 0;
+		}
+		return notaFiscalVolume;
+	}
+	
+	public void updateBox(int volume, String allocation) {
+		String query = " update pcpc_320 a "
+				+ " set live_endereco_volume = ? ,"
+				+ " local_caixa = ? "
+				+ " where a.numero_volume = ? ";
+		jdbcTemplate.update(query, allocation, 9, volume);
+	}
+	
+	public String validateVolumeIsAllocated(int volume) {
+		String volumeAllocated = "";
+		
+		String query = " select a.live_endereco_volume from pcpc_320 a "
+				+ " where a.numero_volume = " + volume
+				+ " and (a.live_endereco_volume is not null) ";
+		try {
+			volumeAllocated = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			volumeAllocated = "";
+		}
+		return volumeAllocated;
+	}
+	
+	public void cleanAllocationVolume(int volume) {
+		String query = " update pcpc_320 a "
+				+ " set live_endereco_volume = ? ,"
+				+ " 	local_caixa = ? ,"
+				+ "		live_dt_hr_local_9 = ?"
+				+ " where a.numero_volume = ? ";
+		jdbcTemplate.update(query, "", 7, null, volume);
+	}
+	
+	public List<ConteudoChaveAlfaNum> findEnderecosVolumes(String leitor) {
+		String query = " select a.live_endereco_volume value, a.live_endereco_volume label from pcpc_320 a "
+				+ " where a.live_endereco_volume is not null "
+				+ " and a.live_endereco_volume like '%" + leitor + "%' "
+				+ " group by a.live_endereco_volume ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public String findTransportadoraNotaFiscal(int notaFiscal) {
+		String transportadora = "";
+		
+		String query = " select fatu_050.transpor_forne9 || fatu_050.transpor_forne4 || fatu_050.transpor_forne2 from fatu_050 "
+				+ " where fatu_050.num_nota_fiscal = " + notaFiscal
+				+ " and fatu_050.serie_nota_fisc = '2' ";
+		try {
+			transportadora = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			transportadora = "";
+		}
+		return transportadora;
+	}
+	
+	public int countVolumeSemEndereco(int notaFiscal, String transportadora) {
+		int countVolumes = 0;
+		
+		String query = " select count(*) from pcpc_320 a "
+				+ " where a.local_caixa = 7 "
+				+ " and exists (select 1 from fatu_050 "
+				+ "                            where fatu_050.num_nota_fiscal = a.nota_fiscal"
+				+ "                              and fatu_050.serie_nota_fisc = '2' "
+				+ "                              and fatu_050.codigo_empresa = a.cod_empresa "
+				+ "                              and fatu_050.transpor_forne9 || fatu_050.transpor_forne4 || fatu_050.transpor_forne2 = " + transportadora + ")";
+		try {
+			countVolumes = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			countVolumes = 0;
+		}
+		return countVolumes;
 	}
 }

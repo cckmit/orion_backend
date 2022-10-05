@@ -189,3 +189,6 @@ values (62, 'Limpar Intervalo de Endereços', 'Expedição', '/limpar-intervalo-
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (63, 'Historico de Movimentação dos Endereços', 'Expedição', '/historico-mov-enderecos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (64, 'Endereçar Volumes', 'Expedição', '/enderecar-volumes');
