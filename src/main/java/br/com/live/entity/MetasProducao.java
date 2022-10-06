@@ -29,6 +29,12 @@ public class MetasProducao {
 	@Column(name = "meta_ajustada")
 	public int metaAjustada;
 	
+	@Column(name = "numero_expedidor")
+	public int numeroExpedidor;
+	
+	@Column(name = "meta_expedidor")
+	public int metaExpedidor;
+	
 	public String getId() {
 		return id;
 	}
@@ -93,11 +99,28 @@ public class MetasProducao {
 		this.metaAjustada = metaAjustada;
 	}
 
+	public int getNumeroExpedidor() {
+		return numeroExpedidor;
+	}
+
+	public void setNumeroExpedidor(int numeroExpedidor) {
+		this.numeroExpedidor = numeroExpedidor;
+	}
+
+	public int getMetaExpedidor() {
+		return metaExpedidor;
+	}
+
+	public void setMetaExpedidor(int metaExpedidor) {
+		this.metaExpedidor = metaExpedidor;
+	}
+
 	public MetasProducao() {
 		
 	}
 
-	public MetasProducao(int mes, int ano, int codEstagio, int metaMes, int diasUteis, int metaDiaria, int metaAjustada) {
+	public MetasProducao(int mes, int ano, int codEstagio, int metaMes, int diasUteis, int metaDiaria, int metaAjustada, int numeroExpedidor,
+						int	metaExpedidor) {
 		this.id = mes + "-" + ano + "-" + codEstagio;
 		this.mes = mes;
 		this.ano = ano;
@@ -106,5 +129,8 @@ public class MetasProducao {
 		this.diasUteis = diasUteis;
 		this.metaDiaria = metaDiaria;
 		this.metaAjustada = metaAjustada;
+		this.numeroExpedidor = numeroExpedidor;
+		this.metaExpedidor = metaExpedidor;
+		
 	}
 }

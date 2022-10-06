@@ -27,5 +27,7 @@ public class BodyConfeccao {
 	public Date dataFim;
 	public int metaReal;
 	public int metaRealTurno;
-	public int metaAjustadaTurno;	
+	public int metaAjustadaTurno;
+	public int numeroExpedidor;
+	public int metaExpedidor;
 }

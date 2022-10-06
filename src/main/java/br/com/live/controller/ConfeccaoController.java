@@ -185,7 +185,7 @@ public class ConfeccaoController {
 	
 	@RequestMapping(value = "/save-meta-producao", method = RequestMethod.POST)
 	public String saveMetaProducao(@RequestBody BodyConfeccao body) {
-		return confeccaoService.saveMetaProducao(body.idMetaMes, body.mesMeta, body.anoMeta , body.codEstagio, body.metaMes, body.diasUteis, body.metaDiaria, body.metaAjustada);
+		return confeccaoService.saveMetaProducao(body.idMetaMes, body.mesMeta, body.anoMeta , body.codEstagio, body.metaMes, body.diasUteis, body.metaDiaria, body.metaAjustada, body.numeroExpedidor, body.metaExpedidor);
 	}
 		
 	@RequestMapping(value = "/save-meta-producao-semana", method = RequestMethod.POST)

@@ -166,21 +166,21 @@ public class ConfeccaoService {
 		restricoesRoloRepository.flush();
 	}
 	
-	public String saveMetaProducao(String id, int mes, int ano, int codEstagio, int metaMes, int diasUteis, int metaDiaria, int metaAjustada) {
+	public String saveMetaProducao(String id, int mes, int ano, int codEstagio, int metaMes, int diasUteis, int metaDiaria, int metaAjustada, int numeroExpedidor, int metaExpedidor) {
 		MetasProducao dadosMeta = metasProducaoRepository.findByIdMeta(id);
 		
 		if (dadosMeta == null) {
-			dadosMeta = new MetasProducao(mes, ano, codEstagio, metaMes, diasUteis, metaDiaria, metaAjustada);
+			dadosMeta = new MetasProducao(mes, ano, codEstagio, metaMes, diasUteis, metaDiaria, metaAjustada, numeroExpedidor, metaExpedidor);
 		} else {
 			dadosMeta.metaMes = metaMes; 
 			dadosMeta.diasUteis = diasUteis;
 			dadosMeta.metaDiaria = metaDiaria;
-			dadosMeta.metaAjustada = metaAjustada; 					
+			dadosMeta.metaAjustada = metaAjustada;
+			dadosMeta.numeroExpedidor = numeroExpedidor;
+			dadosMeta.metaExpedidor = metaExpedidor;
 		}						
 		metasProducaoRepository.save(dadosMeta);		
-		saveMetaSemana(dadosMeta.id, mes, ano, metaDiaria, metaAjustada);	
-		
-		System.out.println("DADOS: " + mes + "/" + ano);
+		saveMetaSemana(dadosMeta.id, mes, ano, metaDiaria, metaAjustada);
 		
 		return dadosMeta.id;
 	}
@@ -202,9 +202,6 @@ public class ConfeccaoService {
 			numSemanaMes++;			
 			qtdePecasMetaSemana = semana.getQtdeDiasUteis() * qtdePecasMetaDiaria;
 			qtdePecasMetaAjustSemana = semana.getQtdeDiasUteis() * qtdePecasMetaAjustDiaria;
-			
-			System.out.println("SEMANA - " + numSemanaMes);
-			System.out.println("QUANT  - " + semana.getQtdeDiasUteis() + " --- " + qtdePecasMetaDiaria + " / " + qtdePecasMetaAjustDiaria);
 			
 			// DIVIDE POR 2 TURNOS DE PRODU��O (ATUALMENTE S� EXISTEM 2 TURNOS)
 			qtdePecasMetaTurno = (int) qtdePecasMetaSemana / 2; 
