@@ -150,7 +150,9 @@ public class ConfeccaoCustom {
 				+ " ( "
 				+ " SELECT a.codigo_estagio estagio, a.descricao FROM mqop_005 a "
 				+ " UNION "
-				+ " SELECT 101 estagio, 'COLETA PARA FATURAMENTO' descricao FROM dual) ESTAGIOS "
+				+ " SELECT 101 estagio, 'COLETA PARA FATURAMENTO' descricao FROM dual ESTAGIOS "
+				+ " UNION "
+				+ " SELECT 102 estagio, 'ABASTECIMENTO' descricao FROM dual) ESTAGIOS "
 				+ " GROUP BY ESTAGIOS.estagio, ESTAGIOS.descricao "
 				+ " ORDER BY ESTAGIOS.estagio ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
