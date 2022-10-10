@@ -651,25 +651,28 @@ public class ExpedicaoService {
 	public StatusGravacao allocateBox(String allocation, int volume, int notaFiscal) {
 		StatusGravacao status = null;
 		
-		status = validateVolume(volume, notaFiscal);
+		String volumeComp = "" + volume + "";
+		String volumeEdit = volumeComp.substring(0, 7);
+		
+		status = validateVolume(Integer.parseInt(volumeEdit), notaFiscal, allocation);
 		
 		if (status == null) {
-			expedicaoCustom.updateBox(volume, allocation);
+			expedicaoCustom.updateBox(Integer.parseInt(volumeEdit), allocation);
 			status = new StatusGravacao(true, "Endereçado Com Sucesso!");
 		}
 		return status;
 	}
 	
-	public StatusGravacao validateVolume(int volume, int notaFiscal) {
+	public StatusGravacao validateVolume(int volume, int notaFiscal, String endereco) {
 		StatusGravacao status = null;
 		int notaFiscalVolume = 0;
 		int openOrClose = 0;
-		String volumeAllocated = "";
+		String transpNota = "";
+		String transpEndereco = "";
 		
-		volumeAllocated = expedicaoCustom.validateVolumeIsAllocated(volume);
-		if (!volumeAllocated.equalsIgnoreCase("")) {
-			status = new StatusGravacao(false, "Volume " + volume + " já está endereçado! Deseja limpar o endereço " + volumeAllocated + "?", 1);
-		}
+		transpEndereco = expedicaoCustom.findTransportadoraEndereco(endereco);
+		transpNota = expedicaoCustom.findTransportadoraNotaFiscal(notaFiscal);
+		
 		openOrClose = expedicaoCustom.validateOrdered(volume);
 		if (openOrClose != 1) {
 			status = new StatusGravacao(false, "Pedido do volume " + volume + " não foi faturado!", 2);
@@ -678,10 +681,24 @@ public class ExpedicaoService {
 		if (notaFiscalVolume != 1) {
 			status = new StatusGravacao(false, "Nota fiscal informada é diferente da Nota fiscal do volume " + volume + "!", 3);
 		}
+		if (transpEndereco != null && (!transpEndereco.equalsIgnoreCase(transpNota))) {
+			status = new StatusGravacao(false, "Transportadora da nota fiscal " + notaFiscal + " é diferente da transportadora do endereço " + endereco + "!", 4);
+		}
 		return status;
 	}
 	
 	public void cleanAllocationVolume(int volume) {
 		expedicaoCustom.cleanAllocationVolume(volume);
+	}
+	
+	public StatusGravacao validateVolumeEnderecado(int volume) {
+		StatusGravacao status = new StatusGravacao(true, "");
+		String volumeAllocated = "";
+		
+		volumeAllocated = expedicaoCustom.validateVolumeIsAllocated(volume);
+		if (!volumeAllocated.equalsIgnoreCase("")) {
+			status = new StatusGravacao(false, "Volume " + volume + " já está endereçado! Deseja limpar o endereço " + volumeAllocated + "?", 1);
+		}
+		return status;
 	}
 }

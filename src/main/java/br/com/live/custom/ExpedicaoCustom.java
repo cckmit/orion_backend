@@ -1038,6 +1038,7 @@ public class ExpedicaoCustom {
 		
 		String query = " select count(*) from pcpc_320 a "
 				+ " where a.local_caixa = 7 "
+				+ " and a.data_montagem >= sysdate-1 "
 				+ " and exists (select 1 from fatu_050 "
 				+ "                            where fatu_050.num_nota_fiscal = a.nota_fiscal"
 				+ "                              and fatu_050.serie_nota_fisc = '2' "
@@ -1049,5 +1050,19 @@ public class ExpedicaoCustom {
 			countVolumes = 0;
 		}
 		return countVolumes;
+	}
+	
+	public String findTransportadoraEndereco(String endereco) {
+		String transpEndereco = "";
+		
+		String query = " select nvl(min(c.transpor_forne9) || min(c.transpor_forne4) || min(c.transpor_forne2), '') from pcpc_320 a, fatu_050 c "
+				+ " where a.live_endereco_volume = '"+ endereco +"' "
+				+ " and c.num_nota_fiscal = a.nota_fiscal ";
+		try {
+			transpEndereco = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			transpEndereco = "";
+		}
+		return transpEndereco;
 	}
 }

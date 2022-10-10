@@ -300,4 +300,9 @@ public class ExpedicaoController {
     	String transportadora = expedicaoCustom.findTransportadoraNotaFiscal(notaFiscal);
     	return expedicaoCustom.countVolumeSemEndereco(notaFiscal, transportadora);
     }
+    
+    @RequestMapping(value = "/validate-volume-enderecado", method = RequestMethod.POST)
+    public StatusGravacao validateVolumeEnderecao(@RequestBody BodyExpedicao body) {
+    	return expedicaoService.validateVolumeEnderecado(body.volume);
+    }
 }
