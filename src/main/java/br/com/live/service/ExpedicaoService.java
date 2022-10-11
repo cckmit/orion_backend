@@ -681,7 +681,7 @@ public class ExpedicaoService {
 		if (notaFiscalVolume != 1) {
 			status = new StatusGravacao(false, "Nota fiscal informada é diferente da Nota fiscal do volume " + volume + "!", 3);
 		}
-		if (transpEndereco != null && (!transpEndereco.equalsIgnoreCase(transpNota))) {
+		if ((transpEndereco != null) && (!transpEndereco.equalsIgnoreCase(transpNota))) {
 			status = new StatusGravacao(false, "Transportadora da nota fiscal " + notaFiscal + " é diferente da transportadora do endereço " + endereco + "!", 4);
 		}
 		return status;
@@ -695,7 +695,10 @@ public class ExpedicaoService {
 		StatusGravacao status = new StatusGravacao(true, "");
 		String volumeAllocated = "";
 		
-		volumeAllocated = expedicaoCustom.validateVolumeIsAllocated(volume);
+		String volumeComp = "" + volume + "";
+		String volumeEdit = volumeComp.substring(0, 7);
+		
+		volumeAllocated = expedicaoCustom.validateVolumeIsAllocated(Integer.parseInt(volumeEdit));
 		if (!volumeAllocated.equalsIgnoreCase("")) {
 			status = new StatusGravacao(false, "Volume " + volume + " já está endereçado! Deseja limpar o endereço " + volumeAllocated + "?", 1);
 		}
