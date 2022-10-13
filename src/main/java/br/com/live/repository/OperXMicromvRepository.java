@@ -20,6 +20,8 @@ public interface OperXMicromvRepository extends JpaRepository<OperacaoXMicromovi
 	@Query("SELECT a FROM OperacaoXMicromovimentos a where a.codOperacao = :codOperacao")
 	List<OperacaoXMicromovimentos> findByCodOper(int codOperacao);
 	
+	void deleteByCodOperacao(int codOperacao);
+	
 	void deleteById(long id);
 
 }

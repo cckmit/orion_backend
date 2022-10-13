@@ -422,4 +422,13 @@ public class EngenhariaService {
 			engenhariaCustom.atualizarFichaDigital(referencia);
 		}		
 	}
+	public void copiarMicromovimentosDePara (int codOperacaoOrigem, int codOperacaoDestino) {
+		operXMicromvRepository.deleteByCodOperacao(codOperacaoDestino);
+		List<OperacaoXMicromovimentos> microMovimentosOrigem = operXMicromvRepository.findByCodOper(codOperacaoOrigem);
+		for (OperacaoXMicromovimentos microMovimento : microMovimentosOrigem) {
+			long id = operXMicromvRepository.findNextID();
+			OperacaoXMicromovimentos micromovimentoDestino = new OperacaoXMicromovimentos(id, codOperacaoDestino, microMovimento.sequencia, microMovimento.tipo, microMovimento.idMicromovimento, microMovimento.idTempoMaquina);
+			operXMicromvRepository.save(micromovimentoDestino);
+		}
+	}
 }

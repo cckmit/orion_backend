@@ -309,6 +309,14 @@ public class EngenhariaController {
     	engenhariaService.atualizarPacote(body.centimetrosCone, body.idConsumoMet, body.idTipoFio, body.observacao);
     }
     
+    //
+    // Atualizar Pacote
+    //
+    @RequestMapping(value = "/copiar-operacao", method = RequestMethod.POST)
+    public void copiaOperacao(@RequestBody BodyEngenharia body) {
+    	engenhariaService.copiarMicromovimentosDePara(body.codOperacaoOrigem, body.codOperacaoDestino);
+    }
+    
     
     @RequestMapping(value = "/atualiza-tempo-homem/{operacao}", method = RequestMethod.GET)
     public void atualizarTempoHomem(@PathVariable("operacao") int operacao) {

@@ -58,6 +58,8 @@ public class BodyEngenharia {
 	public List<ConteudoChaveAlfaNum> listIdMicromovimento;
 	public List<ConteudoChaveNumerica> listIdTempoMaquina;
 	public float total;
+	public int codOperacaoOrigem;
+	public int codOperacaoDestino;
 	
 	public List<String> listaRefenciasFtDigital;
 }
