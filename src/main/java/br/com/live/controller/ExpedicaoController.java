@@ -27,6 +27,7 @@ import br.com.live.model.DadosModalEndereco;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCount;
 import br.com.live.model.ProdutoEnderecar;
+import br.com.live.model.SugestaoColeta;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
@@ -304,5 +305,21 @@ public class ExpedicaoController {
     @RequestMapping(value = "/validate-volume-enderecado", method = RequestMethod.POST)
     public StatusGravacao validateVolumeEnderecao(@RequestBody BodyExpedicao body) {
     	return expedicaoService.validateVolumeEnderecado(body.volume);
+    }
+    
+    @RequestMapping(value = "/find-all-clientes-async/{leitor}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllClientesAsync(@PathVariable("leitor") String leitor) {
+    	return expedicaoCustom.findClientesAsync(leitor);
+    }
+    
+    @RequestMapping(value = "/find-all-representantes-async-col/{leitor}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllRepresentantesAsync(@PathVariable("leitor") String leitor) {
+    	return expedicaoCustom.findRepresentanteAsync(leitor);
+    }
+    
+    @RequestMapping(value = "/find-pedidos-sugestao-coleta", method = RequestMethod.POST)
+    public List<SugestaoColeta> findPedidosSugestaoColeta(@RequestBody BodyExpedicao body) {
+    	return expedicaoCustom.findPedidosSugestaoColeta(body.dataEmissaoInicio, body.dataEmissaoFim, body.dataEmbarqueInicio, body.dataEmbarqueFim, 
+    			body.empresas, body.clientes, body.representantes, body.transportadoras);
     }
 }

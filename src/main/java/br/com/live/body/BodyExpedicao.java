@@ -4,6 +4,8 @@ import java.util.List;
 
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.Produto;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyExpedicao {
 	public String numeroTag;
@@ -28,4 +30,13 @@ public class BodyExpedicao {
 	public List<Produto> referencias;
 	public List<String> produtosSel;
 	public List<String> enderecos;
+	
+	public String dataEmissaoInicio;
+	public String dataEmissaoFim;
+	public String dataEmbarqueInicio;
+	public String dataEmbarqueFim;
+	public List<ConteudoChaveNumerica> empresas;
+	public List<ConteudoChaveAlfaNum> clientes;
+	public List<ConteudoChaveAlfaNum> transportadoras;
+	public List<ConteudoChaveNumerica> representantes;
 }

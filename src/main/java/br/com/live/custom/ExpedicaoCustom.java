@@ -21,6 +21,7 @@ import br.com.live.model.EnderecoCesto;
 import br.com.live.model.EnderecoCount;
 import br.com.live.model.Produto;
 import br.com.live.model.ProdutoEnderecar;
+import br.com.live.model.SugestaoColeta;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -1064,5 +1065,63 @@ public class ExpedicaoCustom {
 			transpEndereco = "";
 		}
 		return transpEndereco;
+	}
+	
+	public List<ConteudoChaveAlfaNum> findClientesAsync(String leitor) {
+		String query = " select b.cgc_9 || b.cgc_4 || b.cgc_2 value, lpad(b.cgc_9, 9, 0) || lpad(b.cgc_4, 4, 0) || lpad(b.cgc_2,2,0) || ' - ' || b.nome_cliente label from pedi_010 b "
+				+ " where b.cgc_9 || b.cgc_4 || b.cgc_2 || b.nome_cliente like '%" + leitor + "%' ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public List<ConteudoChaveAlfaNum> findRepresentanteAsync(String leitor) {
+		String query = " select a.cod_rep_cliente value, a.cod_rep_cliente || ' - ' || a.nome_rep_cliente label from pedi_020 a "
+				+ " where a.cod_rep_cliente || a.nome_rep_cliente like '%" + leitor + "%' ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public List<SugestaoColeta> findPedidosSugestaoColeta(String dataEmissaoInicio, String dataEmissaoFim, String dataEmbarqueInicio, String dataEmbarqueFim,
+			List<ConteudoChaveNumerica> empresas, List<ConteudoChaveAlfaNum> clientes, List<ConteudoChaveNumerica> representantes,
+			List<ConteudoChaveAlfaNum> transportadora) {
+		List<SugestaoColeta> dadosColeta = null;
+		
+		String query = " select a.codigo_empresa empresa, a.pedido_venda pedido, a.data_entr_venda embarque, a.qtde_total_pedi qtdePedido, "
+				+ " a.qtde_saldo_pedi qtdeSaldo, a.qtde_total_pedi - a.qtde_saldo_pedi qtdeFatu, a.valor_total_pedi valorSaldo, "
+				+ " lpad(a.cli_ped_cgc_cli9,9,0) || '/' || lpad(a.cli_ped_cgc_cli4,4,0) || '-' || lpad(a.cli_ped_cgc_cli2,2,0) || ' - ' || b.nome_cliente cliente, "
+				+ " (select count(*) from pcpc_330 n "
+				+ "        where n.pedido_venda = a.pedido_venda "
+				+ "        and n.estoque_tag = 3) qtdeColetada, "
+				+ "        a.qtde_total_pedi - (select count(*) from pcpc_330 n "
+				+ "                                    where n.pedido_venda = a.pedido_venda "
+				+ "                                     and n.estoque_tag = 3) qtdeColetar"
+				+ " from pedi_100 a, pedi_010 b "
+				+ " where b.cgc_9 = a.cli_ped_cgc_cli9 "
+				+ " and b.cgc_4 = a.cli_ped_cgc_cli4 "
+				+ " and b.cgc_2 = a.cli_ped_cgc_cli2 "
+				+ " and a.data_emis_venda between to_date('" + dataEmissaoInicio + "' , 'dd-MM-yyyy') and to_date('" + dataEmissaoFim+ "' , 'dd-MM-yyyy')";
+				
+				if (!dataEmbarqueInicio.equals("NaN-NaN-NaN")) {
+					query +=  " and a.data_entr_venda between to_date('" + dataEmbarqueInicio + "' , 'dd-MM-yyyy') and to_date('" + dataEmbarqueFim + "' , 'dd-MM-yyyy')";
+				}
+				if (empresas.size() > 0) {
+					query += " and a.codigo_empresa in (" + ConteudoChaveNumerica.parseValueToString(empresas) + ") ";
+				}
+				if (clientes.size() > 0) {
+					query += " and a.cli_ped_cgc_cli9 || a.cli_ped_cgc_cli4 || a.cli_ped_cgc_cli2 in (" + ConteudoChaveAlfaNum.parseValueToString(clientes) + ")";
+				}
+				if (representantes.size() > 0) {
+					query += " and a.cod_rep_cliente in (" + ConteudoChaveNumerica.parseValueToString(representantes) + ")";
+				}
+				if (transportadora.size() > 0) {
+					query += " and a.trans_pv_forne9 || a.trans_pv_forne4 || a.trans_pv_forne2 in (" + ConteudoChaveAlfaNum.parseValueToString(transportadora) + ") ";
+				}
+				
+		try {
+			dadosColeta = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(SugestaoColeta.class));
+		} catch (Exception e) {
+			dadosColeta = new ArrayList<SugestaoColeta>();
+			System.out.println(e);
+		}
+		
+		return dadosColeta;
 	}
 }
