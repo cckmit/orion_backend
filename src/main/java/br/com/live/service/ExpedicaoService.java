@@ -626,6 +626,12 @@ public class ExpedicaoService {
 		int sequence = Integer.parseInt(tagNumber.substring(18, 22));
 		
 		int tagWarehouse = expedicaoCustom.findWarehouseTAG(period, order, orderPackage, sequence);
+		int situacaoTag = expedicaoCustom.findSituacaoTAG(period, order, orderPackage, sequence);
+		
+		if (situacaoTag == 4) {
+			status = new StatusGravacao(false, "Este TAG já está faturado! não é possível endereçar!");
+			return status;
+		}
 		
 		String block = allocation.substring(0, 1);
 		

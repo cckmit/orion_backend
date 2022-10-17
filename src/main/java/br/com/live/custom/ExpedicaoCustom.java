@@ -888,6 +888,22 @@ public class ExpedicaoCustom {
 		return warehouse;
 	}
 	
+	public int findSituacaoTAG(int periodo, int ordemProd, int pacote, int sequencia) {
+		int situacao = 0;
+		
+		String query = " select a.estoque_tag from pcpc_330 a "
+				+ " where a.periodo_producao = " + periodo
+				+ " and a.ordem_producao = " + ordemProd
+				+ " and a.ordem_confeccao = " + pacote
+				+ " and a.sequencia = " + sequencia;
+		try {
+			situacao = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			situacao = 0;
+		}
+		return situacao;
+	}
+	
 	public void clearAllocation(String oldAllocation) {
 		String query = " update pcpc_330 a "
 				+ " set endereco = ? "
