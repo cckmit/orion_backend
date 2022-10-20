@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyEngenharia;
-import br.com.live.custom.ConfeccaoCustom;
 import br.com.live.custom.EngenhariaCustom;
 import br.com.live.entity.ConsumoFiosLinhas;
 import br.com.live.entity.ConsumoMetragemFio;
@@ -59,7 +58,6 @@ public class EngenhariaController {
     private TiposPontoRepository tiposPontoRepository;
     private ConsumoFiosLinhasRepository consumoFiosLinhasRepository;
     private ConsumoMetragemFioRepository consumoMetragemFioRepository;
-    private TempoMaquinaCMRepository tempoMaquinaCMRepository;
     private OperXMicromvRepository operXMicromvRepository;
 
 	@Autowired
@@ -75,7 +73,6 @@ public class EngenhariaController {
         this.tiposPontoFioRepository = tiposPontoFioRepository;
         this.consumoFiosLinhasRepository = consumoFiosLinhasRepository;
         this.consumoMetragemFioRepository = consumoMetragemFioRepository;
-        this.tempoMaquinaCMRepository = tempoMaquinaCMRepository;
         this.operXMicromvRepository = operXMicromvRepository;
 	}
 	
@@ -404,10 +401,10 @@ public class EngenhariaController {
     	return operXMicromvRepository.findAll();
     }
     
-    @RequestMapping(value = "/delete-oper-x-micromv/{codOp}/{id}", method = RequestMethod.DELETE)
-    public List<ConsultaOperacaoXMicromovimentos> deleteOperXMicromv(@PathVariable("codOp") int codOp, @PathVariable("id") long id) {
-    	engenhariaService.deleteOperXMicromvById(id);
-    	return engenhariaCustom.findAllOperacaoXMicromv(codOp);
+    @RequestMapping(value = "/delete-oper-x-micromv", method = RequestMethod.POST)
+    public List<ConsultaOperacaoXMicromovimentos> deleteOperXMicromv(@RequestBody BodyEngenharia body) {
+    	engenhariaService.deleteOperXMicromvById(body.listaId);
+    	return engenhariaCustom.findAllOperacaoXMicromv(body.codOperacao);
     }
 
     @RequestMapping(value = "/find-produtos-enviar-ficha-digital", method = RequestMethod.GET)
@@ -419,5 +416,11 @@ public class EngenhariaController {
 	public List<Produto> atualizarFichaDigital(@RequestBody BodyEngenharia body) {
     	engenhariaService.atualizarFichaDigital(body.listaRefenciasFtDigital);
     	return engenhariaCustom.findProdutosEnviarFichaDigital();
-	}        
+	}
+    
+    @RequestMapping(value = "/resequenciar-operacao/{operacao}/{intervalo}", method = RequestMethod.GET)
+	public void ResequenciarOperacao(@PathVariable("operacao") int operacao, @PathVariable("intervalo") int intervalo) {
+    	engenhariaService.resequenciarOper(operacao, intervalo);
+	}
+    
 }

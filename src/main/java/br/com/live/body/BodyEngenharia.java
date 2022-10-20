@@ -61,5 +61,7 @@ public class BodyEngenharia {
 	public int codOperacaoOrigem;
 	public int codOperacaoDestino;
 	
+	public List<Long> listaId;
+	
 	public List<String> listaRefenciasFtDigital;
 }

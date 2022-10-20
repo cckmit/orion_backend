@@ -275,8 +275,10 @@ public class EngenhariaService {
 		return new StatusGravacao(true, "Excluído com sucesso!", engenhariaCustom.findAllTempoMaquinaCM());
 	}
 	
-	public void deleteOperXMicromvById(long id) {
-		operXMicromvRepository.deleteById(id);
+	public void deleteOperXMicromvById(List<Long> listId) {
+		for (Long idmicromv : listId) {
+			operXMicromvRepository.deleteById(idmicromv);	
+		}
 	}
 	
 	public List<Micromovimentos> findAllMicromovimentos() {
@@ -430,5 +432,17 @@ public class EngenhariaService {
 			OperacaoXMicromovimentos micromovimentoDestino = new OperacaoXMicromovimentos(id, codOperacaoDestino, microMovimento.sequencia, microMovimento.tipo, microMovimento.idMicromovimento, microMovimento.idTempoMaquina);
 			operXMicromvRepository.save(micromovimentoDestino);
 		}
+	}
+	
+	public void resequenciarOper(int operacao, int intervalo) {
+		List<OperacaoXMicromovimentos> listaSequencia = operXMicromvRepository.findByCodOper(operacao);
+		int seqIncrement = intervalo;
+		
+		for (OperacaoXMicromovimentos dado : listaSequencia){
+			dado.sequencia = seqIncrement;
+			operXMicromvRepository.save(dado);
+			seqIncrement = seqIncrement + intervalo;			
+		}
+		
 	}
 }

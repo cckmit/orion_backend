@@ -60,7 +60,6 @@ public class CapacidadeProducaoService {
 
 	public void saveArtigos(int periodo, int estagio, List<ArtigoCapacidadeProducao> artigosCapacidadeProducao) {
 		for (ArtigoCapacidadeProducao artigo : artigosCapacidadeProducao) {
-			System.out.println("artigo: " + artigo.artigo);
 			
 			CapacidadeProdArtigo capacidade = new CapacidadeProdArtigo(periodo, estagio, artigo.artigo, artigo.qtdePecas,
 					artigo.qtdeMinutos);

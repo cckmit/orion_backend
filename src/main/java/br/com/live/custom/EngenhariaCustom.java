@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.model.Colecao;
 import br.com.live.model.ConsultaConsumoMetragem;
 import br.com.live.model.ConsultaOperacaoXMicromovimentos;
 import br.com.live.model.ConsultaTabelaConsumo;
@@ -21,7 +20,6 @@ import br.com.live.model.OptionProduto;
 import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 @Repository
 public class EngenhariaCustom {
