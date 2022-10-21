@@ -195,3 +195,8 @@ values (64, 'Endereçar Volumes', 'Expedição', '/enderecar-volumes');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (65, 'Sugestão de Coleta', 'Expedição', '/sugestao-coleta');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (66, 'Política de Vendas', 'Comercial', '/politica-de-vendas');
+
+
