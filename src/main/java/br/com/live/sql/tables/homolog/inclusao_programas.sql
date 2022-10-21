@@ -199,4 +199,6 @@ values (65, 'Sugestão de Coleta', 'Expedição', '/sugestao-coleta');
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (66, 'Política de Vendas', 'Comercial', '/politica-de-vendas');
 
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (67, 'Áreas de Coleta', 'Expedição', '/areas-coleta');
 
