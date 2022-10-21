@@ -38,5 +38,9 @@ public class BodyExpedicao {
 	public List<ConteudoChaveNumerica> empresas;
 	public List<ConteudoChaveAlfaNum> clientes;
 	public List<ConteudoChaveAlfaNum> transportadoras;
-	public List<ConteudoChaveNumerica> representantes;
+	public List<ConteudoChaveNumerica> representantes;	
+	public Long idAreaColeta;
+	public String descArea;
+	public String endInicioArea;
+	public String endFimArea;
 }

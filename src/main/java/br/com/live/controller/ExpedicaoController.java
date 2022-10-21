@@ -15,6 +15,7 @@ import br.com.live.body.BodyExpedicao;
 import br.com.live.body.BodyMinutaTransporte;
 import br.com.live.body.BodyVariacaoPesoArtigo;
 import br.com.live.custom.ExpedicaoCustom;
+import br.com.live.entity.AreaColeta;
 import br.com.live.entity.CaixasParaEnderecar;
 import br.com.live.entity.ParametrosMapaEndereco;
 import br.com.live.entity.ParametrosMapaEnderecoCaixa;
@@ -29,6 +30,7 @@ import br.com.live.model.EnderecoCount;
 import br.com.live.model.ProdutoEnderecar;
 import br.com.live.model.SugestaoColeta;
 import br.com.live.repository.AberturaCaixasRepository;
+import br.com.live.repository.AreaColetaRepository;
 import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
 import br.com.live.service.AcertoCalculoDepreciacaoService;
@@ -49,16 +51,18 @@ public class ExpedicaoController {
 	private AberturaCaixasRepository aberturaCaixasRepository;
 	private ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
 	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;
+	private AreaColetaRepository areaColetaRepository; 
 	
     @Autowired
     public ExpedicaoController(ExpedicaoService expedicaoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
-    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService) {
+    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService, AreaColetaRepository areaColetaRepository) {
     	this.expedicaoService = expedicaoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
     	this.expedicaoCustom = expedicaoCustom;
     	this.aberturaCaixasRepository = aberturaCaixasRepository;
     	this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
     	this.acertoCalculoDepreciacaoService = acertoCalculoDepreciacaoService;
+    	this.areaColetaRepository = areaColetaRepository; 
     }
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
@@ -322,4 +326,22 @@ public class ExpedicaoController {
     	return expedicaoCustom.findPedidosSugestaoColeta(body.dataEmissaoInicio, body.dataEmissaoFim, body.dataEmbarqueInicio, body.dataEmbarqueFim, 
     			body.empresas, body.clientes, body.representantes, body.transportadoras);
     }
+        
+    @RequestMapping(value = "/find-all-areas-coleta", method = RequestMethod.GET)
+    public List<AreaColeta> findAllAreasColetas() {
+    	return areaColetaRepository.findAll();    	
+    }      
+    
+    @RequestMapping(value = "/save-area-coleta", method = RequestMethod.POST)
+    public List<AreaColeta> saveAreaColeta(@RequestBody BodyExpedicao body) {    	
+    	expedicaoService.saveAreaColeta(body.idAreaColeta, body.descArea, body.endInicioArea, body.endFimArea);
+    	return areaColetaRepository.findAll();
+    }
+    
+    @RequestMapping(value = "/delete-area-coleta/{id}", method = RequestMethod.DELETE)
+    public List<AreaColeta> deleteAreaColeta(@PathVariable("id") long id) {
+    	expedicaoService.deleteAreaColeta(id);
+    	return areaColetaRepository.findAll(); 
+    }
+    
 }
