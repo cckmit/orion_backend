@@ -32,6 +32,7 @@ import br.com.live.model.DadosTagProd;
 import br.com.live.model.Embarque;
 import br.com.live.model.EnderecoCesto;
 import br.com.live.model.EnderecoCount;
+import br.com.live.model.ItemAColetarPorPedido;
 import br.com.live.model.Produto;
 import br.com.live.model.ProdutoEnderecar;
 import br.com.live.model.SugestaoColeta;
@@ -57,8 +58,7 @@ public class ExpedicaoService {
 	private final UsuarioRepository usuarioRepository;
 	private final ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
 	private final VariacaoPesoArtigoRepository variacaoPesoArtigoRepository;
-	private final ReportService reportService;
-	private final AreaColetaRepository areaColetaRepository;
+	private final ReportService reportService;	
 
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
@@ -67,8 +67,7 @@ public class ExpedicaoService {
 			CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository,
 			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository,
 			ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
-			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService,
-			AreaColetaRepository areaColetaRepository) {
+			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService) {
 		this.expedicaoCustom = expedicaoCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
@@ -76,8 +75,7 @@ public class ExpedicaoService {
 		this.usuarioRepository = usuarioRepository;
 		this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
 		this.variacaoPesoArtigoRepository = variacaoPesoArtigoRepository;
-		this.reportService = reportService;
-		this.areaColetaRepository = areaColetaRepository;
+		this.reportService = reportService;		
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -715,29 +713,5 @@ public class ExpedicaoService {
 			status = new StatusGravacao(false, "Volume " + volume + " já está endereçado! Deseja limpar o endereço " + volumeAllocated + "?", 1);
 		}
 		return status;
-	}
-	
-	public void saveAreaColeta(long id, String descricao, String enderecoInicio, String enderecoFim) {
-		AreaColeta area = areaColetaRepository.findById(id);
-		
-		if (area == null) {
-			id = areaColetaRepository.findNextId();
-			area = new AreaColeta(id, descricao, enderecoInicio, enderecoFim);
-		} else {
-			area.setDescricao(descricao);
-			area.setEnderecoInicio(enderecoInicio);
-			area.setEnderecoFim(enderecoFim);
-		}
-		areaColetaRepository.save(area);		
-	}
-	
-	public void deleteAreaColeta(long id) {
-		areaColetaRepository.deleteById(id);
 	}	
-	
-	public void createSequenciasColeta(List<SugestaoColeta> pedidosSugeridos) {
-		for (SugestaoColeta pedido : pedidosSugeridos) {
-			expedicaoCustom.findItensParaColetarByPedido(pedido.pedido);			
-		}
-	}
 }

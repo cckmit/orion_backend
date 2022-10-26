@@ -7,15 +7,19 @@ public class ItemAColetarPorPedido {
 	private String grupo;
 	private String sub;
 	private String item;
+	private String endereco;
+	private int deposito;
 	private int qtdeColetar;
 	
-	public ItemAColetarPorPedido(int pedido, String nivel, String grupo, String sub, String item, int qtdeColetar) {
+	public ItemAColetarPorPedido(int pedido, String nivel, String grupo, String sub, String item, String endereco, int deposito, int qtdeColetar) {
 		super();
 		this.pedido = pedido;
 		this.nivel = nivel;
 		this.grupo = grupo;
 		this.sub = sub;
 		this.item = item;
+		this.endereco = endereco;
+		this.deposito = deposito;
 		this.qtdeColetar = qtdeColetar;
 	}
 
@@ -65,5 +69,21 @@ public class ItemAColetarPorPedido {
 
 	public void setQtdeColetar(int qtdeColetar) {
 		this.qtdeColetar = qtdeColetar;
+	}	
+	
+	public String getEndereco() {
+		return endereco;
 	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	public int getDeposito() {
+		return deposito;
+	}
+
+	public void setDeposito(int deposito) {
+		this.deposito = deposito;
+	}	
 }

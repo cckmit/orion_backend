@@ -50,19 +50,17 @@ public class ExpedicaoController {
 	private ExpedicaoCustom expedicaoCustom;
 	private AberturaCaixasRepository aberturaCaixasRepository;
 	private ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
-	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;
-	private AreaColetaRepository areaColetaRepository; 
+	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;	
 	
     @Autowired
     public ExpedicaoController(ExpedicaoService expedicaoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
-    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService, AreaColetaRepository areaColetaRepository) {
+    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService) {
     	this.expedicaoService = expedicaoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
     	this.expedicaoCustom = expedicaoCustom;
     	this.aberturaCaixasRepository = aberturaCaixasRepository;
     	this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
-    	this.acertoCalculoDepreciacaoService = acertoCalculoDepreciacaoService;
-    	this.areaColetaRepository = areaColetaRepository; 
+    	this.acertoCalculoDepreciacaoService = acertoCalculoDepreciacaoService;    	
     }
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
@@ -320,28 +318,4 @@ public class ExpedicaoController {
     public List<ConteudoChaveAlfaNum> findAllRepresentantesAsync(@PathVariable("leitor") String leitor) {
     	return expedicaoCustom.findRepresentanteAsync(leitor);
     }
-    
-    @RequestMapping(value = "/find-pedidos-sugestao-coleta", method = RequestMethod.POST)
-    public List<SugestaoColeta> findPedidosSugestaoColeta(@RequestBody BodyExpedicao body) {
-    	return expedicaoCustom.findPedidosSugestaoColeta(body.dataEmissaoInicio, body.dataEmissaoFim, body.dataEmbarqueInicio, body.dataEmbarqueFim, 
-    			body.empresas, body.clientes, body.representantes, body.transportadoras);
-    }
-        
-    @RequestMapping(value = "/find-all-areas-coleta", method = RequestMethod.GET)
-    public List<AreaColeta> findAllAreasColetas() {
-    	return areaColetaRepository.findAll();    	
-    }      
-    
-    @RequestMapping(value = "/save-area-coleta", method = RequestMethod.POST)
-    public List<AreaColeta> saveAreaColeta(@RequestBody BodyExpedicao body) {    	
-    	expedicaoService.saveAreaColeta(body.idAreaColeta, body.descArea, body.endInicioArea, body.endFimArea);
-    	return areaColetaRepository.findAll();
-    }
-    
-    @RequestMapping(value = "/delete-area-coleta/{id}", method = RequestMethod.DELETE)
-    public List<AreaColeta> deleteAreaColeta(@PathVariable("id") long id) {
-    	expedicaoService.deleteAreaColeta(id);
-    	return areaColetaRepository.findAll(); 
-    }
-    
 }
