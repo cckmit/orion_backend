@@ -19,6 +19,6 @@ public interface AreaColetaRepository extends JpaRepository<AreaColeta, Long> {
 	@Query("SELECT p FROM AreaColeta p where p.id = :id")
 	AreaColeta findById(long id);	
 	
-	@Query("SELECT p FROM AreaColeta p where p.enderecoInicio >= :endereco and p.enderecoFim <= :endereco and rownum = 1")
+	@Query("SELECT p FROM AreaColeta p where p.enderecoInicio <= :endereco and p.enderecoFim >= :endereco and rownum = 1")
 	AreaColeta findAreaColetaByEndereco(String endereco);
 }

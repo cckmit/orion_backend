@@ -18,6 +18,10 @@ public class LoteSugestaoColetaPorArea {
 	@Column(name="id_area")
 	private Long idArea;
 	
+	public LoteSugestaoColetaPorArea() {
+		super();
+	}
+	
 	public LoteSugestaoColetaPorArea(Long id, Long idLote, Long idArea) {
 		super();
 		this.id = id;

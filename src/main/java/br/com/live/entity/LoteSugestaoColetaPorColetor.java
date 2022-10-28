@@ -18,6 +18,10 @@ public class LoteSugestaoColetaPorColetor {
 	@Column(name="id_coletor")
 	private String idColetor;
 
+	public LoteSugestaoColetaPorColetor() {
+		super();
+	}
+
 	public LoteSugestaoColetaPorColetor(Long id, Long idLoteArea, String idColetor) {
 		super();
 		this.id = id;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.model.Produto;
+import br.com.live.model.SugestaoColeta;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -43,4 +44,7 @@ public class BodyExpedicao {
 	public String descArea;
 	public String endInicioArea;
 	public String endFimArea;
+	
+	public long idUsuarioLote;
+	public List<SugestaoColeta> pedidosLoteSugColeta;
 }

@@ -11,6 +11,10 @@ public class ItemAColetarPorPedido {
 	private int deposito;
 	private int qtdeColetar;
 	
+	public ItemAColetarPorPedido() {
+		super();
+	}	
+	
 	public ItemAColetarPorPedido(int pedido, String nivel, String grupo, String sub, String item, String endereco, int deposito, int qtdeColetar) {
 		super();
 		this.pedido = pedido;

@@ -35,6 +35,7 @@ public class SugestaoColetaController {
 	
     @RequestMapping(value = "/find-pedidos-sugestao-coleta", method = RequestMethod.POST)
     public List<SugestaoColeta> findPedidosSugestaoColeta(@RequestBody BodyExpedicao body) {
+    	sugestaoColetaService.cleanLoteColetaNaoLiberadoByUsuario(body.idUsuarioLote);
     	return sugestaoColetaCustom.findPedidosSugestaoColeta(body.dataEmissaoInicio, body.dataEmissaoFim, body.dataEmbarqueInicio, body.dataEmbarqueFim, 
     			body.empresas, body.clientes, body.representantes, body.transportadoras);
     }
@@ -54,5 +55,10 @@ public class SugestaoColetaController {
     public List<AreaColeta> deleteAreaColeta(@PathVariable("id") long id) {
     	sugestaoColetaService.deleteAreaColeta(id);
     	return areaColetaRepository.findAll(); 
+    }
+    
+    @RequestMapping(value = "/create-lote-coleta", method = RequestMethod.POST)
+    public void createLoteColeta(@RequestBody BodyExpedicao body) {
+    	sugestaoColetaService.createLoteColeta(body.idUsuarioLote, body.pedidosLoteSugColeta);
     }
 }

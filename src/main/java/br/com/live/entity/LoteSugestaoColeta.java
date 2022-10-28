@@ -16,6 +16,10 @@ public class LoteSugestaoColeta {
 	@Column(name="id_usuario")
 	private Long idUsuario;
 
+	public LoteSugestaoColeta() {
+		super();		
+	}
+	
 	public LoteSugestaoColeta(Long id, int situacao, Long idUsuario) {
 		super();
 		this.id = id;		

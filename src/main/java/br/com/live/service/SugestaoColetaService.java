@@ -10,25 +10,44 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.SugestaoColetaCustom;
 import br.com.live.entity.AreaColeta;
+import br.com.live.entity.LoteSugestaoColeta;
+import br.com.live.entity.LoteSugestaoColetaPorArea;
+import br.com.live.entity.LoteSugestaoColetaPorAreaItem;
 import br.com.live.model.ItemAColetarPorPedido;
 import br.com.live.model.SugestaoColeta;
 import br.com.live.repository.AreaColetaRepository;
+import br.com.live.repository.LoteSugestaoColetaPorAreaItemRepository;
+import br.com.live.repository.LoteSugestaoColetaPorAreaRepository;
+import br.com.live.repository.LoteSugestaoColetaPorColetorRepository;
+import br.com.live.repository.LoteSugestaoColetaRepository;
 
 @Service
 @Transactional
 public class SugestaoColetaService {
 
-	private final SugestaoColetaCustom sugestaoColetaCustom; 
+	private final SugestaoColetaCustom sugestaoColetaCustom;
 	private final AreaColetaRepository areaColetaRepository;
-	
-	public SugestaoColetaService(SugestaoColetaCustom sugestaoColetaCustom, AreaColetaRepository areaColetaRepository) {
+	private final LoteSugestaoColetaRepository loteSugestaoColetaRepository;
+	private final LoteSugestaoColetaPorAreaRepository loteSugestaoColetaPorAreaRepository;
+	private final LoteSugestaoColetaPorAreaItemRepository loteSugestaoColetaPorAreaItemRepository;
+	private final LoteSugestaoColetaPorColetorRepository loteSugestaoColetaPorColetorRepository;
+
+	public SugestaoColetaService(SugestaoColetaCustom sugestaoColetaCustom, AreaColetaRepository areaColetaRepository,
+			LoteSugestaoColetaRepository loteSugestaoColetaRepository,
+			LoteSugestaoColetaPorAreaRepository loteSugestaoColetaPorAreaRepository,
+			LoteSugestaoColetaPorAreaItemRepository loteSugestaoColetaPorAreaItemRepository,
+			LoteSugestaoColetaPorColetorRepository loteSugestaoColetaPorColetorRepository) {
 		this.sugestaoColetaCustom = sugestaoColetaCustom;
 		this.areaColetaRepository = areaColetaRepository;
+		this.loteSugestaoColetaRepository = loteSugestaoColetaRepository;
+		this.loteSugestaoColetaPorAreaRepository = loteSugestaoColetaPorAreaRepository;
+		this.loteSugestaoColetaPorAreaItemRepository = loteSugestaoColetaPorAreaItemRepository;
+		this.loteSugestaoColetaPorColetorRepository = loteSugestaoColetaPorColetorRepository;
 	}
-	
+
 	public void saveAreaColeta(long id, String descricao, String enderecoInicio, String enderecoFim) {
 		AreaColeta area = areaColetaRepository.findById(id);
-		
+
 		if (area == null) {
 			id = areaColetaRepository.findNextId();
 			area = new AreaColeta(id, descricao, enderecoInicio, enderecoFim);
@@ -37,58 +56,84 @@ public class SugestaoColetaService {
 			area.setEnderecoInicio(enderecoInicio);
 			area.setEnderecoFim(enderecoFim);
 		}
-		areaColetaRepository.save(area);		
-	}
-	
-	public void deleteAreaColeta(long id) {
-		areaColetaRepository.deleteById(id);
-	}	
-	
-	public void createLoteColeta(List<SugestaoColeta> pedidosSugeridos) {
-		
-		System.out.println("*** createLoteColeta ***");				
-		
-		Map<String, List<ItemAColetarPorPedido>> mapItensPorArea = new HashMap<String, List<ItemAColetarPorPedido>>();
-		List<ItemAColetarPorPedido> itensColetarArea = null;
-		
-		// Separa por area os itens para coleta
-		for (SugestaoColeta pedido : pedidosSugeridos) {
-			List<ItemAColetarPorPedido> itens = sugestaoColetaCustom.findItensParaColetarByPedido(pedido.pedido);	
-			
-			for (ItemAColetarPorPedido item : itens) {				
-				String area = "SEM AREA";
-				AreaColeta areaColeta = areaColetaRepository.findAreaColetaByEndereco(item.getEndereco());				
-				if (areaColeta != null) area = areaColeta.getDescricao(); 
-				
-				if (!mapItensPorArea.containsKey(area)) {
-					itensColetarArea = new ArrayList<ItemAColetarPorPedido>();
-				} else {
-					itensColetarArea = mapItensPorArea.get(area);
-				}				
-				itensColetarArea.add(item);
-				mapItensPorArea.put(area, itensColetarArea);
-			}
-		}
-					
-		// Grava informações por area
-		for (String area : mapItensPorArea.keySet()) {
-			int qtdePecas = 0;
-			List<Integer> pedidos = new ArrayList<Integer>();
-			List<String> skus = new ArrayList<String>();
-			List<String> enderecos = new ArrayList<String>();
-			
-			itensColetarArea = mapItensPorArea.get(area);			
-			for (ItemAColetarPorPedido itemColetar : itensColetarArea) {				
-				qtdePecas++;
-				if (!pedidos.contains(itemColetar.getPedido())) pedidos.add(itemColetar.getPedido()); 
-			    if (!skus.contains(itemColetar.getNivel() + "." + itemColetar.getGrupo() + "." + itemColetar.getSub() + "." + itemColetar.getItem() + "-" + itemColetar.getDeposito()))
-			    	skus.add(itemColetar.getNivel() + "." + itemColetar.getGrupo() + "." + itemColetar.getSub() + "." + itemColetar.getItem() + "-" + itemColetar.getDeposito()); 	
-			    if (!enderecos.contains(itemColetar.getEndereco())) enderecos.add(itemColetar.getEndereco());			    			
-			}			
-		}
-		
-		
-		
+		areaColetaRepository.save(area);
 	}
 
+	public void deleteAreaColeta(long id) {
+		areaColetaRepository.deleteById(id);
+	}
+
+	public void cleanLoteColetaNaoLiberadoByUsuario(long idUsuario) {
+		LoteSugestaoColeta lote = loteSugestaoColetaRepository.findLoteNaoLiberadoByUsuario(idUsuario);
+		if (lote != null) {
+			List<LoteSugestaoColetaPorArea> areas = loteSugestaoColetaPorAreaRepository.findAreasByLote(lote.getId());
+			for (LoteSugestaoColetaPorArea area : areas) {
+				loteSugestaoColetaPorAreaItemRepository.deleteByIdLoteArea(area.getId());
+				loteSugestaoColetaPorColetorRepository.deleteByIdLoteArea(area.getId());
+			}
+			loteSugestaoColetaPorAreaRepository.deleteByIdLote(lote.getId());
+			loteSugestaoColetaRepository.deleteById(lote.getId());
+		}
+	}
+
+	public void createLoteColeta(long idUsuarioLote, List<SugestaoColeta> pedidosSugeridos) {
+
+		System.out.println("*** createLoteColeta ***");
+
+		// TODO - EXCLUIR DO USUARIO SE TIVER SUGESTAO AINDA NÃO LIBERADO
+
+		Map<Long, List<ItemAColetarPorPedido>> mapItensPorArea = new HashMap<Long, List<ItemAColetarPorPedido>>();
+		List<ItemAColetarPorPedido> itensColetarArea = null;
+
+		/* Gravar o lote */
+		LoteSugestaoColeta lote = new LoteSugestaoColeta(loteSugestaoColetaRepository.findNextId(), 0, idUsuarioLote);
+		loteSugestaoColetaRepository.save(lote);
+
+		for (SugestaoColeta pedido : pedidosSugeridos) {
+
+			System.out.println("pedido: " + pedido.pedido);
+
+			List<ItemAColetarPorPedido> itens = sugestaoColetaCustom.findItensParaColetarByPedido(pedido.pedido);
+			for (ItemAColetarPorPedido item : itens) {
+				long area = 999999;
+				AreaColeta areaColeta = areaColetaRepository.findAreaColetaByEndereco(item.getEndereco());
+				if (areaColeta != null)
+					area = areaColeta.getId();
+				if (!mapItensPorArea.containsKey(area)) {
+					itensColetarArea = new ArrayList<ItemAColetarPorPedido>();
+					mapItensPorArea.put(area, itensColetarArea);
+				} else {
+					itensColetarArea = mapItensPorArea.get(area);
+				}
+				itensColetarArea.add(item);
+
+				System.out.println("REF: " + item.getGrupo() + " END: " + item.getEndereco() + " QTDE: "
+						+ item.getQtdeColetar() + " AREA: " + area);
+			}
+		}
+
+		for (Long idArea : mapItensPorArea.keySet()) {
+			itensColetarArea = mapItensPorArea.get(idArea);
+			/* Gravar as áreas de coletas do lote */
+			LoteSugestaoColetaPorArea loteArea = new LoteSugestaoColetaPorArea(
+					loteSugestaoColetaPorAreaRepository.findNextId(), lote.getId(), idArea);
+			loteSugestaoColetaPorAreaRepository.save(loteArea);
+
+			System.out.println("GRAVOU AREA: " + idArea);
+
+			for (ItemAColetarPorPedido item : itensColetarArea) {
+				/* Gravar o item de cada área */
+				
+				System.out.println("ENDERECO: " + item.getEndereco());
+				
+				LoteSugestaoColetaPorAreaItem itemColetar = new LoteSugestaoColetaPorAreaItem(
+						loteSugestaoColetaPorAreaItemRepository.findNextId(), loteArea.getId(), item.getPedido(),
+						item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getEndereco(),
+						item.getQtdeColetar());
+				loteSugestaoColetaPorAreaItemRepository.save(itemColetar);
+
+				System.out.println("GRAVOU ITEM: " + item.getGrupo());
+			}
+		}
+	}
 }

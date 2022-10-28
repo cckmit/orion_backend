@@ -47,3 +47,5 @@ constraint fk_orion_exp_363_exp_361 foreign key (id_lote_area) references orion_
 );
 
 comment on table orion_exp_363 is 'Tabela de lote de coleta de pedidos - Coletores';
+
+create index indx_orion_exp_362_pv on orion_exp_362 (pedido_venda);

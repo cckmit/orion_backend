@@ -27,6 +27,10 @@ public class LoteSugestaoColetaPorAreaItem {
 	@Column(name="qtde_coletar")
 	private int qtdeColetar;
 
+	public LoteSugestaoColetaPorAreaItem() {
+		super();
+	}	
+	
 	public LoteSugestaoColetaPorAreaItem(Long id, Long idLoteArea, int pedidoVenda, String nivel, String grupo,
 			String sub, String item, String endereco, int qtdeColetar) {
 		super();

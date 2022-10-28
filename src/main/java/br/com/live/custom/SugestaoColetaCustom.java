@@ -42,7 +42,10 @@ public class SugestaoColetaCustom {
 	       + " and b.cgc_2 = a.cli_ped_cgc_cli2 "
 	       + " and a.data_emis_venda between to_date('" + dataEmissaoInicio + "' , 'dd-MM-yyyy') and to_date('" + dataEmissaoFim + "' , 'dd-MM-yyyy') "
 	       + " and c.pedido_venda = a.pedido_venda "
-	       + " and c.cod_cancelamento = 0 ";
+	       + " and c.cod_cancelamento = 0 "	       
+	       // Desconsidera o que já foi liberado para coleta
+	       + " and not exists (select 1 from orion_exp_362 y "
+	       + " where y.pedido_venda = a.pedido_venda ) ";
 			
 		if (!dataEmbarqueInicio.equals("NaN-NaN-NaN")) {
 			query +=  " and a.data_entr_venda between to_date('" + dataEmbarqueInicio + "' , 'dd-MM-yyyy') and to_date('" + dataEmbarqueFim + "' , 'dd-MM-yyyy')";
@@ -81,14 +84,21 @@ public class SugestaoColetaCustom {
 		+ " and y.grupo = p.cd_it_pe_grupo "
 		+ " and y.subgrupo = p.cd_it_pe_subgrupo "               
 		+ " and y.item = p.cd_it_pe_item "
-		+ " and y.deposito = p.codigo_deposito),'SEM ENDERECO') endereco "                  				
+		+ " and y.deposito = p.codigo_deposito),'SEM ENDERE') endereco "                  				
 		+ " from pedi_110 p "
 		+ " where p.pedido_venda = ? " 
 		+ " and p.cod_cancelamento = 0 "
 		+ " and (p.qtde_pedida - p.qtde_faturada - p.qtde_afaturar) > 0 "
-		+ " group by p.pedido_venda, p.cd_it_pe_nivel99, p.cd_it_pe_grupo, p.cd_it_pe_subgrupo, p.cd_it_pe_item ";
+		+ " group by p.pedido_venda, p.cd_it_pe_nivel99, p.cd_it_pe_grupo, p.cd_it_pe_subgrupo, p.cd_it_pe_item, p.codigo_deposito ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ItemAColetarPorPedido.class), pedidoVenda);		
 	}
-
+	
+	public void findSugestaoColetaParaLiberar() {
+		
+		
+		
+		
+	}
+	
 }
