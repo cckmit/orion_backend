@@ -13,6 +13,7 @@ import br.com.live.entity.AreaColeta;
 import br.com.live.entity.LoteSugestaoColeta;
 import br.com.live.entity.LoteSugestaoColetaPorArea;
 import br.com.live.entity.LoteSugestaoColetaPorAreaItem;
+import br.com.live.model.ConsultaSugestaoColetaPorLoteArea;
 import br.com.live.model.ItemAColetarPorPedido;
 import br.com.live.model.SugestaoColeta;
 import br.com.live.repository.AreaColetaRepository;
@@ -20,6 +21,7 @@ import br.com.live.repository.LoteSugestaoColetaPorAreaItemRepository;
 import br.com.live.repository.LoteSugestaoColetaPorAreaRepository;
 import br.com.live.repository.LoteSugestaoColetaPorColetorRepository;
 import br.com.live.repository.LoteSugestaoColetaRepository;
+import br.com.live.util.StatusPesquisa;
 
 @Service
 @Transactional
@@ -78,10 +80,8 @@ public class SugestaoColetaService {
 
 	public void createLoteColeta(long idUsuarioLote, List<SugestaoColeta> pedidosSugeridos) {
 
-		System.out.println("*** createLoteColeta ***");
-
-		// TODO - EXCLUIR DO USUARIO SE TIVER SUGESTAO AINDA NÃO LIBERADO
-
+		cleanLoteColetaNaoLiberadoByUsuario(idUsuarioLote);
+		
 		Map<Long, List<ItemAColetarPorPedido>> mapItensPorArea = new HashMap<Long, List<ItemAColetarPorPedido>>();
 		List<ItemAColetarPorPedido> itensColetarArea = null;
 
@@ -90,9 +90,6 @@ public class SugestaoColetaService {
 		loteSugestaoColetaRepository.save(lote);
 
 		for (SugestaoColeta pedido : pedidosSugeridos) {
-
-			System.out.println("pedido: " + pedido.pedido);
-
 			List<ItemAColetarPorPedido> itens = sugestaoColetaCustom.findItensParaColetarByPedido(pedido.pedido);
 			for (ItemAColetarPorPedido item : itens) {
 				long area = 999999;
@@ -106,9 +103,6 @@ public class SugestaoColetaService {
 					itensColetarArea = mapItensPorArea.get(area);
 				}
 				itensColetarArea.add(item);
-
-				System.out.println("REF: " + item.getGrupo() + " END: " + item.getEndereco() + " QTDE: "
-						+ item.getQtdeColetar() + " AREA: " + area);
 			}
 		}
 
@@ -119,21 +113,21 @@ public class SugestaoColetaService {
 					loteSugestaoColetaPorAreaRepository.findNextId(), lote.getId(), idArea);
 			loteSugestaoColetaPorAreaRepository.save(loteArea);
 
-			System.out.println("GRAVOU AREA: " + idArea);
-
 			for (ItemAColetarPorPedido item : itensColetarArea) {
-				/* Gravar o item de cada área */
-				
-				System.out.println("ENDERECO: " + item.getEndereco());
-				
+				/* Gravar o item de cada área */				
 				LoteSugestaoColetaPorAreaItem itemColetar = new LoteSugestaoColetaPorAreaItem(
 						loteSugestaoColetaPorAreaItemRepository.findNextId(), loteArea.getId(), item.getPedido(),
 						item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getEndereco(),
 						item.getQtdeColetar());
-				loteSugestaoColetaPorAreaItemRepository.save(itemColetar);
-
-				System.out.println("GRAVOU ITEM: " + item.getGrupo());
+				loteSugestaoColetaPorAreaItemRepository.save(itemColetar);				
 			}
 		}
+	}
+	
+	public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
+		boolean encontrou = false;
+		List<ConsultaSugestaoColetaPorLoteArea> dados = sugestaoColetaCustom.findSugestaoColetaParaLiberarByIdUsuario(idUsuario);
+		if (dados != null) encontrou = true;
+		return new StatusPesquisa(encontrou, dados);
 	}
 }

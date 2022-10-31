@@ -16,6 +16,7 @@ import br.com.live.entity.AreaColeta;
 import br.com.live.model.SugestaoColeta;
 import br.com.live.repository.AreaColetaRepository;
 import br.com.live.service.SugestaoColetaService;
+import br.com.live.util.StatusPesquisa;
 
 @RestController
 @CrossOrigin
@@ -60,5 +61,10 @@ public class SugestaoColetaController {
     @RequestMapping(value = "/create-lote-coleta", method = RequestMethod.POST)
     public void createLoteColeta(@RequestBody BodyExpedicao body) {
     	sugestaoColetaService.createLoteColeta(body.idUsuarioLote, body.pedidosLoteSugColeta);
+    }
+    
+    @RequestMapping(value = "/find-sugestao-para-liberar", method = RequestMethod.POST)
+    public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
+    	return sugestaoColetaService.findSugestaoColetaParaLiberarByIdUsuario(idUsuario);
     }
 }

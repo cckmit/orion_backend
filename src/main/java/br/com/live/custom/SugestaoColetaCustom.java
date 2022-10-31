@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.model.ConsultaSugestaoColetaPorLoteArea;
 import br.com.live.model.ItemAColetarPorPedido;
 import br.com.live.model.SugestaoColeta;
 import br.com.live.util.ConteudoChaveAlfaNum;
@@ -94,11 +95,36 @@ public class SugestaoColetaCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ItemAColetarPorPedido.class), pedidoVenda);		
 	}
 	
-	public void findSugestaoColetaParaLiberar() {
+	public List<ConsultaSugestaoColetaPorLoteArea> findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
 		
+		String query = " select b.id_lote idLote, b.id_area idArea, nvl(c.descricao, 'SEM AREA') descricaoArea, "
+		+ " (select count(*) "
+		+ " from (select z.pedido_venda "
+		+ " from orion_exp_362 z "
+		+ " where z.id_lote_area = b.id "
+		+ " group by z.pedido_venda)) qtdePedidos, "
+		+ " (select sum(z.qtde_coletar) "
+		+ " from orion_exp_362 z "
+		+ " where z.id_lote_area = b.id) qtdePecas, "          
+		+ " (select count(*) "
+		+ " from (select z.nivel, z.grupo, z.sub, z.item "
+		+ " from orion_exp_362 z "
+		+ " where z.id_lote_area = b.id "
+		+ " group by z.nivel, z.grupo, z.sub, z.item)) qtdeSkus, "
+		+ " (select count(*) "
+		+ " from (select z.endereco "
+		+ " from orion_exp_362 z "
+		+ " where z.id_lote_area = b.id "
+		+ " group by z.endereco)) qtdeEnderecos "
+		+ " from orion_exp_360 a, orion_exp_361 b, orion_exp_350 c "
+		+ " where a.situacao = 0 "
+		+ " and a.id_usuario = ? "
+		+ " and a.id_usuario = 2 "
+		+ " and b.id_lote = a.id "
+		+ " and c.id (+) = b.id_area "
+		+ " group by b.id, b.id_lote, b.id_area, c.descricao ";
 		
-		
-		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaSugestaoColetaPorLoteArea.class), idUsuario);				
 	}
 	
 }
