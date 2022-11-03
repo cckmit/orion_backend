@@ -21,8 +21,8 @@ public class CapacidadeCotasVendasCustom {
 	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAtualInicial, int periodoAtualFinal, String colecoes) {		
 		String query = "select tipo.tipo_cliente tipoCliente, pedi_085.descr_tipo_clien descricaoTipo,"
 		   + " sum(tipo.quantidade) qtdePecas, "
-	       + " sum(tipo.valor_bruto) valorBruto, round(sum(tipo.valor_liq_itens),2) valorLiqItens, round(sum(tipo.valor_liq_total),2) valorLiqTotal, "
-	       + " sum(tipo.tempo) tempo "
+	       + " round(sum(tipo.valor_bruto),2) valorBruto, round(sum(tipo.valor_liq_itens),2) valorLiqItens, round(sum(tipo.valor_liq_total),2) valorLiqTotal, "
+	       + " round(sum(tipo.tempo),2) tempo "
 		+ " from ( "
 		+ " select pedi.tipo_cliente, pedi.pedido_venda, sum(pedi.quantidade) quantidade, "
 		       + " sum(pedi.valor_bruto) valor_bruto, sum(pedi.valor_liquido) valor_liq_itens, "
@@ -31,8 +31,8 @@ public class CapacidadeCotasVendasCustom {
 		+ " from ( "
 		+ " select m.tipo_cliente, p.pedido_venda, LIVE_FN_CALC_PERC_DESCONTO(min(p.desconto1), min(p.desconto2), min(p.desconto3)) perc_desc_capa, "
 		       + " a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item, sum(a.qtde_pedida - a.qtde_faturada) quantidade, "
-		       + " sum((a.qtde_pedida - a.qtde_faturada) * a.valor_unitario) valor_bruto, "
-		       + " sum(((a.qtde_pedida - a.qtde_faturada) * a.valor_unitario) - (((a.qtde_pedida - a.qtde_faturada) * a.valor_unitario) * a.percentual_desc / 100)) valor_liquido, "
+		       + " sum((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) valor_bruto, "
+		       + " sum(((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) - (((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) * a.percentual_desc / 100)) valor_liquido, "
 		       + " nvl((select max(o.tempo) from orion_vi_itens_x_tempo_estagio o "
 		         + " where o.nivel = a.cd_it_pe_nivel99 "
 		           + " and o.grupo = a.cd_it_pe_grupo "
@@ -146,7 +146,7 @@ public class CapacidadeCotasVendasCustom {
 		 + " where b.ordem_producao = a.ordem_producao " 
 		 + " and b.ultimo_estagio = a.codigo_estagio "
 		 + " and b.cod_cancelamento = 0 "
-		 + " and b.periodo_producao between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal
+		 + " and b.periodo_producao between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
 		 + " group by a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item) processos "          
 		 + " where categorias.cod_refere (+) = ordenacao.referencia " 
 		 + " and depositos.grupo (+) = ordenacao.referencia "
