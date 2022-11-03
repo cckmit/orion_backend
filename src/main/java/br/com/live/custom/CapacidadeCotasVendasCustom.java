@@ -18,51 +18,62 @@ public class CapacidadeCotasVendasCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
-	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAtualInicial, int periodoAtualFinal, String colecoes) {		
+	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAtualInicial, int periodoAtualFinal, int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes) {
 		String query = "select tipo.tipo_cliente tipoCliente, pedi_085.descr_tipo_clien descricaoTipo,"
-		   + " sum(tipo.quantidade) qtdePecas, "
-	       + " round(sum(tipo.valor_bruto),2) valorBruto, round(sum(tipo.valor_liq_itens),2) valorLiqItens, round(sum(tipo.valor_liq_total),2) valorLiqTotal, "
-	       + " round(sum(tipo.tempo),2) tempo "
-		+ " from ( "
-		+ " select pedi.tipo_cliente, pedi.pedido_venda, sum(pedi.quantidade) quantidade, "
-		       + " sum(pedi.valor_bruto) valor_bruto, sum(pedi.valor_liquido) valor_liq_itens, "
-		      + " (sum(pedi.valor_liquido) - ((sum(pedi.valor_liquido) * pedi.perc_desc_capa) / 100)) valor_liq_total, "
-		      + " sum(pedi.quantidade * pedi.tempo) tempo "
-		+ " from ( "
-		+ " select m.tipo_cliente, p.pedido_venda, LIVE_FN_CALC_PERC_DESCONTO(min(p.desconto1), min(p.desconto2), min(p.desconto3)) perc_desc_capa, "
-		       + " a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item, sum(a.qtde_pedida - a.qtde_faturada) quantidade, "
-		       + " sum((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) valor_bruto, "
-		       + " sum(((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) - (((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) * a.percentual_desc / 100)) valor_liquido, "
-		       + " nvl((select max(o.tempo) from orion_vi_itens_x_tempo_estagio o "
-		         + " where o.nivel = a.cd_it_pe_nivel99 "
-		           + " and o.grupo = a.cd_it_pe_grupo "
-		           + " and o.estagio = 20),0) tempo "
-		 + " from pedi_100 p, pedi_010 m, pedi_110 a "
-		 + " where p.situacao_venda <> 10 "
-		 + " and p.cod_cancelamento = 0 "
-		 + " and p.tecido_peca = '1' "
-		 + " and m.cgc_9 = p.cli_ped_cgc_cli9 "
-		 + " and m.cgc_4 = p.cli_ped_cgc_cli4 "
-		 + " and m.cgc_2 = p.cli_ped_cgc_cli2 "
-		 + " and a.pedido_venda = p.pedido_venda "
-		 + " and a.cod_cancelamento = 0 "
-		 + " and (a.qtde_pedida - a.qtde_faturada) > 0 "
-		 + " and p.num_periodo_prod between " + periodoAtualInicial + " and " + periodoAtualFinal
-		+ " group by m.tipo_cliente, p.pedido_venda, a.cd_it_pe_nivel99, a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item "
-		+ " ) pedi "
-		+ " where exists (select 1 from orion_vi_itens_x_colecoes oc "
-		               + " where oc.nivel = pedi.nivel "
-		                 + " and oc.referencia = pedi.grupo "
-		                 + " and oc.tamanho = pedi.sub "
-		                 + " and oc.cor = pedi.item	"
-		                 + " and oc.colecao in (" + colecoes + ")) " 
-		+ " group by pedi.tipo_cliente, pedi.pedido_venda, pedi.perc_desc_capa "
-		+ " ) tipo, pedi_085 "
-		+ " where pedi_085.tipo_cliente = tipo.tipo_cliente "
-		+ " group by tipo.tipo_cliente, pedi_085.descr_tipo_clien "
-		+ " order by tipo.tipo_cliente ";
-		
+			   + " sum(tipo.quantidade) qtdePecas, "
+		       + " round(sum(tipo.valor_bruto),2) valorBruto, round(sum(tipo.valor_liq_itens),2) valorLiqItens, round(sum(tipo.valor_liq_total),2) valorLiqTotal, "
+		       + " round(sum(tipo.tempo),2) tempo "
+			+ " from ( "
+			+ " select pedi.tipo_cliente, pedi.pedido_venda, sum(pedi.quantidade) quantidade, "
+			       + " sum(pedi.valor_bruto) valor_bruto, sum(pedi.valor_liquido) valor_liq_itens, "
+			      + " (sum(pedi.valor_liquido) - ((sum(pedi.valor_liquido) * pedi.perc_desc_capa) / 100)) valor_liq_total, "
+			      + " sum(pedi.quantidade * pedi.tempo) tempo "
+			+ " from ( "
+			+ " select m.tipo_cliente, p.pedido_venda, LIVE_FN_CALC_PERC_DESCONTO(min(p.desconto1), min(p.desconto2), min(p.desconto3)) perc_desc_capa, "
+			       + " a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item, sum(a.qtde_pedida - a.qtde_faturada) quantidade, "
+			       + " sum((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) valor_bruto, "
+			       + " sum(((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) - (((a.qtde_pedida - a.qtde_faturada) * LIVE_FN_CONVERTE_MOEDA(p.codigo_moeda, a.valor_unitario)) * a.percentual_desc / 100)) valor_liquido, "
+			       + " nvl((select max(o.tempo) from orion_vi_itens_x_tempo_estagio o "
+			         + " where o.nivel = a.cd_it_pe_nivel99 "
+			           + " and o.grupo = a.cd_it_pe_grupo "
+			           + " and o.estagio = 20),0) tempo "
+			 + " from pedi_100 p, pedi_010 m, pedi_110 a "
+			 + " where p.situacao_venda <> 10 "
+			 + " and p.cod_cancelamento = 0 "
+			 + " and p.tecido_peca = '1' "
+			 + " and m.cgc_9 = p.cli_ped_cgc_cli9 "
+			 + " and m.cgc_4 = p.cli_ped_cgc_cli4 "
+			 + " and m.cgc_2 = p.cli_ped_cgc_cli2 "
+			 + " and a.pedido_venda = p.pedido_venda "
+			 + " and a.cod_cancelamento = 0 "
+			 + " and (a.qtde_pedida - a.qtde_faturada) > 0 ";
+			 
+		if ((periodoAnaliseInicial > 0) && (periodoAnaliseFinal > 0)) { 
+			 query+= " and p.num_periodo_prod not between " + periodoAtualInicial + " and " + periodoAtualFinal
+			       + " and p.num_periodo_prod between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal;
+		} else {
+			 query+= " and p.num_periodo_prod between " + periodoAtualInicial + " and " + periodoAtualFinal;
+		}
+			 
+		query+= " group by m.tipo_cliente, p.pedido_venda, a.cd_it_pe_nivel99, a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item "
+			+ " ) pedi "
+			+ " where exists (select 1 from orion_vi_itens_x_colecoes oc "
+			               + " where oc.nivel = pedi.nivel "
+			                 + " and oc.referencia = pedi.grupo "
+			                 + " and oc.tamanho = pedi.sub "
+			                 + " and oc.cor = pedi.item	"
+			                 + " and oc.colecao in (" + colecoes + ")) " 
+			+ " group by pedi.tipo_cliente, pedi.pedido_venda, pedi.perc_desc_capa "
+			+ " ) tipo, pedi_085 "
+			+ " where pedi_085.tipo_cliente = tipo.tipo_cliente "
+			+ " group by tipo.tipo_cliente, pedi_085.descr_tipo_clien "
+			+ " order by tipo.tipo_cliente ";
+			
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadeCotasVendasTipoCliente.class));
+	}
+	
+	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAtualInicial, int periodoAtualFinal, String colecoes) {				
+		return findDadosPorTipoCliente(periodoAtualInicial, periodoAtualFinal, 0, 0, colecoes);
 	}	
 	
 	public List<CapacidadeCotasVendas> findItensByFiltros(int periodoAtualInicial, int periodoAtualFinal, int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes, String depositos){		String query = " select ordenacao.referencia, ordenacao.tamanho, ordenacao.cor, ordenacao.descricao, nvl(categorias.des_categoria,' ') categoria, " 

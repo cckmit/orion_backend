@@ -27,36 +27,60 @@ public class CapacidadeCotasVendasService {
 	}
 
 	public BodyCapacidadeCotasVendas findItens(int periodoAtualInicial,int periodoAtualFinal, int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes, String depositos) {
-		System.out.println("Localizar cotas vendas por tipo cliente...");
-		List<CapacidadeCotasVendasTipoCliente> tiposClientes = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAtualInicial, periodoAtualFinal, colecoes);
+		System.out.println("Localizar cotas vendas por tipo cliente (periodo atual)...");
+		List<CapacidadeCotasVendasTipoCliente> tiposClientesAtual = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAtualInicial, periodoAtualFinal, colecoes);
+		System.out.println("Localizar cotas vendas por tipo cliente (periodo análise)...");
+		List<CapacidadeCotasVendasTipoCliente> tiposClientesAnalise = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAtualInicial, periodoAtualFinal, periodoAnaliseInicial, periodoAnaliseFinal, colecoes);		
 		System.out.println("Localizar cotas vendas por itens...");
 		List<CapacidadeCotasVendas> itens = capacidadeCotasVendasCustom.findItensByFiltros(periodoAtualInicial, periodoAtualFinal, periodoAnaliseInicial, periodoAnaliseFinal, colecoes, depositos);
 		
-		int tamArray = tiposClientes.size();
-		tamArray++;
+		int tamArrayAtual = tiposClientesAtual.size();
+		tamArrayAtual++;
+
+		int tamArrayAnalise = tiposClientesAnalise.size();
+		tamArrayAnalise++;
 		
-		Object[] arrayValores = new Object[tamArray];
-		Object[] arrayPecas = new Object[tamArray];
-		Object[] arrayMinutos = new Object[tamArray];
+		Object[] arrayValoresAtual = new Object[tamArrayAtual];
+		Object[] arrayPecasAtual = new Object[tamArrayAtual];
+		Object[] arrayMinutosAtual = new Object[tamArrayAtual];
+		Object[] arrayValoresAnalise = new Object[tamArrayAnalise];
+		Object[] arrayPecasAnalise = new Object[tamArrayAnalise];
+		Object[] arrayMinutosAnalise = new Object[tamArrayAnalise];
 		
 		int indice = 0;
 		Object[] cabVal = {"CANAL", "VALORES"};
-		arrayValores [indice] = cabVal;
 		Object[] cabPec = {"CANAL", "PECAS"};
-		arrayPecas [indice] = cabPec;
 		Object[] cabMin = {"CANAL", "MINUTOS"};
-		arrayMinutos [indice] = cabMin;
+		
+		arrayValoresAtual [indice] = cabVal;		
+		arrayPecasAtual [indice] = cabPec;		
+		arrayMinutosAtual [indice] = cabMin;
 
-		for (CapacidadeCotasVendasTipoCliente tipo : tiposClientes) {
+		for (CapacidadeCotasVendasTipoCliente tipo : tiposClientesAtual) {
 			indice++;
 			Object[] valores = {tipo.getDescricaoTipo(), tipo.getValorLiqTotal()};   
 			Object[] pecas = {tipo.getDescricaoTipo(), tipo.getQtdePecas()};
 			Object[] minutos = {tipo.getDescricaoTipo(), tipo.getTempo()};
-			arrayValores[indice] = valores;
-			arrayPecas[indice] = pecas;
-			arrayMinutos[indice] = minutos;
+			arrayValoresAtual[indice] = valores;
+			arrayPecasAtual[indice] = pecas;
+			arrayMinutosAtual[indice] = minutos;
 		}		
 		
-		return new BodyCapacidadeCotasVendas(itens, arrayValores, arrayPecas, arrayMinutos);		
+		indice = 0;
+		arrayValoresAnalise [indice] = cabVal;		
+		arrayPecasAnalise [indice] = cabPec;		
+		arrayMinutosAnalise [indice] = cabMin;
+
+		for (CapacidadeCotasVendasTipoCliente tipo : tiposClientesAnalise) {
+			indice++;
+			Object[] valores = {tipo.getDescricaoTipo(), tipo.getValorLiqTotal()};   
+			Object[] pecas = {tipo.getDescricaoTipo(), tipo.getQtdePecas()};
+			Object[] minutos = {tipo.getDescricaoTipo(), tipo.getTempo()};
+			arrayValoresAnalise[indice] = valores;
+			arrayPecasAnalise[indice] = pecas;
+			arrayMinutosAnalise[indice] = minutos;
+		}		
+		
+		return new BodyCapacidadeCotasVendas(itens, arrayValoresAtual, arrayPecasAtual, arrayMinutosAtual, arrayValoresAnalise, arrayPecasAnalise, arrayMinutosAnalise);		
 	}
 }

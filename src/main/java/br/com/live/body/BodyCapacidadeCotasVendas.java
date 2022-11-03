@@ -14,16 +14,21 @@ public class BodyCapacidadeCotasVendas {
 	public List<ConteudoChaveNumerica> depositos;
 	// Variaveis de retorno
 	public List<CapacidadeCotasVendas> listaItens;
-	public Object[] arrayValores;
-	public Object[] arrayPecas;
-	public Object[] arrayMinutos;
+	public Object[] arrayValoresAtual;
+	public Object[] arrayPecasAtual;
+	public Object[] arrayMinutosAtual;
+	public Object[] arrayValoresAnalise;
+	public Object[] arrayPecasAnalise;
+	public Object[] arrayMinutosAnalise;
 	
-	public BodyCapacidadeCotasVendas(List<CapacidadeCotasVendas> listaItens, Object[] arrayValores, Object[] arrayPecas,
-			Object[] arrayMinutos) {
+	public BodyCapacidadeCotasVendas(List<CapacidadeCotasVendas> listaItens, Object[] arrayValoresAtual, Object[] arrayPecasAtual, Object[] arrayMinutosAtual, Object[] arrayValoresAnalise, Object[] arrayPecasAnalise, Object[] arrayMinutosAnalise) {
 		super();
 		this.listaItens = listaItens;
-		this.arrayValores = arrayValores;
-		this.arrayPecas = arrayPecas;
-		this.arrayMinutos = arrayMinutos;
+		this.arrayValoresAtual = arrayValoresAtual;
+		this.arrayPecasAtual = arrayPecasAtual;
+		this.arrayMinutosAtual = arrayMinutosAtual;
+		this.arrayValoresAnalise = arrayValoresAnalise;
+		this.arrayPecasAnalise = arrayPecasAnalise;
+		this.arrayMinutosAnalise = arrayMinutosAnalise;
 	}
 }
