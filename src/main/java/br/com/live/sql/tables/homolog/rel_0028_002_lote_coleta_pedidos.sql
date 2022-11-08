@@ -41,7 +41,7 @@ comment on table orion_exp_362 is 'Tabela de lote de coleta de pedidos - Pedidos
 create table orion_exp_363 (
 id number(9),
 id_lote_area number(9) default 0,
-id_coletor varchar2(60) default '',
+id_coletor number(9) default 0,
 constraint orion_exp_363_pk primary key (id),
 constraint fk_orion_exp_363_exp_361 foreign key (id_lote_area) references orion_exp_361 (id)
 );

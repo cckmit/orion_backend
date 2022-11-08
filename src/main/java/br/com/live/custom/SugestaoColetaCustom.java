@@ -97,7 +97,9 @@ public class SugestaoColetaCustom {
 	
 	public List<ConsultaSugestaoColetaPorLoteArea> findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
 		
-		String query = " select b.id_lote idLote, b.id_area idArea, nvl(c.descricao, 'SEM AREA') descricaoArea, "
+		List<ConsultaSugestaoColetaPorLoteArea> listaSugestao = null;
+		
+		String query = "select b.id idLoteArea, b.id_lote idLote, b.id_area idArea, nvl(c.descricao, 'SEM AREA') descricaoArea, "
 		+ " (select count(*) "
 		+ " from (select z.pedido_venda "
 		+ " from orion_exp_362 z "
@@ -118,13 +120,82 @@ public class SugestaoColetaCustom {
 		+ " group by z.endereco)) qtdeEnderecos "
 		+ " from orion_exp_360 a, orion_exp_361 b, orion_exp_350 c "
 		+ " where a.situacao = 0 "
-		+ " and a.id_usuario = ? "
-		+ " and a.id_usuario = 2 "
+		+ " and a.id_usuario = ? "		
 		+ " and b.id_lote = a.id "
 		+ " and c.id (+) = b.id_area "
 		+ " group by b.id, b.id_lote, b.id_area, c.descricao ";
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaSugestaoColetaPorLoteArea.class), idUsuario);				
+		try {
+			listaSugestao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaSugestaoColetaPorLoteArea.class), idUsuario);	
+		} catch (Exception e) {
+			listaSugestao = new ArrayList<ConsultaSugestaoColetaPorLoteArea>();
+		}
+		
+		for (ConsultaSugestaoColetaPorLoteArea sugestao: listaSugestao) {
+			String idColetores = ConteudoChaveNumerica.parseValueToString(findColetoresByIdAreaLote(sugestao.getIdLoteArea()));
+			sugestao.setColetores(idColetores);
+		}
+		
+		return listaSugestao;				
 	}
 	
+	public List<ConteudoChaveNumerica> findAllColetores() {
+	
+		String query = "select hdoc_001.codigo value, replace(hdoc_030.observacao, 'COLETOR - ','')  label "   
+		+ " from hdoc_001, hdoc_030 "
+		+ " where hdoc_001.tipo   = 120 "
+		+ " and hdoc_030.empresa = 1 "
+		+ " and hdoc_030.usuario = hdoc_001.descricao " 
+		+ " and hdoc_030.observacao not like '%INATIVO%' "
+		+ " order by hdoc_001.codigo ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}	
+	
+	public List<ConteudoChaveNumerica> findColetoresByIdAreaLote(long idAreaLote) {
+		
+		List<ConteudoChaveNumerica> listIdColetores = null;
+		
+		String query = "select hdoc_001.codigo value, replace(hdoc_030.observacao, 'COLETOR - ','')  label "   
+		+ " from hdoc_001, hdoc_030 "
+		+ " where hdoc_001.tipo   = 120 "
+		+ " and hdoc_030.empresa = 1 "
+		+ " and hdoc_030.usuario = hdoc_001.descricao "
+		+ " and hdoc_030.observacao not like '%INATIVO%' "
+		+ " and hdoc_001.codigo in (select o.id_coletor from orion_exp_363 o "
+		+ " where o.id_lote_area = ?) "		
+		+ " order by hdoc_001.codigo ";
+
+		try {
+			listIdColetores = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), idAreaLote); 
+		} catch (Exception e) {
+			listIdColetores = new ArrayList<ConteudoChaveNumerica>();
+		}
+				
+		return listIdColetores;
+	}
+	
+	public List<ConteudoChaveNumerica> findColetoresDisponiveiByLote(long idLote) {
+		
+		List<ConteudoChaveNumerica> listIdColetores = null;
+		
+		String query = "select hdoc_001.codigo value, replace(hdoc_030.observacao, 'COLETOR - ','')  label "   
+		+ " from hdoc_001, hdoc_030 "
+		+ " where hdoc_001.tipo   = 120 "
+		+ " and hdoc_030.empresa = 1 "
+		+ " and hdoc_030.usuario = hdoc_001.descricao "
+		+ " and hdoc_030.observacao not like '%INATIVO%' "		
+		+ " and hdoc_001.codigo not in (select y.id_coletor from orion_exp_361 z, orion_exp_363 y "
+		+ " where z.id_lote = ? "
+		+ " and y.id_lote_area = z.id) "
+		+ " order by hdoc_001.codigo ";
+
+		try {
+			listIdColetores = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), idLote); 
+		} catch (Exception e) {
+			listIdColetores = new ArrayList<ConteudoChaveNumerica>();
+		}
+				
+		return listIdColetores;
+	}	
 }

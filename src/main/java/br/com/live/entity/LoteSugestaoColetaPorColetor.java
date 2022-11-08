@@ -16,13 +16,13 @@ public class LoteSugestaoColetaPorColetor {
 	private Long idLoteArea;
 
 	@Column(name="id_coletor")
-	private String idColetor;
+	private int idColetor;
 
 	public LoteSugestaoColetaPorColetor() {
 		super();
 	}
 
-	public LoteSugestaoColetaPorColetor(Long id, Long idLoteArea, String idColetor) {
+	public LoteSugestaoColetaPorColetor(Long id, Long idLoteArea, int idColetor) {
 		super();
 		this.id = id;
 		this.idLoteArea = idLoteArea;
@@ -45,11 +45,11 @@ public class LoteSugestaoColetaPorColetor {
 		this.idLoteArea = idLoteArea;
 	}
 
-	public String getIdColetor() {
+	public int getIdColetor() {
 		return idColetor;
 	}
 
-	public void setIdColetor(String idColetor) {
+	public void setIdColetor(int idColetor) {
 		this.idColetor = idColetor;
 	}
 }

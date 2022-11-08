@@ -13,6 +13,7 @@ import br.com.live.entity.AreaColeta;
 import br.com.live.entity.LoteSugestaoColeta;
 import br.com.live.entity.LoteSugestaoColetaPorArea;
 import br.com.live.entity.LoteSugestaoColetaPorAreaItem;
+import br.com.live.entity.LoteSugestaoColetaPorColetor;
 import br.com.live.model.ConsultaSugestaoColetaPorLoteArea;
 import br.com.live.model.ItemAColetarPorPedido;
 import br.com.live.model.SugestaoColeta;
@@ -127,7 +128,15 @@ public class SugestaoColetaService {
 	public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
 		boolean encontrou = false;
 		List<ConsultaSugestaoColetaPorLoteArea> dados = sugestaoColetaCustom.findSugestaoColetaParaLiberarByIdUsuario(idUsuario);
-		if (dados != null) encontrou = true;
+		if (dados.size() > 0) encontrou = true;
 		return new StatusPesquisa(encontrou, dados);
+	}
+	
+	public void saveColetoresByArea(long idLoteArea, List<Integer> listIdColetores) {	
+		loteSugestaoColetaPorColetorRepository.deleteByIdLoteArea(idLoteArea);
+		for (Integer idColetor : listIdColetores) {
+			LoteSugestaoColetaPorColetor coletor = new LoteSugestaoColetaPorColetor(loteSugestaoColetaPorColetorRepository.findNextId(), idLoteArea, idColetor);
+			loteSugestaoColetaPorColetorRepository.save(coletor);
+		}		
 	}
 }

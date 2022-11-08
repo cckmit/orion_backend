@@ -45,6 +45,8 @@ public class BodyExpedicao {
 	public String endInicioArea;
 	public String endFimArea;
 	
+	public long idLoteArea;
 	public long idUsuarioLote;
 	public List<SugestaoColeta> pedidosLoteSugColeta;
+	public List<ConteudoChaveNumerica> listColetoresArea;
 }

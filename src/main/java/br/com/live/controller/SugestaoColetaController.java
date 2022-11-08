@@ -16,6 +16,7 @@ import br.com.live.entity.AreaColeta;
 import br.com.live.model.SugestaoColeta;
 import br.com.live.repository.AreaColetaRepository;
 import br.com.live.service.SugestaoColetaService;
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.StatusPesquisa;
 
 @RestController
@@ -62,9 +63,29 @@ public class SugestaoColetaController {
     public void createLoteColeta(@RequestBody BodyExpedicao body) {
     	sugestaoColetaService.createLoteColeta(body.idUsuarioLote, body.pedidosLoteSugColeta);
     }
+
+    @RequestMapping(value = "/save-coletores-area", method = RequestMethod.POST)
+    public void saveColetoresByArea(@RequestBody BodyExpedicao body) {
+    	sugestaoColetaService.saveColetoresByArea(body.idLoteArea, ConteudoChaveNumerica.parseValueToListInt(body.listColetoresArea));
+    }
     
-    @RequestMapping(value = "/find-sugestao-para-liberar", method = RequestMethod.POST)
-    public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
+    @RequestMapping(value = "/find-sugestao-para-liberar/{idUsuario}", method = RequestMethod.GET)
+    public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(@PathVariable("idUsuario") long idUsuario) {
     	return sugestaoColetaService.findSugestaoColetaParaLiberarByIdUsuario(idUsuario);
+    }
+    
+    @RequestMapping(value = "/find-coletores", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllColetores() {
+    	return sugestaoColetaCustom.findAllColetores();
+    }
+    
+    @RequestMapping(value = "/find-coletores/{idAreaLote}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findColetoresByIdAreaLote(@PathVariable("idAreaLote") long idAreaLote) {
+    	return sugestaoColetaCustom.findColetoresByIdAreaLote(idAreaLote);
+    }
+    
+    @RequestMapping(value = "/find-coletores-disponiveis/{idLote}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findColetoresDisponiveiByLote(@PathVariable("idLote") long idLote) {
+    	return sugestaoColetaCustom.findColetoresDisponiveiByLote(idLote);
     }
 }
