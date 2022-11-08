@@ -264,7 +264,6 @@ public class EngenhariaCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
-	
 	public List<ConsultaOperacaoXMicromovimentos> findAllOperacaoXMicromv(int operacao){
 			
 		String query = "SELECT a.id, "
@@ -347,6 +346,21 @@ public class EngenhariaCustom {
 		interferencia = jdbcTemplate.queryForObject(query, Float.class, grupoMaquina, subGrupoMaquina);
 		
 		return interferencia;
+	}
+	
+	public float findTempoTotalOperacao(int codOp) {
+		float tempoTotal = 0;
+		String query = "SELECT NVL(SUM(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((e.interferencia / 100) * c.tempo) + c.tempo)), 0) tempo_total "
+				+ "  FROM orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_020 e "
+				+ "  WHERE a.cod_operacao = " + codOp
+				+ "  AND b.id (+) = a.id_micromovimento "
+				+ "  AND c.id (+) = a.id_tempo_maquina "
+				+ "  AND e.grupo_maquina (+) = c.grupo "
+				+ "  AND e.subgrupo_maquina (+) = c.subgrupo ";
+		
+		tempoTotal = jdbcTemplate.queryForObject(query, Float.class);
+		
+		return tempoTotal;
 	}
 	
 	public List<Produto> findProdutosEnviarFichaDigital() {

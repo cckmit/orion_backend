@@ -234,6 +234,11 @@ public class EngenhariaController {
     	return engenhariaCustom.findAllOperacaoXMicromv(operacao);
     } 
     
+    @RequestMapping(value = "/find-tempo-total/{codOp}", method = RequestMethod.GET)
+    public float findTotalById(@PathVariable("codOp") int codOp) {
+    	return engenhariaCustom.findTempoTotalOperacao(codOp);
+    }
+     
     @RequestMapping(value = "/find-tempo-maquinacm-by-id/{idTempoMaqCM}", method = RequestMethod.GET)
     public TempoMaquinaCM findByidTempoMaqCM(@PathVariable("idTempoMaqCM") long idTempoMaqCM) {
         return engenhariaService.findTempoMaquinaCMById(idTempoMaqCM);
