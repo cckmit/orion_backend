@@ -29,4 +29,6 @@ public class BodyMinutaTransporte {
 	public boolean consideraPedidosCD;
 	
 	public List<ConsultaMinutaTransporte> notasSelecionadas;
+	public String horaLibPaypalInicio;
+	public String horaLibPaypalFim;
 }
