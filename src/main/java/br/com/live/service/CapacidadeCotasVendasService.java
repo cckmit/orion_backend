@@ -26,47 +26,32 @@ public class CapacidadeCotasVendasService {
 		this.capacidadeCotasVendasCustom = capacidadeCotasVendasCustom;
 	}
 
-	public BodyCapacidadeCotasVendas findItens(int periodoAtualInicial,int periodoAtualFinal, int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes, String depositos) {
-		System.out.println("Localizar cotas vendas por tipo cliente (periodo atual)...");
-		List<CapacidadeCotasVendasTipoCliente> tiposClientesAtual = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAtualInicial, periodoAtualFinal, colecoes);
-		System.out.println("Localizar cotas vendas por tipo cliente (periodo análise)...");
-		List<CapacidadeCotasVendasTipoCliente> tiposClientesAnalise = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAtualInicial, periodoAtualFinal, periodoAnaliseInicial, periodoAnaliseFinal, colecoes);		
+	public BodyCapacidadeCotasVendas findItens(int periodoProgInicial,int periodoProgFinal, int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes, String depositos) {
+		System.out.println("Localizar cotas vendas por tipo cliente (análise)...");
+		List<CapacidadeCotasVendasTipoCliente> tiposClientesAnalise = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, colecoes);
+		System.out.println("Localizar cotas vendas por tipo cliente (programado)...");
+		List<CapacidadeCotasVendasTipoCliente> tiposClientesProg = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, periodoProgInicial, periodoProgFinal, colecoes);		
 		System.out.println("Localizar cotas vendas por itens...");
-		List<CapacidadeCotasVendas> itens = capacidadeCotasVendasCustom.findItensByFiltros(periodoAtualInicial, periodoAtualFinal, periodoAnaliseInicial, periodoAnaliseFinal, colecoes, depositos);
+		List<CapacidadeCotasVendas> itens = capacidadeCotasVendasCustom.findItensByFiltros(periodoAnaliseInicial, periodoAnaliseFinal, periodoProgInicial, periodoProgFinal, colecoes, depositos);
 		
-		int tamArrayAtual = tiposClientesAtual.size();
-		tamArrayAtual++;
-
 		int tamArrayAnalise = tiposClientesAnalise.size();
 		tamArrayAnalise++;
+
+		int tamArrayProg = tiposClientesProg.size();
+		tamArrayProg++;
 		
-		Object[] arrayValoresAtual = new Object[tamArrayAtual];
-		Object[] arrayPecasAtual = new Object[tamArrayAtual];
-		Object[] arrayMinutosAtual = new Object[tamArrayAtual];
 		Object[] arrayValoresAnalise = new Object[tamArrayAnalise];
 		Object[] arrayPecasAnalise = new Object[tamArrayAnalise];
 		Object[] arrayMinutosAnalise = new Object[tamArrayAnalise];
+		Object[] arrayValoresProg = new Object[tamArrayProg];
+		Object[] arrayPecasProg = new Object[tamArrayProg];
+		Object[] arrayMinutosProg = new Object[tamArrayProg];
 		
 		int indice = 0;
 		Object[] cabVal = {"CANAL", "VALORES"};
 		Object[] cabPec = {"CANAL", "PECAS"};
 		Object[] cabMin = {"CANAL", "MINUTOS"};
 		
-		arrayValoresAtual [indice] = cabVal;		
-		arrayPecasAtual [indice] = cabPec;		
-		arrayMinutosAtual [indice] = cabMin;
-
-		for (CapacidadeCotasVendasTipoCliente tipo : tiposClientesAtual) {
-			indice++;
-			Object[] valores = {tipo.getDescricaoTipo(), tipo.getValorLiqTotal()};   
-			Object[] pecas = {tipo.getDescricaoTipo(), tipo.getQtdePecas()};
-			Object[] minutos = {tipo.getDescricaoTipo(), tipo.getTempo()};
-			arrayValoresAtual[indice] = valores;
-			arrayPecasAtual[indice] = pecas;
-			arrayMinutosAtual[indice] = minutos;
-		}		
-		
-		indice = 0;
 		arrayValoresAnalise [indice] = cabVal;		
 		arrayPecasAnalise [indice] = cabPec;		
 		arrayMinutosAnalise [indice] = cabMin;
@@ -81,6 +66,21 @@ public class CapacidadeCotasVendasService {
 			arrayMinutosAnalise[indice] = minutos;
 		}		
 		
-		return new BodyCapacidadeCotasVendas(itens, arrayValoresAtual, arrayPecasAtual, arrayMinutosAtual, arrayValoresAnalise, arrayPecasAnalise, arrayMinutosAnalise);		
+		indice = 0;
+		arrayValoresProg [indice] = cabVal;		
+		arrayPecasProg [indice] = cabPec;		
+		arrayMinutosProg [indice] = cabMin;
+
+		for (CapacidadeCotasVendasTipoCliente tipo : tiposClientesProg) {
+			indice++;
+			Object[] valores = {tipo.getDescricaoTipo(), tipo.getValorLiqTotal()};   
+			Object[] pecas = {tipo.getDescricaoTipo(), tipo.getQtdePecas()};
+			Object[] minutos = {tipo.getDescricaoTipo(), tipo.getTempo()};
+			arrayValoresProg[indice] = valores;
+			arrayPecasProg[indice] = pecas;
+			arrayMinutosProg[indice] = minutos;
+		}		
+		
+		return new BodyCapacidadeCotasVendas(itens, arrayValoresAnalise, arrayPecasAnalise, arrayMinutosAnalise, arrayValoresProg, arrayPecasProg, arrayMinutosProg);		
 	}
 }

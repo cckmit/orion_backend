@@ -23,7 +23,7 @@ public class CapacidadeCotasVendasController {
 
 	@RequestMapping(value = "/consultar", method = RequestMethod.POST)
 	public BodyCapacidadeCotasVendas findItens(@RequestBody BodyCapacidadeCotasVendas body) {
-		return capacidadeCotasVendasService.findItens(body.periodoAtualInicio, body.periodoAtualFinal, body.periodoAnaliseInicio, body.periodoAnaliseFinal,
+		return capacidadeCotasVendasService.findItens(body.periodoProgInicio, body.periodoProgFinal, body.periodoAnaliseInicio, body.periodoAnaliseFinal,
 				ConteudoChaveNumerica.parseValueToString(body.colecoes),
 				ConteudoChaveNumerica.parseValueToString(body.depositos));
 	}

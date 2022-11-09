@@ -8,8 +8,9 @@ public class CapacidadeCotasVendas {
 	private String descricao;
 	private String categoria;
 	private float tempoUnitario;
-	private int qtdeDemandaAtual;
-	private float qtdeMinutosDemandaAtual;	
+	private int qtdeDemandaAnalise;
+	private int qtdeProcessoAnalise;
+	private float qtdeMinutosDemandaAnalise;	
 	private int qtdeEstoque; 
 	private int qtdeDemanda; 
 	private int qtdeProcesso;  
@@ -68,6 +69,12 @@ public class CapacidadeCotasVendas {
 	}
 	public void setQtdeProcesso(int qtdeProcesso) {
 		this.qtdeProcesso = qtdeProcesso;
+	}	
+	public int getQtdeProcessoAnalise() {
+		return qtdeProcessoAnalise;
+	}
+	public void setQtdeProcessoAnalise(int qtdeProcessoAnalise) {
+		this.qtdeProcessoAnalise = qtdeProcessoAnalise;
 	}
 	public int getQtdeSaldo() {
 		return qtdeSaldo;
@@ -75,16 +82,16 @@ public class CapacidadeCotasVendas {
 	public void setQtdeSaldo(int qtdeSaldo) {
 		this.qtdeSaldo = qtdeSaldo;
 	}
-	public int getQtdeDemandaAtual() {
-		return qtdeDemandaAtual;
+	public int getQtdeDemandaAnalise() {
+		return qtdeDemandaAnalise;
 	}
-	public void setQtdeDemandaAtual(int qtdeDemandaAtual) {
-		this.qtdeDemandaAtual = qtdeDemandaAtual;
+	public void setQtdeDemandaAnalise(int qtdeDemandaAnalise) {
+		this.qtdeDemandaAnalise = qtdeDemandaAnalise;
 	}
-	public float getQtdeMinutosDemandaAtual() {
-		return qtdeMinutosDemandaAtual;
+	public float getQtdeMinutosDemandaAnalise() {
+		return qtdeMinutosDemandaAnalise;
 	}
-	public void setQtdeMinutosDemandaAtual(float qtdeMinutosDemandaAtual) {
-		this.qtdeMinutosDemandaAtual = qtdeMinutosDemandaAtual;
+	public void setQtdeMinutosDemandaAnalise(float qtdeMinutosDemandaAnalise) {
+		this.qtdeMinutosDemandaAnalise = qtdeMinutosDemandaAnalise;
 	}
 }
