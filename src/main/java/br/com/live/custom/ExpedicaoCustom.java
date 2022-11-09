@@ -587,11 +587,12 @@ public class ExpedicaoCustom {
 	}
 	
 	public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
-												 String transportadora, int pedido, int nota) {
+												 String transportadora, int pedido, int nota, String horaLibPaypalIni, String horaLibPaupalFim) {
 		String query = "";
 
 		if (empresa == 1) {
-			query = retornaQueryPedidosEmpresa1(dataEmiInicio, dataEmiFim, dataLibPaypalIni, dataLibPaypalFim, empresa, localCaixa, transportadora, pedido, nota);
+			query = retornaQueryPedidosEmpresa1(dataEmiInicio, dataEmiFim, dataLibPaypalIni, dataLibPaypalFim, empresa, localCaixa,
+					transportadora, pedido, nota, horaLibPaypalIni, horaLibPaupalFim);
 		} else {
 			query = retornaQueryPedidosEmpresa100(dataEmiInicio, dataEmiFim, dataLibPaypalIni, dataLibPaypalFim, localCaixa, transportadora, pedido, nota);
 		}
@@ -666,7 +667,7 @@ public class ExpedicaoCustom {
 	}
 
 	public String retornaQueryPedidosEmpresa1(String dataEmiInicio, String dataEmiFim, String dataLibPaypalIni, String dataLibPaypalFim, int empresa, List<ConteudoChaveNumerica> localCaixa,
-										String transportadora, int pedido, int nota) {
+										String transportadora, int pedido, int nota, String horaLibPaypalIni, String horaLibPaypalFim) {
 		String filtroDataLib = "";
 
 		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
@@ -704,6 +705,9 @@ public class ExpedicaoCustom {
 				+ " 		  and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
 		query += filtroDataLib;
 
+		if (!horaLibPaypalIni.equals("") && !dataLibPaypalIni.equals("NaN-NaN-NaN")) {
+			query += " and to_char(f.data_liberacao, 'HH24:MI') between '" + horaLibPaypalIni + "' and '" + horaLibPaypalFim + "' ";
+		}
 		if (nota > 0) {
 			query += " and a.num_nota_fiscal = " + nota;
 		}

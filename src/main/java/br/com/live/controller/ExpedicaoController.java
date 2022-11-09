@@ -221,7 +221,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-dados-minuta-atacado", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> findDadosMinutaAtacado(@RequestBody BodyMinutaTransporte body) {
     	return expedicaoCustom.findDadosMinutaAtacado(body.dataEmiInicio, body.dataEmiFim, body.dataLibPaypalIni, body.dataLibPaypalFim,
-    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota);
+    			body.codEmpresa, body.localCaixa, body.transportadora, body.pedido, body.nota, body.horaLibPaypalInicio, body.horaLibPaypalFim);
     }
     
     @RequestMapping(value = "/find-dados-minuta-ecommerce", method = RequestMethod.POST)
