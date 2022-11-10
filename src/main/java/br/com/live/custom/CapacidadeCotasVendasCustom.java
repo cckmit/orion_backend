@@ -191,7 +191,7 @@ public class CapacidadeCotasVendasCustom {
 		 + " and processos_analise.sub (+) = ordenacao.tamanho "
 		 + " and processos_analise.item (+) = ordenacao.cor " 		 
 		 // TODO - TESTE
-		 + " and ordenacao.referencia = '42571'"
+		 //+ " and ordenacao.referencia = '42571'"
 		 ;        
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadeCotasVendas.class));
