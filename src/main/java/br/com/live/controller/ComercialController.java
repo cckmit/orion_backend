@@ -12,9 +12,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyComercial;
+import br.com.live.body.BodyEngenharia;
 import br.com.live.entity.BloqueioTitulosForn;
+import br.com.live.entity.MetasCategoria;
+import br.com.live.entity.Micromovimentos;
+import br.com.live.model.ConsultaMetasCategoria;
 import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.service.ComercialService;
+import br.com.live.service.EstacaoService;
 
 @RestController
 @CrossOrigin
@@ -22,10 +27,12 @@ import br.com.live.service.ComercialService;
 public class ComercialController {
 	
 	private ComercialService comercialService;
+	private EstacaoService estacaoService;
 	
 	@Autowired
-	public ComercialController(ComercialService comercialService) {
+	public ComercialController(ComercialService comercialService, EstacaoService estacaoService) {
 		this.comercialService = comercialService;
+		this.estacaoService = estacaoService;
 	}
 	
 	@RequestMapping(value = "/save-envio-produtos-e-commerce", method = RequestMethod.POST)
@@ -53,4 +60,12 @@ public class ComercialController {
     public BloqueioTitulosForn findAllFornBloq(@PathVariable("idForn") String idForn) {
 		return comercialService.findForncedorBloq(idForn);
 	}
+	//
+    // Importar Metas Categorias de Coleções
+    //
+    @RequestMapping(value = "/importar-metas-estacoes", method = RequestMethod.POST)
+    public List<ConsultaMetasCategoria> importarMetasCategoria(@RequestBody BodyComercial body) {                  
+    	comercialService.importarMetasCategoria(body.codEstacao, body.tipoMeta, body.tabImportar);
+    	return estacaoService.findMetasCategoriaGrid(body.codEstacao, body.tipoMeta);
+    }
 }
