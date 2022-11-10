@@ -32,12 +32,11 @@ public class DemandaProdutoCustom {
 		List<DemandaProdutoPlano> listDemandaProdutoPlano = new ArrayList<DemandaProdutoPlano>();
 
 		for (DemandaProduto produto : listDemandaProduto) {
-
 			DemandaProdutoPlano produtoPlano = new DemandaProdutoPlano(produto.id, produto.nivel, produto.grupo,
 					produto.sub, produto.item, produto.quantidade, produto.periodo,
 					parametrosFormatados.getPlanoPeriodoDemanda(produto.periodo), produto.colecao, produto.linha,
 					produto.artigo, produto.artigoCotas, produto.origem, produto.permanente, produto.natureza,
-					produto.nrInterno, produto.pedido, produto.embarque, produto.situacaoVenda);
+					produto.nrInterno, produto.pedido, produto.embarque, produto.situacaoVenda, produto.deposito);
 
 			listDemandaProdutoPlano.add(produtoPlano);
 		}
@@ -49,7 +48,7 @@ public class DemandaProdutoCustom {
 
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
 
-		String query = "select new br.com.live.entity.DemandaProduto (d.id, d.nivel, d.grupo, d.sub, d.item, d.quantidade, d.periodo, d.colecao, d.linha, d.artigo, d.artigoCotas, d.origem, d.permanente, d.natureza, d.nrInterno, d.pedido, d.embarque, d.situacaoVenda) from DemandaProduto d ";
+		String query = "select new br.com.live.entity.DemandaProduto (d.id, d.nivel, d.grupo, d.sub, d.item, d.quantidade, d.periodo, d.colecao, d.linha, d.artigo, d.artigoCotas, d.origem, d.permanente, d.natureza, d.nrInterno, d.pedido, d.embarque, d.situacaoVenda, d.deposito) from DemandaProduto d ";
 		String condicao = "where ";
 
 		if (parametrosFormatados.getPeriodoDemandaInicio() > 0) {
@@ -128,6 +127,11 @@ public class DemandaProdutoCustom {
 			condicao = " and ";
 		}		
 		
+		if (!parametrosFormatados.getDepositos().equalsIgnoreCase("")) {
+			query += condicao + " d.deposito in " + parametrosFormatados.getDepositos();
+			condicao = " and ";			
+		}
+		
 		if (!parametrosFormatados.consideraPedBloqueados()) {
 			query += condicao + " d.situacaoVenda = 0 " ;
 			condicao = " and ";			
@@ -139,7 +143,7 @@ public class DemandaProdutoCustom {
 		}
 		
 		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
-		query += condicao + " exists (select 1 from PrevisaoVendasItem v where v.idPrevisaoVendas in " + parametrosFormatados.getPrevisoes()
+			query += condicao + " exists (select 1 from PrevisaoVendasItem v where v.idPrevisaoVendas in " + parametrosFormatados.getPrevisoes()
               + " and v.grupo = d.grupo "
 		      + " and v.item = d.item)";
 		}
@@ -151,35 +155,6 @@ public class DemandaProdutoCustom {
 		return parseDemandaProdutoPlano(q.getResultList(), parametrosFormatados);
 	}
 
-	public int findQtdeDemandaByProdutoAndPeriodos(String nivel, String grupo, String sub, String item, int periodoInicial, int periodoFinal, int periodoInicialIgnorar, int periodoFinalIgnorar) {
-		
-		String query = " select nvl(sum(demanda.quantidade),0) quantidade "
-		+ " from ( "
-		+ " select p.num_periodo_prod periodo, a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item, (a.qtde_pedida - a.qtde_faturada) quantidade "
-        + "	from pedi_100 p, pedi_110 a "
-		+ " where p.situacao_venda <> 10 "
-		+ " and p.cod_cancelamento = 0 "
-		+ " and p.tecido_peca = '1' "
-		+ " and a.pedido_venda = p.pedido_venda "
-		+ " and a.cod_cancelamento = 0 "
-		+ " and (a.qtde_pedida - a.qtde_faturada) > 0 "
-		+ " UNION "
-		+ " select c.periodo_producao periodo, a.item_nivel99 nivel, a.item_grupo grupo, a.item_sub sub, a.item_item item, a.qtde_pedida quantidade "
-		+ " from inte_100 i, inte_110 a, pcpc_010 c "
-		+ " where i.tecido_peca = '1' "
-		+ " and i.tipo_registro = 1 "
-		+ " and a.pedido_venda = i.pedido_venda "
-		+ " ) demanda "
-		+ " where demanda.nivel = '" + nivel + "'" 
-		+ " and demanda.grupo = '" + grupo + "'"
-		+ " and demanda.sub = '" + sub + "'" 
-		+ " and demanda.item = '" + item + "'"
-		+ " and demanda.periodo between " + periodoInicial + " and " + periodoFinal
-		+ " and not demanda.periodo between " + periodoInicialIgnorar + " and " + periodoFinalIgnorar;
-
-		return jdbcTemplate.queryForObject(query, Integer.class);
-	}
-	
 	public List<PedidoVenda> findPedidosByPeriodo(int periodoInicio, int periodoFim) {
 			
 		String query = " select p.pedido_venda pedidoVenda, p.num_periodo_prod periodo from pedi_100 p "

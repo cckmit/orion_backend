@@ -40,11 +40,13 @@ public class DemandaProduto {
 	@Column(name = "situacao_venda")
 	public int situacaoVenda;
 	
+	public int deposito;
+	
 	public DemandaProduto() {};
 	
 	public DemandaProduto(int id, String nivel, String grupo, String sub, String item, int quantidade, int periodo,
 			int colecao, int linha, int artigo, int artigoCotas, int origem, int permanente, int natureza,
-			int nrInterno, int pedido, String embarque, int situacaoVenda) {
+			int nrInterno, int pedido, String embarque, int situacaoVenda, int deposito) {
 		this.id = id;
 		this.nivel = nivel;
 		this.grupo = grupo;
@@ -63,6 +65,7 @@ public class DemandaProduto {
 		this.pedido = pedido;
 		this.embarque = embarque;
 		this.situacaoVenda = situacaoVenda;
+		this.deposito = deposito;
 	}
 
 }
