@@ -22,4 +22,5 @@ public interface MetasCategoriaRepository extends JpaRepository<MetasCategoria, 
 	void deleteById(String idMetas);
 	
 	void deleteByCodEstacao(long codEstacao);
+	void deleteByCodEstacaoAndTipoMeta(long codEstacao, int tipoMeta);
 }
