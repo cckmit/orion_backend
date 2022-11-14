@@ -1,4 +1,4 @@
-FROM 3.8.6-eclipse-temurin-11-alpine
+FROM maven:3.8.5-eclipse-temurin-11-focal
 WORKDIR /build
 COPY . /build
 RUN mvn clean install
