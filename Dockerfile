@@ -1,4 +1,4 @@
-FROM maven:3.6-jdk-8-alpine
+FROM 3.8.6-eclipse-temurin-11-alpine
 WORKDIR /build
 COPY . /build
 RUN mvn clean install
