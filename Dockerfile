@@ -1,5 +1,4 @@
-from openjdk:16-alpine
-WORKDIR /Orion/Projects/orion_backend/
+from maven:3.6-jdk-16-alpine
 RUN mvn clean install
 COPY ./target/orionBackendJar.jar /app/orionBackendJar.jar
 WORKDIR /app
