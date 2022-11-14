@@ -17,7 +17,7 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (6, 'Cadastro Help', 'Administrativo', '/cadastro-help');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (7, 'Cotas de Vendas', 'Comercial', '/cotas-vendas');
+values (7, 'Análise de Ocupação', 'Comercial', '/cotas-vendas');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (8, 'Cadastro de Programas', 'BI', '/bi-programas');
