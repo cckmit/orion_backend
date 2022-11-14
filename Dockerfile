@@ -1,4 +1,5 @@
 FROM maven:3.6-jdk-8-alpine
+WORKDIR .
 RUN mvn clean install
 COPY ./target/orionBackendJar.jar /app/orionBackendJar.jar
 WORKDIR /app
