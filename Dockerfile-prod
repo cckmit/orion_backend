@@ -4,5 +4,5 @@ COPY . /build
 RUN mvn clean install
 COPY /target/orionBackendJar.jar /app/orionBackendJar.jar
 WORKDIR /app
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=homol", "orionBackendJar.jar"]
-EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "orionBackendJar.jar"]
+EXPOSE 8081

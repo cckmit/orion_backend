@@ -122,6 +122,13 @@
 				<spring.profile>prod</spring.profile>
 			</properties>
 		</profile>
+		
+		<profile>
+			<id>homol</id>
+			<properties>
+				<spring.profile>homol</spring.profile>
+			</properties>
+		</profile>
 	</profiles>
 
 	<build>
