@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-    backend-homolog:
+    backend-producao:
       container_name: back-end-producao
       build:
         context: .
