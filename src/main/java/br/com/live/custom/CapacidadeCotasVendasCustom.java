@@ -56,14 +56,18 @@ public class CapacidadeCotasVendasCustom {
 		}
 			 
 		query+= " group by m.tipo_cliente, p.pedido_venda, a.cd_it_pe_nivel99, a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item "
-			+ " ) pedi "
-			+ " where exists (select 1 from orion_vi_itens_x_colecoes oc "
-			               + " where oc.nivel = pedi.nivel "
-			                 + " and oc.referencia = pedi.grupo "
-			                 + " and oc.tamanho = pedi.sub "
-			                 + " and oc.cor = pedi.item	"
-			                 + " and oc.colecao in (" + colecoes + ")) " 
-			+ " group by pedi.tipo_cliente, pedi.pedido_venda, pedi.perc_desc_capa "
+		+ " ) pedi ";
+
+		if (!colecoes.equalsIgnoreCase("")) {			
+			query+=	" where exists (select 1 from orion_vi_itens_x_colecoes oc "
+			        + " where oc.nivel = pedi.nivel "
+			        + " and oc.referencia = pedi.grupo "
+			        + " and oc.tamanho = pedi.sub "
+			        + " and oc.cor = pedi.item	"
+			        + " and oc.colecao in (" + colecoes + ")) ";
+		}
+		
+		query+=	" group by pedi.tipo_cliente, pedi.pedido_venda, pedi.perc_desc_capa "
 			+ " ) tipo, pedi_085 "
 			+ " where pedi_085.tipo_cliente = tipo.tipo_cliente "
 			+ " group by tipo.tipo_cliente, pedi_085.descr_tipo_clien "
@@ -94,10 +98,18 @@ public class CapacidadeCotasVendasCustom {
 		         + " and o.grupo = ordenacao.referencia "
 		         + " and o.estagio = 20),0)) qtdeMinutosDemandaAnalise " 
 		 + " from ( "
-		 + " select capac_cotas.referencia, capac_cotas.tamanho, capac_cotas.cor, capac_cotas.descricao " 
-		 + " from ( select o.nivel, o.referencia, o.tamanho, o.cor, o.descricao from orion_vi_itens_x_colecoes o "
-		         + " where o.colecao in (" + colecoes + ") "
-		 + " ) capac_cotas "  
+		 + " select capac_cotas.referencia, capac_cotas.tamanho, capac_cotas.cor, capac_cotas.descricao from (";
+		 
+		 if (!colecoes.equalsIgnoreCase("")) {
+			 query +=" select o.nivel, o.referencia, o.tamanho, o.cor, o.descricao from orion_vi_itens_x_colecoes o "
+		           + " where o.colecao in (" + colecoes + ") ";
+		 } else {			 			 			
+			 query += " select o.nivel, o.grupo referencia, o.sub tamanho, o.item cor, o.descricao from orion_vi_itens_proc_dem_aberto o "
+			 + " where (o.periodo between " + periodoProgInicial +" and " + periodoProgFinal + " or o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseInicial + ") "
+			    + " or (o.periodo between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500) + " or o.periodo between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500) + ") ";
+		 }
+		         
+		 query += " ) capac_cotas "  
 		 + " group by capac_cotas.referencia, capac_cotas.tamanho, capac_cotas.cor, capac_cotas.descricao "         
 		 + " order by capac_cotas.referencia, capac_cotas.tamanho, capac_cotas.cor, capac_cotas.descricao " 
 		 + " ) ordenacao, "  
@@ -124,52 +136,34 @@ public class CapacidadeCotasVendasCustom {
 		 + " /* DEMANDAS ANALISE */ "
 		 + " (select vendas.nivel, vendas.grupo, vendas.sub, vendas.item, nvl(sum(vendas.quantidade),0) quantidade " 
 		 + " from "
-		 + " (select a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item, sum(a.qtde_pedida - a.qtde_faturada) quantidade "  
-		 + " from pedi_100 p, pedi_110 a "  
-		 + " where p.situacao_venda <> 10 " 
-		 + " and p.cod_cancelamento = 0 " 
-		 + " and p.tecido_peca = '1' " 
-		 + " and a.pedido_venda = p.pedido_venda "  
-		 + " and a.cod_cancelamento = 0 " 
-		 + " and (a.qtde_pedida - a.qtde_faturada) > 0 "     
-		 + " and p.num_periodo_prod between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal    
-		 + " group by a.cd_it_pe_nivel99, a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item "    
+		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_pedido) quantidade"
+		 + " from orion_vi_itens_proc_dem_aberto o "
+		 + " where o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal 
+		 + " group by o.nivel, o.grupo, o.sub, o.item "		 		 		 
 		 + " ) vendas " 
 		 + " group by vendas.nivel, vendas.grupo, vendas.sub, vendas.item " 
 		 + " ) demandas_atual, "           
 		 + " /* DEMANDAS PROGRAMADO */ " 
 		 + " (select vendas.nivel, vendas.grupo, vendas.sub, vendas.item, nvl(sum(vendas.quantidade),0) quantidade " 
 		 + " from "
-		 + " (select a.cd_it_pe_nivel99 nivel, a.cd_it_pe_grupo grupo, a.cd_it_pe_subgrupo sub, a.cd_it_pe_item item, sum(a.qtde_pedida - a.qtde_faturada) quantidade "  
-		 + " from pedi_100 p, pedi_110 a "   
-		 + " where p.situacao_venda <> 10 " 
-		 + " and p.cod_cancelamento = 0 " 
-		 + " and p.tecido_peca = '1' "  
-		 + " and a.pedido_venda = p.pedido_venda "  
-		 + " and a.cod_cancelamento = 0 " 
-		 + " and (a.qtde_pedida - a.qtde_faturada) > 0 "     
-		 + " and p.num_periodo_prod between " + periodoProgInicial + " and " + periodoProgFinal
-		 + " and not p.num_periodo_prod between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal
-		 + " group by a.cd_it_pe_nivel99, a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item "
+		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_pedido) quantidade"
+		 + " from orion_vi_itens_proc_dem_aberto o "
+		 + " where o.periodo between " + periodoProgInicial + " and " + periodoProgFinal
+		 + " and not o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal
+		 + " group by o.nivel, o.grupo, o.sub, o.item "		 		 		 
 		 + " ) vendas "
 		 + " group by vendas.nivel, vendas.grupo, vendas.sub, vendas.item " 
 		 + " ) demandas_analise, "		 		 
-		 + " (select a.proconf_nivel99 nivel, a.proconf_grupo grupo, a.proconf_subgrupo sub, a.proconf_item item, nvl(sum(a.qtde_a_produzir_pacote),0) quantidade "   
-		 + " from pcpc_040 a, pcpc_020 b "
-		 + " where b.ordem_producao = a.ordem_producao " 
-		 + " and b.ultimo_estagio = a.codigo_estagio "
-		 + " and b.cod_cancelamento = 0 "
-    	 + " and b.periodo_producao between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500)
-    	 + " and b.periodo_producao not between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
-		 + " group by a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item) processos_prog, "
-		 + " (select a.proconf_nivel99 nivel, a.proconf_grupo grupo, a.proconf_subgrupo sub, a.proconf_item item, nvl(sum(a.qtde_a_produzir_pacote),0) quantidade "   
-		 + " from pcpc_040 a, pcpc_020 b "
-		 + " where b.ordem_producao = a.ordem_producao " 
-		 + " and b.ultimo_estagio = a.codigo_estagio "
-		 + " and b.cod_cancelamento = 0 "
-    	 + " and b.periodo_producao between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
-		 + " and b.periodo_producao not between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500)
-		 + " group by a.proconf_nivel99, a.proconf_grupo, a.proconf_subgrupo, a.proconf_item) processos_analise "    		 		 
+		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_producao) quantidade "
+		 + " from orion_vi_itens_proc_dem_aberto o "
+		 + " where o.periodo between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500)
+		 + " and o.periodo not between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
+		 + " group by o.nivel, o.grupo, o.sub, o.item) processos_prog, "
+		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_producao) quantidade "
+		 + " from orion_vi_itens_proc_dem_aberto o "
+		 + " where o.periodo between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
+		 + " and o.periodo not between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500)
+		 + " group by o.nivel, o.grupo, o.sub, o.item) processos_analise "
 		 + " where categorias.cod_refere (+) = ordenacao.referencia " 
 		 + " and depositos.grupo (+) = ordenacao.referencia "
 		 + " and depositos.tamanho (+) = ordenacao.tamanho "
@@ -190,8 +184,8 @@ public class CapacidadeCotasVendasCustom {
 		 + " and processos_analise.grupo (+) = ordenacao.referencia " 
 		 + " and processos_analise.sub (+) = ordenacao.tamanho "
 		 + " and processos_analise.item (+) = ordenacao.cor " 		 
-		 // TODO - TESTE
-		 //+ " and ordenacao.referencia = '42571'"
+		 //+ " and ordenacao.referencia = 'P8117'"
+		 //+ " and ordenacao.cor = '0VD183'"
 		 ;        
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadeCotasVendas.class));
