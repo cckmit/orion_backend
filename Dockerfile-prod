@@ -7,4 +7,3 @@ WORKDIR /app
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "orionBackendJar.jar"]
 EXPOSE 8081
 WORKDIR /build
-RUN mkdir /Orion/Arquivos/
