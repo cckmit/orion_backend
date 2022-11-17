@@ -838,9 +838,11 @@ public class OrdemProducaoCustom {
 		sequencia = jdbcTemplate.queryForObject(query, Integer.class);
 				
 		String queryInsert = " insert into pcpc_045 (pcpc040_ordconf, pcpc040_perconf, pcpc040_estconf, sequencia, data_producao, hora_producao, qtde_produzida, turno_producao, codigo_usuario, usuario_systextil, ordem_producao, executa_trigger) " 
-		+ "	values (" + pacote + ", " + periodo + ", " + estagio + ", " + sequencia + ", " + " to_char(sysdate,'dd/mm/yyyy'), to_date('16/11/1989 ' || to_CHAR(sysdate,'hh24:mi'),'dd/mm/yyyy hh24:mi'), "
+		+ "	values (" + pacote + ", " + periodo + ", " + estagio + ", " + sequencia + ", " + " trunc(sysdate), to_date('16/11/1989 ' || to_CHAR(sysdate,'hh24:mi'),'dd/mm/yyyy hh24:mi'), "
 		+ quantidade + ", 1, " + codUsuario + ", '" + usuarioSystextil + "', " + ordemProducao + ", 3) ";  				
-						
+		
+		System.out.println("INSERT NA PCPC_045: " + queryInsert);
+		
 		jdbcTemplate.update(queryInsert);
 	}	
 	
@@ -848,7 +850,7 @@ public class OrdemProducaoCustom {
 
 		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p "
 		+ " where p.pcpc040_estconf = " + codEstagio  		
-		+ " and to_char(p.data_producao) = to_char(sysdate) "		
+		+ " and p.data_producao = trunc(sysdate) "		
 		+ " and exists (select 1 from pcpc_020 m "
 		+ " where m.ordem_producao = p.ordem_producao "
 		+ " and m.referencia_peca not like ('TM%')) "
@@ -862,7 +864,7 @@ public class OrdemProducaoCustom {
 	
 		String query = " select nvl(max(a.live_seq_dt_liberacao),0) last_seq "
 		+ " from pcpc_020 a "
-		+ " where to_char(a.live_dt_liberacao) = to_char(sysdate) "
+		+ " where trunc(a.live_dt_liberacao) = trunc(sysdate) "
 		+ " and not exists (select 1 from pcpc_040 b " 
 		+ " where b.ordem_producao = a.ordem_producao "
 		+ " and b.codigo_estagio = 2 " // ANALISE DE TECIDO
