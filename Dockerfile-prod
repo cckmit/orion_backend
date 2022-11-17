@@ -6,6 +6,7 @@ COPY /src/main/java/br/com/live/reports /app/
 COPY ./fonts ./
 RUN mkdir -p /usr/share/fonts/truetype/
 RUN install -m644 arial-black.ttf /usr/share/fonts/truetype/
+RUN install -m644 arial.ttf /usr/share/fonts/truetype/
 WORKDIR /app
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "orionBackendJar.jar"]
 EXPOSE 8081
