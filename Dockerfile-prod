@@ -3,6 +3,7 @@ WORKDIR /build
 COPY . /build
 COPY /target/orionBackendJar.jar /app/orionBackendJar.jar
 COPY /src/main/java/br/com/live/reports /app/
+RUN sudo apt install ttf-mscorefonts-installer
 WORKDIR /app
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "orionBackendJar.jar"]
 EXPOSE 8081
