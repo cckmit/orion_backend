@@ -2,6 +2,7 @@ FROM maven:3.8.5-eclipse-temurin-11-focal
 WORKDIR /build
 COPY . /build
 COPY /target/orionBackendJar.jar /app/orionBackendJar.jar
+COPY /src/main/java/br/com/live/reports /app/
 WORKDIR /app
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "orionBackendJar.jar"]
 EXPOSE 8081
