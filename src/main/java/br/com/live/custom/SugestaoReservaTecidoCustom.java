@@ -27,8 +27,8 @@ public class SugestaoReservaTecidoCustom {
 		+ " where p.pcpc0302_orprocor in (select a.ordem_producao from pcpc_020 a, pcpc_040 b "
 		+ " where a.cod_cancelamento = 0 "
 		+ " and b.ordem_producao = a.ordem_producao "
-        + " and b.codigo_estagio = 1 " // PROGRAMACAO
-        + " and b.qtde_a_produzir_pacote > 0) "
+		+ " and b.codigo_estagio = 2 " // ANALISE DE TECIDO
+        + " and b.qtde_disponivel_baixa > 0) "
 		+ " and m.nivel_estrutura = p.tecordco_nivel99 "
 		+ " and m.grupo_estrutura = p.tecordco_grupo "
 		+ " and m.subgru_estrutura = p.tecordco_subgrupo "
@@ -54,8 +54,8 @@ public class SugestaoReservaTecidoCustom {
 		+ " where a.cod_cancelamento = 0 "
     	+ " and exists (select 1 from pcpc_040 b "
         + " where b.ordem_producao = a.ordem_producao " 
-        + " and b.codigo_estagio = 1 "
-        + " and b.qtde_a_produzir_pacote > 0) "
+        + " and b.codigo_estagio = 2 " // ANALISE DE TECIDO
+        + " and b.qtde_disponivel_baixa > 0) "
 		+ " and c.nivel_estrutura = '1' "
 		+ " and c.referencia = a.referencia_peca "
 		+ " group by a.referencia_peca, c.descr_referencia " 
@@ -83,9 +83,9 @@ public class SugestaoReservaTecidoCustom {
 		+ " and t.item_estrutura = '" + item + "' "    
 		+ " and not exists (select 1 from pcpc_040 p "  
 		+ " where p.ordem_producao = t.nr_pedido_ordem "  
-		+ " and p.codigo_estagio = 1 " // Estagio 1 - Programação 
-		+ " and p.qtde_a_produzir_pacote > 0) "
-		+ " and not exists (select 1 from orion_200 o "
+		+ " and p.codigo_estagio in (1, 2) " // PROGRAMACAO E ANALISE DE TECIDO 
+		+ " and p.qtde_disponivel_baixa > 0) "
+		+ " and not exists (select 1 from orion_cfc_200 o "
 		+ " where o.ordem_producao = t.nr_pedido_ordem "		
 		+ " and o.nivel_tecido = t.nivel_estrutura "
 		+ " and o.grupo_tecido = t.grupo_estrutura "
@@ -93,15 +93,15 @@ public class SugestaoReservaTecidoCustom {
 	    + " and o.item_tecido = t.item_estrutura) "
 		+ " union all "
 		+ " select nvl(sum(t.quantidade),0) quantidade "
-		+ " from orion_200 t "
+		+ " from orion_cfc_200 t "
 		+ " where t.nivel_tecido = '" + nivel + "' "
 		+ " and t.grupo_tecido = '" + grupo + "' "
 		+ " and t.sub_tecido = '" + sub + "' "
 		+ " and t.item_tecido = '" + item + "' "
 		+ " and not exists (select 1 from pcpc_040 p "  
 		+ " where p.ordem_producao = t.ordem_producao "  
-		+ " and p.codigo_estagio = 1 " // Estagio 1 - Programação 
-		+ " and p.qtde_a_produzir_pacote > 0) "
+		+ " and p.codigo_estagio in (1, 2) " // ANALISE DE TECIDO 
+		+ " and p.qtde_disponivel_baixa > 0) "
 		+ " and exists (select 1 from tmrp_041 o "
 		+ " where o.area_producao = 1 "
 		+ " and o.nr_pedido_ordem = t.ordem_producao "
@@ -126,18 +126,18 @@ public class SugestaoReservaTecidoCustom {
 	
 	public void gravarTecidosReservados(int idOrdem, String nivelTecido, String grupoTecido, String subTecido, String itemTecido, double quantidade) {		
 		String id = idOrdem + "-" + nivelTecido+ "." + grupoTecido+ "." + subTecido+ "." + itemTecido;				
-		String query = " insert into orion_200 (id, ordem_producao, nivel_tecido, grupo_tecido, sub_tecido, item_tecido, quantidade) values (?,?,?,?,?,?,?) "; 
+		String query = " insert into orion_cfc_200 (id, ordem_producao, nivel_tecido, grupo_tecido, sub_tecido, item_tecido, quantidade) values (?,?,?,?,?,?,?) "; 
 		
 		try {
 			jdbcTemplate.update(query, id, idOrdem, nivelTecido, grupoTecido, subTecido, itemTecido, quantidade);
 		} catch (Exception e) {
-			query = " update orion_200 set quantidade ? where id = ? ";
+			query = " update orion_cfc_200 set quantidade ? where id = ? ";
 			jdbcTemplate.update(query, quantidade, id);
 		}
 	}
 	
 	public void excluirTecidosReservadosPorOrdem(int idOrdem) {
-		String query = " delete from orion_200 where ordem_producao = ? ";
+		String query = " delete from orion_cfc_200 where ordem_producao = ? ";
 		jdbcTemplate.update(query, idOrdem);		
 	}
 	

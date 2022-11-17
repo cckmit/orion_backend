@@ -49,7 +49,7 @@ public class SugestaoReservaTecidoService {
 		for (OrdemProducao ordem : listaOrdensLiberar) {
 			System.out.println("ORDEM: " + ordem.ordemProducao);
 			sugestaoReservaTecidoCustom.excluirTecidosReservadosPorOrdem(ordem.ordemProducao);
-			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 1, idUsuarioOrion); // Estagio 1 - Programação
+			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 2, idUsuarioOrion); // Estágio = 2 - ANALISE DE TECIDO
 			ordemProducaoService.gravarSeqPrioridadeDia(ordem.ordemProducao, urgente);
 		}
 		

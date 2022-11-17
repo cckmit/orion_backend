@@ -728,9 +728,9 @@ public class OrdemProducaoCustom {
 	    + " and cc.nivel_estrutura = '1' "
 	    + " and cc.referencia = aa.referencia_peca "
 	    + " and exists (select 1 from pcpc_040 "
-	    + " where pcpc_040.ordem_producao = aa.ordem_producao "
-	    + " and pcpc_040.codigo_estagio = 1 " // PROGRAMACAO
-	    + " and pcpc_040.qtde_a_produzir_pacote > 0)";
+	    + " where pcpc_040.ordem_producao = aa.ordem_producao "	    
+ 	    + " and pcpc_040.codigo_estagio = 2 " // ANALISE DE TECIDO
+	    + " and pcpc_040.qtde_disponivel_baixa > 0)";
 
 		if (periodoInicial > 0 || periodoFinal > 0)
 			query += " and aa.periodo_producao between " + periodoInicial + " and " + periodoFinal;
@@ -865,8 +865,8 @@ public class OrdemProducaoCustom {
 		+ " where to_char(a.live_dt_liberacao) = to_char(sysdate) "
 		+ " and not exists (select 1 from pcpc_040 b " 
 		+ " where b.ordem_producao = a.ordem_producao "
-		+ " and b.codigo_estagio = 1 "
-		+ " and b.qtde_a_produzir_pacote > 0) ";
+		+ " and b.codigo_estagio = 2 " // ANALISE DE TECIDO
+		+ " and b.qtde_disponivel_baixa > 0) "; 
 		
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}	
