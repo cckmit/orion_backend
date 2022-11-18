@@ -39,7 +39,7 @@ public class SugestaoReservaTecidoService {
 	}
 	
 	public int findQtdePecasLiberadasDia(long idUsuario) {
-		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(1, idUsuario);
+		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(2, idUsuario);
 	}	
 	
 	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaTecidosReservados> listaTecidosReservar , boolean urgente, long idUsuarioOrion) {		
