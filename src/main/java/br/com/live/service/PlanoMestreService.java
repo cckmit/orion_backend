@@ -346,7 +346,7 @@ public class PlanoMestreService {
 
 			List<ProdutoPlanoMestre> produtos = null;
 
-			if (parametros.tipoDistribuicao == 1)
+			if (parametros.tipoDistribuicao == 0 || parametros.tipoDistribuicao == 1) 
 				produtos = calcularGradePadrao(produtoCor);
 
 			if (parametros.tipoDistribuicao == 2)
