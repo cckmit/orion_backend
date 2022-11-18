@@ -14,6 +14,7 @@ import br.com.live.body.BodyPoliticaVendas;
 import br.com.live.custom.PoliticaVendasCustom;
 import br.com.live.entity.MarcasFio;
 import br.com.live.entity.PoliticaVendas;
+import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.model.RegrasPoliticaVendas;
 import br.com.live.repository.PoliticaVendasRepository;
 import br.com.live.service.PoliticaVendasService;
@@ -72,6 +73,11 @@ public class PoliticaVendasController {
     public List<ConteudoChaveAlfaNum> findAllCondPgto() {
         return politicaVendasCustom.findCondPagamento();
 	    }
+	// Carrregar todos os Pedidos com Divergências
+		@RequestMapping(value = "/find-all-pedidos-divergencias", method = RequestMethod.GET)
+	    public List<DivergenciasPoliticaVendas> findAllDivergencias() {
+	        return politicaVendasCustom.findDivergencias();
+		    }
 	//
 	// Carregar GRID Regra (Forma de Pagamento X Portador)	
 	@RequestMapping(value = "/find-all-regra/{tipo}", method = RequestMethod.GET)
