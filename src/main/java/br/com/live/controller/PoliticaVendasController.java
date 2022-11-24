@@ -59,9 +59,9 @@ public class PoliticaVendasController {
         return politicaVendasCustom.findNaturezaOperacao();
     }
 	// Carrregar todos os CNPJ dos Cliente de tipo Cliente 4
-	@RequestMapping(value = "/find-all-cnpj", method = RequestMethod.GET)
-    public List<ConteudoChaveAlfaNum> findAllCnpj() {
-        return politicaVendasCustom.findCnpj();
+	@RequestMapping(value = "/find-all-cnpj/{cnpj}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllCnpj(@PathVariable("cnpj") String cnpj) {
+        return politicaVendasCustom.findCnpj(cnpj);
     }
 	// Carrregar todos os Depósitos
 	@RequestMapping(value = "/find-all-deposito", method = RequestMethod.GET)

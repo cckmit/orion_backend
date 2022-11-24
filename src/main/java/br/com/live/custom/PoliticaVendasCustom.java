@@ -46,11 +46,13 @@ public class PoliticaVendasCustom {
 				+ " order by a.natur_operacao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
-	public List<ConteudoChaveAlfaNum> findCnpj() {
-		String query = " SELECT LPAD(a.cgc_9, 9, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) value, LPAD(a.cgc_9, 9, 0) || '/' || LPAD(a.cgc_4, 4, 0) || '-' || LPAD(a.cgc_2, 2, 0) || ' - ' || a.nome_cliente label "
-				+ " FROM pedi_010 a, pedi_085 b "
-				+ " WHERE b.tipo_cliente = a.tipo_cliente "
-				+ " AND a.tipo_cliente = 4 ";
+	public List<ConteudoChaveAlfaNum> findCnpj(String cnpj) {
+		String query = "SELECT LPAD(a.cgc_9, 9, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) value, LPAD(a.cgc_9, 9, 0) || '/' || LPAD(a.cgc_4, 4, 0) || '-' || LPAD(a.cgc_2, 2, 0) || ' - ' || a.nome_cliente label "
+				+ "        FROM pedi_010 a, pedi_085 b "
+				+ "        WHERE b.tipo_cliente = a.tipo_cliente "
+				+ "        AND a.tipo_cliente IN (2, 4, 6, 8, 9, 12, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 28, 29, 31, 32, 33, 35, 36, 37, 99) "
+				+ "        AND a.situacao_cliente = 1 "
+				+ "        AND LPAD(a.cgc_9, 9, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) || a.nome_cliente LIKE '%" + cnpj + "%'";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	public List<ConteudoChaveAlfaNum> findDeposito() {
@@ -116,7 +118,7 @@ public class PoliticaVendasCustom {
 				+ " AND b.tipo = 3 "
 				+ " AND NOT EXISTS (SELECT 1 FROM orion_com_260 c "
 				+ "                  WHERE c.tipo = 3 "
-				+ "                  AND c.desc_capa = a.desconto1 + a.desconto2 + a.desconto3) "
+				+ "                  AND c.desc_capa = live_fn_calc_perc_desconto(a.desconto1, a.desconto2, a.desconto3)) "
 				+ " UNION "
 				+ " SELECT a.pedido_venda PEDIDO, a.data_entr_venda DATA_EMBARQUE, a.data_emis_venda DATA_EMISSAO, 'PEDIDO: ' || a.pedido_venda || ' COM DIVERGÊNCIA: Tipo de Pedido X Deposito Itens' DIVERGENCIA "
 				+ " FROM pedi_100 a, pedi_110 b, orion_com_260 c "
