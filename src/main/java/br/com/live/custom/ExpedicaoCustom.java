@@ -955,21 +955,70 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 	}
 	
-	public List<ConsultaTag> findMovsEnderecos(String endereco, String dataInicio, String dataFim) {
+	public List<ConsultaTag> findMovsEnderecos(String endereco, String dataInicio, String dataFim, String usuario, String tipoMov) {
 		List<ConsultaTag> historicoEnderecos = new ArrayList<ConsultaTag>();
-		
+
 		String query = " select a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) numeroTag, "
 				+ " a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item produto, a.data_hora data, a.tipo, a.usuario, a.endereco "
 				+ " from orion_exp_300 a "
-				+ " where a.endereco = '" + endereco + "' "
-				+ " and trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') "
-				+ " order by a.data_hora ";
+				+ " where trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') ";
+		
+				if  (endereco != null && !endereco.equalsIgnoreCase("")) {
+					query += " and a.endereco = '" + endereco + "' ";
+				}
+				if (usuario != null && !usuario.equalsIgnoreCase("")) {
+					query += " and a.usuario in (" + usuario + ")";
+				}
+				if (tipoMov != null) {
+					query += " and a.tipo = '" + tipoMov + "' ";
+				}
+				query += " order by a.data_hora ";
 		try {
 			historicoEnderecos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 		} catch (Exception e) {
 			historicoEnderecos = new ArrayList<ConsultaTag>();
 		}
 		return historicoEnderecos;
+	}
+	
+	public int somaQuantidadeMovimentacoes(String endereco, String dataInicio, String dataFim, String usuario, String tipoMov) {
+		int totalMov = 0;
+		
+		boolean flagEntrou = false;
+		
+		String query = " select count(*) quantMov from orion_exp_300 a ";
+		
+		if  (endereco != null && !endereco.equalsIgnoreCase("")) {
+			if (flagEntrou == true) {
+				query += " and a.endereco = '" + endereco + "' ";
+			} else {
+				query += " where a.endereco = '" + endereco + "' ";
+				flagEntrou = true;
+			}
+		}
+		if (usuario != null && !usuario.equalsIgnoreCase("")) {
+			if (flagEntrou == true) {
+				query += " and a.usuario in (" + usuario + ")";
+			} else {
+				query += " where a.usuario in (" + usuario + ")";
+				flagEntrou = true;
+			}
+		}
+		if (tipoMov != null) {
+			if (flagEntrou == true) {
+				query += " and a.tipo = '" + tipoMov + "' ";
+			} else {
+				query += " where a.tipo = '" + tipoMov + "' ";
+			}
+		}
+		
+		System.out.println("QUERY: " + query);
+		try {
+			totalMov = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			totalMov = 0;
+		}
+		return totalMov;
 	}
 	
 	public int validateOrdered(int volume) {
@@ -1109,5 +1158,12 @@ public class ExpedicaoCustom {
 		+ " and e.deposito = ? ";
 		
 		return jdbcTemplate.queryForObject(query, String.class, nivel, grupo, sub, item, deposito);
+	}
+
+	public List<ConteudoChaveAlfaNum> findUsuariosEnderecamento() {
+		String query = " select a.usuario value, a.usuario label from orion_exp_300 a " +
+				"where a.usuario is not null " +
+				"group by a.usuario ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 }

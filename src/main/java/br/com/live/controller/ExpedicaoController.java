@@ -280,9 +280,9 @@ public class ExpedicaoController {
     	return expedicaoService.validateWarehouse(body.endereco, body.numeroTag);
     }
     
-    @RequestMapping(value = "/find-history-mov-allocation/{allocation}/{startDate}/{endDate}", method = RequestMethod.GET)
-    public List<ConsultaTag> findHistoryMovAllocation(@PathVariable("allocation") String allocation, @PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate) {
-    	return expedicaoCustom.findMovsEnderecos(allocation.toUpperCase(), startDate, endDate);
+    @RequestMapping(value = "/find-history-mov-allocation", method = RequestMethod.POST)
+    public List<ConsultaTag> findHistoryMovAllocation(@RequestBody BodyExpedicao body) {
+    	return expedicaoCustom.findMovsEnderecos(body.endereco.toUpperCase(), body.dataInicio, body.dataFim, ConteudoChaveAlfaNum.parseValueToString(body.usuarioMov), body.tipoMov);
     }
     
     @RequestMapping(value = "/volume-allocation", method = RequestMethod.POST)
@@ -317,5 +317,15 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-all-representantes-async-col/{leitor}", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllRepresentantesAsync(@PathVariable("leitor") String leitor) {
     	return expedicaoCustom.findRepresentanteAsync(leitor);
+    }
+
+    @RequestMapping(value = "/find-usuarios-enderecamento", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findUsuariosEnderecamento() {
+        return expedicaoCustom.findUsuariosEnderecamento();
+    }
+    
+    @RequestMapping(value = "/find-quant-movimentacoes", method = RequestMethod.POST)
+    public int findQuantMovimentacoes(@RequestBody BodyExpedicao body) {
+        return expedicaoCustom.somaQuantidadeMovimentacoes(body.endereco.toUpperCase(), body.dataInicio, body.dataFim, ConteudoChaveAlfaNum.parseValueToString(body.usuarioMov), body.tipoMov);
     }
 }

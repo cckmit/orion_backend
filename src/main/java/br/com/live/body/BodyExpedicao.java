@@ -49,4 +49,9 @@ public class BodyExpedicao {
 	public long idUsuarioLote;
 	public List<SugestaoColeta> pedidosLoteSugColeta;
 	public List<ConteudoChaveNumerica> listColetoresArea;
+	public List<ConteudoChaveAlfaNum> usuarioMov;
+	public String tipoMov;
+	public String dataInicio;
+	public String dataFim;
+
 }
