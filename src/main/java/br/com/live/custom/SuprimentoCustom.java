@@ -180,7 +180,7 @@ public class SuprimentoCustom {
 	}		
 	
 	public int findNextNumeroRequisicao() {		
-		String query = "select nvl(max(a.num_requisicao),0) + 1 from supr_510 a";
+		String query = "select seq_supr_510.nextval from dual";
 		return jdbcTemplate.queryForObject(query, Integer.class);		
 	}
 	
