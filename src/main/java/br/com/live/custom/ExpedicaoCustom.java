@@ -805,7 +805,11 @@ public class ExpedicaoCustom {
 			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
 		}
 		if (!transportadora.equals("")) {
-			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+			//query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+			query += " and exists (select 1 from fatu_050 w "
+					+ "                  where w.num_nota_fiscal = i.num_nota_fiscal "
+					+ "                  and w.codigo_empresa = 100 "
+					+ "                  and w.transpor_forne9 || '.' || w.transpor_forne4 || '.' || w.transpor_forne2 = '" + transportadora + "') ";
 		}
 		
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
@@ -842,7 +846,11 @@ public class ExpedicaoCustom {
 			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
 		}
 		if (!transportadora.equals("")) {
-			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+			//query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+			query += " and exists (select 1 from fatu_050 w "
+					+ "                  where w.num_nota_fiscal = i.num_nota_fiscal "
+					+ "                  and w.codigo_empresa = 100 "
+					+ "                  and w.transpor_forne9 || '.' || w.transpor_forne4 || '.' ||w.transpor_forne2 = '" + transportadora + "') ";
 		}
 		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
 			query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
@@ -1012,7 +1020,6 @@ public class ExpedicaoCustom {
 			}
 		}
 		
-		System.out.println("QUERY: " + query);
 		try {
 			totalMov = jdbcTemplate.queryForObject(query, Integer.class);
 		} catch (Exception e) {
