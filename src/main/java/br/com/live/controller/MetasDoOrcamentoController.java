@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/metas-orcamento")
 public class MetasDoOrcamentoController {
 	
-	private MetasDoOrcamentoService metasDoOrcamentoService;
+	private final MetasDoOrcamentoService metasDoOrcamentoService;
 	
 	@Autowired
 	public MetasDoOrcamentoController(MetasDoOrcamentoService metasDoOrcamentoService) {
@@ -37,4 +37,9 @@ public class MetasDoOrcamentoController {
     	return metasDoOrcamentoService.findDadosGrid(body.ano,body.tipoMeta);
     }
 
+	@RequestMapping(value = "/importar", method = RequestMethod.POST)
+	public List<ConsultaMetasOrcamento> importarMetas(@RequestBody BodyMetasOrcamento body) {
+		metasDoOrcamentoService.importarMetas(body.listMetas, body.ano, body.tipoMeta);
+		return metasDoOrcamentoService.findDadosGrid(body.ano,body.tipoMeta);
+	}
 }
