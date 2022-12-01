@@ -992,32 +992,17 @@ public class ExpedicaoCustom {
 	public int somaQuantidadeMovimentacoes(String endereco, String dataInicio, String dataFim, String usuario, String tipoMov) {
 		int totalMov = 0;
 		
-		boolean flagEntrou = false;
-		
-		String query = " select count(*) quantMov from orion_exp_300 a ";
+		String query = " select count(*) quantMov from orion_exp_300 a "
+				+ " where trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') ";
 		
 		if  (endereco != null && !endereco.equalsIgnoreCase("")) {
-			if (flagEntrou == true) {
-				query += " and a.endereco = '" + endereco + "' ";
-			} else {
-				query += " where a.endereco = '" + endereco + "' ";
-				flagEntrou = true;
-			}
+			query += " and a.endereco = '" + endereco + "' ";
 		}
 		if (usuario != null && !usuario.equalsIgnoreCase("")) {
-			if (flagEntrou == true) {
-				query += " and a.usuario in (" + usuario + ")";
-			} else {
-				query += " where a.usuario in (" + usuario + ")";
-				flagEntrou = true;
-			}
+			query += " and a.usuario in (" + usuario + ")";
 		}
 		if (tipoMov != null) {
-			if (flagEntrou == true) {
-				query += " and a.tipo = '" + tipoMov + "' ";
-			} else {
-				query += " where a.tipo = '" + tipoMov + "' ";
-			}
+			query += " and a.tipo = '" + tipoMov + "' ";
 		}
 		
 		try {
