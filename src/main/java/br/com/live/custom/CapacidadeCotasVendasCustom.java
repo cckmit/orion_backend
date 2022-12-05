@@ -72,8 +72,26 @@ public class CapacidadeCotasVendasCustom {
 			+ " where pedi_085.tipo_cliente = tipo.tipo_cliente "
 			+ " group by tipo.tipo_cliente, pedi_085.descr_tipo_clien "
 			+ " order by tipo.tipo_cliente ";
-			
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadeCotasVendasTipoCliente.class));
+					
+		List<CapacidadeCotasVendasTipoCliente> listaCapacCotasVendasTiposClientes = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadeCotasVendasTipoCliente.class));
+		
+		int totPecas = 0;
+		double totMinutos = 0.0;
+		double totValor = 0.0;
+		for (CapacidadeCotasVendasTipoCliente tipoCliente : listaCapacCotasVendasTiposClientes) {
+			totPecas += tipoCliente.getQtdePecas();
+			totMinutos += tipoCliente.getTempo();
+			totValor += tipoCliente.getValorLiqTotal();
+		}
+		
+		for (CapacidadeCotasVendasTipoCliente tipoCliente : listaCapacCotasVendasTiposClientes) {
+			if (totPecas > 0) tipoCliente.setPercentualPecas( (double) ((tipoCliente.getQtdePecas() * 100) / (double) totPecas)); 
+			if (totMinutos > 0.0) tipoCliente.setPercentualMinutos( (double) ((tipoCliente.getTempo() * 100) / (double) totMinutos));
+			if (totValor > 0.0) tipoCliente.setPercentualValor( (double) ((tipoCliente.getValorLiqItens() * 100) / (double) totValor));
+			System.out.println(tipoCliente.getDescricaoTipo() + " - tipoCliente.getQtdePecas(): " + tipoCliente.getQtdePecas() + " - tipoCliente.getPercentualPecas(): " + tipoCliente.getPercentualPecas() + " - totPecas: " + totPecas);
+		}
+		
+		return listaCapacCotasVendasTiposClientes;
 	}
 	
 	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes) {				
@@ -186,7 +204,7 @@ public class CapacidadeCotasVendasCustom {
 		 + " and processos_analise.item (+) = ordenacao.cor " 		 
 		 //+ " and ordenacao.referencia = 'P8117'"
 		 //+ " and ordenacao.cor = '0VD183'"
-		 ;        
+		 ;
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CapacidadeCotasVendas.class));
 	}	

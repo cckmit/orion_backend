@@ -81,6 +81,7 @@ public class CapacidadeCotasVendasService {
 			arrayMinutosProg[indice] = minutos;
 		}		
 		
-		return new BodyCapacidadeCotasVendas(itens, arrayValoresAnalise, arrayPecasAnalise, arrayMinutosAnalise, arrayValoresProg, arrayPecasProg, arrayMinutosProg);			
+		System.out.println("Fim");
+		return new BodyCapacidadeCotasVendas(itens, arrayValoresAnalise, arrayPecasAnalise, arrayMinutosAnalise, arrayValoresProg, arrayPecasProg, arrayMinutosProg, tiposClientesAnalise, tiposClientesProg);			
 	}
 }

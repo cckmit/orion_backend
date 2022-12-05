@@ -3,6 +3,7 @@ package br.com.live.body;
 import java.util.List;
 
 import br.com.live.model.CapacidadeCotasVendas;
+import br.com.live.model.CapacidadeCotasVendasTipoCliente;
 import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyCapacidadeCotasVendas {	
@@ -21,7 +22,10 @@ public class BodyCapacidadeCotasVendas {
 	public Object[] arrayPecasProg;
 	public Object[] arrayMinutosProg;
 	
-	public BodyCapacidadeCotasVendas(List<CapacidadeCotasVendas> listaItens, Object[] arrayValoresAnalise, Object[] arrayPecasAnalise, Object[] arrayMinutosAnalise, Object[] arrayValoresProg, Object[] arrayPecasProg, Object[] arrayMinutosProg) {
+	public List<CapacidadeCotasVendasTipoCliente> listaCapacPorTipoClienteAnalise;
+	public List<CapacidadeCotasVendasTipoCliente> listaCapacPorTipoClienteProg;
+	
+	public BodyCapacidadeCotasVendas(List<CapacidadeCotasVendas> listaItens, Object[] arrayValoresAnalise, Object[] arrayPecasAnalise, Object[] arrayMinutosAnalise, Object[] arrayValoresProg, Object[] arrayPecasProg, Object[] arrayMinutosProg, List<CapacidadeCotasVendasTipoCliente> listaCapacPorTipoClienteAnalise, List<CapacidadeCotasVendasTipoCliente> listaCapacPorTipoClienteProg) {
 		super();
 		this.listaItens = listaItens;
 		this.arrayValoresAnalise = arrayValoresAnalise;
@@ -29,6 +33,9 @@ public class BodyCapacidadeCotasVendas {
 		this.arrayMinutosAnalise = arrayMinutosAnalise;
 		this.arrayValoresProg = arrayValoresProg;
 		this.arrayPecasProg = arrayPecasProg;
-		this.arrayMinutosProg = arrayMinutosProg;		
+		this.arrayMinutosProg = arrayMinutosProg;
+		this.listaCapacPorTipoClienteAnalise = listaCapacPorTipoClienteAnalise; 
+		this.listaCapacPorTipoClienteProg = listaCapacPorTipoClienteProg;
+
 	}
 }

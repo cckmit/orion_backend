@@ -9,6 +9,9 @@ public class CapacidadeCotasVendasTipoCliente {
 	private double valorLiqItens;
 	private double valorLiqTotal;
 	private double tempo;
+	private double percentualPecas;
+	private double percentualMinutos;
+	private double percentualValor;
 	
 	public CapacidadeCotasVendasTipoCliente() {
 		super();
@@ -81,4 +84,28 @@ public class CapacidadeCotasVendasTipoCliente {
 	public void setTempo(double tempo) {
 		this.tempo = tempo;
 	}
+
+	public double getPercentualPecas() {
+		return percentualPecas;
+	}
+
+	public void setPercentualPecas(double percentualPecas) {
+		this.percentualPecas = percentualPecas;
+	}
+
+	public double getPercentualMinutos() {
+		return percentualMinutos;
+	}
+
+	public void setPercentualMinutos(double percentualMinutos) {
+		this.percentualMinutos = percentualMinutos;
+	}
+
+	public double getPercentualValor() {
+		return percentualValor;
+	}
+
+	public void setPercentualValor(double percentualValor) {
+		this.percentualValor = percentualValor;
+	}		
 }
