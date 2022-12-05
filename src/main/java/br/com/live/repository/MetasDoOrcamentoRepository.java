@@ -17,4 +17,6 @@ public interface MetasDoOrcamentoRepository extends JpaRepository<MetasDoOrcamen
 	MetasDoOrcamento findByIdMetas(String idMetas);
 	
 	void deleteById(String idMetas);
+
+	void deleteByAnoAndTipoMeta(int ano, int tipoMeta);
 }
