@@ -3,6 +3,7 @@ package br.com.live.model;
 public class DivergenciasPoliticaVendas {
 	
 	private int codPedido;
+	private String canal;
 	private String dataEmbarque;
 	private String dataEmissao;
 	private String dataAuditoria;
@@ -38,13 +39,20 @@ public class DivergenciasPoliticaVendas {
 		this.dataAuditoria = dataAuditoria;
 	}
 	
+	public String getCanal() {
+		return canal;
+	}
+	public void setCanal(String canal) {
+		this.canal = canal;
+	}
 	public DivergenciasPoliticaVendas() {
 		
 	}
 	
-	public DivergenciasPoliticaVendas(int codPedido, String dataEmbarque, String dataEmissao, String divergencia, String dataAuditoria) {
+	public DivergenciasPoliticaVendas(int codPedido, String canal, String dataEmbarque, String dataEmissao, String divergencia, String dataAuditoria) {
 		
 		this.codPedido = codPedido;
+		this.canal = canal;
 		this.dataEmbarque = dataEmbarque;
 		this.dataEmissao = dataEmissao;
 		this.divergencia = divergencia;

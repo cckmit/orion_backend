@@ -10,11 +10,16 @@ import br.com.live.custom.ComercialCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.BloqueioTitulosForn;
 import br.com.live.entity.MetasCategoria;
-import br.com.live.entity.Micromovimentos;
+import br.com.live.entity.TpClienteXTabPreco;
+import br.com.live.entity.TpClienteXTabPrecoItem;
 import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.model.Produto;
 import br.com.live.repository.BloqueioTitulosFornRepository;
 import br.com.live.repository.MetasCategoriaRepository;
+import br.com.live.repository.TpClienteXTabPrecoItemRepository;
+import br.com.live.repository.TpClienteXTabPrecoRepository;
+import br.com.live.util.StatusGravacao;
+import ch.qos.logback.core.net.SyslogOutputStream;
 
 @Service
 @Transactional
@@ -24,12 +29,17 @@ public class ComercialService {
 	private final ComercialCustom comercialCustom;
 	private final ProdutoCustom produtoCustom;
 	private final MetasCategoriaRepository metasCategoriaRepository;
+	private final TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
+	private final TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
 	
-	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository) {
+	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository,
+			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository) {
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
 		this.produtoCustom = produtoCustom;
 		this.metasCategoriaRepository = metasCategoriaRepository; 
+		this.tpClienteXTabPrecoRepository = tpClienteXTabPrecoRepository;
+		this.tpClienteXTabPrecoItemRepository = tpClienteXTabPrecoItemRepository;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
@@ -69,6 +79,22 @@ public class ComercialService {
 		bloqueioTitulosFornRepository.save(dadosBloqueio);
 	}
 	
+	public List<TpClienteXTabPreco> findAllRelacionamento() {
+		return tpClienteXTabPrecoRepository.findAll();
+	}
+	
+	public void deleteItemRelacionamento(int idItem) {
+		tpClienteXTabPrecoItemRepository.deleteById(idItem);
+	}
+	
+	public void deleteRelacionamento(String idCapa) {
+		tpClienteXTabPrecoItemRepository.deleteByIdCapa(idCapa);
+	}
+	
+	public void deleteRelacCapa(String idCapa) {
+		tpClienteXTabPrecoRepository.deleteById(idCapa);
+	}
+	
 	public void liberarBloqueio(String fornecedor) {
 		String[] fornecedorConcat = fornecedor.split("[.]");
 
@@ -101,4 +127,61 @@ public class ComercialService {
 	public List<MetasCategoria> findAllMetasCategoria() {
 		return metasCategoriaRepository.findAll();
 	}
+	
+	public String saveRelacionamento(String id, int catalogo, int tipoCliente, String tabela, int numDias, int numInterno) {
+		
+		TpClienteXTabPreco dadosRelac = tpClienteXTabPrecoRepository.findByIdTpCliTabPreco(id);
+		String[] tabelaConcat = tabela.split("[.]");
+
+		String col = tabelaConcat[0];
+		String mes = tabelaConcat[1];
+		String seq = tabelaConcat[2];
+		
+		if (dadosRelac == null) {
+			dadosRelac = new TpClienteXTabPreco(catalogo, tipoCliente, Integer.parseInt(col), Integer.parseInt(mes), Integer.parseInt(seq), numDias, numInterno);
+		} else {
+			dadosRelac.numDias = numDias;
+			dadosRelac.numInterno = numInterno;
+		}
+		tpClienteXTabPrecoRepository.save(dadosRelac);
+		return dadosRelac.id;
+	}
+	
+	private boolean existsTpClienteXTabPrecoItemParaPeriodo(long idItem, String idCapa, Date periodoIni, Date periodoFim) {		
+		TpClienteXTabPrecoItem dadosItem = tpClienteXTabPrecoItemRepository.findTabByData(idItem, idCapa, periodoIni, periodoFim);
+		
+		if (dadosItem != null) return true; 
+		return false;
+	}	
+	
+	public StatusGravacao saveRelacionamentoItem(long id, String idCapa, int catalogo, int tipoCliente, String tabela, Date periodoIni, Date periodoFim) {
+		
+		TpClienteXTabPrecoItem dadosItem = tpClienteXTabPrecoItemRepository.findByIdTpCliTabPrecoItem(id);
+
+		long idItem = 0; 
+		if (dadosItem != null) idItem = dadosItem.idItem;
+		
+		if (existsTpClienteXTabPrecoItemParaPeriodo(idItem, idCapa, periodoIni, periodoFim))
+			return new StatusGravacao(false, "Já existe tabela de preço cadastrada para o período informado!");		
+		
+		String[] tableConcat = tabela.split("[.]");
+
+		String col = tableConcat[0];
+		String mes = tableConcat[1];
+		String seq = tableConcat[2];
+		
+		if (dadosItem == null) { 
+			dadosItem = new TpClienteXTabPrecoItem(tpClienteXTabPrecoItemRepository.findNextId(), idCapa, catalogo, tipoCliente, Integer.parseInt(col), Integer.parseInt(mes), Integer.parseInt(seq), periodoIni, periodoFim);
+		} else {
+			dadosItem.idCapa = idCapa;
+			dadosItem.colTabEntr = Integer.parseInt(col);
+			dadosItem.mesTabEntr = Integer.parseInt(mes);
+			dadosItem.seqTabEntr = Integer.parseInt(seq);
+			dadosItem.periodoIni = periodoIni;
+			dadosItem.periodoFim = periodoFim;	
+		}
+		tpClienteXTabPrecoItemRepository.save(dadosItem);
+		return new StatusGravacao(true, "");		
+	}
+	
 }
