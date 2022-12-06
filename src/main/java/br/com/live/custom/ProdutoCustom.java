@@ -1287,4 +1287,74 @@ public class ProdutoCustom {
 		}
 		return narrativa;
 	}
+
+	public List<String> obterListaCaracteristicasPorProdutoCompleto(String nivel, String grupo, String subGrupo, String item) {
+		List<String> caracteristicasProd = null;
+
+		String queryProdutoCompleto = " select b.desc_carac caracteristica from basi_770 a, basi_760 b  "
+				+ " where a.nivel = '" + nivel + "' "
+				+ " and a.grupo = '" + grupo + "' "
+				+ " and a.sub_grupo = '" + subGrupo + "' "
+				+ " and a.item = '" + item + "' "
+				+ " and b.id_carac = a.id_carac ";
+		try {
+			caracteristicasProd = jdbcTemplate.queryForList(queryProdutoCompleto, String.class);
+		} catch (Exception e) {
+			caracteristicasProd = new ArrayList<>();
+		}
+		return caracteristicasProd;
+	}
+
+	public List<String> obterListaCaracteristicasPorCorSemTamanho(String nivel, String grupo, String item) {
+		List<String> caracteristicasProd = null;
+
+		String queryProdutoCompleto = " select b.desc_carac caracteristica from basi_770 a, basi_760 b  "
+				+ " where a.nivel = '" + nivel + "' "
+				+ " and a.grupo = '" + grupo + "' "
+				+ " and a.sub_grupo = '000' "
+				+ " and a.item = '" + item + "' "
+				+ " and b.id_carac = a.id_carac ";
+		try {
+			caracteristicasProd = jdbcTemplate.queryForList(queryProdutoCompleto, String.class);
+		} catch (Exception e) {
+			caracteristicasProd = new ArrayList<>();
+		}
+		return caracteristicasProd;
+	}
+
+	public List<String> obterListaCaracteristicasPorTamanho(String nivel, String grupo, String subGrupo) {
+		List<String> caracteristicasProd = null;
+
+		String queryProdutoCompleto = " select b.desc_carac caracteristica from basi_770 a, basi_760 b  "
+				+ " where a.nivel = '" + nivel + "' "
+				+ " and a.grupo = '" + grupo + "' "
+				+ " and a.sub_grupo = '" + subGrupo + "' "
+				+ " and a.item = '000000' "
+				+ " and b.id_carac = a.id_carac ";
+		try {
+			caracteristicasProd = jdbcTemplate.queryForList(queryProdutoCompleto, String.class);
+		} catch (Exception e) {
+			caracteristicasProd = new ArrayList<>();
+		}
+		return caracteristicasProd;
+	}
+
+	public List<String> obterListaCaracteristicasPorReferencia(String nivel, String grupo) {
+		List<String> caracteristicasProd = null;
+
+		String queryProdutoCompleto = " select b.desc_carac caracteristica from basi_770 a, basi_760 b  "
+				+ " where a.nivel = '" + nivel + "' "
+				+ " and a.grupo = '" + grupo + "' "
+				+ " and a.sub_grupo = '000' "
+				+ " and a.item = '000000' "
+				+ " and b.id_carac = a.id_carac ";
+
+		try {
+			caracteristicasProd = jdbcTemplate.queryForList(queryProdutoCompleto, String.class);
+		} catch (Exception e) {
+			caracteristicasProd = new ArrayList<>();
+		}
+		return caracteristicasProd;
+	}
+
 }
