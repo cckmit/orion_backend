@@ -88,7 +88,7 @@ public class CapacidadeCotasVendasCustom {
 			if (totPecas > 0) tipoCliente.setPercentualPecas( (double) ((tipoCliente.getQtdePecas() * 100) / (double) totPecas)); 
 			if (totMinutos > 0.0) tipoCliente.setPercentualMinutos( (double) ((tipoCliente.getTempo() * 100) / (double) totMinutos));
 			if (totValor > 0.0) tipoCliente.setPercentualValor( (double) ((tipoCliente.getValorLiqItens() * 100) / (double) totValor));
-			System.out.println(tipoCliente.getDescricaoTipo() + " - tipoCliente.getQtdePecas(): " + tipoCliente.getQtdePecas() + " - tipoCliente.getPercentualPecas(): " + tipoCliente.getPercentualPecas() + " - totPecas: " + totPecas);
+			//System.out.println(tipoCliente.getDescricaoTipo() + " - tipoCliente.getQtdePecas(): " + tipoCliente.getQtdePecas() + " - tipoCliente.getPercentualPecas(): " + tipoCliente.getPercentualPecas() + " - totPecas: " + totPecas);
 		}
 		
 		return listaCapacCotasVendasTiposClientes;
