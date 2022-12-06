@@ -203,6 +203,9 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (67, 'Áreas de Coleta', 'Expedição', '/areas-coleta');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (68, 'Relacionamento tipo de cliente x Tabela de preço', 'Comercial', '/relacionamento-tipo-de-cliente-x-tabela-de-preco');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (69, 'Auditoria de Transporte', 'Expedição', '/auditoria-transporte');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
