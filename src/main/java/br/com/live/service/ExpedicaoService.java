@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import br.com.live.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,22 +21,6 @@ import br.com.live.entity.ParametrosMapaEndereco;
 import br.com.live.entity.ParametrosMapaEnderecoCaixa;
 import br.com.live.entity.Usuario;
 import br.com.live.entity.VariacaoPesoArtigo;
-import br.com.live.model.CestoEndereco;
-import br.com.live.model.ConsultaCaixasNoEndereco;
-import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
-import br.com.live.model.ConsultaMinutaTransporte;
-import br.com.live.model.ConsultaTag;
-import br.com.live.model.ConsultaTransportadora;
-import br.com.live.model.ConsultaVariacaoArtigo;
-import br.com.live.model.DadosModalEndereco;
-import br.com.live.model.DadosTagProd;
-import br.com.live.model.Embarque;
-import br.com.live.model.EnderecoCesto;
-import br.com.live.model.EnderecoCount;
-import br.com.live.model.ItemAColetarPorPedido;
-import br.com.live.model.Produto;
-import br.com.live.model.ProdutoEnderecar;
-import br.com.live.model.SugestaoColeta;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.AreaColetaRepository;
 import br.com.live.repository.CapacidadeArtigoEnderecoRepository;
@@ -704,14 +689,24 @@ public class ExpedicaoService {
 	public StatusGravacao validateVolumeEnderecado(int volume) {
 		StatusGravacao status = new StatusGravacao(true, "");
 		String volumeAllocated = "";
-		
+
 		String volumeComp = "" + volume + "";
 		String volumeEdit = volumeComp.substring(0, 7);
-		
+
 		volumeAllocated = expedicaoCustom.validateVolumeIsAllocated(Integer.parseInt(volumeEdit));
 		if (!volumeAllocated.equalsIgnoreCase("")) {
 			status = new StatusGravacao(false, "Volume " + volume + " já está endereçado! Deseja limpar o endereço " + volumeAllocated + "?", 1);
 		}
 		return status;
-	}	
+	}
+
+	public void gravarAuditoria(int codRua, int volume) {
+		if (codRua > 0 && volume > 0) {
+			expedicaoCustom.gravarAuditoria(codRua, volume);
+		}
+	}
+
+	public List<ConsultaHistAuditoria> consultaHistoricoAuditoria(String dataInicio, String dataFim) {
+		return expedicaoCustom.findAuditoriaByDate(dataInicio, dataFim);
+	}
 }

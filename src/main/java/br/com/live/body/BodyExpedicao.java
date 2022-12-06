@@ -53,5 +53,6 @@ public class BodyExpedicao {
 	public String tipoMov;
 	public String dataInicio;
 	public String dataFim;
+	public int rua;
 
 }
