@@ -3,6 +3,7 @@ package br.com.live.controller;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import br.com.live.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,15 +19,6 @@ import br.com.live.custom.ExpedicaoCustom;
 import br.com.live.entity.CaixasParaEnderecar;
 import br.com.live.entity.ParametrosMapaEndereco;
 import br.com.live.entity.ParametrosMapaEnderecoCaixa;
-import br.com.live.model.ConsultaCaixasNoEndereco;
-import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
-import br.com.live.model.ConsultaMinutaTransporte;
-import br.com.live.model.ConsultaTag;
-import br.com.live.model.ConsultaVariacaoArtigo;
-import br.com.live.model.DadosModalEndereco;
-import br.com.live.model.Embarque;
-import br.com.live.model.EnderecoCount;
-import br.com.live.model.ProdutoEnderecar;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
@@ -324,5 +316,15 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-quant-movimentacoes", method = RequestMethod.POST)
     public int findQuantMovimentacoes(@RequestBody BodyExpedicao body) {
         return expedicaoCustom.somaQuantidadeMovimentacoes(body.endereco.toUpperCase(), body.dataInicio, body.dataFim, ConteudoChaveAlfaNum.parseValueToString(body.usuarioMov), body.tipoMov);
+    }
+
+    @RequestMapping(value = "/gravar-auditoria-transporte", method = RequestMethod.POST)
+    public void gravarAuditoriaTransporte(@RequestBody BodyExpedicao body) {
+        expedicaoService.gravarAuditoria(body.rua, body.volume);
+    }
+
+    @RequestMapping(value = "/consulta-auditoria-transporte", method = RequestMethod.POST)
+    public List<ConsultaHistAuditoria> consultaAuditoriaTransporte(@RequestBody BodyExpedicao body) {
+        return expedicaoService.consultaHistoricoAuditoria(body.dataInicio, body.dataFim);
     }
 }

@@ -3,26 +3,11 @@ package br.com.live.custom;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.live.model.*;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.model.CestoEndereco;
-import br.com.live.model.ConsultaCaixasNoEndereco;
-import br.com.live.model.ConsultaCapacidadeArtigosEnderecos;
-import br.com.live.model.ConsultaMinutaTransporte;
-import br.com.live.model.ConsultaTag;
-import br.com.live.model.ConsultaTransportadora;
-import br.com.live.model.ConsultaVariacaoArtigo;
-import br.com.live.model.DadosModalEndereco;
-import br.com.live.model.DadosTagProd;
-import br.com.live.model.Embarque;
-import br.com.live.model.EnderecoCesto;
-import br.com.live.model.EnderecoCount;
-import br.com.live.model.ItemAColetarPorPedido;
-import br.com.live.model.Produto;
-import br.com.live.model.ProdutoEnderecar;
-import br.com.live.model.SugestaoColeta;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -962,7 +947,7 @@ public class ExpedicaoCustom {
 				+ " and a.sequencia = " + sequence;
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 	}
-	
+
 	public List<ConsultaTag> findMovsEnderecos(String endereco, String dataInicio, String dataFim, String usuario, String tipoMov) {
 		List<ConsultaTag> historicoEnderecos = new ArrayList<ConsultaTag>();
 
@@ -1157,5 +1142,29 @@ public class ExpedicaoCustom {
 				"where a.usuario is not null " +
 				"group by a.usuario ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+
+	public int findNextIdAuditoria() {
+		int nextId = 0;
+
+		String query = " select nvl(max(a.id),0) +1 from orion_exp_310 a ";
+		try {
+			nextId = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			nextId = 0;
+		}
+		return nextId;
+	}
+
+	public void gravarAuditoria(int codRua, int volume) {
+		String query = " insert into orion_exp_310 values (?, ?, ?, sysdate) ";
+		jdbcTemplate.update(query, findNextIdAuditoria(), codRua, volume);
+	}
+
+	public List<ConsultaHistAuditoria> findAuditoriaByDate(String dataInicio, String dataFim) {
+		String query = " select a.id, a.codigo_rua rua, a.volume, a.data_auditoria dataAuditoria, b.local_caixa localCaixa from orion_exp_310 a, pcpc_320 b " +
+				" where trunc(a.data_auditoria) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') " +
+				" and b.numero_volume = a.volume ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHistAuditoria.class));
 	}
 }
