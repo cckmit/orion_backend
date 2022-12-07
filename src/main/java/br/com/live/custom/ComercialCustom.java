@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaTipoPonto;
 import br.com.live.model.ConsultaTitulosBloqForn;
-import br.com.live.model.ConsultaTpClienteXTabPreco;
+//import br.com.live.model.ConsultaTpClienteXTabPreco;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -60,7 +60,7 @@ public class ComercialCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
-	
+	/*
 	public List<ConsultaTpClienteXTabPreco> findByIdTpCliTabPrecoItem(String idCapa){
 		String query = " SELECT a.id_item idItem, "
 				+ "		  a.id_capa idCapa, "
@@ -86,5 +86,5 @@ public class ComercialCustom {
 		
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTpClienteXTabPreco.class), idCapa, id);
 	}
-	
+	*/
 }

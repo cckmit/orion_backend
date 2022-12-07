@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.body.BodyComercial;
 import br.com.live.custom.ComercialCustom;
 import br.com.live.entity.BloqueioTitulosForn;
-import br.com.live.entity.TpClienteXTabPreco;
-import br.com.live.entity.TpClienteXTabPrecoItem;
+//import br.com.live.entity.TpClienteXTabPreco;
+//import br.com.live.entity.TpClienteXTabPrecoItem;
 import br.com.live.model.ConsultaMetasCategoria;
 import br.com.live.model.ConsultaTitulosBloqForn;
-import br.com.live.model.ConsultaTpClienteXTabPreco;
-import br.com.live.repository.TpClienteXTabPrecoItemRepository;
-import br.com.live.repository.TpClienteXTabPrecoRepository;
+//import br.com.live.model.ConsultaTpClienteXTabPreco;
+//import br.com.live.repository.TpClienteXTabPrecoItemRepository;
+//import br.com.live.repository.TpClienteXTabPrecoRepository;
 import br.com.live.service.ComercialService;
 import br.com.live.service.EstacaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
@@ -35,17 +35,16 @@ public class ComercialController {
 	private ComercialService comercialService;
 	private EstacaoService estacaoService;
 	private ComercialCustom comercialCustom;
-	private TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
-	private TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
+	//private TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
+	//private TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
 	
 	@Autowired
-	public ComercialController(ComercialService comercialService, EstacaoService estacaoService, ComercialCustom comercialCustom, TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository,
-			TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository) {
+	public ComercialController(ComercialService comercialService, EstacaoService estacaoService, ComercialCustom comercialCustom) {
 		this.comercialService = comercialService;
 		this.estacaoService = estacaoService;
 		this.comercialCustom = comercialCustom;
-		this.tpClienteXTabPrecoRepository = tpClienteXTabPrecoRepository;
-		this.tpClienteXTabPrecoItemRepository = tpClienteXTabPrecoItemRepository;
+		//this.tpClienteXTabPrecoRepository = tpClienteXTabPrecoRepository;
+		//this.tpClienteXTabPrecoItemRepository = tpClienteXTabPrecoItemRepository;
 	}
 	
 	@RequestMapping(value = "/save-envio-produtos-e-commerce", method = RequestMethod.POST)
@@ -79,6 +78,7 @@ public class ComercialController {
 		return comercialCustom.findAllRelacionam();
 	}
 	
+	/*
 	@RequestMapping(value = "/find-relacionamentos/{id}", method = RequestMethod.GET)
     public TpClienteXTabPreco findTpClienteTabPreco(@PathVariable("id") String id) {
     	return tpClienteXTabPrecoRepository.findByIdTpCliTabPreco(id);
@@ -92,7 +92,7 @@ public class ComercialController {
 	@RequestMapping(value = "/find-relacionamentos-grid/{idCapa}/{id}", method = RequestMethod.GET)
     public ConsultaTpClienteXTabPreco findAllGridItem(@PathVariable("idCapa") String idCapa, @PathVariable("id") long id) {
     	return comercialCustom.findAllGridItem(idCapa, id);
-    }
+    }*/
 		
 	// Carregar todos Tipos de Cliente
 		@RequestMapping(value = "/find-all-tipo-cliente", method = RequestMethod.GET)
@@ -112,7 +112,8 @@ public class ComercialController {
     	comercialService.importarMetasCategoria(body.codEstacao, body.tipoMeta, body.tabImportar);
     	return estacaoService.findMetasCategoriaGrid(body.codEstacao, body.tipoMeta);
     }
- 
+    
+    /*
     // Salvar Relacionamentos Tipo Cliente e Tabela de Preço
     //
     @RequestMapping(value = "/save-relacionamento", method = RequestMethod.POST)
@@ -127,6 +128,7 @@ public class ComercialController {
     	return comercialService.saveRelacionamentoItem(body.idItem, body.idCapa, body.catalogo, body.tipoCliente, body.tabela, body.periodoIni, body.periodoFim);
     }
     
+    
     @RequestMapping(value = "/delete-relacionamento-item/{idItem}", method = RequestMethod.DELETE)
     public List<TpClienteXTabPrecoItem> deleteItemRelac(@PathVariable("idItem") int idItem) {                  
     	comercialService.deleteItemRelacionamento(idItem);
@@ -139,4 +141,5 @@ public class ComercialController {
     	comercialService.deleteRelacCapa(idCapa);
         return tpClienteXTabPrecoItemRepository.findAll();
     }
+    */
 }

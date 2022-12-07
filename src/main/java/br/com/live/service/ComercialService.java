@@ -10,14 +10,14 @@ import br.com.live.custom.ComercialCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.BloqueioTitulosForn;
 import br.com.live.entity.MetasCategoria;
-import br.com.live.entity.TpClienteXTabPreco;
-import br.com.live.entity.TpClienteXTabPrecoItem;
+//import br.com.live.entity.TpClienteXTabPreco;
+//import br.com.live.entity.TpClienteXTabPrecoItem;
 import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.model.Produto;
 import br.com.live.repository.BloqueioTitulosFornRepository;
 import br.com.live.repository.MetasCategoriaRepository;
-import br.com.live.repository.TpClienteXTabPrecoItemRepository;
-import br.com.live.repository.TpClienteXTabPrecoRepository;
+//import br.com.live.repository.TpClienteXTabPrecoItemRepository;
+//import br.com.live.repository.TpClienteXTabPrecoRepository;
 import br.com.live.util.StatusGravacao;
 import ch.qos.logback.core.net.SyslogOutputStream;
 
@@ -29,17 +29,16 @@ public class ComercialService {
 	private final ComercialCustom comercialCustom;
 	private final ProdutoCustom produtoCustom;
 	private final MetasCategoriaRepository metasCategoriaRepository;
-	private final TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
-	private final TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
+	//private final TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
+	//private final TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
 	
-	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository,
-			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository) {
+	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository) {
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
 		this.produtoCustom = produtoCustom;
 		this.metasCategoriaRepository = metasCategoriaRepository; 
-		this.tpClienteXTabPrecoRepository = tpClienteXTabPrecoRepository;
-		this.tpClienteXTabPrecoItemRepository = tpClienteXTabPrecoItemRepository;
+		//this.tpClienteXTabPrecoRepository = tpClienteXTabPrecoRepository;
+		//this.tpClienteXTabPrecoItemRepository = tpClienteXTabPrecoItemRepository;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
@@ -78,7 +77,7 @@ public class ComercialService {
 		}
 		bloqueioTitulosFornRepository.save(dadosBloqueio);
 	}
-	
+	/*
 	public List<TpClienteXTabPreco> findAllRelacionamento() {
 		return tpClienteXTabPrecoRepository.findAll();
 	}
@@ -94,7 +93,7 @@ public class ComercialService {
 	public void deleteRelacCapa(String idCapa) {
 		tpClienteXTabPrecoRepository.deleteById(idCapa);
 	}
-	
+	*/
 	public void liberarBloqueio(String fornecedor) {
 		String[] fornecedorConcat = fornecedor.split("[.]");
 
@@ -128,6 +127,7 @@ public class ComercialService {
 		return metasCategoriaRepository.findAll();
 	}
 	
+	/*
 	public String saveRelacionamento(String id, int catalogo, int tipoCliente, String tabela, int numDias, int numInterno) {
 		
 		TpClienteXTabPreco dadosRelac = tpClienteXTabPrecoRepository.findByIdTpCliTabPreco(id);
@@ -183,5 +183,5 @@ public class ComercialService {
 		tpClienteXTabPrecoItemRepository.save(dadosItem);
 		return new StatusGravacao(true, "");		
 	}
-	
+	*/
 }
