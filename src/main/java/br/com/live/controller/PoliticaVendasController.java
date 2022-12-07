@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyPoliticaVendas;
 import br.com.live.custom.PoliticaVendasCustom;
-import br.com.live.entity.MarcasFio;
 import br.com.live.entity.PoliticaVendas;
 import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.model.RegrasPoliticaVendas;
