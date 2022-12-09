@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.live.service.ProdutoService;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,9 +20,11 @@ import br.com.live.util.ConteudoChaveAlfaNum;
 public class OrdemProducaoCustom {
 
 	private JdbcTemplate jdbcTemplate;
+	private final ProdutoService produtoService;
 
-	public OrdemProducaoCustom(JdbcTemplate jdbcTemplate) {
+	public OrdemProducaoCustom(JdbcTemplate jdbcTemplate, ProdutoService produtoService) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.produtoService = produtoService;
 	}
 
 	public int findNextIdOrdem() {
@@ -492,12 +495,31 @@ public class OrdemProducaoCustom {
 		DadosTagChina construtorFormatado; 
 		
 		for (DadosTagChina tagAtual : dadosTagsChina) {
-			
+
+			List<String> bullets = new ArrayList<>();
 			int seqTag = 0;
 			String atributo = "";
-			
+			String bullet1 = "";
+			String bullet2 = "";
+			String bullet3 = "";
+			String bullet4 = "";
+			String bullet5 = "";
+			String bullet6 = "";
+			String bullet7 = "";
+
 			atributo = findAtributo(tagAtual.getReferencia(), tagAtual.getTamanho(), tagAtual.getCor());
-			
+			bullets = produtoService.obterCaracteristicas("1", tagAtual.getReferencia(), tagAtual.getTamanho(), tagAtual.getCor());
+
+			if (bullets.size() > 0) {
+				if (bullets.size() >= 1) bullet1 = bullets.get(0);
+				if (bullets.size() >= 2) bullet2 = bullets.get(1);
+				if (bullets.size() >= 3) bullet3 = bullets.get(2);
+				if (bullets.size() >= 4) bullet4 = bullets.get(3);
+				if (bullets.size() >= 5) bullet5 = bullets.get(4);
+				if (bullets.size() >= 6) bullet6 = bullets.get(5);
+				if (bullets.size() >= 7) bullet7 = bullets.get(6);
+			}
+
 			while (seqTag < tagAtual.getQuantidade()) {
 				seqTag++;
 				
@@ -510,7 +532,8 @@ public class OrdemProducaoCustom {
 				}
 				
 				construtorFormatado = new DadosTagChina(tagAtual.getReferencia(), tamanhoAtual, tagAtual.getCor(), tagAtual.getDescCor(), tagAtual.getDescReferencia(), tagAtual.getQrCode(), tagAtual.getCodBarrasEan(), 
-						tagAtual.getQuantidade(), tagAtual.getPreco(), atributo, tagAtual.getCodBarrasProd(), seqTag, tamanhoMedida);
+						tagAtual.getQuantidade(), tagAtual.getPreco(), atributo, tagAtual.getCodBarrasProd(), seqTag, tamanhoMedida,
+						bullet1, bullet2, bullet3, bullet4, bullet5, bullet6, bullet7);
 				
 				dadosTagsChinaFormatados.add(construtorFormatado);
 			} 	

@@ -1,5 +1,6 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -177,5 +178,25 @@ public class ProdutoService {
 	public int atualizaComplementoByColecao(int colecao, int complemento) {
 		produtoRepository.atualizaComplementoByColecao(colecao, complemento);
 		return produtoRepository.findTotalProdutosInColecao(colecao);
+	}
+
+	public List<String> obterCaracteristicas(String nivel, String grupo, String subGrupo, String item) {
+		List<String> caracteristicasProd = produtoRepository.obterListaCaracteristicasPorProdutoCompleto(nivel, grupo, subGrupo, item);
+		if (caracteristicasProd.size() > 0) {
+			return caracteristicasProd;
+		} else {
+			caracteristicasProd = produtoRepository.obterListaCaracteristicasPorCorSemTamanho(nivel, grupo, item);
+			if (caracteristicasProd.size() > 0) {
+				return caracteristicasProd;
+			} else {
+				caracteristicasProd = produtoRepository.obterListaCaracteristicasPorTamanho(nivel, grupo, subGrupo);
+				if (caracteristicasProd.size() > 0) {
+					return caracteristicasProd;
+				} else {
+					caracteristicasProd = produtoRepository.obterListaCaracteristicasPorReferencia(nivel, grupo);
+					return (caracteristicasProd.size() > 0 ? caracteristicasProd : new ArrayList<>());
+				}
+			}
+		}
 	}
 }
