@@ -28,9 +28,9 @@ public class CapacidadeCotasVendasService {
 
 	public BodyCapacidadeCotasVendas findItens(int periodoProgInicial,int periodoProgFinal, int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes, String depositos) {
 		System.out.println("Localizar cotas vendas por tipo cliente (análise)...");
-		List<CapacidadeCotasVendasTipoCliente> tiposClientesAnalise = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, colecoes);		
+		List<CapacidadeCotasVendasTipoCliente> tiposClientesAnalise = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, colecoes, depositos);		
 		System.out.println("Localizar cotas vendas por tipo cliente (programado)...");
-		List<CapacidadeCotasVendasTipoCliente> tiposClientesProg = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, periodoProgInicial, periodoProgFinal, colecoes);				
+		List<CapacidadeCotasVendasTipoCliente> tiposClientesProg = capacidadeCotasVendasCustom.findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, periodoProgInicial, periodoProgFinal, colecoes, depositos);				
 		System.out.println("Localizar cotas vendas por itens...");
 		List<CapacidadeCotasVendas> itens = capacidadeCotasVendasCustom.findItensByFiltros(periodoAnaliseInicial, periodoAnaliseFinal, periodoProgInicial, periodoProgFinal, colecoes, depositos);
 		
