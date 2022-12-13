@@ -23,6 +23,7 @@ public class CalculoCalendarioProducao {
 		Date dataInicioSet = null;
 		Date dataFimSet = null;
 		int leadSet = 0;
+		EstagiosConfigCalend estMontagem = null;
 
 		Map<Integer, EstagiosConfigCalend> estagiosAnteriores = new HashMap<Integer, EstagiosConfigCalend> ();
 		
@@ -35,9 +36,13 @@ public class CalculoCalendarioProducao {
 			List<CalendarioEstagiosProducao> estagiosGeracao = new ArrayList<CalendarioEstagiosProducao>();
 
 			for (EstagiosConfigCalend estagio : estagios) {
-				
+
 				EstagiosConfigCalend estagioAnterior = estagiosAnteriores.get(estagio.getEstagio());
-				
+
+				if (estagio.getEstagio() == 20) {
+					estMontagem = estagiosAnteriores.get(97);
+				}
+
 				if (estagioAnterior == null) {
 					estagioSet = estagio.getEstagio();
 					dataInicioSet = estagio.getDataInicioDate();
@@ -46,12 +51,19 @@ public class CalculoCalendarioProducao {
 				} else {
 					estagioSet = estagio.getEstagio();
 					leadSet = estagio.getLead();
-					dataInicioSet = retornaDiaUtil(estagioAnterior.getDataFimDate(), 1, parametrosCalendario.consideraSabado,
-							parametrosCalendario.consideraDomingo);
-					dataFimSet = retornaDiaUtil(dataInicioSet, estagio.getLead(), parametrosCalendario.consideraSabado,
-							parametrosCalendario.consideraDomingo);
-					
-					
+
+					if ((estagio.getEstagio() == 20) && (estMontagem != null)) {
+						dataInicioSet = retornaDiaUtil(estMontagem.getDataInicioDate(), 1, parametrosCalendario.consideraSabado,
+								parametrosCalendario.consideraDomingo);
+						dataFimSet = retornaDiaUtil(estMontagem.getDataInicioDate(), estagio.getLead() + 1, parametrosCalendario.consideraSabado,
+								parametrosCalendario.consideraDomingo);
+					} else {
+						dataInicioSet = retornaDiaUtil(estagioAnterior.getDataFimDate(), 1, parametrosCalendario.consideraSabado,
+								parametrosCalendario.consideraDomingo);
+						dataFimSet = retornaDiaUtil(dataInicioSet, estagio.getLead(), parametrosCalendario.consideraSabado,
+								parametrosCalendario.consideraDomingo);
+					}
+
 					estagio.setDataFimDate(dataFimSet);
 					estagio.setDataInicioDate(dataInicioSet);
 				}
