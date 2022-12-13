@@ -21,7 +21,6 @@ import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.repository.TpClienteXTabPrecoRepository;
 import br.com.live.model.ConsultaTpClienteXTabPreco;
 import br.com.live.repository.TpClienteXTabPrecoItemRepository;
-import br.com.live.repository.TpClienteXTabPrecoRepository;
 import br.com.live.service.ComercialService;
 import br.com.live.service.EstacaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
@@ -79,7 +78,6 @@ public class ComercialController {
 	public List<ConteudoChaveAlfaNum> findAllRelacionam() {
 		return comercialCustom.findAllRelacionam();
 	}
-	
 	
 	@RequestMapping(value = "/find-relacionamentos/{id}", method = RequestMethod.GET)
     public TpClienteXTabPreco findTpClienteTabPreco(@PathVariable("id") String id) {

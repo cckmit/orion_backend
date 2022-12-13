@@ -3,20 +3,16 @@ package br.com.live.custom;
 import java.util.List;
 
 import br.com.live.model.ConsultaRestricoesRolo;
-import br.com.live.model.ConsultaTipoPonto;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.entity.MetasProducao;
-import br.com.live.entity.MetasProducaoSemana;
+import br.com.live.entity.PedidoCustomizado;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
-import br.com.live.model.ConsultaTiposFio;
-import br.com.live.model.DiasUteis;
+import br.com.live.model.ConsultaPedidoCustomizado;
 import br.com.live.model.EstagioProducao;
 import br.com.live.util.ConteudoChaveNumerica;
-import br.com.live.util.FormataData;
 
 @Repository
 public class ConfeccaoCustom {
@@ -157,4 +153,50 @@ public class ConfeccaoCustom {
 				+ " ORDER BY ESTAGIOS.estagio ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
 	}
+	
+	public List<ConsultaPedidoCustomizado> findAllPainelPedCustomBySolic(int solicitacao) {
+		String query = " SELECT a.id, a.solicitacao, a.pedido_venda, a.data_emis_venda, a.data_entr_venda, "
+				+ "       DECODE(a.cli_ped_cgc_cli4, 0, LPAD(a.cli_ped_cgc_cli9, 9, 0) || '-' || LPAD(a.cli_ped_cgc_cli2, 2, 0) || ' - ' || b.nome_cliente, "
+				+ "       LPAD(a.cli_ped_cgc_cli9, 9, 0) || '/' || LPAD(a.cli_ped_cgc_cli4, 4, 0) || '-' || LPAD(a.cli_ped_cgc_cli2, 2, 0) || ' - ' || b.nome_cliente) cliente, "
+				+ "       a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item, a.codigo_deposito, a.qtde_pedida, a.caminho_arquivo, a.ordem_producao, a.periodo, a.situacao, a.selecao, a.data_registro, "
+				+ "       a.alternativa, a.roteiro, a.seq_item_pedido, a.flag_imagem, a.ordem_tamanho FROM orion_cfc_280 a, pedi_010 b "
+				+ "       WHERE b.cgc_9 = a.cli_ped_cgc_cli9 "
+				+ "       AND b.cgc_4 = cli_ped_cgc_cli4 "
+				+ "       AND b.cgc_2 = cli_ped_cgc_cli2 "
+				+ "       AND a.solicitacao = '" + solicitacao + "'";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidoCustomizado.class));
+	}
+	
+	public List<ConsultaPedidoCustomizado> findAllPainelPedCustomByDate() {
+		String query = " SELECT a.id, a.solicitacao, a.pedido_venda, a.data_emis_venda, a.data_entr_venda, "
+				+ "       DECODE(a.cli_ped_cgc_cli4, 0, LPAD(a.cli_ped_cgc_cli9, 9, 0) || '-' || LPAD(a.cli_ped_cgc_cli2, 2, 0) || ' - ' || b.nome_cliente, "
+				+ "       LPAD(a.cli_ped_cgc_cli9, 9, 0) || '/' || LPAD(a.cli_ped_cgc_cli4, 4, 0) || '-' || LPAD(a.cli_ped_cgc_cli2, 2, 0) || ' - ' || b.nome_cliente) cliente, "
+				+ "       a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item, a.codigo_deposito, a.qtde_pedida, a.caminho_arquivo, a.ordem_producao, a.periodo, a.situacao, a.selecao, a.data_registro, "
+				+ "       a.alternativa, a.roteiro, a.seq_item_pedido, a.flag_imagem, a.ordem_tamanho FROM orion_cfc_280 a, pedi_010 b "
+				+ "       WHERE b.cgc_9 = a.cli_ped_cgc_cli9 "
+				+ "       AND b.cgc_4 = cli_ped_cgc_cli4 "
+				+ "       AND b.cgc_2 = cli_ped_cgc_cli2 " 
+				+ "       AND a.data_registro = TO_CHAR(sysdate, 'DD/MON/YYYY')";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidoCustomizado.class));
+	}
+	
+	public List<ConsultaPedidoCustomizado> findPedidosCustomizado() {
+		String query = " select a.pedido_venda, a.data_emis_venda, a.data_entr_venda, a.cli_ped_cgc_cli9, a.cli_ped_cgc_cli4, a.cli_ped_cgc_cli2, b.cd_it_pe_grupo, "
+				+ "       b.cd_it_pe_subgrupo, b.cd_it_pe_item, b.codigo_deposito, b.qtde_pedida, b.seq_item_pedido, c.ordem_tamanho, TRUNC(sysdate) data_registro"
+				+ "       from pedi_100 a , pedi_110 b, basi_220 c "
+				+ "       where a.pedido_venda = b.pedido_venda "
+				+ "     and a.tecido_peca  = '1' "
+				+ "     and b.cd_it_pe_grupo like 'LC%' "
+				+ "     and a.cod_cancelamento = 0 "
+				+ "     and b.cod_cancelamento = 0 "
+				+ "     and c.tamanho_ref  = b.cd_it_pe_subgrupo "
+				+ "     and a.data_emis_venda = TRUNC(sysdate)";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidoCustomizado.class));
+	}
+	
+	public List<PedidoCustomizado> findAllPedidosCustom() {
+		String query = " select s.solicitacao, s.data_registro from  orion_cfc_280 s GROUP BY s.solicitacao, s.data_registro ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PedidoCustomizado.class));
+	}
 }
+ 

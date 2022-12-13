@@ -210,3 +210,6 @@ values (69, 'Auditoria de Transporte', 'Expedição', '/auditoria-transporte');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (70, 'Histórico Auditoria de Transporte', 'Expedição', '/hist-auditoria-transporte');
+
+insert into orion_002 (ID, DESCRIÇÃO, MODULO, PATH)
+values (71, 'Painel de Pedidos Customizados', 'Confecção', '/painel-pedidos-customizados');

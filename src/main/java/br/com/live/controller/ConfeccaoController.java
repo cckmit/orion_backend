@@ -22,8 +22,10 @@ import br.com.live.body.BodyTipoObservacao;
 import br.com.live.entity.MetasProducao;
 import br.com.live.entity.MetasProducaoSemana;
 import br.com.live.entity.ObservacaoOrdemPacote;
+import br.com.live.entity.PedidoCustomizado;
 import br.com.live.entity.TipoObservacao;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
+import br.com.live.model.ConsultaPedidoCustomizado;
 import br.com.live.repository.MetasProducaoRepository;
 import br.com.live.repository.MetasProducaoSemanaRepository;
 import br.com.live.repository.ObservacaoOrdemPacoteRepository;
@@ -48,7 +50,7 @@ public class ConfeccaoController {
 	public ConfeccaoController(ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository,
 			CalendarioCustom calendarioCustom, MetasProducaoRepository metasProducaoRepository, 
 			MetasProducaoSemanaRepository metasProducaoSemanaRepository, ConfeccaoService confeccaoService, ConfeccaoCustom confeccaoCustom,
-			TipoObservacaoRepository tipoObservacaoRepository ) {
+			TipoObservacaoRepository tipoObservacaoRepository) {
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoService = confeccaoService;
@@ -166,7 +168,17 @@ public class ConfeccaoController {
 	@RequestMapping(value = "/save-restricoes-por-ordens", method = RequestMethod.POST)
 	public void saveRestricoesPorOrdens(@RequestBody BodyConfeccao body) {
 		confeccaoService.proxySaveRestricoesPorOrdemBenef(body.ordens, body.restricoes);
-	} 
+	}
+	
+	@RequestMapping(value = "/find-pedidos-custom/{solicitacao}", method = RequestMethod.GET)
+    public List<ConsultaPedidoCustomizado> findAllPainelPedCustomById(@PathVariable("solicitacao") int solicitacao) {
+    	return confeccaoCustom.findAllPainelPedCustomBySolic(solicitacao);
+    }
+	
+	@RequestMapping(value = "/find-pedidos-custom", method = RequestMethod.GET)
+    public List<ConsultaPedidoCustomizado> findAllPainelPedCustomByDate() {
+    	return confeccaoCustom.findAllPainelPedCustomByDate();
+    }
 
 	@RequestMapping(value = "/find-dias-uteis/{mes}/{ano}", method = RequestMethod.GET)
 	public int findDiasUteis(@PathVariable("mes") int mes, @PathVariable("ano") int ano) {
@@ -211,5 +223,15 @@ public class ConfeccaoController {
 	@RequestMapping(value = "/find-all-estagios-metas", method = RequestMethod.GET)
 	public List<EstagioProducao> findAllEstagiosMetas() {
 		return confeccaoCustom.findAllEstagioMetas();
+	}
+	
+	@RequestMapping(value = "/find-all-pedidos-person", method = RequestMethod.GET)
+	public List<PedidoCustomizado> findAllPedidos() {
+		return confeccaoCustom.findAllPedidosCustom();
+	}
+	
+	@RequestMapping(value = "/load-pedidos-personalizados", method = RequestMethod.POST)
+	public void loadPedidosPersonalizados(){
+		confeccaoService.loadPedidosPersonalizados();
 	}
 }
