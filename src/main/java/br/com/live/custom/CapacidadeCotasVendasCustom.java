@@ -18,7 +18,7 @@ public class CapacidadeCotasVendasCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
-	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAnaliseInicial, int periodoAnaliseFinal, int periodoProgInicial, int periodoProgFinal, String colecoes) {
+	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAnaliseInicial, int periodoAnaliseFinal, int periodoProgInicial, int periodoProgFinal, String colecoes, String depositos) {
 		String query = "select tipo.tipo_cliente tipoCliente, pedi_085.descr_tipo_clien descricaoTipo,"
 			   + " sum(tipo.quantidade) qtdePecas, "
 		       + " round(sum(tipo.valor_bruto),2) valorBruto, round(sum(tipo.valor_liq_itens),2) valorLiqItens, round(sum(tipo.valor_liq_total),2) valorLiqTotal, "
@@ -46,6 +46,7 @@ public class CapacidadeCotasVendasCustom {
 			 + " and m.cgc_2 = p.cli_ped_cgc_cli2 "
 			 + " and a.pedido_venda = p.pedido_venda "
 			 + " and a.cod_cancelamento = 0 "
+			 + " and a.codigo_deposito in (" + depositos +")"
 			 + " and (a.qtde_pedida - a.qtde_faturada) > 0 ";
 			 
 		if ((periodoProgInicial > 0) && (periodoProgFinal > 0)) { 
@@ -94,8 +95,8 @@ public class CapacidadeCotasVendasCustom {
 		return listaCapacCotasVendasTiposClientes;
 	}
 	
-	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes) {				
-		return findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, 0, 0, colecoes);
+	public List<CapacidadeCotasVendasTipoCliente> findDadosPorTipoCliente(int periodoAnaliseInicial, int periodoAnaliseFinal, String colecoes, String depositos) {				
+		return findDadosPorTipoCliente(periodoAnaliseInicial, periodoAnaliseFinal, 0, 0, colecoes, depositos);
 	}	
 	
 	public List<CapacidadeCotasVendas> findItensByFiltros(int periodoAnaliseInicial, int periodoAnaliseFinal, int periodoProgInicial, int periodoProgFinal, String colecoes, String depositos) {		
@@ -123,8 +124,20 @@ public class CapacidadeCotasVendasCustom {
 		           + " where o.colecao in (" + colecoes + ") ";
 		 } else {			 			 			
 			 query += " select o.nivel, o.grupo referencia, o.sub tamanho, o.item cor, o.descricao from orion_vi_itens_proc_dem_aberto o "
-			 + " where (o.periodo between " + periodoProgInicial +" and " + periodoProgFinal + " or o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseInicial + ") "
-			    + " or (o.periodo between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500) + " or o.periodo between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500) + ") ";
+			 + " where o.deposito in (" + depositos + ")"
+			 + " and (o.periodo between " + periodoProgInicial +" and " + periodoProgFinal + ") ";
+
+			 query += " union select o.nivel, o.grupo referencia, o.sub tamanho, o.item cor, o.descricao from orion_vi_itens_proc_dem_aberto o "
+			 + " where o.deposito in (" + depositos + ")"
+			 + " and (o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal + ") ";
+			 
+			 query += " union select o.nivel, o.grupo referencia, o.sub tamanho, o.item cor, o.descricao from orion_vi_itens_proc_dem_aberto o "
+			 + " where o.deposito in (" + depositos + ")"
+			 + " and (o.periodo between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500) + ") ";
+
+			 query += " union select o.nivel, o.grupo referencia, o.sub tamanho, o.item cor, o.descricao from orion_vi_itens_proc_dem_aberto o "
+			 + " where o.deposito in (" + depositos + ")"
+			 + " and (o.periodo between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500) + ") ";			 
 		 }
 		         
 		 query += " ) capac_cotas "  
@@ -156,7 +169,8 @@ public class CapacidadeCotasVendasCustom {
 		 + " from "
 		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_pedido) quantidade"
 		 + " from orion_vi_itens_proc_dem_aberto o "
-		 + " where o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal 
+		 + " where o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal
+		 + " and o.deposito in (" + depositos + ")"
 		 + " group by o.nivel, o.grupo, o.sub, o.item "		 		 		 
 		 + " ) vendas " 
 		 + " group by vendas.nivel, vendas.grupo, vendas.sub, vendas.item " 
@@ -166,7 +180,8 @@ public class CapacidadeCotasVendasCustom {
 		 + " from "
 		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_pedido) quantidade"
 		 + " from orion_vi_itens_proc_dem_aberto o "
-		 + " where o.periodo between " + periodoProgInicial + " and " + periodoProgFinal
+		 + " where o.deposito in (" + depositos + ")"
+		 + " and o.periodo between " + periodoProgInicial + " and " + periodoProgFinal
 		 + " and not o.periodo between " + periodoAnaliseInicial + " and " + periodoAnaliseFinal
 		 + " group by o.nivel, o.grupo, o.sub, o.item "		 		 		 
 		 + " ) vendas "
@@ -174,12 +189,14 @@ public class CapacidadeCotasVendasCustom {
 		 + " ) demandas_analise, "		 		 
 		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_producao) quantidade "
 		 + " from orion_vi_itens_proc_dem_aberto o "
-		 + " where o.periodo between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500)
+		 + " where o.deposito in (" + depositos + ")"
+		 + " and o.periodo between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500)
 		 + " and o.periodo not between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
 		 + " group by o.nivel, o.grupo, o.sub, o.item) processos_prog, "
 		 + " (select o.nivel, o.grupo, o.sub, o.item, sum(o.qtde_producao) quantidade "
 		 + " from orion_vi_itens_proc_dem_aberto o "
-		 + " where o.periodo between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
+		 + " where o.deposito in (" + depositos + ")"
+		 + " and o.periodo between " + ConvertePeriodo.parse(periodoAnaliseInicial, 500) + " and " + ConvertePeriodo.parse(periodoAnaliseFinal, 500)
 		 + " and o.periodo not between " + ConvertePeriodo.parse(periodoProgInicial, 500) + " and " + ConvertePeriodo.parse(periodoProgFinal, 500)
 		 + " group by o.nivel, o.grupo, o.sub, o.item) processos_analise "
 		 + " where categorias.cod_refere (+) = ordenacao.referencia " 
