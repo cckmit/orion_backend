@@ -16,7 +16,7 @@ import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
-import br.com.live.service.OrdemProducaoService;
+import br.com.live.service.OrdemProducaoPlanoMestreService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 
 @RestController
@@ -25,7 +25,7 @@ import br.com.live.util.ConteudoChaveAlfaNum;
 public class OrdemProducaoController {
 
 	@Autowired
-	private OrdemProducaoService ordemProducaoService;
+	private OrdemProducaoPlanoMestreService ordemProducaoService;
 
     @RequestMapping(value = "/estagios-producao", method = RequestMethod.GET)
     public List<EstagioProducao> findAll() {

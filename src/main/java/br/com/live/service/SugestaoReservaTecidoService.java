@@ -16,11 +16,11 @@ public class SugestaoReservaTecidoService {
 
 	private final SugestaoReservaTecidoCustom sugestaoReservaTecidoCustom;
 	private final SugestaoReservaTecidoPorOrdensService sugestaoReservaTecidoPorOrdensService;
-	private final OrdemProducaoService ordemProducaoService;
+	private final OrdemProducaoPlanoMestreService ordemProducaoService;
 
 	public SugestaoReservaTecidoService(SugestaoReservaTecidoCustom sugestaoReservaTecidoCustom,
 			SugestaoReservaTecidoPorOrdensService sugestaoReservaTecidoPorOrdensService,
-			OrdemProducaoService ordemProducaoService) {		
+			OrdemProducaoPlanoMestreService ordemProducaoService) {		
 		this.sugestaoReservaTecidoCustom = sugestaoReservaTecidoCustom;
 		this.sugestaoReservaTecidoPorOrdensService = sugestaoReservaTecidoPorOrdensService;
 		this.ordemProducaoService = ordemProducaoService;
