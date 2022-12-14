@@ -36,7 +36,10 @@ public class PoliticaVendasCustom {
 	}
 	
 	public List<ConteudoChaveNumerica> findCodFuncionario() {
-		String query = " SELECT a.cod_funcionario value, LPAD(a.cod_funcionario, 6, 0) || ' - ' || a.nome label FROM efic_050 a WHERE a.cod_funcionario BETWEEN 40000 AND 41000 ";
+		String query = " SELECT a.cod_funcionario value, LPAD(a.cod_funcionario, 6, 0) || ' - ' || a.nome label "
+				+ "FROM efic_050 a "
+				+ "WHERE a.cod_funcionario BETWEEN 40000 AND 41000 "
+				+ "AND a.cod_empresa = 1 ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
