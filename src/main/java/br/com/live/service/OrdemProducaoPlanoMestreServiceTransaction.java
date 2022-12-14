@@ -15,7 +15,6 @@ import br.com.live.entity.PlanoMestre;
 import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.entity.PlanoMestrePreOrdemItem;
 import br.com.live.model.DadosGeracaoOrdemProducao;
-import br.com.live.model.OrdemConfeccao;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
@@ -208,21 +207,5 @@ public class OrdemProducaoPlanoMestreServiceTransaction {
 			else if (ordensExcluidas.size() > 0) planoMestre.situacao = OrdemProducaoPlanoMestreService.ORDENS_EXCLUIDAS;
 		}		
 		planoMestreRepository.save(planoMestre);
-	}	
-	
-	public void baixarEstagioProducao(int ordemProducao, int estagio, int codUsuarioSystextil, String usuarioSystextil) {		
-		List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);		
-		for (OrdemConfeccao pacote : pacotes) {
-			ordemProducaoCustom.gravarProducaoEstagio(pacote.ordemProducao, pacote.periodo, pacote.ordemConfeccao, estagio, pacote.qtdePecas, codUsuarioSystextil, usuarioSystextil);
-		}
-	}
-	
-	public void gravarSeqPrioridadeDia(int ordemProducao, boolean urgente) {
-		int sequencia = 0; 
-		if (!urgente) { 
-			sequencia = ordemProducaoCustom.findUltimaSeqPrioridadeDia();
-			sequencia++;
-		}		  		
-		ordemProducaoCustom.gravarSeqPrioridadeDia(ordemProducao, sequencia);
-	}
+	}		
 }

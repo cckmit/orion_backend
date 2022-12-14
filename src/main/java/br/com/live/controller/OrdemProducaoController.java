@@ -17,16 +17,23 @@ import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.service.OrdemProducaoPlanoMestreService;
+import br.com.live.service.OrdemProducaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/ordens-producao")
 public class OrdemProducaoController {
+	
+	private OrdemProducaoService ordemProducaoService;
+	private OrdemProducaoPlanoMestreService ordemProducaoPlanoMestreService;
 
 	@Autowired
-	private OrdemProducaoPlanoMestreService ordemProducaoService;
-
+	public OrdemProducaoController(OrdemProducaoService ordemProducaoService, OrdemProducaoPlanoMestreService ordemProducaoPlanoMestreService) {
+		this.ordemProducaoService = ordemProducaoService;
+		this.ordemProducaoPlanoMestreService = ordemProducaoPlanoMestreService;
+	}
+	
     @RequestMapping(value = "/estagios-producao", method = RequestMethod.GET)
     public List<EstagioProducao> findAll() {
           return ordemProducaoService.findAllEstagios();
@@ -49,12 +56,12 @@ public class OrdemProducaoController {
 	
 	@RequestMapping(value = "/gerar", method = RequestMethod.POST)
 	public BodyOrdemProducao gerar(@RequestBody BodyOrdemProducao body) {
-		return ordemProducaoService.gerarOrdens(body.idPlanoMestre, body.listaPreOrdens);		
+		return ordemProducaoPlanoMestreService.gerarOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
 	
 	@RequestMapping(value = "/excluir", method = RequestMethod.POST)
 	public List<ConsultaPreOrdemProducao> excluir(@RequestBody BodyOrdemProducao body) {
-		return ordemProducaoService.excluirOrdens(body.idPlanoMestre, body.listaPreOrdens);		
+		return ordemProducaoPlanoMestreService.excluirOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
 	
     @RequestMapping(value = "/find-tags-async-select/{estagio}/{searchVar}", method = RequestMethod.GET)

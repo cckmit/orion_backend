@@ -5,10 +5,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.ProdutoCustom;
+import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaDadosRoteiro;
 import br.com.live.model.DadosGeracaoOrdemProducao;
 import br.com.live.model.DadosGeracaoOrdemProducaoItem;
+import br.com.live.model.DadosTagChina;
+import br.com.live.model.EstagioProducao;
 import br.com.live.model.NecessidadeTecidos;
+import br.com.live.model.OrdemConfeccao;
+import br.com.live.model.OrdemProducao;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.StatusGravacao;
 
 @Service
@@ -17,13 +24,63 @@ public class OrdemProducaoService {
 	
 	private final OrdemProducaoCustom ordemProducaoCustom;
 	private final ProdutoCustom produtoCustom;
+	private final UsuarioService usuarioService;
 	
-	public OrdemProducaoService(OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom) {
+	public OrdemProducaoService(OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom, UsuarioService usuarioService) {
 		super();
 		this.ordemProducaoCustom = ordemProducaoCustom;
 		this.produtoCustom = produtoCustom;
+		this.usuarioService = usuarioService;
 	}
 
+	public List<EstagioProducao> findAllEstagios() {
+		return ordemProducaoCustom.findAllEstagios();
+	}
+	
+	public List<OrdemProducao> findAllTagsExportacaoChina() {
+		return ordemProducaoCustom.findAllTagsExportacaoChina();
+	}
+	
+	public List<OrdemConfeccao> findAllPacotes(int ordemProducao) {
+		return ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);
+	}
+	
+	public List<DadosTagChina> findDadosTag(List<ConteudoChaveNumerica> ordemProducao) {
+		return ordemProducaoCustom.findDadosTagChina(ConteudoChaveNumerica.parseValueToString(ordemProducao));
+	}
+	
+	public void baixarEstagioProducao(int ordemProducao, int estagio, long idUsuarioOrion) {		
+		Usuario usuario = usuarioService.findByIdUsuario(idUsuarioOrion);
+		int codUsuarioSystextil = usuarioService.findCodigoUsuarioSystextil(idUsuarioOrion);		
+		List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordemProducao);		
+		for (OrdemConfeccao pacote : pacotes) {
+			ordemProducaoCustom.gravarProducaoEstagio(pacote.ordemProducao, pacote.periodo, pacote.ordemConfeccao, estagio, pacote.qtdePecas, codUsuarioSystextil, usuario.usuarioSystextil);
+		}
+	}
+	
+	public void gravarSeqPrioridadeDia(int ordemProducao, boolean urgente) {
+		int sequencia = 0; 
+		if (!urgente) { 
+			sequencia = ordemProducaoCustom.findUltimaSeqPrioridadeDia();
+			sequencia++;
+		}		  		
+		ordemProducaoCustom.gravarSeqPrioridadeDia(ordemProducao, sequencia);
+	}
+	
+	public int findQtdePecasApontadaNoDiaPorEstagioUsuario(int codEstagio, long idUsuarioOrion) {		
+		Usuario usuario = usuarioService.findByIdUsuario(idUsuarioOrion);
+		int codUsuarioSystextil = usuarioService.findCodigoUsuarioSystextil(idUsuarioOrion);		
+		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorUsuario(codEstagio, codUsuarioSystextil, usuario.usuarioSystextil);
+	}	
+	
+	public void gravarObservacao(int ordemProducao, String observacao) {
+		ordemProducaoCustom.gravarObservacao(ordemProducao, observacao);
+	}
+	
+	public List<ConteudoChaveAlfaNum> findAllOrdensAsync(int estagio, String searchVar) {
+		return ordemProducaoCustom.findOrdensForAsync(estagio, searchVar);
+	}
+		
 	private String validarDados(DadosGeracaoOrdemProducao ordem) {
 		boolean existeEstrutura = true;
 		boolean existeRoteiro = true;
