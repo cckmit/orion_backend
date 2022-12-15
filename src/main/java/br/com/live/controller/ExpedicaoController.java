@@ -3,7 +3,9 @@ package br.com.live.controller;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import br.com.live.entity.VolumesMinutaTransporte;
 import br.com.live.model.*;
+import br.com.live.repository.VolumesMinutaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,17 +41,19 @@ public class ExpedicaoController {
 	private ExpedicaoCustom expedicaoCustom;
 	private AberturaCaixasRepository aberturaCaixasRepository;
 	private ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
-	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;	
+	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;
+    private VolumesMinutaRepository volumesMinutaRepository;
 	
     @Autowired
     public ExpedicaoController(ExpedicaoService expedicaoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
-    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService) {
+    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService, VolumesMinutaRepository volumesMinutaRepository) {
     	this.expedicaoService = expedicaoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
     	this.expedicaoCustom = expedicaoCustom;
     	this.aberturaCaixasRepository = aberturaCaixasRepository;
     	this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
-    	this.acertoCalculoDepreciacaoService = acertoCalculoDepreciacaoService;    	
+    	this.acertoCalculoDepreciacaoService = acertoCalculoDepreciacaoService;
+        this.volumesMinutaRepository = volumesMinutaRepository;
     }
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
@@ -326,5 +330,41 @@ public class ExpedicaoController {
     @RequestMapping(value = "/consulta-auditoria-transporte", method = RequestMethod.POST)
     public List<ConsultaHistAuditoria> consultaAuditoriaTransporte(@RequestBody BodyExpedicao body) {
         return expedicaoService.consultaHistoricoAuditoria(body.dataInicio, body.dataFim);
+    }
+
+    @RequestMapping(value = "/find-minutas-geradas", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findMinutasGeradas() {
+        return expedicaoCustom.findListMinutasGeradas();
+    }
+
+    @RequestMapping(value = "/delete-notas-minuta", method = RequestMethod.POST)
+    public List<ConsultaMinutaTransporte> deleteNotasMinuta (@RequestBody BodyMinutaTransporte body) {
+        expedicaoService.deleteByNota(body.notasRemoveSelect);
+        return expedicaoCustom.consultaRelatorioMinutas(body.minuta, body.dataInicio, body.dataFim);
+    }
+
+    @RequestMapping(value = "/consulta-minutas-transporte", method = RequestMethod.POST)
+    public List<ConsultaMinutaTransporte> consultaMinutas (@RequestBody BodyMinutaTransporte body) {
+        return expedicaoCustom.consultaRelatorioMinutas(body.minuta, body.dataInicio, body.dataFim);
+    }
+
+    @RequestMapping(value = "/validar-local-caixa-volumes/{minuta}", method = RequestMethod.GET)
+    public StatusGravacao validarLocalCaixaVolumes(@PathVariable("minuta") int minuta) {
+        return expedicaoService.validarVolumesMinuta(minuta);
+    }
+
+    @RequestMapping(value = "/alterar-local-caixa-volumes", method = RequestMethod.POST)
+    public StatusGravacao alterarLocalCaixa(@RequestBody BodyMinutaTransporte body) {
+        return expedicaoService.alterarLocalCaixaVolume(body.minuta, body.volume, body.localCaixaVolume);
+    }
+
+    @RequestMapping(value = "/total-caixas-minuta/{minuta}", method = RequestMethod.GET)
+    public int totalCaixasMinuta(@PathVariable("minuta") int minuta) {
+        return expedicaoCustom.totalCaixasMinuta(minuta);
+    }
+
+    @RequestMapping(value = "/obter-transportadora-minuta/{minuta}", method = RequestMethod.GET)
+    public String obterTransportadoraMinuta(@PathVariable("minuta") int minuta) {
+        return expedicaoCustom.obterTransportadoraMinuta(minuta);
     }
 }

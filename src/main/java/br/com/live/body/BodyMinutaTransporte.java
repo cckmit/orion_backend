@@ -31,4 +31,10 @@ public class BodyMinutaTransporte {
 	public List<ConsultaMinutaTransporte> notasSelecionadas;
 	public String horaLibPaypalInicio;
 	public String horaLibPaypalFim;
+	public String dataInicio;
+	public String dataFim;
+	public int minuta;
+	public List<Integer> notasRemoveSelect;
+	public int localCaixaVolume;
+	public int volume;
 }

@@ -9,25 +9,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import br.com.live.entity.*;
 import br.com.live.model.*;
+import br.com.live.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.ExpedicaoCustom;
-import br.com.live.entity.AreaColeta;
-import br.com.live.entity.CaixasParaEnderecar;
-import br.com.live.entity.CapacidadeArtigoEndereco;
-import br.com.live.entity.ParametrosMapaEndereco;
-import br.com.live.entity.ParametrosMapaEnderecoCaixa;
-import br.com.live.entity.Usuario;
-import br.com.live.entity.VariacaoPesoArtigo;
-import br.com.live.repository.AberturaCaixasRepository;
-import br.com.live.repository.AreaColetaRepository;
-import br.com.live.repository.CapacidadeArtigoEnderecoRepository;
-import br.com.live.repository.ParametrosEnderecoCaixaRepository;
-import br.com.live.repository.ParametrosMapaEndRepository;
-import br.com.live.repository.UsuarioRepository;
-import br.com.live.repository.VariacaoPesoArtigoRepository;
 import br.com.live.util.ConverteLista;
 import br.com.live.util.StatusGravacao;
 import net.sf.jasperreports.engine.JRException;
@@ -43,16 +31,20 @@ public class ExpedicaoService {
 	private final UsuarioRepository usuarioRepository;
 	private final ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
 	private final VariacaoPesoArtigoRepository variacaoPesoArtigoRepository;
-	private final ReportService reportService;	
+	private final ReportService reportService;
+	private final VolumesMinutaRepository volumesMinutaRepository;
 
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
+	public static final int ATACADO = 1;
+	public static final int ECOMMERCE = 2;
 
 	public ExpedicaoService(ExpedicaoCustom expedicaoCustom, ParametrosMapaEndRepository parametrosMapaEndRepository,
 			CapacidadeArtigoEnderecoRepository capacidadeArtigoEnderecoRepository,
 			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository,
 			ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
-			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService) {
+			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService,
+							VolumesMinutaRepository volumesMinutaRepository) {
 		this.expedicaoCustom = expedicaoCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
@@ -60,7 +52,8 @@ public class ExpedicaoService {
 		this.usuarioRepository = usuarioRepository;
 		this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
 		this.variacaoPesoArtigoRepository = variacaoPesoArtigoRepository;
-		this.reportService = reportService;		
+		this.reportService = reportService;
+		this.volumesMinutaRepository = volumesMinutaRepository;
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -521,7 +514,7 @@ public class ExpedicaoService {
 		}
 	}
 	
-	public Map<String, Object> setParameters(String transportadora) {
+	public Map<String, Object> setParameters(String transportadora, int minuta) {
 		ConsultaTransportadora transport = expedicaoCustom.findDadosTransportadora(transportadora);
 		
 		Map<String, Object> parameters = new HashMap<>();
@@ -532,16 +525,37 @@ public class ExpedicaoService {
 		parameters.put("cep", transport.cep);
 		parameters.put("estado", transport.estado);
 		parameters.put("cidade", transport.cidade);
+		parameters.put("numMinuta", minuta);
 		
 		return parameters;
+	}
+
+	private int gravarVolumesMinutaAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, int tipoMinuta, String transportadora) {
+		List<Integer> volumesPedido = new ArrayList<>();
+		VolumesMinutaTransporte volumesMinutaSave = null;
+		int minuta = expedicaoCustom.findNextMinuta();
+
+		for (ConsultaMinutaTransporte dadosMinuta : notasSelecionadas) {
+			volumesPedido = expedicaoCustom.findVolumesPedido(dadosMinuta.pedido);
+
+			for (Integer volume : volumesPedido) {
+				volumesMinutaSave = new VolumesMinutaTransporte(expedicaoCustom.findNextIdVolumesMinuta(),volume, dadosMinuta.pedido,dadosMinuta.nota,
+						Integer.toString(dadosMinuta.serie), dadosMinuta.cliente, dadosMinuta
+						.libPaypal, dadosMinuta.pesoBruto, dadosMinuta.valorNota, minuta, new Date(), tipoMinuta, transportadora);
+				volumesMinutaRepository.saveAndFlush(volumesMinutaSave);
+			}
+		}
+		return minuta;
 	}
 
 	public String gerarMinutaTransporteAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, String transportadora) throws FileNotFoundException, JRException {
 		String nomeRelatorioGerado = "";
 		
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(notasSelecionadas);
-		
-		Map<String, Object> parameters = setParameters(transportadora);
+
+		int minuta = gravarVolumesMinutaAtacado(notasSelecionadas, ATACADO, transportadora);
+
+		Map<String, Object> parameters = setParameters(transportadora, minuta);
 
 		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
 
@@ -552,8 +566,10 @@ public class ExpedicaoService {
 		String nomeRelatorioGerado = "";
 
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(notasSelecionadas);
-		
-		Map<String, Object> parameters = setParameters(transportadora);
+
+		int minuta = gravarVolumesMinutaAtacado(notasSelecionadas, ECOMMERCE, transportadora);
+
+		Map<String, Object> parameters = setParameters(transportadora, minuta);
 
 		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
 
@@ -708,5 +724,46 @@ public class ExpedicaoService {
 
 	public List<ConsultaHistAuditoria> consultaHistoricoAuditoria(String dataInicio, String dataFim) {
 		return expedicaoCustom.findAuditoriaByDate(dataInicio, dataFim);
+	}
+
+	public void deleteByNota(List<Integer> notasSelect) {
+		for (Integer nota : notasSelect) {
+			volumesMinutaRepository.deleteByNota(nota);
+		}
+	}
+
+	public StatusGravacao validarVolumesMinuta(int minuta) {
+		StatusGravacao status = new StatusGravacao(true, "Existem volumes a serem lidos", 0);;
+
+		int statusLocalCaixa = expedicaoCustom.validarVolumesMinuta(minuta);
+		if (statusLocalCaixa == 3) {
+			status = new StatusGravacao(true, "Todos os Volumes da caixa estão com local da caixa 3", statusLocalCaixa);
+		} else if (statusLocalCaixa == 7) {
+			status = new StatusGravacao(true, "Todos os Volumes da caixa estão com local da caixa 7", statusLocalCaixa);
+		} else if (statusLocalCaixa == 9) {
+			status = new StatusGravacao(true, "Todos os Volumes da caixa estão com local da caixa 9", statusLocalCaixa);
+		}
+		return status;
+	}
+
+	public StatusGravacao alterarLocalCaixaVolume(int minuta, int volume, int localCaixa) {
+		StatusGravacao status = new StatusGravacao(true, "");
+		int localCaixaVolume = 0;
+
+		int volumeDentroDaMinuta = expedicaoCustom.validarVolumeDentroMinuta(minuta, volume);
+		if (volumeDentroDaMinuta == 1) {
+
+			localCaixaVolume = expedicaoCustom.obterLocalCaixaVolume(volume);
+
+			if (localCaixaVolume == localCaixa) {
+				status = new StatusGravacao(false, "Volume já esta com local da caixa " + localCaixa + "" +
+						"!");
+			} else {
+				expedicaoCustom.alterarLocalCaixaVolume(volume, localCaixa);
+			}
+		} else {
+			status = new StatusGravacao(false, "Volume não pertence a minuta informada!");
+		}
+		return status;
 	}
 }

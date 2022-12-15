@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
+import javax.print.DocFlavor;
+
 @Repository
 public class ExpedicaoCustom {
 	
@@ -683,9 +685,9 @@ public class ExpedicaoCustom {
 				+ "           and a.cod_rep_cliente <> 162 "
 				+ "           and f.cod_empresa (+) = a.codigo_empresa "
 				+ "           and f.nota_fiscal (+) = a.num_nota_fiscal "
-				+ " 		  and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T')) and (" +
+				/*+ " 		  and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T')) and (" +
 				" 			  to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') " +
-				" 			  and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY'))) "
+				" 			  and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY'))) "*/
 				+ "  		  and g.cod_cidade = c.cod_cidade "
 				+ " 		  and b.cli_ped_cgc_cli9 || b.cli_ped_cgc_cli4 || b.cli_ped_cgc_cli2 <> 35303139199 ";
 		query += filtroDataLib;
@@ -704,6 +706,13 @@ public class ExpedicaoCustom {
 		}
 		if (!transportadora.equals("")) {
 			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
+		}
+		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
+			query += " 		  and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T')) and (" +
+					" 			  to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') " +
+					" 			  and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY'))) ";
+		} else {
+			query += " and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T'))) ";
 		}
 		
 		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
@@ -743,6 +752,8 @@ public class ExpedicaoCustom {
 		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 
 		query += ") minuta order by minuta.nota ";
+
+		System.out.println("query: " + query);
 
 		return query;
 	}
@@ -790,12 +801,13 @@ public class ExpedicaoCustom {
 			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
 		}
 		if (!transportadora.equals("")) {
-			//query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
 			query += " and exists (select 1 from fatu_050 w "
 					+ "                  where w.num_nota_fiscal = i.num_nota_fiscal "
 					+ "                  and w.codigo_empresa = 100 "
 					+ "                  and w.transpor_forne9 || '.' || w.transpor_forne4 || '.' || w.transpor_forne2 = '" + transportadora + "') ";
 		}
+		query += " and not exists (select 1 from orion_exp_320 y " +
+				"					where y.nota = i.num_nota_fiscal) ";
 		
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 		query += " UNION ";
@@ -831,15 +843,16 @@ public class ExpedicaoCustom {
 			query += " and e.local_caixa in (" + ConteudoChaveNumerica.parseValueToString(localCaixa) + ") ";
 		}
 		if (!transportadora.equals("")) {
-			//query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
 			query += " and exists (select 1 from fatu_050 w "
 					+ "                  where w.num_nota_fiscal = i.num_nota_fiscal "
 					+ "                  and w.codigo_empresa = 100 "
-					+ "                  and w.transpor_forne9 || '.' || w.transpor_forne4 || '.' ||w.transpor_forne2 = '" + transportadora + "') ";
+					+ "                  and w.transpor_forne9 || '.' || w.transpor_forne4 || '.' || w.transpor_forne2 = '" + transportadora + "') ";
 		}
 		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
 			query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/") + "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
 		}
+		query += " and not exists (select 1 from orion_exp_320 y " +
+				"					where y.nota = i.num_nota_fiscal) ";
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 
 		query += ") minuta order by minuta.nota ";
@@ -1166,5 +1179,128 @@ public class ExpedicaoCustom {
 				" where trunc(a.data_auditoria) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') " +
 				" and b.numero_volume = a.volume ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHistAuditoria.class));
+	}
+
+	public List<Integer> findVolumesPedido(int pedido) {
+		String query = " select a.numero_volume from pcpc_320 a "
+				+ " where a.pedido_venda = " + pedido
+				+ " and not exists ( select 1 from orion_exp_320 b "
+				+ "                        where b.pedido = a.pedido_venda "
+				+ "                        and b.volume = a.numero_volume) ";
+		return jdbcTemplate.queryForList(query, Integer.class);
+	}
+
+	public long findNextIdVolumesMinuta() {
+		int nextId = 0;
+
+		String query = " select nvl(max(orion_exp_320.id),0) + 1 from orion_exp_320 ";
+
+		try {
+			nextId = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			nextId = 0;
+		}
+
+		return (long) nextId;
+	}
+
+	public int findNextMinuta() {
+		int nextMinuta = 0;
+
+		String query = " select nvl(max(orion_exp_320.minuta),0) + 1 from orion_exp_320 ";
+		try {
+			nextMinuta = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			nextMinuta = 0;
+		}
+		return nextMinuta;
+	}
+
+	public List<ConteudoChaveNumerica> findListMinutasGeradas() {
+		String query = " select a.minuta value, a.minuta label from orion_exp_320 a "
+				+ " group by a.minuta "
+				+ " order by a.minuta ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+
+	public List<ConsultaMinutaTransporte> consultaRelatorioMinutas(int minuta, String dataInicio, String dataFim) {
+		String query = " select a.minuta, a.tipo_minuta tipoMinuta, a.nota, a.serie, a.pedido from orion_exp_320 a " +
+				" where trunc(a.data_hora_geracao) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') ";
+		if (minuta > 0) {
+			query += " and a.minuta = " + minuta;
+		}
+		query += " group by a.minuta, a.tipo_minuta, a.nota, a.serie, a.pedido ";
+		query += " order by a.minuta, a.nota ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
+	}
+
+	public int validarVolumesMinuta(int minuta) {
+		int localCaixa = 0;
+
+		String query = " select b.local_caixa from orion_exp_320 a, pcpc_320 b "
+				+ " where b.numero_volume = a.volume "
+				+ " and a.minuta = " + minuta
+				+ " group by b.local_caixa ";
+		try {
+			localCaixa = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			localCaixa = 0;
+		}
+		return localCaixa;
+	}
+
+	public void alterarLocalCaixaVolume(int volume, int localCaixa) {
+		String query = " update pcpc_320 "
+				+ "			set local_caixa = ? "
+				+ "			where pcpc_320.numero_volume = ? ";
+		jdbcTemplate.update(query, localCaixa, volume);
+	}
+
+	public int validarVolumeDentroMinuta(int minuta, int volume) {
+		int status = 0;
+
+		String query = " select 1 from orion_exp_320 a "
+				+ " where a.minuta = " + minuta
+				+ " and a.volume = " + volume;
+		try {
+			status = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			status = 0;
+		}
+		return status;
+	}
+
+	public int totalCaixasMinuta(int minuta) {
+		int totalCaixas = 0;
+
+		String query = " select count(*) from orion_exp_320 a "
+				+ " where a.minuta = " + minuta;
+		try {
+			totalCaixas = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			totalCaixas = 0;
+		}
+		return totalCaixas;
+	}
+
+	public String obterTransportadoraMinuta(int minuta) {
+		String query = " select a.transportadora || ' - ' || b.nome_fornecedor from orion_exp_320 a, supr_010 b "
+				+ " where b.fornecedor9 || '.' || b.fornecedor4 || '.' || b.fornecedor2 = a.transportadora "
+				+ " and a.minuta = " + minuta
+				+ " group by a.transportadora, b.nome_fornecedor ";
+		return jdbcTemplate.queryForObject(query, String.class);
+	}
+
+	public int obterLocalCaixaVolume(int volume) {
+		int localCaixa = 0;
+
+		String query = " select a.local_caixa from pcpc_320 a" +
+				" where a.numero_volume = " + volume;
+		try {
+			localCaixa = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			localCaixa = 0;
+		}
+		return localCaixa;
 	}
 }

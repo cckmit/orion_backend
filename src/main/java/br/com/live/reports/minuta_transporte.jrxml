@@ -56,6 +56,7 @@
 	<parameter name="estado" class="java.lang.String"/>
 	<parameter name="cidade" class="java.lang.String"/>
 	<parameter name="cep" class="java.lang.Integer"/>
+	<parameter name="numMinuta" class="java.lang.Integer"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -67,21 +68,17 @@
 			<staticText>
 				<reportElement x="140" y="12" width="270" height="29" uuid="3ab80487-cd46-4cc8-838f-8f0d793c1765"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial Black" size="18" isBold="true"/>
+					<font fontName="Arial" size="18" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MINUTA DE TRANSPORTE]]></text>
 			</staticText>
-			<textField pattern="MMMMM dd, yyyy">
-				<reportElement x="430" y="16" width="111" height="19" uuid="244c65b6-e080-42ba-8c34-fbab128eca8f"/>
-				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())]]></textFieldExpression>
-			</textField>
 			<rectangle>
 				<reportElement x="0" y="0" width="131" height="51" uuid="42d4d102-fb57-452b-bc45-1095cba9f7e8"/>
 			</rectangle>
 			<staticText>
 				<reportElement x="0" y="7" width="131" height="39" forecolor="#000000" uuid="75eabf37-dedb-4c8c-b75b-a7adf3cf7126"/>
 				<textElement textAlignment="Center" rotation="None" markup="none">
-					<font fontName="Arial Black" size="24" isBold="true" isItalic="false" isUnderline="false"/>
+					<font fontName="Arial" size="24" isBold="true" isItalic="false" isUnderline="false"/>
 				</textElement>
 				<text><![CDATA[LIVE!]]></text>
 			</staticText>
@@ -235,6 +232,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{bairro}]]></textFieldExpression>
 			</textField>
+			<componentElement>
+				<reportElement x="464" y="10" width="111" height="36" uuid="4ba4992c-56b3-4289-bcc3-875e10ba41bd"/>
+				<jr:Code128 xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<jr:codeExpression><![CDATA[String.format("%09d", $P{numMinuta});]]></jr:codeExpression>
+				</jr:Code128>
+			</componentElement>
 		</band>
 	</title>
 	<detail>

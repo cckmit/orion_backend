@@ -28,11 +28,20 @@ public class VolumesMinutaTransporte {
     @Column(name = "valor_nota")
     public Float valorNota;
 
+    @Column(name = "data_hora_geracao")
+    public Date dataHoraGeracao;
+
+    @Column(name = "tipo_minuta")
+    public int tipoMinuta;
+
+    public String transportadora;
+
     public VolumesMinutaTransporte() {
 
     }
 
-    public VolumesMinutaTransporte(long id, int volume, int pedido, int nota, String serie, String cliente, Date dataLiberacao, Float pesoBruto, Float valorNota, int minuta) {
+    public VolumesMinutaTransporte(long id, int volume, int pedido, int nota, String serie, String cliente, Date dataLiberacao, Float pesoBruto, Float valorNota, int minuta,
+                                   Date dataHoraGeracao, int tipoMinuta, String transportadora) {
         this.id = id;
         this.volume = volume;
         this.pedido = pedido;
@@ -43,5 +52,8 @@ public class VolumesMinutaTransporte {
         this.pesoBruto = pesoBruto;
         this.valorNota = valorNota;
         this.minuta = minuta;
+        this.dataHoraGeracao = dataHoraGeracao;
+        this.tipoMinuta = tipoMinuta;
+        this.transportadora = transportadora;
     }
 }

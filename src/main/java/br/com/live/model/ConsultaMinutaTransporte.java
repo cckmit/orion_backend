@@ -17,6 +17,9 @@ public class ConsultaMinutaTransporte {
 	public int caixa;
 	public String local;
 	public String endereco;
+	public int volume;
+	public int minuta;
+	public int tipoMinuta;
 	
 	public int getNota() {
 		return nota;
@@ -102,13 +105,25 @@ public class ConsultaMinutaTransporte {
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
-	
+	public int getVolume() { return volume; }
+	public void setVolume(int volume) { this.volume = volume; }
+	public int getMinuta() { return minuta;	}
+	public void setMinuta(int minuta) { this.minuta = minuta; }
+
+	public int getTipoMinuta() {
+		return tipoMinuta;
+	}
+
+	public void setTipoMinuta(int tipoMinuta) {
+		this.tipoMinuta = tipoMinuta;
+	}
+
 	public ConsultaMinutaTransporte() {
 		
 	}
 	
 	public ConsultaMinutaTransporte(int nota, int serie, Date emissao, int pedido, String cliente, int caixas,
-			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco) {
+			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco, int volume, int minuta, int tipoMinuta) {
 		this.nota = nota;
 		this.serie = serie;
 		this.emissao = emissao;
@@ -123,5 +138,8 @@ public class ConsultaMinutaTransporte {
 		this.caixa = caixa;
 		this.local = local;
 		this.endereco = endereco;
+		this.volume = volume;
+		this.minuta = minuta;
+		this.tipoMinuta = tipoMinuta;
 	}	
 }
