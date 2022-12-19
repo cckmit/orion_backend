@@ -10,6 +10,8 @@ import javax.persistence.Table;
 public class Notificacao {
 	
 	public static final int REQUISICAO_TECIDOS = 1;
+	public static final int PEDIDOS_CUSTOMIZADOS = 2;
+	
 	
 	@Id
 	public String id;

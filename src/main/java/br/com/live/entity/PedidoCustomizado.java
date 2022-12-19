@@ -47,7 +47,7 @@ public class PedidoCustomizado {
 	public int codigoDeposito;   
 	
 	@Column(name = "qtde_pedida")
-	public float qtdePedida;
+	public int qtdePedida;
 	                      
 	@Column(name = "caminho_arquivo")
 	public String caminhoArquivo;
@@ -170,11 +170,11 @@ public class PedidoCustomizado {
 		this.codigoDeposito = codigoDeposito;
 	}
 
-	public float getQtdePedida() {
+	public int getQtdePedida() {
 		return qtdePedida;
 	}
 
-	public void setQtdePedida(float qtdePedida) {
+	public void setQtdePedida(int qtdePedida) {
 		this.qtdePedida = qtdePedida;
 	}
 
@@ -272,7 +272,7 @@ public class PedidoCustomizado {
 
 	public PedidoCustomizado(long id, int solicitacao, int pedidoVenda, Date dataEmisVenda, Date dataEntrVenda,
 			int cliPedCgcCli9, int cliPedCgcCli4, int cliPedCgcCli2, String cdItPeGrupo, String cdItPeSubgrupo,
-			String cdItPeItem, int codigoDeposito, float qtdePedida, String caminhoArquivo, int ordemProducao,
+			String cdItPeItem, int codigoDeposito, int qtdePedida, String caminhoArquivo, int ordemProducao,
 			int periodo, int situacao, int selecao, Date dataRegistro, int alternativa, int roteiro, int seqItemPedido,
 			int flagImagem, int ordemTamanho) {
 		this.id = id;

@@ -153,7 +153,7 @@ public class OrdemProducaoCustom {
 		jdbcTemplate.update(query);		
 	}
 	
-	public void gravarCapa(int idOrdemProducao, String referencia, int periodo, int alternativa, int roteiro, int quantidade, String observacao, String observacao2) {
+	public void gravarCapa(int idOrdemProducao, String referencia, int periodo, int alternativa, int roteiro, int quantidade, String observacao, String observacao2, int pedido) {
 		
 		System.out.println("gravarCapa: " + idOrdemProducao + " -> " + referencia);
 		
@@ -171,7 +171,7 @@ public class OrdemProducaoCustom {
 	    + " deposito_entrada, pedido_venda) "  
 	    + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " ;
 		
-		jdbcTemplate.update(query, idOrdemProducao, periodo, 3, alternativa, roteiro, 0, quantidade, 0, 0, 2, dataProgramacao, referencia, 1, idOrdemProducao,observacao, observacao2, 0, 0);
+		jdbcTemplate.update(query, idOrdemProducao, periodo, 3, alternativa, roteiro, 0, quantidade, 0, 0, 2, dataProgramacao, referencia, 1, idOrdemProducao,observacao, observacao2, 0, pedido);
 	}
 	
 	public void gravarTamanhoCor(int idOrdemProducao, String tamanho, String cor, int quantidade, int seqTamanho) {

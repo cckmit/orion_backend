@@ -31,6 +31,7 @@ import br.com.live.repository.MetasProducaoSemanaRepository;
 import br.com.live.repository.ObservacaoOrdemPacoteRepository;
 import br.com.live.repository.TipoObservacaoRepository;
 import br.com.live.service.ConfeccaoService;
+import br.com.live.service.PedidosCustomizadosService;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
@@ -45,12 +46,13 @@ public class ConfeccaoController {
 	private MetasProducaoRepository metasProducaoRepository;
 	private MetasProducaoSemanaRepository metasProducaoSemanaRepository;
 	private CalendarioCustom calendarioCustom;
+	private PedidosCustomizadosService pedidosCustomizadosService; 
 
 	@Autowired
 	public ConfeccaoController(ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository,
 			CalendarioCustom calendarioCustom, MetasProducaoRepository metasProducaoRepository, 
 			MetasProducaoSemanaRepository metasProducaoSemanaRepository, ConfeccaoService confeccaoService, ConfeccaoCustom confeccaoCustom,
-			TipoObservacaoRepository tipoObservacaoRepository) {
+			TipoObservacaoRepository tipoObservacaoRepository, PedidosCustomizadosService pedidosCustomizadosService) {
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoService = confeccaoService;
@@ -58,6 +60,7 @@ public class ConfeccaoController {
 		this.metasProducaoRepository = metasProducaoRepository;
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
 		this.calendarioCustom = calendarioCustom;
+		this.pedidosCustomizadosService = pedidosCustomizadosService;
 	}
 
 	@RequestMapping(value = "/find-all-tipo-obs", method = RequestMethod.GET)
@@ -230,8 +233,18 @@ public class ConfeccaoController {
 		return confeccaoCustom.findAllPedidosCustom();
 	}
 	
-	@RequestMapping(value = "/load-pedidos-personalizados", method = RequestMethod.POST)
+	@RequestMapping(value = "/load-pedidos-personalizados", method = RequestMethod.GET)
 	public void loadPedidosPersonalizados(){
-		confeccaoService.loadPedidosPersonalizados();
+		pedidosCustomizadosService.loadPedidosPersonalizados();
+	}
+	
+	@RequestMapping(value = "/email-pedidos-personalizados/{id}", method = RequestMethod.POST)
+	public void emailPedidosPersonalizados(@PathVariable("id") long id){
+		pedidosCustomizadosService.enviarEmail(id);
+	}
+	
+	@RequestMapping(value = "/gerar-ordem-pedidos-personalizados", method = RequestMethod.POST)
+	public void gerarOrdemPedidosPersonalizados(@RequestBody BodyConfeccao body){
+		pedidosCustomizadosService.gerarOrdem(body.solicitacao, body.periodoProducao, body.alternativa, body.roteiro);
 	}
 }

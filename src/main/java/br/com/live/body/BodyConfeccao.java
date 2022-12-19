@@ -30,4 +30,9 @@ public class BodyConfeccao {
 	public int metaAjustadaTurno;
 	public int numeroExpedidor;
 	public int metaExpedidor;
+	public int solicitacao;
+	public Date dataRegistro;
+	public int periodoProducao;
+	public int alternativa;
+	public int roteiro;
 }

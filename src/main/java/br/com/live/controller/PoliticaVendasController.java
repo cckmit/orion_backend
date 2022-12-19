@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyPoliticaVendas;
 import br.com.live.custom.PoliticaVendasCustom;
-import br.com.live.entity.PoliticaVendas;
 import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.model.RegrasPoliticaVendas;
 import br.com.live.repository.PoliticaVendasRepository;
@@ -28,13 +27,11 @@ public class PoliticaVendasController {
 	
 	private PoliticaVendasCustom politicaVendasCustom;
 	private PoliticaVendasService politicaVendasService;
-	private PoliticaVendasRepository politicaVendasRepository;
 	
 	@Autowired
-	public PoliticaVendasController(PoliticaVendasCustom politicaVendasCustom, PoliticaVendasService politicaVendasService, PoliticaVendasRepository politicaVendasRepository) {
+	public PoliticaVendasController(PoliticaVendasCustom politicaVendasCustom, PoliticaVendasService politicaVendasService) {
 		this.politicaVendasCustom = politicaVendasCustom;
 		this.politicaVendasService = politicaVendasService;
-		this.politicaVendasRepository = politicaVendasRepository;
 		
 	}
 	// Carregar todas Formas de Pagamento

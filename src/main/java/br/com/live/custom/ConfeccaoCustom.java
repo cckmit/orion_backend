@@ -181,21 +181,30 @@ public class ConfeccaoCustom {
 	}
 	
 	public List<ConsultaPedidoCustomizado> findPedidosCustomizado() {
-		String query = " select a.pedido_venda, a.data_emis_venda, a.data_entr_venda, a.cli_ped_cgc_cli9, a.cli_ped_cgc_cli4, a.cli_ped_cgc_cli2, b.cd_it_pe_grupo, "
-				+ "       b.cd_it_pe_subgrupo, b.cd_it_pe_item, b.codigo_deposito, b.qtde_pedida, b.seq_item_pedido, c.ordem_tamanho, TRUNC(sysdate) data_registro"
-				+ "       from pedi_100 a , pedi_110 b, basi_220 c "
-				+ "       where a.pedido_venda = b.pedido_venda "
-				+ "     and a.tecido_peca  = '1' "
-				+ "     and b.cd_it_pe_grupo like 'LC%' "
-				+ "     and a.cod_cancelamento = 0 "
-				+ "     and b.cod_cancelamento = 0 "
-				+ "     and c.tamanho_ref  = b.cd_it_pe_subgrupo "
-				+ "     and a.data_emis_venda = TRUNC(sysdate)";
+		String query = " SELECT a.pedido_venda, a.data_emis_venda, a.data_entr_venda, a.cli_ped_cgc_cli9, a.cli_ped_cgc_cli4, a.cli_ped_cgc_cli2, b.cd_it_pe_grupo, "
+				+ "        b.cd_it_pe_subgrupo, b.cd_it_pe_item, b.codigo_deposito, b.qtde_pedida, b.seq_item_pedido, c.ordem_tamanho, TRUNC(sysdate) data_registro "
+				+ "        FROM pedi_100 a , pedi_110 b, basi_220 c "
+				+ "        WHERE a.pedido_venda = b.pedido_venda "
+				+ "        AND a.tecido_peca  = '1' "
+				+ "        AND b.cd_it_pe_grupo like 'LC%' "
+				+ "        AND a.cod_cancelamento = 0 "
+				+ "		   AND b.cod_cancelamento = 0 "
+				+ "		   AND c.tamanho_ref  = b.cd_it_pe_subgrupo "
+				+ "		   AND a.data_emis_venda = TRUNC(sysdate) "
+				+ "        AND NOT EXISTS (SELECT 1 FROM orion_cfc_280 b "
+				+ "                               WHERE TRUNC(b.data_emis_venda) = TRUNC(a.data_emis_venda) "
+				+ "                               AND b.pedido_venda = a.pedido_venda) ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidoCustomizado.class));
 	}
 	
 	public List<PedidoCustomizado> findAllPedidosCustom() {
 		String query = " select s.solicitacao, s.data_registro from  orion_cfc_280 s GROUP BY s.solicitacao, s.data_registro ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PedidoCustomizado.class));
+	}
+	
+	public List<PedidoCustomizado> findSolicitacaoMaxDia() {
+		String query = " SELECT s.solicitacao FROM orion_cfc_280 s  WHERE s.data_registro = TRUNC(sysdate) "
+				+ "      GROUP BY s.solicitacao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PedidoCustomizado.class));
 	}
 }
