@@ -165,9 +165,9 @@ public class OrdemProducaoService {
 		}		
 	}
 	
-	private int gravarCapa(String referencia, int periodo, int alternativa, int roteiro, int quantidade, String observacao1, String observacao2) {
+	private int gravarCapa(String referencia, int periodo, int alternativa, int roteiro, int quantidade, String observacao1, String observacao2, int pedido) {
 		int id = ordemProducaoCustom.findNextIdOrdem();
-		ordemProducaoCustom.gravarCapa(id, referencia, periodo, alternativa, roteiro, quantidade, observacao1, observacao2);		
+		ordemProducaoCustom.gravarCapa(id, referencia, periodo, alternativa, roteiro, quantidade, observacao1, observacao2, pedido);		
 		return id;
 	}
 	
@@ -185,7 +185,7 @@ public class OrdemProducaoService {
 		int idOrdemProducao = 0;
 		
 		try {														
-			idOrdemProducao = gravarCapa(ordem.getReferencia(), ordem.getPeriodo(), ordem.getAlternativa(), ordem.getRoteiro(), ordem.getQuantidade(), ordem.getObservacao1(), ordem.getObservacao2());
+			idOrdemProducao = gravarCapa(ordem.getReferencia(), ordem.getPeriodo(), ordem.getAlternativa(), ordem.getRoteiro(), ordem.getQuantidade(), ordem.getObservacao1(), ordem.getObservacao2(), ordem.getPedido());
 			for (DadosGeracaoOrdemProducaoItem item : ordem.getGradeTamanhosCores()) {
 				gravarItem(idOrdemProducao, ordem.getPeriodo(), ordem.getReferencia(), item.getTamanho(), item.getCor(), ordem.getAlternativa(), ordem.getRoteiro(), item.getQuantidade());
 			}

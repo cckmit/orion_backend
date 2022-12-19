@@ -14,15 +14,12 @@ import br.com.live.custom.ConfeccaoCustom;
 import br.com.live.entity.MetasProducao;
 import br.com.live.entity.MetasProducaoSemana;
 import br.com.live.entity.ObservacaoOrdemPacote;
-import br.com.live.entity.PedidoCustomizado;
 import br.com.live.entity.TipoObservacao;
 import br.com.live.model.CalendarioSemana;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
-import br.com.live.model.ConsultaPedidoCustomizado;
 import br.com.live.repository.MetasProducaoRepository;
 import br.com.live.repository.MetasProducaoSemanaRepository;
 import br.com.live.repository.ObservacaoOrdemPacoteRepository;
-import br.com.live.repository.PedidoCustomizadoRepository;
 import br.com.live.repository.TipoObservacaoRepository;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -37,13 +34,10 @@ public class ConfeccaoService {
 	private final MetasProducaoRepository metasProducaoRepository;
 	private final MetasProducaoSemanaRepository metasProducaoSemanaRepository;
 	private final CalendarioCustom calendarioCustom;
-	private final PedidoCustomizadoRepository pedidoCustomizadoRepository; 
-
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
 			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository,
-			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom,
-			PedidoCustomizadoRepository pedidoCustomizadoRepository) {
+			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
@@ -52,7 +46,6 @@ public class ConfeccaoService {
 		this.metasProducaoRepository = metasProducaoRepository;
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
 		this.calendarioCustom = calendarioCustom;
-		this.pedidoCustomizadoRepository = pedidoCustomizadoRepository;
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -213,23 +206,6 @@ public class ConfeccaoService {
 			id = metasProducaoSemanaRepository.findNextId();
 			MetasProducaoSemana metaProducaoSemana = new MetasProducaoSemana(id, idMesAno, numSemanaMes, semana.getQtdeDiasUteis(), semana.getDataInicio(), semana.getDataFim(), qtdePecasMetaSemana, qtdePecasMetaTurno, qtdePecasMetaAjustSemana, qtdePecasMetaAjustTurno);
 			metasProducaoSemanaRepository.save(metaProducaoSemana);
-		}				
-	}	
-	public void loadPedidosPersonalizados() {
-		
-		List<ConsultaPedidoCustomizado> pedidos = confeccaoCustom.findPedidosCustomizado();
-		
-		long id = 0;
-		int solicitacao = 0;
-		solicitacao = pedidoCustomizadoRepository.findNexSolic();
-		
-		for (ConsultaPedidoCustomizado ped : pedidos) {
-			
-			id = pedidoCustomizadoRepository.findNextId();
-			PedidoCustomizado pedidoCustomizado = new PedidoCustomizado(id, solicitacao, ped.pedidoVenda, ped.dataEmisVenda, ped.dataEntrVenda, ped.cliPedCgcCli9, 
-					ped.cliPedCgcCli4, ped.cliPedCgcCli2, ped.cdItPeGrupo, ped.cdItPeSubgrupo, ped.cdItPeItem, ped.codigoDeposito, ped.qtdePedida, ped.caminhoArquivo, ped.ordemProducao,
-					ped.periodo, ped.situacao, ped.selecao, ped.dataRegistro, ped.alternativa, ped.roteiro, ped.seqItemPedido, ped.flagImagem, ped.ordemTamanho);
-			pedidoCustomizadoRepository.save(pedidoCustomizado);
 		}				
 	}	
 }

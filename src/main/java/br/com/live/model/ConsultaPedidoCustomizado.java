@@ -14,7 +14,7 @@ public class ConsultaPedidoCustomizado {
 	public String cdItPeSubgrupo;
 	public String cdItPeItem;
 	public int codigoDeposito;
-	public float qtdePedida;
+	public int qtdePedida;
 	public String caminhoArquivo;
 	public int ordemProducao;
 	public int periodo;
@@ -90,10 +90,10 @@ public class ConsultaPedidoCustomizado {
 	public void setCodigoDeposito(int codigoDeposito) {
 		this.codigoDeposito = codigoDeposito;
 	}
-	public float getQtdePedida() {
+	public int getQtdePedida() {
 		return qtdePedida;
 	}
-	public void setQtdePedida(float qtdePedida) {
+	public void setQtdePedida(int qtdePedida) {
 		this.qtdePedida = qtdePedida;
 	}
 	public String getCaminhoArquivo() {
@@ -186,7 +186,7 @@ public class ConsultaPedidoCustomizado {
 	}
 	public ConsultaPedidoCustomizado(int id, int solicitacao, int pedidoVenda, Date dataEmisVenda, Date dataEntrVenda,
 			String cliente, String cdItPeGrupo, String cdItPeSubgrupo, String cdItPeItem, int codigoDeposito,
-			float qtdePedida, String caminhoArquivo, int ordemProducao, int periodo, int situacao, int selecao,
+			int qtdePedida, String caminhoArquivo, int ordemProducao, int periodo, int situacao, int selecao,
 			Date dataRegistro, int alternativa, int roteiro, int seqItemPedido, int flagImagem, int ordemTamanho, int cliPedCgcCli9, int cliPedCgcCli4, int cliPedCgcCli2) {
 	
 		this.id = id;

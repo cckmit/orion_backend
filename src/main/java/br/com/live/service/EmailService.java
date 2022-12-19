@@ -15,6 +15,7 @@ public class EmailService {
 	
 	public void enviar(String assunto, String corpoEmail, String destinatario) {
 		
+		
 		String emailAuth = configuracoes.getRemetenteEmail();
 		String senhaAuth = configuracoes.getSenhaEmail();
 		

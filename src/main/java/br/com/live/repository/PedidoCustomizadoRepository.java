@@ -16,10 +16,16 @@ public interface PedidoCustomizadoRepository extends JpaRepository<PedidoCustomi
 	@Query(" SELECT s FROM PedidoCustomizado s where s.id = :id ")
 	List<PedidoCustomizado> findByIdPedidosCustom(long id);
 	
+	@Query(" SELECT s FROM PedidoCustomizado s where s.dataRegistro = TRUNC(sysdate) ")
+	List<PedidoCustomizado> findAllByDate();
+	
+	@Query(" SELECT d FROM PedidoCustomizado d where d.solicitacao = :solicitacao ")
+	List<PedidoCustomizado> findBySolicitacao(int solicitacao);
+	
 	@Query(" SELECT nvl(max(a.id),0) + 1 FROM PedidoCustomizado a ")
 	long findNextId();
 	
 	@Query(" SELECT nvl(max(a.solicitacao),0) + 1 FROM PedidoCustomizado a ")
-	int findNexSolic();
+	int findNextSolicit();
 
 }
