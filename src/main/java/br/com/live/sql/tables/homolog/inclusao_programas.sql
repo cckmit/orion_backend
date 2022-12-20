@@ -216,3 +216,6 @@ values (71, 'Painel de Pedidos Customizados', 'Confecção', '/painel-pedidos-cu
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (72, 'Despacho Atacado', 'Expedição', '/despacho-atacado');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (73, 'Caixas Disponíveis', 'Expedição', '/caixas-disponiveis');

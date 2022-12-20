@@ -25,9 +25,8 @@ public class ReportService {
 	// EXEMPLO DE DATASOURCE - JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(micromov);
 	//
     public String generateReport(String reportFormat, JRBeanCollectionDataSource dataSource, String layout, Map<String, Object> parameters) throws FileNotFoundException, JRException {
-        Random hashName = new Random();
         
-        int fileName = hashName.nextInt(999999999);
+        int fileName = (Integer) parameters.get("numMinuta");
         
     	File file = ResourceUtils.getFile(configuracoesService.getDiretorioJasper() + layout + ".jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());

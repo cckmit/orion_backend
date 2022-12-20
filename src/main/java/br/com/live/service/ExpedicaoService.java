@@ -308,7 +308,7 @@ public class ExpedicaoService {
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(codUsuario);
 
 		dadosAbertura = new CaixasParaEnderecar(codCaixa, 0, codUsuario, dataAtual, dataFinal,
-				dadosUsuario.usuarioSystextil, "");
+				dadosUsuario.usuarioSystextil, "", 0);
 
 		aberturaCaixasRepository.save(dadosAbertura);
 

@@ -714,6 +714,8 @@ public class ExpedicaoCustom {
 		} else {
 			query += " and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T'))) ";
 		}
+		query += " and not exists (select 1 from orion_exp_320 y " +
+				"					where y.nota = a.num_nota_fiscal) ";
 		
 		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 		query += " UNION ";
@@ -749,6 +751,9 @@ public class ExpedicaoCustom {
 		if (!transportadora.equals("")) {
 			query += " and a.transpor_forne9 || '.' || a.transpor_forne4 || '.' || a.transpor_forne2 = '" + transportadora + "' ";
 		}
+		query += " and not exists (select 1 from orion_exp_320 y " +
+				"					where y.nota = a.num_nota_fiscal) ";
+
 		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 
 		query += ") minuta order by minuta.nota ";
@@ -1224,13 +1229,22 @@ public class ExpedicaoCustom {
 	}
 
 	public List<ConsultaMinutaTransporte> consultaRelatorioMinutas(int minuta, String dataInicio, String dataFim) {
-		String query = " select a.minuta, a.tipo_minuta tipoMinuta, a.nota, a.serie, a.pedido from orion_exp_320 a " +
+
+		String query = " select minGeradas.minuta, minGeradas.tipoMinuta, minGeradas.nota, minGeradas.serie, minGeradas.pedido, nvl(minGeradas.status, 0) status from ";
+
+		query += " ( ";
+		query += " select a.minuta, a.tipo_minuta tipoMinuta, a.nota, a.serie, a.pedido, (select 1 from pcpc_320 b " +
+				"                                                                        where b. pedido_venda = a.pedido " +
+				"                                                                        and b.local_caixa = 9 " +
+				"                                                                        group by 1) status  from orion_exp_320 a " +
 				" where trunc(a.data_hora_geracao) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') ";
 		if (minuta > 0) {
 			query += " and a.minuta = " + minuta;
 		}
 		query += " group by a.minuta, a.tipo_minuta, a.nota, a.serie, a.pedido ";
 		query += " order by a.minuta, a.nota ";
+		query += " ) minGeradas ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
 
@@ -1302,5 +1316,13 @@ public class ExpedicaoCustom {
 			localCaixa = 0;
 		}
 		return localCaixa;
+	}
+
+	public List<Integer> obterCaixasNaEsteira(int caixaNaEsteira) {
+
+		String query = " ";
+
+
+		return jdbcTemplate.queryForList(query, Integer.class);
 	}
 }

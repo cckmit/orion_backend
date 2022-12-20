@@ -20,6 +20,7 @@ public class ConsultaMinutaTransporte {
 	public int volume;
 	public int minuta;
 	public int tipoMinuta;
+	public int status;
 	
 	public int getNota() {
 		return nota;
@@ -118,12 +119,20 @@ public class ConsultaMinutaTransporte {
 		this.tipoMinuta = tipoMinuta;
 	}
 
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 	public ConsultaMinutaTransporte() {
 		
 	}
 	
 	public ConsultaMinutaTransporte(int nota, int serie, Date emissao, int pedido, String cliente, int caixas,
-			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco, int volume, int minuta, int tipoMinuta) {
+			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco, int volume, int minuta, int tipoMinuta, int status) {
 		this.nota = nota;
 		this.serie = serie;
 		this.emissao = emissao;
@@ -141,5 +150,6 @@ public class ConsultaMinutaTransporte {
 		this.volume = volume;
 		this.minuta = minuta;
 		this.tipoMinuta = tipoMinuta;
+		this.status = status;
 	}	
 }
