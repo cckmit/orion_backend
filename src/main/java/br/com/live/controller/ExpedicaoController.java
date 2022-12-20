@@ -367,4 +367,19 @@ public class ExpedicaoController {
     public String obterTransportadoraMinuta(@PathVariable("minuta") int minuta) {
         return expedicaoCustom.obterTransportadoraMinuta(minuta);
     }
+
+    @RequestMapping(value = "/caixas-disponiveis/{statusCaixa}", method = RequestMethod.GET)
+    public List<CaixasEsteira> obterCaixasDisponiveis(@PathVariable("statusCaixa") int statusCaixa) {
+        return expedicaoService.obterListaCaixasDisponiveis(statusCaixa);
+    }
+
+    @RequestMapping(value = "/colocar-caixa-esteira", method = RequestMethod.POST)
+    public void colocarCaixaEsteira(@RequestBody BodyExpedicao body) {
+        expedicaoService.colocarCaixaEsteira(body.codCaixa);
+    }
+
+    @RequestMapping(value = "/retirar-caixa-esteira", method = RequestMethod.POST)
+    public void retirarCaixaEsteira(@RequestBody BodyExpedicao body) {
+        expedicaoService.retirarCaixaEsteira(body.codCaixa);
+    }
 }

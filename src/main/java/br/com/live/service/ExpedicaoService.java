@@ -766,4 +766,34 @@ public class ExpedicaoService {
 		}
 		return status;
 	}
+
+	public List<CaixasEsteira> obterListaCaixasDisponiveis(int statusCaixa) {
+		List<CaixasEsteira> listCaixas = new ArrayList<CaixasEsteira>();
+		CaixasEsteira dadosCaixa = null;
+
+		List<Integer> caixas = expedicaoCustom.obterCaixasNaEsteira(statusCaixa);
+		for (Integer caixa : caixas) {
+			String area = expedicaoCustom.obterAreaCaixa(caixa);
+
+			dadosCaixa = new CaixasEsteira(caixa, area);
+			listCaixas.add(dadosCaixa);
+		}
+		return listCaixas;
+	}
+
+	public void colocarCaixaEsteira(int numeroCaixa) {
+		CaixasParaEnderecar dadosCaixa = aberturaCaixasRepository.findByNumeroCaixa(numeroCaixa);
+
+		dadosCaixa.caixaNaEsteira = 1;
+
+		aberturaCaixasRepository.save(dadosCaixa);
+	}
+
+	public void retirarCaixaEsteira(int numeroCaixa) {
+		CaixasParaEnderecar dadosCaixa = aberturaCaixasRepository.findByNumeroCaixa(numeroCaixa);
+
+		dadosCaixa.caixaNaEsteira = 0;
+
+		aberturaCaixasRepository.save(dadosCaixa);
+	}
 }

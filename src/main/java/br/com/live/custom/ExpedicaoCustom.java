@@ -1320,9 +1320,33 @@ public class ExpedicaoCustom {
 
 	public List<Integer> obterCaixasNaEsteira(int caixaNaEsteira) {
 
-		String query = " ";
-
+		String query = " select a.numero_caixa caixa from orion_130 a "
+				+ " where a.caixa_na_esteira = " + caixaNaEsteira
+				+ " and a.endereco is null ";
 
 		return jdbcTemplate.queryForList(query, Integer.class);
+	}
+
+	public String obterAreaCaixa(int caixa) {
+		String area = "";
+		String query = " select p.descricao from orion_131 n, pcpc_330 m, estq_110 o, orion_exp_350 p " +
+				" where n.numero_caixa = " + caixa +
+				" and m.periodo_producao = n.periodo_producao " +
+				" and m.ordem_producao = n.ordem_producao " +
+				" and m.ordem_confeccao = n.ordem_confeccao " +
+				" and m.sequencia = n.sequencia " +
+				" and o.nivel = m.nivel " +
+				" and o.grupo = m.grupo " +
+				" and o.subgrupo = m.subgrupo " +
+				" and o.item = m.item " +
+				" and o.endereco between p.endereco_inicial and p.endereco_final " +
+				" group by p.descricao ";
+
+		try {
+			area = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			area = "SEM ÁREA";
+		}
+		return area;
 	}
 }
