@@ -1322,6 +1322,7 @@ public class ExpedicaoCustom {
 
 		String query = " select a.numero_caixa caixa from orion_130 a "
 				+ " where a.caixa_na_esteira = " + caixaNaEsteira
+				+ " and a.situacao_caixa = 1 "
 				+ " and a.endereco is null ";
 
 		return jdbcTemplate.queryForList(query, Integer.class);
