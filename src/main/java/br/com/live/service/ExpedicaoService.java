@@ -286,7 +286,7 @@ public class ExpedicaoService {
 		}
 	}
 
-	public String abrirCaixa(int codCaixa, int codUsuario) {
+	public String abrirCaixa(int codCaixa, int codUsuario, int tipoCaixa) {
 		String msgErro = "";
 		int numeroCaixa = 0;
 
@@ -308,7 +308,7 @@ public class ExpedicaoService {
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(codUsuario);
 
 		dadosAbertura = new CaixasParaEnderecar(codCaixa, 0, codUsuario, dataAtual, dataFinal,
-				dadosUsuario.usuarioSystextil, "", 0);
+				dadosUsuario.usuarioSystextil, "", 0, tipoCaixa);
 
 		aberturaCaixasRepository.save(dadosAbertura);
 
@@ -340,6 +340,12 @@ public class ExpedicaoService {
 		String msgErro = "";
 
 		CaixasParaEnderecar dadosCaixa = aberturaCaixasRepository.findByNumeroCaixa(numeroCaixa);
+
+		if (dadosCaixa.endereco.equalsIgnoreCase(endereco)) {
+			dadosCaixa.endereco = "";
+			msgErro = "Removido o endereço da caixa " + numeroCaixa;
+			return msgErro;
+		}
 
 		if (dadosCaixa.situacaoCaixa == CAIXA_FECHADA) {
 			dadosCaixa.endereco = endereco;
@@ -750,16 +756,22 @@ public class ExpedicaoService {
 		StatusGravacao status = new StatusGravacao(true, "");
 		int localCaixaVolume = 0;
 
-		int volumeDentroDaMinuta = expedicaoCustom.validarVolumeDentroMinuta(minuta, volume);
+		String volumeComp = "" + volume + "";
+		String volumeEdit = volumeComp.substring(0, 7);
+
+		System.out.println(volume);
+		System.out.println(Integer.parseInt(volumeEdit));
+
+		int volumeDentroDaMinuta = expedicaoCustom.validarVolumeDentroMinuta(minuta, Integer.parseInt(volumeEdit));
 		if (volumeDentroDaMinuta == 1) {
 
-			localCaixaVolume = expedicaoCustom.obterLocalCaixaVolume(volume);
+			localCaixaVolume = expedicaoCustom.obterLocalCaixaVolume(Integer.parseInt(volumeEdit));
 
 			if (localCaixaVolume == localCaixa) {
 				status = new StatusGravacao(false, "Volume já esta com local da caixa " + localCaixa + "" +
 						"!");
 			} else {
-				expedicaoCustom.alterarLocalCaixaVolume(volume, localCaixa);
+				expedicaoCustom.alterarLocalCaixaVolume(Integer.parseInt(volumeEdit), localCaixa);
 			}
 		} else {
 			status = new StatusGravacao(false, "Volume não pertence a minuta informada!");
@@ -774,11 +786,16 @@ public class ExpedicaoService {
 		List<Integer> caixas = expedicaoCustom.obterCaixasNaEsteira(statusCaixa);
 		for (Integer caixa : caixas) {
 			String area = expedicaoCustom.obterAreaCaixa(caixa);
+			int quantidade = expedicaoCustom.obterQuantidadePendente(caixa);
 
-			dadosCaixa = new CaixasEsteira(caixa, area);
+			dadosCaixa = new CaixasEsteira(caixa, area, quantidade);
 			listCaixas.add(dadosCaixa);
 		}
 		return listCaixas;
+	}
+
+	public List<CaixasEsteira> obterListaCaixasSortidas() {
+		return expedicaoCustom.obterCaixasSortidas();
 	}
 
 	public void colocarCaixaEsteira(int numeroCaixa) {

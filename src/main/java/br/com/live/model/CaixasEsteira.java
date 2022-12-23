@@ -4,6 +4,7 @@ public class CaixasEsteira {
 
     public int caixa;
     public String area;
+    public int quantidade;
 
     public int getCaixa() {
         return caixa;
@@ -21,12 +22,21 @@ public class CaixasEsteira {
         this.area = area;
     }
 
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
     public CaixasEsteira() {
 
     }
 
-    public CaixasEsteira(int caixa, String area) {
+    public CaixasEsteira(int caixa, String area, int quantidade) {
         this.caixa = caixa;
         this.area = area;
+        this.quantidade = quantidade;
     }
 }

@@ -54,4 +54,5 @@ public class BodyExpedicao {
 	public String dataInicio;
 	public String dataFim;
 	public int rua;
+	public int tipoCaixa;
 }

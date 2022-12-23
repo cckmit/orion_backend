@@ -100,7 +100,7 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/abrir-caixa", method = RequestMethod.POST)
     public String abrirCaixa(@RequestBody BodyExpedicao body) {
-    	return expedicaoService.abrirCaixa(body.codCaixa, body.usuario);
+    	return expedicaoService.abrirCaixa(body.codCaixa, body.usuario, body.tipoCaixa);
     }
     
     @RequestMapping(value = "/find-dados-caixa/{codCaixa}", method = RequestMethod.GET)
@@ -371,6 +371,11 @@ public class ExpedicaoController {
     @RequestMapping(value = "/caixas-disponiveis/{statusCaixa}", method = RequestMethod.GET)
     public List<CaixasEsteira> obterCaixasDisponiveis(@PathVariable("statusCaixa") int statusCaixa) {
         return expedicaoService.obterListaCaixasDisponiveis(statusCaixa);
+    }
+
+    @RequestMapping(value = "/find-caixas-sortidas", method = RequestMethod.GET)
+    public List<CaixasEsteira> obterCaixasSortidas() {
+        return expedicaoService.obterListaCaixasSortidas();
     }
 
     @RequestMapping(value = "/colocar-caixa-esteira", method = RequestMethod.POST)

@@ -33,11 +33,15 @@ public class CaixasParaEnderecar {
 
 	@Column(name = "caixa_na_esteira")
 	public int caixaNaEsteira;
+
+	@Column(name = "tipo_caixa")
+	public int tipoCaixa;
 	
 	public CaixasParaEnderecar() {
 	}
 
-	public CaixasParaEnderecar(int numeroCaixa, int situacaoCaixa, int usuario, Date dataHoraInicio, Date dataHoraFim, String usuarioSystextil, String endereco, int caixaNaEsteira) {
+	public CaixasParaEnderecar(int numeroCaixa, int situacaoCaixa, int usuario, Date dataHoraInicio, Date dataHoraFim, String usuarioSystextil, String endereco, int caixaNaEsteira,
+							   int tipoCaixa) {
 		this.numeroCaixa = numeroCaixa;
 		this.situacaoCaixa = situacaoCaixa;
 		this.usuario = usuario;
@@ -46,5 +50,6 @@ public class CaixasParaEnderecar {
 		this.usuarioSystextil = usuarioSystextil;
 		this.endereco = endereco;
 		this.caixaNaEsteira = caixaNaEsteira;
+		this.tipoCaixa = tipoCaixa;
 	}
 }

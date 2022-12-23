@@ -1323,6 +1323,7 @@ public class ExpedicaoCustom {
 		String query = " select a.numero_caixa caixa from orion_130 a "
 				+ " where a.caixa_na_esteira = " + caixaNaEsteira
 				+ " and a.situacao_caixa = 1 "
+				+ " and a.tipo_caixa = 0 "
 				+ " and a.endereco is null ";
 
 		return jdbcTemplate.queryForList(query, Integer.class);
@@ -1349,5 +1350,34 @@ public class ExpedicaoCustom {
 			area = "SEM ÁREA";
 		}
 		return area;
+	}
+
+	public List<CaixasEsteira> obterCaixasSortidas() {
+		List<CaixasEsteira> listCaixas = null;
+
+		String query = " select a.numero_caixa caixa, 'SORTIDA' area, (select count(*) from orion_131 where orion_131.numero_caixa = a.numero_caixa) quantidade " +
+				" from orion_130 a " +
+				" where a.situacao_caixa = 1 " +
+				" and a.tipo_caixa = 1 ";
+		try {
+			listCaixas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CaixasEsteira.class));
+		} catch (Exception e) {
+			listCaixas = new ArrayList<>();
+		}
+		return listCaixas;
+	}
+
+	public int obterQuantidadePendente(int numeroCaixa) {
+		int quantidade = 0;
+
+		String query = " select count(*) from orion_131 a " +
+				" where a.numero_caixa = " + numeroCaixa;
+
+		try {
+			quantidade = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			quantidade = 0;
+		}
+		return quantidade;
 	}
 }
