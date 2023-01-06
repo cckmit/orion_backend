@@ -55,7 +55,7 @@ public class ConfeccaoCustom {
 				+ " and f.ordem_producao = c.ordem_producao "
 				+ " and (f.ordem_confeccao = c.ordem_confeccao OR c.ordem_confeccao = 0) "
 				+ " and f.codigo_estagio = 35 "
-				+ " and f.qtde_a_produzir_pacote > 0 "
+				+ " and (f.qtde_a_produzir_pacote > 0 or f.qtde_conserto > 0) "
 				+ " and g.codigo_estagio = c.estagio "
 				+ " group by c.id, c.estagio, c.ordem_producao, c.ordem_confeccao, c.tipo_observacao, d.descricao, c.observacao_adicional, g.descricao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaObservacaoOrdemPacote.class));

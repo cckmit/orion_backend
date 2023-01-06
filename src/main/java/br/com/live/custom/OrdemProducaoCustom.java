@@ -916,7 +916,7 @@ public class OrdemProducaoCustom {
 				+ " from pcpc_040 a, pcpc_020 b "
 				+ " where b.ordem_producao = a.ordem_producao "
 				+ " and b.cod_cancelamento = 0 "
-				+ " and a.qtde_a_produzir_pacote > 0 "
+				+ " and (a.qtde_a_produzir_pacote > 0 or a.qtde_conserto > 0) "
 				+ " and a.codigo_estagio = " + estagio
 				+ " and a.ordem_producao like '%" + searchVar + "%' "
 				+ " and rownum <= 100 "
