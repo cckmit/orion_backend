@@ -1,0 +1,13 @@
+CREATE TABLE orion_ind_080(
+        ID                VARCHAR2(100),
+        ID_INDICADOR      NUMBER(4),
+        MES               VARCHAR2(100),
+        ANO               NUMBER(4),
+        CODIGO            VARCHAR2(200),
+        DESCRICAO         VARCHAR2(200),
+        SEMANA_1          NUMBER(12,3),
+        SEMANA_2          NUMBER(12,3),
+        SEMANA_3          NUMBER(12,3),
+        SEMANA_4          NUMBER(12,3),
+        SEMANA_5          NUMBER(12,3),
+        CONSTRAINT orion_ind_080_pk PRIMARY KEY (ID));

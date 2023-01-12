@@ -1,0 +1,4 @@
+CREATE TABLE orion_ind_040(
+        ID                     NUMBER(4),
+        DESCRICAO_DEPARTAMENTO VARCHAR2(200),
+        CONSTRAINT orion_ind_040_pk PRIMARY KEY (ID));

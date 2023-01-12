@@ -1,0 +1,18 @@
+CREATE TABLE orion_ind_110(
+        ID                        NUMBER(4),
+        NOME_INDICADOR            VARCHAR2(100),
+        GRUPO_INDICADOR           NUMBER(5),
+        AREA                      NUMBER(5),
+        DEPARTAMENTO              NUMBER(5),
+        SETOR                     NUMBER(5),
+        GESTOR_AVALIADO           NUMBER(6),
+        UNIDADE_MEDIDA            VARCHAR2(50),
+        FREQUENCIA_MONITORAMENTO  VARCHAR2(50),
+        FONTE_DADOS               VARCHAR2(50),
+        POLARIDADE                VARCHAR2(50),
+        RESPONSAVEL_REGISTRO      NUMBER(6),
+        RESPONSAVEL_PUBLICACAO    NUMBER(6),
+        OBSERVACAO                VARCHAR2(200),
+        FORMULA_CALCULO           VARCHAR2(100),
+        VARIAVEIS                 VARCHAR2(100),
+        CONSTRAINT orion_ind_110_pk PRIMARY KEY (ID));
