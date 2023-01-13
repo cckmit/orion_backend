@@ -14,7 +14,6 @@ import br.com.live.body.BodyPoliticaVendas;
 import br.com.live.custom.PoliticaVendasCustom;
 import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.model.RegrasPoliticaVendas;
-import br.com.live.repository.PoliticaVendasRepository;
 import br.com.live.service.PoliticaVendasService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;

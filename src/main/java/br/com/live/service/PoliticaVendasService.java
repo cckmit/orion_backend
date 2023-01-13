@@ -1,14 +1,8 @@
 package br.com.live.service;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
-
 import org.springframework.stereotype.Service;
-
-import br.com.live.custom.PoliticaVendasCustom;
 import br.com.live.entity.PoliticaVendas;
-import br.com.live.model.RegrasPoliticaVendas;
 import br.com.live.repository.PoliticaVendasRepository;
 
 @Transactional
@@ -16,11 +10,9 @@ import br.com.live.repository.PoliticaVendasRepository;
 public class PoliticaVendasService {
 	
 	private final PoliticaVendasRepository politicaVendasRepository;
-	private final PoliticaVendasCustom politicaVendasCustom;
 	
-	public PoliticaVendasService(PoliticaVendasRepository politicaVendasRepository, PoliticaVendasCustom politicaVendasCustom) {
+	public PoliticaVendasService(PoliticaVendasRepository politicaVendasRepository) {
 		this.politicaVendasRepository = politicaVendasRepository;
-		this.politicaVendasCustom = politicaVendasCustom;
 	}
 	
 	

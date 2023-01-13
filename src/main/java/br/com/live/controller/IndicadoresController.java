@@ -24,12 +24,7 @@ import br.com.live.entity.ResultadosIndicadorMensal;
 import br.com.live.entity.ResultadosIndicadorSemanal;
 import br.com.live.entity.SetorIndicador;
 import br.com.live.entity.UndMedidaIndicador;
-import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.IndicadoresAdministrativos;
-import br.com.live.repository.IndicadoresDiarioRepository;
-import br.com.live.repository.IndicadoresSemanalRepository;
-import br.com.live.repository.ResultadosIndicadorSemanalRepository;
-import br.com.live.repository.ResultadosIndicadorDiarioRepository;
 import br.com.live.service.IndicadoresService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -41,21 +36,11 @@ import br.com.live.util.ConteudoChaveNumerica;
 public class IndicadoresController {
 	
 	private IndicadoresCustom indicadoresCustom;
-	private IndicadoresSemanalRepository indicadoresSemanalRepository;
-	private ResultadosIndicadorSemanalRepository resultadosIndicadorSemanalRepository;
-	private IndicadoresDiarioRepository indicadoresDiarioRepository;
-	private ResultadosIndicadorDiarioRepository resultadosIndicadorDiarioRepository;
 	private IndicadoresService indicadoresService;
 	
 	@Autowired
-	public IndicadoresController(IndicadoresCustom indicadoresCustom, IndicadoresSemanalRepository indicadoresSemanalRepository, 
-			ResultadosIndicadorSemanalRepository resultadosIndicadorSemanalRepository, IndicadoresDiarioRepository indicadoresDiarioRepository, 
-			ResultadosIndicadorDiarioRepository resultadosIndicadorDiarioRepository, IndicadoresService indicadoresService) {
+	public IndicadoresController(IndicadoresCustom indicadoresCustom, IndicadoresService indicadoresService) {
 		this.indicadoresCustom = indicadoresCustom;
-		this.indicadoresSemanalRepository = indicadoresSemanalRepository;
-		this.resultadosIndicadorSemanalRepository = resultadosIndicadorSemanalRepository;
-		this.indicadoresDiarioRepository = indicadoresDiarioRepository;
-		this.resultadosIndicadorDiarioRepository = resultadosIndicadorDiarioRepository;
 		this.indicadoresService = indicadoresService;
 				
 	}

@@ -308,7 +308,7 @@ public class PoliticaVendasCustom {
 				+ "        ) pedidos "
 				+ "        WHERE (pedidos.qtde_total_pedi <> pedidos.qtde_total_itens "
 				+ "          OR pedidos.valor_total_pedi <> pedidos.valor_total_itens "
-				+ "          OR ROUND(pedidos.valor_saldo_pedi,1) <> ROUND(pedidos.valor_saldo_itens - (pedidos.valor_saldo_itens * (live_fn_calc_perc_desconto(pedidos.desconto1, pedidos.desconto2, pedidos.desconto3) / 100)),1)) "
+				+ "          OR TRUNC(pedidos.valor_saldo_pedi) <> TRUNC(pedidos.valor_saldo_itens - (pedidos.valor_saldo_itens * (live_fn_calc_perc_desconto(pedidos.desconto1, pedidos.desconto2, pedidos.desconto3) / 100)))) "
 				+ "        ) REGRAS "
 				+ "        ORDER BY REGRAS.PEDIDO";
 		
