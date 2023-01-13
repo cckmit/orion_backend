@@ -3,7 +3,6 @@ package br.com.live.controller;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import br.com.live.entity.VolumesMinutaTransporte;
 import br.com.live.model.*;
 import br.com.live.repository.VolumesMinutaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,11 @@ import br.com.live.custom.ExpedicaoCustom;
 import br.com.live.entity.CaixasParaEnderecar;
 import br.com.live.entity.ParametrosMapaEndereco;
 import br.com.live.entity.ParametrosMapaEnderecoCaixa;
+import br.com.live.entity.RegrasPrioridadePedido;
 import br.com.live.repository.AberturaCaixasRepository;
 import br.com.live.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.repository.ParametrosMapaEndRepository;
+import br.com.live.repository.RegrasPrioridadePedidoRepository;
 import br.com.live.service.AcertoCalculoDepreciacaoService;
 import br.com.live.service.ExpedicaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
@@ -43,10 +44,12 @@ public class ExpedicaoController {
 	private ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository;
 	private AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService;
     private VolumesMinutaRepository volumesMinutaRepository;
+    private RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository;
 	
     @Autowired
     public ExpedicaoController(ExpedicaoService expedicaoService, ParametrosMapaEndRepository parametrosMapaEndRepository, ExpedicaoCustom expedicaoCustom, AberturaCaixasRepository aberturaCaixasRepository,
-    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService, VolumesMinutaRepository volumesMinutaRepository) {
+    		ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository, AcertoCalculoDepreciacaoService acertoCalculoDepreciacaoService, VolumesMinutaRepository volumesMinutaRepository, 
+            RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository) {
     	this.expedicaoService = expedicaoService;
     	this.parametrosMapaEndRepository = parametrosMapaEndRepository;
     	this.expedicaoCustom = expedicaoCustom;
@@ -54,6 +57,7 @@ public class ExpedicaoController {
     	this.parametrosEnderecoCaixaRepository = parametrosEnderecoCaixaRepository;
     	this.acertoCalculoDepreciacaoService = acertoCalculoDepreciacaoService;
         this.volumesMinutaRepository = volumesMinutaRepository;
+        this.regrasPrioridadePedidoRepository = regrasPrioridadePedidoRepository;
     }
 
     @RequestMapping(value = "/find-endereco/{deposito}", method = RequestMethod.GET)
@@ -386,5 +390,27 @@ public class ExpedicaoController {
     @RequestMapping(value = "/retirar-caixa-esteira", method = RequestMethod.POST)
     public void retirarCaixaEsteira(@RequestBody BodyExpedicao body) {
         expedicaoService.retirarCaixaEsteira(body.codCaixa);
+    }
+
+    @RequestMapping(value = "/salvar-regra-prioridade-tipo-cliente", method = RequestMethod.POST)
+    public List<ConsultaRegraPrioridadeTipoCliente> salvarRegraPrioridadeTipoCliente(@RequestBody BodyExpedicao body) {
+        expedicaoService.salvarRegraPrioridadeTipoClientePedido(body.tipoCliente, body.prioridade);
+        return expedicaoCustom.findAllRegrasTipoClientePedido();
+    }
+
+    @RequestMapping(value = "/find-all-regra-prioridade-tipo-cliente", method = RequestMethod.GET)
+    public List<ConsultaRegraPrioridadeTipoCliente> obterRegraTipoCliente() {
+        return expedicaoService.findAllRegraTipoCliente();
+    }
+
+    @RequestMapping(value = "/find-regra-prioridade-tipo-cliente/{tipoCliente}", method = RequestMethod.GET)
+    public RegrasPrioridadePedido findTipoClienteRegra(@PathVariable("tipoCliente") int tipoCliente) {
+        return regrasPrioridadePedidoRepository.findByTipoCliente(tipoCliente);
+    }
+
+    @RequestMapping(value = "/delete-regra-tipo-cliente/{tipoCliente}", method = RequestMethod.DELETE)
+    public List<ConsultaRegraPrioridadeTipoCliente> deleteVariacaoById (@PathVariable("tipoCliente") int tipoCliente) {
+    	expedicaoService.deleteRegraPrioridadeTipoClientePedido(tipoCliente);
+        return expedicaoService.findAllRegraTipoCliente();
     }
 }

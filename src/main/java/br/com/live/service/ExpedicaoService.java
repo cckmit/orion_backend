@@ -33,6 +33,7 @@ public class ExpedicaoService {
 	private final VariacaoPesoArtigoRepository variacaoPesoArtigoRepository;
 	private final ReportService reportService;
 	private final VolumesMinutaRepository volumesMinutaRepository;
+	private final RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository;
 
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
@@ -44,7 +45,7 @@ public class ExpedicaoService {
 			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository,
 			ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
 			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService,
-							VolumesMinutaRepository volumesMinutaRepository) {
+							VolumesMinutaRepository volumesMinutaRepository, RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository) {
 		this.expedicaoCustom = expedicaoCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
@@ -54,6 +55,7 @@ public class ExpedicaoService {
 		this.variacaoPesoArtigoRepository = variacaoPesoArtigoRepository;
 		this.reportService = reportService;
 		this.volumesMinutaRepository = volumesMinutaRepository;
+		this.regrasPrioridadePedidoRepository = regrasPrioridadePedidoRepository;
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -813,4 +815,25 @@ public class ExpedicaoService {
 
 		aberturaCaixasRepository.save(dadosCaixa);
 	}
+
+	public void salvarRegraPrioridadeTipoClientePedido(int tipoCliente, int prioridade) {
+
+		RegrasPrioridadePedido dadosRegra = regrasPrioridadePedidoRepository.findByTipoCliente(tipoCliente);
+
+		if (dadosRegra == null) {
+			dadosRegra = new RegrasPrioridadePedido(tipoCliente, prioridade);
+		} else {
+			dadosRegra.prioridade = prioridade;
+		}
+		regrasPrioridadePedidoRepository.save(dadosRegra);
+	}
+
+	public void deleteRegraPrioridadeTipoClientePedido(int tipoCliente) {
+		regrasPrioridadePedidoRepository.deleteByTipoCliente(tipoCliente);
+	}
+
+	public List<ConsultaRegraPrioridadeTipoCliente> findAllRegraTipoCliente() {
+		return expedicaoCustom.findAllRegrasTipoClientePedido();
+	}
+
 }
