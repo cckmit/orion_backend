@@ -274,7 +274,7 @@ public class EngenhariaCustom {
 				+ " NVL(DECODE(a.tipo, 1, b.interferencia, e.interferencia), 0) interferencia, "
 				+ " a.id_micromovimento idMicromovimento, "
 				+ " a.id_tempo_maquina idTempoMaquina, "
-				+ " NVL(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((e.interferencia / 100) * c.tempo) + c.tempo), 0) tempo_total "
+				+ " NVL(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((e.interferencia / 100) * c.tempo) + c.tempo), 0) tempo_normal "
 				+ " FROM orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_010 d, mqop_020 e "
 				+ " WHERE a.cod_operacao = " + operacao
 				+ " AND b.id (+) = a.id_micromovimento "
@@ -347,9 +347,19 @@ public class EngenhariaCustom {
 		
 		return interferencia;
 	}
-	
+
 	public float findTempoTotalOperacao(int codOp) {
 		float tempoTotal = 0;
+		
+		String query = " SELECT n.tempo_homem FROM mqop_040 n WHERE n.codigo_operacao = ? ";
+		
+		tempoTotal = jdbcTemplate.queryForObject(query, Float.class, codOp);
+		
+		return tempoTotal;
+	}
+	
+	public float findTempoNormalOperacao(int codOp) {
+		float tempoNormal = 0;
 		String query = "SELECT NVL(SUM(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((e.interferencia / 100) * c.tempo) + c.tempo)), 0) tempo_total "
 				+ "  FROM orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_020 e "
 				+ "  WHERE a.cod_operacao = " + codOp
@@ -358,9 +368,9 @@ public class EngenhariaCustom {
 				+ "  AND e.grupo_maquina (+) = c.grupo "
 				+ "  AND e.subgrupo_maquina (+) = c.subgrupo ";
 		
-		tempoTotal = jdbcTemplate.queryForObject(query, Float.class);
+		tempoNormal = jdbcTemplate.queryForObject(query, Float.class);
 		
-		return tempoTotal;
+		return tempoNormal;
 	}
 	
 	public List<Produto> findProdutosEnviarFichaDigital() {

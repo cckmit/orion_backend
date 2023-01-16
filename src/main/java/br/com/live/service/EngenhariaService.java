@@ -391,7 +391,7 @@ public class EngenhariaService {
 		operXMicromvRepository.save(dadosOperXMicromv);
 		operXMicromvRepository.flush();
 	}
-	public void atualizaTempoOperacao(int operacao) {
+	public float atualizaTempoOperacao(int operacao) {
 		float tempoTotal = 0;
 		float tempoMicromv = 0;
 		float tempoMaquina = 0;
@@ -415,7 +415,9 @@ public class EngenhariaService {
 					tempoTotal = tempoTotal + tempoMaquina;
 			}		
 		}
+		tempoTotal = (float) (tempoTotal + ((1.86 * tempoTotal) / 100));
 		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
+		return tempoTotal;
 		
 	}
 	

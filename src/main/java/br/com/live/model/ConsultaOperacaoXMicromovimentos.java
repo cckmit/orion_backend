@@ -10,7 +10,7 @@ public class ConsultaOperacaoXMicromovimentos {
     private float interferencia;
     private String idMicromovimento;
     private long idTempoMaquina;
-    private float tempoTotal;
+    private float tempoNormal;
     
 	public long getId() {
 		return id;
@@ -60,11 +60,11 @@ public class ConsultaOperacaoXMicromovimentos {
 	public void setIdTempoMaquina(long idTempoMaquina) {
 		this.idTempoMaquina = idTempoMaquina;
 	}
-	public float getTempoTotal() {
-		return tempoTotal;
+	public float getTempoNormal() {
+		return tempoNormal;
 	}
-	public void setTempoTotal(float tempoTotal) {
-		this.tempoTotal = tempoTotal;
+	public void setTempoNormal(float tempoNormal) {
+		this.tempoNormal = tempoNormal;
 	}
     
     

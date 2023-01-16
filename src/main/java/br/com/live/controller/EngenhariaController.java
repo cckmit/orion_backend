@@ -234,6 +234,11 @@ public class EngenhariaController {
     	return engenhariaCustom.findAllOperacaoXMicromv(operacao);
     } 
     
+    @RequestMapping(value = "/find-tempo-normal/{codOp}", method = RequestMethod.GET)
+    public float findNormalById(@PathVariable("codOp") int codOp) {
+    	return engenhariaCustom.findTempoNormalOperacao(codOp);
+    }
+
     @RequestMapping(value = "/find-tempo-total/{codOp}", method = RequestMethod.GET)
     public float findTotalById(@PathVariable("codOp") int codOp) {
     	return engenhariaCustom.findTempoTotalOperacao(codOp);
@@ -321,8 +326,8 @@ public class EngenhariaController {
     
     
     @RequestMapping(value = "/atualiza-tempo-homem/{operacao}", method = RequestMethod.GET)
-    public void atualizarTempoHomem(@PathVariable("operacao") int operacao) {
-    	engenhariaService.atualizaTempoOperacao(operacao);
+    public float atualizarTempoHomem(@PathVariable("operacao") int operacao) {
+    	return engenhariaService.atualizaTempoOperacao(operacao);
     }
     
     //
