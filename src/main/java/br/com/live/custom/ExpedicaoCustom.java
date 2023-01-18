@@ -106,6 +106,29 @@ public class ExpedicaoCustom {
 
 		jdbcTemplate.update(queryUpdate);
 	}
+	
+	public int validarEnderecoCorreto(int periodo, int ordemProducao, int ordermConfeccao, int sequencia, String endereco) {
+		int enderecoCorreto = 0;
+		
+		String query = " select 1 from pcpc_330 c, estq_110 d "
+				+ " where c.periodo_producao = " + periodo
+				+ " and c.ordem_producao = " + ordemProducao
+				+ " and c.ordem_confeccao = " + ordermConfeccao
+				+ " and c.sequencia = " + sequencia
+				+ " and d.deposito = 4 "
+				+ " and d.nivel = c.nivel "
+				+ " and d.grupo = c.grupo "
+				+ " and d.subgrupo = c.subgrupo "
+				+ " and d.item = c.item "
+				+ " and d.endereco = '" + endereco + "'";
+		
+		try {
+			enderecoCorreto = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			enderecoCorreto = 0;
+		}
+		return enderecoCorreto;
+	}
 
 	public String validarGravacaoEndereco(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
 		String endereco = "";
@@ -448,21 +471,26 @@ public class ExpedicaoCustom {
 	}
 
 	public List<ConsultaTag> obterEnderecos(int deposito, String nivel, String grupo, String subGrupo, String item) {
-		String query = " SELECT a.endereco, count(*) quantEndereco FROM pcpc_330 a, estq_040 b "
+		String query = " SELECT c.endereco, count(*) quantEndereco FROM pcpc_330 a, estq_040 b, estq_110 c "
 				+ " WHERE a.nivel = b.cditem_nivel99 "
-				+ " AND a.grupo = b.cditem_grupo "
-				+ " AND a.subgrupo = b.cditem_subgrupo "
-				+ " AND a.item = b.cditem_item "
-				+ " AND a.deposito = b.deposito "
+				+ " and a.grupo = b.cditem_grupo "
+				+ " and a.subgrupo = b.cditem_subgrupo "
+				+ " and a.item = b.cditem_item "
+				+ " and a.deposito = b.deposito "
 				+ " and a.nivel = '" + nivel + "' "
 				+ " and a.grupo = '" + grupo + "' "
 				+ " and a.subgrupo = '" + subGrupo + "' "
 				+ " and a.item = '" + item + "' "
 				+ " and a.deposito = " + deposito
-				+ " AND a.estoque_tag = 1 "
+				+ " and a.estoque_tag = 1 "
 				+ " and a.endereco is not null "
-				+ " group by a.endereco "
-				+ " order by a.endereco ";
+				+ " and a.nivel = c.nivel "
+				+ " and a.grupo = c.grupo "
+				+ " and a.subgrupo = c.subgrupo "
+				+ " and a.item = c.item "
+				+ " and a.deposito = c.deposito "
+				+ " group by c.endereco "
+				+ " order by c.endereco ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 	}
 

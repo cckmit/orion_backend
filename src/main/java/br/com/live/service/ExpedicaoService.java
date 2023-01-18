@@ -82,31 +82,39 @@ public class ExpedicaoService {
 		String msgErro = "";
 		String existeEndereco = "";
 		List<DadosTagProd> listTags = new ArrayList<DadosTagProd>();
+		int enderecoCorreto = 0;
 		
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
-
+		
 		if (numeroTag.length() < 22) {
 			int numeroCaixa = Integer.parseInt(numeroTag);
 
 			int temProduto = expedicaoCustom.validarExistePecaCaixa(numeroCaixa);
-
+			
 			if (temProduto == 0) {
 				msgErro = "Caixa não passou pelo novo processo de endereçamento! Será necessário endereçar peça a peça!";
 			} else {
 				listTags = expedicaoCustom.obterTagsLidosCaixa(numeroCaixa);
 
 				for (DadosTagProd dadosTag : listTags) {
+					enderecoCorreto = expedicaoCustom.validarEnderecoCorreto(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote, dadosTag.sequencia, endereco);
+					if (enderecoCorreto != 1) {
+						msgErro = "EsteS TAG's não pertencem ao endereço informado!";
+						break;
+					}
 					expedicaoCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote,
 							dadosTag.sequencia, endereco, dadosUsuario.usuarioSystextil);
+					insertProductInEstq110(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote, dadosTag.sequencia, endereco);
 				}
-				expedicaoCustom.limparCaixa(numeroCaixa);
+				
+				if (msgErro.equalsIgnoreCase("")) expedicaoCustom.limparCaixa(numeroCaixa);
 			}
 		} else {
 			int periodo = Integer.parseInt(numeroTag.substring(0, 4));
 			int ordem = Integer.parseInt(numeroTag.substring(4, 13));
 			int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 			int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
-
+			
 			int flagEmEstoque = expedicaoCustom.validarPecaEmEstoque(periodo, ordem, pacote, sequencia);
 			existeEndereco = expedicaoCustom.validarGravacaoEndereco(periodo, ordem, pacote, sequencia);
 
@@ -116,6 +124,13 @@ public class ExpedicaoService {
 
 			if ((existeEndereco != null) && (!existeEndereco.equals("")) && (!existeEndereco.equals("ENDERECAR"))) {
 				msgErro = existeEndereco;
+			}
+			
+			if (retornaListaLetraNumero(endereco.substring(0, 1)) < 6) {
+				enderecoCorreto = expedicaoCustom.validarEnderecoCorreto(periodo, ordem, pacote, sequencia, endereco);
+				if (enderecoCorreto != 1) {
+					msgErro = "Este TAG não pertence ao endereço informado!";
+				}
 			}
 
 			if (msgErro.equals("")) {
@@ -128,6 +143,7 @@ public class ExpedicaoService {
 					expedicaoCustom.limparTagLidoCaixa(numeroTag);
 				} else {
 					expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
+					insertProductInEstq110(periodo, ordem, pacote, sequencia, endereco);
 					expedicaoCustom.limparTagLidoCaixa(numeroTag);
 				}
 			}
@@ -630,34 +646,34 @@ public class ExpedicaoService {
 	}
 	
 	public StatusGravacao validateWarehouse(String allocation, String tagNumber) {
-		StatusGravacao status = null;
+		StatusGravacao status = new StatusGravacao(true, "Validado Com Sucesso!");
 		int allocationWarehouse = 0;
 		
-		int period = Integer.parseInt(tagNumber.substring(0, 4));
-		int order = Integer.parseInt(tagNumber.substring(4, 13));
-		int orderPackage = Integer.parseInt(tagNumber.substring(13, 18));
-		int sequence = Integer.parseInt(tagNumber.substring(18, 22));
-		
-		int tagWarehouse = expedicaoCustom.findWarehouseTAG(period, order, orderPackage, sequence);
-		int situacaoTag = expedicaoCustom.findSituacaoTAG(period, order, orderPackage, sequence);
-		
-		if (situacaoTag == 4) {
-			status = new StatusGravacao(false, "Este TAG já está faturado! não é possível endereçar!");
-			return status;
-		}
-		
-		String block = allocation.substring(0, 1);
-		
-		if (retornaListaLetraNumero(block) >= 6) {
-			allocationWarehouse = 111;
-		} else {
-			allocationWarehouse = 4;
-		}
-		
-		if (tagWarehouse != allocationWarehouse) {
-			status = new StatusGravacao(false, "Depósito do TAG diferente do depósito do endereço!");
-		} else {
-			status = new StatusGravacao(true, "Validado Com Sucesso!");
+		if ( tagNumber.length() >= 22) {
+			int period = Integer.parseInt(tagNumber.substring(0, 4));
+			int order = Integer.parseInt(tagNumber.substring(4, 13));
+			int orderPackage = Integer.parseInt(tagNumber.substring(13, 18));
+			int sequence = Integer.parseInt(tagNumber.substring(18, 22));
+			
+			int tagWarehouse = expedicaoCustom.findWarehouseTAG(period, order, orderPackage, sequence);
+			int situacaoTag = expedicaoCustom.findSituacaoTAG(period, order, orderPackage, sequence);
+			
+			if (situacaoTag == 4) {
+				status = new StatusGravacao(false, "Este TAG já está faturado! não é possível endereçar!");
+				return status;
+			}
+			
+			String block = allocation.substring(0, 1);
+			
+			if (retornaListaLetraNumero(block) >= 6) {
+				allocationWarehouse = 111;
+			} else {
+				allocationWarehouse = 4;
+			}
+			
+			if (tagWarehouse != allocationWarehouse) {
+				status = new StatusGravacao(false, "Depósito do TAG diferente do depósito do endereço!");
+			}
 		}
 		return status;
 	}
