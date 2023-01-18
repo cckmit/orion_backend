@@ -24,21 +24,21 @@ public class PoliticaVendasService {
 		float descMaxCliente, float comissao, int condPgto, int naturezaOperacao, float desconto) {
 		
 		PoliticaVendas dadosRegra = null;
-		int cnpj9 = 0;
+		int cnpj8 = 0;
 		int cnpj4 = 0;
 		int cnpj2 = 0;
 		
 		dadosRegra = politicaVendasRepository.findByIdPoliticaVendas(id);
 		
 		if ((cnpj != null) && (!cnpj.equalsIgnoreCase(""))) {			
-			cnpj9 = Integer.parseInt(cnpj.substring(0, 9));
+			cnpj8 = Integer.parseInt(cnpj.substring(0, 9));
 			cnpj4 = Integer.parseInt(cnpj.substring(10, 13));
-			cnpj2 = Integer.parseInt(cnpj.substring(13, 15));			
+			cnpj2 = Integer.parseInt(cnpj.substring(13, 15));
 		}
 		
 		if (dadosRegra == null) {
 			id = politicaVendasRepository.findNextID();
-			dadosRegra = new PoliticaVendas(id, tipo, formaPagamento, portador, cnpj9, cnpj4, cnpj2, codFuncionario, descCapa, tipoPedido, depositoItens, descMaxCliente, comissao, 
+			dadosRegra = new PoliticaVendas(id, tipo, formaPagamento, portador, cnpj8, cnpj4, cnpj2, codFuncionario, descCapa, tipoPedido, depositoItens, descMaxCliente, comissao, 
 					condPgto, naturezaOperacao, desconto);
 		} 
 		politicaVendasRepository.save(dadosRegra);

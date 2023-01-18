@@ -50,12 +50,15 @@ public class PoliticaVendasCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	public List<ConteudoChaveAlfaNum> findCnpj(String cnpj) {
-		String query = "SELECT LPAD(a.cgc_9, 9, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) value, LPAD(a.cgc_9, 9, 0) || '/' || LPAD(a.cgc_4, 4, 0) || '-' || LPAD(a.cgc_2, 2, 0) || ' - ' || a.nome_cliente label "
-				+ "        FROM pedi_010 a, pedi_085 b "
-				+ "        WHERE b.tipo_cliente = a.tipo_cliente "
-				+ "        AND a.tipo_cliente IN (2, 4, 6, 8, 9, 12, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 28, 29, 31, 32, 33, 35, 36, 37, 99) "
-				+ "        AND a.situacao_cliente = 1 "
-				+ "        AND LPAD(a.cgc_9, 9, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) || a.nome_cliente LIKE '%" + cnpj + "%'";
+		String query = " SELECT LPAD(a.cgc_9, 9, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) value, "
+				+ "       DECODE(a.cgc_4, 0, "
+				+ "       'CPF: ' || SUBSTR(LPAD(a.cgc_9, 9, 0), 0, 3) || '.' || SUBSTR(LPAD(a.cgc_9, 9, 0), 4, 3) || '.' || SUBSTR(LPAD(a.cgc_9, 9, 0), 7, 3) || '-' || LPAD(a.cgc_2, 2, 0) || ' - ' || a.nome_cliente, "
+				+ "       'CNPJ: ' || LPAD(a.cgc_9, 8, 0) || '/' || LPAD(a.cgc_4, 4, 0) || '-' || LPAD(a.cgc_2, 2, 0) || ' - ' || a.nome_cliente) label "
+				+ "       FROM pedi_010 a, pedi_085 b "
+				+ "       WHERE b.tipo_cliente = a.tipo_cliente "
+				+ "       AND a.tipo_cliente IN (2, 4, 6, 8, 9, 12, 15, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 28, 29, 31, 32, 33, 35, 36, 37, 99) "
+				+ "       AND a.situacao_cliente = 1 "
+				+ "       AND LPAD(a.cgc_9, 8, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) || a.nome_cliente LIKE '%" + cnpj + "%'";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	public List<ConteudoChaveAlfaNum> findDeposito() {
@@ -65,20 +68,22 @@ public class PoliticaVendasCustom {
 	
 	public List<RegrasPoliticaVendas> findAllRegrasByTipo(int tipo) {
 		String query = " SELECT a.id, "
-				+ " (SELECT b.forma_pgto || ' - ' || b.descricao FROM loja_010 b WHERE b.forma_pgto = a.forma_pagamento) formapagamento, "
-				+ " (SELECT c.cod_portador || ' - ' || c.nome_banco FROM pedi_050 c WHERE c.cod_portador = a.portador) portador, "
-				+ " (SELECT LPAD(e.cgc_9, 9, 0) || '/' || LPAD(e.cgc_4, 4, 0) || '-' || LPAD(e.cgc_2, 2, 0) || ' - ' || e.nome_cliente "
-				+ " FROM pedi_010 e WHERE e.cgc_9 = a.cnpj9 AND e.cgc_4 = a.cnpj4 AND e.cgc_2 = a.cnpj2 )cnpj, "
-				+ " (SELECT d.cod_funcionario || ' - ' || MIN(d.nome) FROM efic_050 d WHERE d.cod_funcionario = a.cod_funcionario GROUP BY d.cod_funcionario) codfuncionario, "
-				+ " a.desc_capa desccapa, "
-				+ " DECODE(a.tipo,4, DECODE(a.tipo_pedido, 0, '0 - PROGRAMADO', '1 - PRONTA ENTREGA') , '') tipopedido, "
-				+ " (SELECT f.codigo_deposito || ' - ' || f.descricao FROM basi_205 f WHERE f.codigo_deposito = a.deposito_itens AND f.descricao NOT LIKE ('%(IN)%')) depositoitens, "
-				+ " a.desc_max_cliente descmaxcliente, "
-				+ " a.comissao comissao, "
-				+ " (SELECT g.cond_pgt_cliente || ' - ' || g.descr_pg_cliente FROM pedi_070 g WHERE g.cond_pgt_cliente = a.cond_pgto) condpagamento, "
-				+ " (SELECT h.natur_operacao || ' - ' || MIN(h.descr_nat_oper) FROM pedi_080 h WHERE h.natur_operacao = a.natureza_operacao GROUP BY h.natur_operacao) naturezaOperacao, "
-				+ " a.desconto desconto "
-				+ " FROM orion_com_260 a WHERE a.tipo = ? ";
+				+ "     (SELECT b.forma_pgto || ' - ' || b.descricao FROM loja_010 b WHERE b.forma_pgto = a.forma_pagamento) formapagamento, "
+				+ "     (SELECT c.cod_portador || ' - ' || c.nome_banco FROM pedi_050 c WHERE c.cod_portador = a.portador) portador, "
+				+ "     (SELECT DECODE(e.cgc_4, 0, "
+				+ "     'CPF: ' || SUBSTR(LPAD(e.cgc_9, 9, 0), 0, 3) || '.' || SUBSTR(LPAD(e.cgc_9, 9, 0), 4, 3) || '.' || SUBSTR(LPAD(e.cgc_9, 9, 0), 7, 3) || '-' || LPAD(e.cgc_2, 2, 0) || ' - ' || e.nome_cliente, "
+				+ "		'CNPJ: ' || LPAD(e.cgc_9, 8, 0) || '/' || LPAD(e.cgc_4, 4, 0) || '-' || LPAD(e.cgc_2, 2, 0) || ' - ' || e.nome_cliente) "
+				+ "     FROM pedi_010 e WHERE LPAD(e.cgc_9, 9, 0) = LPAD(a.cnpj9, 9, 0) AND e.cgc_4 = a.cnpj4 AND e.cgc_2 = a.cnpj2) cnpj, "
+				+ "     (SELECT d.cod_funcionario || ' - ' || MIN(d.nome) FROM efic_050 d WHERE d.cod_funcionario = a.cod_funcionario GROUP BY d.cod_funcionario) codfuncionario, "
+				+ "     a.desc_capa desccapa, "
+				+ "     DECODE(a.tipo,4, DECODE(a.tipo_pedido, 0, '0 - PROGRAMADO', '1 - PRONTA ENTREGA') , '') tipopedido, "
+				+ "     (SELECT f.codigo_deposito || ' - ' || f.descricao FROM basi_205 f WHERE f.codigo_deposito = a.deposito_itens AND f.descricao NOT LIKE ('%(IN)%')) depositoitens, "
+				+ "     a.desc_max_cliente descmaxcliente, "
+				+ "     a.comissao comissao, "
+				+ "     (SELECT g.cond_pgt_cliente || ' - ' || g.descr_pg_cliente FROM pedi_070 g WHERE g.cond_pgt_cliente = a.cond_pgto) condpagamento, "
+				+ "     (SELECT h.natur_operacao || ' - ' || MIN(h.descr_nat_oper) FROM pedi_080 h WHERE h.natur_operacao = a.natureza_operacao GROUP BY h.natur_operacao) naturezaOperacao, "
+				+ "     a.desconto desconto "
+				+ "     FROM orion_com_260 a WHERE a.tipo = ? ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(RegrasPoliticaVendas.class),tipo);
 	}
 	
