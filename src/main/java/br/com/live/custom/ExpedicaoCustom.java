@@ -489,6 +489,7 @@ public class ExpedicaoCustom {
 				+ " and a.subgrupo = c.subgrupo "
 				+ " and a.item = c.item "
 				+ " and a.deposito = c.deposito "
+				+ " and a.endereco = c.endereco "
 				+ " group by c.endereco "
 				+ " order by c.endereco ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
