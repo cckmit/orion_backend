@@ -83,6 +83,7 @@ public class ExpedicaoService {
 		String existeEndereco = "";
 		List<DadosTagProd> listTags = new ArrayList<DadosTagProd>();
 		int enderecoCorreto = 0;
+		int quantEnderecosParaPeca = 0;
 		
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
 		
@@ -97,9 +98,10 @@ public class ExpedicaoService {
 				listTags = expedicaoCustom.obterTagsLidosCaixa(numeroCaixa);
 
 				for (DadosTagProd dadosTag : listTags) {
+					quantEnderecosParaPeca = expedicaoCustom.validarSeExistemEnderecosParaTag(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote, dadosTag.sequencia);
 					enderecoCorreto = expedicaoCustom.validarEnderecoCorreto(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote, dadosTag.sequencia, endereco);
-					if (enderecoCorreto != 1) {
-						msgErro = "EsteS TAG's não pertencem ao endereço informado!";
+					if (enderecoCorreto != 1 && quantEnderecosParaPeca > 0) {
+						msgErro = "Estes TAG's não pertencem ao endereço informado!";
 						break;
 					}
 					expedicaoCustom.gravarEnderecos(dadosTag.periodo, dadosTag.ordem, dadosTag.pacote,
@@ -127,8 +129,9 @@ public class ExpedicaoService {
 			}
 			
 			if (retornaListaLetraNumero(endereco.substring(0, 1)) < 6) {
+				quantEnderecosParaPeca = expedicaoCustom.validarSeExistemEnderecosParaTag(periodo, ordem, pacote, sequencia);
 				enderecoCorreto = expedicaoCustom.validarEnderecoCorreto(periodo, ordem, pacote, sequencia, endereco);
-				if (enderecoCorreto != 1) {
+				if (enderecoCorreto != 1 && quantEnderecosParaPeca > 0) {
 					msgErro = "Este TAG não pertence ao endereço informado!";
 				}
 			}

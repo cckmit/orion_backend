@@ -129,6 +129,28 @@ public class ExpedicaoCustom {
 		}
 		return enderecoCorreto;
 	}
+	
+	public int validarSeExistemEnderecosParaTag(int periodo, int ordemProducao, int ordermConfeccao, int sequencia) {
+		int enderecoCorreto = 0;
+		
+		String query = " select count(*) from pcpc_330 c, estq_110 d "
+				+ " where c.periodo_producao = " + periodo
+				+ " and c.ordem_producao = " + ordemProducao
+				+ " and c.ordem_confeccao = " + ordermConfeccao
+				+ " and c.sequencia = " + sequencia
+				+ " and d.deposito = 4 "
+				+ " and d.nivel = c.nivel "
+				+ " and d.grupo = c.grupo "
+				+ " and d.subgrupo = c.subgrupo "
+				+ " and d.item = c.item ";
+		
+		try {
+			enderecoCorreto = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			enderecoCorreto = 0;
+		}
+		return enderecoCorreto;
+	}
 
 	public String validarGravacaoEndereco(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
 		String endereco = "";
