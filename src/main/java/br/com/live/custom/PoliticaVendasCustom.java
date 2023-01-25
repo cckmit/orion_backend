@@ -142,7 +142,7 @@ public class PoliticaVendasCustom {
 				+ "                         AND c.cnpj9 = a.cli_ped_cgc_cli9 "
 				+ "                  		AND c.cnpj4 = a.cli_ped_cgc_cli4 "
 				+ "                  		AND c.cnpj2 = a.cli_ped_cgc_cli2 "
-				+ "                  		AND c.desc_capa = live_fn_calc_perc_desconto(a.desconto_item1, a.desconto_item2, a.desconto_item3)) "
+				+ "                  		AND c.desc_capa = ROUND(live_fn_calc_perc_desconto(a.desconto_item1, a.desconto_item2, a.desconto_item3), 2)) "
 				+ "        UNION "
 				+ "        SELECT a.pedido_venda PEDIDO, e.descr_tipo_clien CANAL, a.data_entr_venda DATA_EMBARQUE, a.data_emis_venda DATA_EMISSAO, 'PEDIDO: ' || a.pedido_venda || ' COM DIVERGÊNCIA: Tipo de Pedido X Deposito Itens' DIVERGENCIA "
 				+ "        FROM pedi_100 a, pedi_085 e, pedi_010 f, pedi_110 b, orion_com_260 c "
