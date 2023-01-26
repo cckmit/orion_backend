@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.live.custom.EstoqueProdutoCustom;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.ProdutoCustom;
-import br.com.live.custom.SugestaoReservaTecidoCustom;
+import br.com.live.custom.SugestaoReservaMaterialCustom;
+import br.com.live.model.NecessidadeAviamentos;
 import br.com.live.model.NecessidadeTecidos;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoItem;
@@ -31,16 +32,17 @@ import br.com.live.util.CodigoProduto;
 
 @Service
 @Transactional
-public class SugestaoReservaTecidoPorOrdensService {
+public class SugestaoReservaMaterialPorOrdensService {
 
 	private static final int RESERVAR_QTDE_RECALCULADA = 0; 
-	private final SugestaoReservaTecidoCustom sugestaoReservaTecidoCustom;
+	private final SugestaoReservaMaterialCustom sugestaoReservaMaterialCustom;
 	private final ProdutoCustom produtoCustom;
 	private final EstoqueProdutoCustom estoqueProdutoCustom;
 	private final OrdemProducaoCustom ordemProducaoCustom;	
 
 	private int regraReserva;
 	private String depositosTecidos;
+	private String depositosAviamentos;
 	private int percentualMinimoAtender;
 	private List<OrdemProducao> listaPriorizadaOrdens;
 	private List<SugestaoTecidoDetalhaSortimentos> listaGradeDetPrevistoAtendidoPorSortimento;
@@ -52,25 +54,26 @@ public class SugestaoReservaTecidoPorOrdensService {
 	private Map<Integer, List<OrdemProducaoItem>> mapPecasPrevistas;
 	private Map<Integer, List<SugestaoReservaTecidosReservados>> mapTecidosReservados;	
 	
-	public SugestaoReservaTecidoPorOrdensService(SugestaoReservaTecidoCustom sugestaoReservaTecidoCustom, 
+	public SugestaoReservaMaterialPorOrdensService(SugestaoReservaMaterialCustom sugestaoReservaMaterialCustom, 
 			ProdutoCustom produtoCustom, 
 			EstoqueProdutoCustom estoqueProdutoCustom,
 			OrdemProducaoCustom ordemProducaoCustom) {						
-		this.sugestaoReservaTecidoCustom = sugestaoReservaTecidoCustom;
+		this.sugestaoReservaMaterialCustom = sugestaoReservaMaterialCustom;
 		this.produtoCustom = produtoCustom;
 		this.estoqueProdutoCustom = estoqueProdutoCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;		
 	}
 
-	public SugestaoReservaTecidos calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {		
+	public SugestaoReservaTecidos calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositosTecidos, String depositosAviamentos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {		
 		// System.out.println("calcularSugestaoReserva");		
 
 		System.out.println("Inicio do calculo de sugestao de reserva de tecidos");
 		
 		iniciarListasAuxiliares();
 		
-		this.regraReserva = regraReserva;
-		this.depositosTecidos = depositos;
+		this.regraReserva = regraReserva;		
+		this.depositosTecidos = depositosTecidos;
+		this.depositosAviamentos = depositosAviamentos;
 		this.percentualMinimoAtender = percentualMinimoAtender;
 		
 		listaGradeDetPrevistoAtendidoPorSortimento = new ArrayList<SugestaoTecidoDetalhaSortimentos>();
@@ -149,9 +152,9 @@ public class SugestaoReservaTecidoPorOrdensService {
 					//if (sugestaoReservaPorOrdemTecido.getQtdeDisponivel() > item.getQtdeDisponivel()) sugestaoReservaPorOrdemTecido.setQtdeDisponivel(item.getQtdeDisponivel());
 					//if (sugestaoReservaPorOrdemTecido.getQtdeDisponivelTecidoSubstituto() > item.getQtdeDisponivelTecidoSubstituto()) sugestaoReservaPorOrdemTecido.setQtdeDisponivelTecidoSubstituto(item.getQtdeDisponivelTecidoSubstituto());					
 					sugestao.add(sugestaoReservaPorOrdemTecido);
-				}				
+				}
 			}
-		}	
+		}
 		
 		return sugestao;
 	}
@@ -580,13 +583,14 @@ public class SugestaoReservaTecidoPorOrdensService {
 			
 			ordem.setSeqPrioridade(prioridade);
 			ordem.setCores(ordemProducaoCustom.getCoresOrdem(ordem.ordemProducao));			
-			ordem.setLembreteSugestao(sugestaoReservaTecidoCustom.findLembreteByOrdem(ordem.ordemProducao));
+			ordem.setLembreteSugestao(sugestaoReservaMaterialCustom.findLembreteByOrdem(ordem.ordemProducao));
 			
 			List<OrdemProducaoItem> dadosItensOrdem = ordemProducaoCustom.findItensByOrdemProducao(ordem.ordemProducao);
 			
 			//if (ordem.id == 20009) System.out.println("idOrdem " + ordem.id);			
 			for (OrdemProducaoItem item : dadosItensOrdem) {
 				List<NecessidadeTecidos> tecidos = produtoCustom.calcularNecessidadeTecido(ordem.referencia, item.tamanho, item.cor, ordem.nrAlternativa, item.qtdePecasProgramada);
+				List<NecessidadeAviamentos> aviamentos = produtoCustom.calcularNecessidadeAviamento(ordem.referencia, item.tamanho, item.cor, ordem.nrAlternativa, item.qtdePecasProgramada);				
 				
 				Produto peca = produtoCustom.findProduto("1", ordem.referencia, item.tamanho, item.cor);
 
@@ -596,15 +600,19 @@ public class SugestaoReservaTecidoPorOrdensService {
 				for (NecessidadeTecidos tecido : tecidos) {															
 					guardarDadosPorTecidoOrdem(ordem, item, tecido);
 				}				
+				
+				for (NecessidadeAviamentos aviamento : aviamentos) {
+					
+				}
 			}
 		}
 	}
 
-	private Map<String, Double> ObtemQtdeEstoqueQtdeEmpenhada(String nivelTecido, String grupoTecido, String subTecido, String itemTecido) {
+	private Map<String, Double> ObtemQtdeEstoqueQtdeEmpenhada(String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial) {
 		Map<String, Double> mapQtdeEstoqueQtdeEmpenhada = new HashMap<String, Double>();
 		
-		double qtdeEstoque = estoqueProdutoCustom.findQtdeEstoqueByProdutoAndDepositos(nivelTecido, grupoTecido, subTecido, itemTecido, depositosTecidos);					
-		double qtdeEmpenhada = sugestaoReservaTecidoCustom.findQtdeReservadaByProduto(nivelTecido, grupoTecido, subTecido, itemTecido);
+		double qtdeEstoque = estoqueProdutoCustom.findQtdeEstoqueByProdutoAndDepositos(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositosMateriais);					
+		double qtdeEmpenhada = sugestaoReservaMaterialCustom.findQtdeReservadaByProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);
 		
 		mapQtdeEstoqueQtdeEmpenhada.put("qtdeEstoque", qtdeEstoque);
 		mapQtdeEstoqueQtdeEmpenhada.put("qtdeEmpenhada", qtdeEmpenhada);

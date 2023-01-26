@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import br.com.live.custom.SugestaoReservaTecidoCustom;
+import br.com.live.custom.SugestaoReservaMaterialCustom;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.Produto;
 import br.com.live.model.SugestaoReservaTecidosReservados;
@@ -12,30 +12,30 @@ import br.com.live.model.SugestaoReservaTecidos;
 
 @Service
 @Transactional
-public class SugestaoReservaTecidoService {
+public class SugestaoReservaMaterialService {
 
-	private final SugestaoReservaTecidoCustom sugestaoReservaTecidoCustom;
-	private final SugestaoReservaTecidoPorOrdensService sugestaoReservaTecidoPorOrdensService;
+	private final SugestaoReservaMaterialCustom sugestaoReservaMaterialCustom;
+	private final SugestaoReservaMaterialPorOrdensService sugestaoReservaMaterialPorOrdensService;
 	private final OrdemProducaoService ordemProducaoService;
 
-	public SugestaoReservaTecidoService(SugestaoReservaTecidoCustom sugestaoReservaTecidoCustom,
-			SugestaoReservaTecidoPorOrdensService sugestaoReservaTecidoPorOrdensService,
+	public SugestaoReservaMaterialService(SugestaoReservaMaterialCustom sugestaoReservaMaterialCustom,
+			SugestaoReservaMaterialPorOrdensService sugestaoReservaMaterialPorOrdensService,
 			OrdemProducaoService ordemProducaoService) {		
-		this.sugestaoReservaTecidoCustom = sugestaoReservaTecidoCustom;
-		this.sugestaoReservaTecidoPorOrdensService = sugestaoReservaTecidoPorOrdensService;
+		this.sugestaoReservaMaterialCustom = sugestaoReservaMaterialCustom;
+		this.sugestaoReservaMaterialPorOrdensService = sugestaoReservaMaterialPorOrdensService;
 		this.ordemProducaoService = ordemProducaoService;
 	}
 
 	public List<Produto> findTecidosEmOrdensParaLiberacao() {
-		return sugestaoReservaTecidoCustom.findTecidosEmOrdensParaLiberacao();
+		return sugestaoReservaMaterialCustom.findTecidosEmOrdensParaLiberacao();
 	}
 	
 	public List<Produto> findReferenciasEmOrdensParaLiberacao() {
-		return sugestaoReservaTecidoCustom.findReferenciasEmOrdensParaLiberacao();				
+		return sugestaoReservaMaterialCustom.findReferenciasEmOrdensParaLiberacao();				
 	}	
 
-	public SugestaoReservaTecidos calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {
-		return sugestaoReservaTecidoPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, percentualMinimoAtender, regraReserva);		
+	public SugestaoReservaTecidos calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositosTecidos, String depositosAviamentos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {
+		return sugestaoReservaMaterialPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositosTecidos, depositosAviamentos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, percentualMinimoAtender, regraReserva);		
 	}
 	
 	public int findQtdePecasLiberadasDia(long idUsuario) {
@@ -48,7 +48,7 @@ public class SugestaoReservaTecidoService {
 		System.out.println("LIBERAR ORDENS DE PRODUÇÃO");
 		for (OrdemProducao ordem : listaOrdensLiberar) {
 			System.out.println("ORDEM: " + ordem.ordemProducao);
-			sugestaoReservaTecidoCustom.excluirTecidosReservadosPorOrdem(ordem.ordemProducao);
+			sugestaoReservaMaterialCustom.excluirTecidosReservadosPorOrdem(ordem.ordemProducao);
 			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 2, idUsuarioOrion); // Estágio = 2 - ANALISE DE TECIDO
 			ordemProducaoService.gravarSeqPrioridadeDia(ordem.ordemProducao, urgente);
 		}
@@ -56,13 +56,13 @@ public class SugestaoReservaTecidoService {
 		System.out.println("GRAVAR QUANTIDADES DE TECIDOS DAS ORDENS LIBERADAS");		
 		for (SugestaoReservaTecidosReservados reservar : listaTecidosReservar) {			
 			System.out.println("ORDEM: " + reservar.idOrdem  + " - " + reservar.nivelTecido + "." +  reservar.grupoTecido + "." + reservar.subTecido + "." + reservar.itemTecido + " => " + reservar.qtdeReservado);
-			sugestaoReservaTecidoCustom.gravarTecidosReservados(reservar.idOrdem, reservar.nivelTecido, reservar.grupoTecido, reservar.subTecido, reservar.itemTecido, reservar.qtdeReservado);
+			sugestaoReservaMaterialCustom.gravarTecidosReservados(reservar.idOrdem, reservar.nivelTecido, reservar.grupoTecido, reservar.subTecido, reservar.itemTecido, reservar.qtdeReservado);
 		}
 	}		
 	
 	public void gravarLembrete(List<OrdemProducao> listaOrdensComLembrete) {
 		for (OrdemProducao ordem : listaOrdensComLembrete) {
-			sugestaoReservaTecidoCustom.gravarLembrete(ordem.getOrdemProducao(), ordem.getLembreteSugestao());
+			sugestaoReservaMaterialCustom.gravarLembrete(ordem.getOrdemProducao(), ordem.getLembreteSugestao());
 		}
 	}
 	

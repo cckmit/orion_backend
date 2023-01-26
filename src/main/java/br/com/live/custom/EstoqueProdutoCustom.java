@@ -102,7 +102,7 @@ public class EstoqueProdutoCustom {
 		System.out.println("Previsões: " + parametrosFormatados.getPrevisoes());
 		
 		if (!parametrosFormatados.getPrevisoes().equalsIgnoreCase("")) {
-		query += condicao + " exists (select 1 from PrevisaoVendasItem v where v.idPrevisaoVendas in " + parametrosFormatados.getPrevisoes()
+			query += condicao + " exists (select 1 from PrevisaoVendasItem v where v.idPrevisaoVendas in " + parametrosFormatados.getPrevisoes()
               + " and v.grupo = e.grupo "
 		      + " and v.item = e.item )";
 		}
@@ -161,7 +161,7 @@ public class EstoqueProdutoCustom {
 	public List<Deposito> findAllDepositosTecidos() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
-		+ " where b.descricao like 'DEP N2%' "
+		+ " where b.descricao not like '%(IN)% "
 		  + " and b.tipo_volume = 2 "
 		  + " and b.considera_tmrp = 1 "
 		+ " order by b.codigo_deposito " ;
@@ -169,6 +169,17 @@ public class EstoqueProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		
 	}
 	
+	public List<Deposito> findAllDepositosAviamentos() {
+				
+		String query = " select b.codigo_deposito id, b.descricao from basi_205 b " 
+		+ " where b.descricao not like '%(IN)%' "
+		+ " and b.descricao like '%AVIAMENTOS%' "
+		+ " and b.tipo_volume = 0 "
+		+ " and b.considera_tmrp = 1 "; 
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));
+	}
+		
 	public List<Deposito> findDepositosByCodigos(String depositos) {		
 
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "

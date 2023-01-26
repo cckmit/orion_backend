@@ -8,13 +8,14 @@ import br.com.live.model.SugestaoReservaTecidosReservados;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
-public class BodySugestaoReservaTecidos {
+public class BodySugestaoReservaMateriais {
 
 	public List<ConteudoChaveNumerica> planosMestres ;
 	public List<ConteudoChaveNumerica> embarques ;
 	public List<ConteudoChaveAlfaNum> referencias ;
 	public List<ConteudoChaveAlfaNum> tecidos ;
-	public List<ConteudoChaveNumerica> depositos ;
+	public List<ConteudoChaveNumerica> depositosTecidos ;
+	public List<ConteudoChaveNumerica> depositosAviamentos ;
 	public List<ConteudoChaveNumerica> estagios ;
 	public List<ConteudoChaveNumerica> artigos ;	
 	public List<ConteudoChaveAlfaNum> camposSelParaPriorizacao ;

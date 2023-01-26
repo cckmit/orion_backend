@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import br.com.live.model.Produto;
 
 @Repository
-public class SugestaoReservaTecidoCustom {
+public class SugestaoReservaMaterialCustom {
 	
 	private final JdbcTemplate jdbcTemplate;
 
-	public SugestaoReservaTecidoCustom(JdbcTemplate jdbcTemplate) {
+	public SugestaoReservaMaterialCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 		
