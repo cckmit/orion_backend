@@ -917,10 +917,12 @@ public class OrdemProducaoCustom {
 				+ " where b.ordem_producao = a.ordem_producao "
 				+ " and b.cod_cancelamento = 0 "
 				+ " and (a.qtde_a_produzir_pacote > 0 or a.qtde_conserto > 0) "
-				+ " and a.codigo_estagio = " + estagio
 				+ " and a.ordem_producao like '%" + searchVar + "%' "
-				+ " and rownum <= 100 "
-				+ " group by a.ordem_producao ";
+				+ " and rownum <= 100 ";
+
+				if (estagio > 0 ) query += " and a.codigo_estagio = " + estagio;
+
+				query += " group by a.ordem_producao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 }

@@ -2,16 +2,13 @@ package br.com.live.custom;
 
 import java.util.List;
 
-import br.com.live.model.ConsultaRestricoesRolo;
+import br.com.live.model.*;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.PedidoCustomizado;
-import br.com.live.model.ConsultaObservacaoOrdemPacote;
-import br.com.live.model.ConsultaPedidoCustomizado;
-import br.com.live.model.EstagioProducao;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
@@ -36,14 +33,24 @@ public class ConfeccaoCustom {
 		return nextId;
 	}
 	
-	public List<ConteudoChaveNumerica> findPacotesOrdem(int ordemProducao) {
-		String query = " select 0 value, '0 - TODOS OS PACOTES' label from dual "
-				+ " union all "
-				+ " select a.ordem_confeccao value, to_char(a.ordem_confeccao) label "
-				+ " from pcpc_040 a, pcpc_020 b "
-				+ " where b.ordem_producao = a.ordem_producao "
-				+ " and a.ordem_producao = " + ordemProducao
-				+ " group by a.ordem_confeccao ";
+	public List<ConteudoChaveNumerica> findPacotesOrdem(int ordemProducao, boolean flagTodos) {
+		String query = "";
+
+		if (flagTodos) {
+			query = " select 0 value, '0 - TODOS OS PACOTES' label from dual "
+					+ " union all "
+					+ " select a.ordem_confeccao value, to_char(a.ordem_confeccao) label "
+					+ " from pcpc_040 a, pcpc_020 b "
+					+ " where b.ordem_producao = a.ordem_producao "
+					+ " and a.ordem_producao = " + ordemProducao
+					+ " group by a.ordem_confeccao ";
+		} else {
+			query = " select a.ordem_confeccao value, to_char(a.ordem_confeccao) label "
+					+ " from pcpc_040 a, pcpc_020 b "
+					+ " where b.ordem_producao = a.ordem_producao "
+					+ " and a.ordem_producao = " + ordemProducao
+					+ " group by a.ordem_confeccao ";
+		}
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
@@ -206,6 +213,26 @@ public class ConfeccaoCustom {
 		String query = " SELECT s.solicitacao FROM orion_cfc_280 s  WHERE s.data_registro = TRUNC(sysdate) "
 				+ "      GROUP BY s.solicitacao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PedidoCustomizado.class));
+	}
+
+	public List<EtiquetasDecoracao> consultaEtiquetasDecoracao(int ordemProducao, List<ConteudoChaveNumerica> pacotes) {
+		String query = " SELECT p.ORDEM_PRODUCAO ordemProducao, p.ORDEM_CONFECCAO ordemConfeccao, p.PERIODO_PRODUCAO periodo, p.PROCONF_NIVEL99 nivel, p.PROCONF_GRUPO referencia, p.PROCONF_SUBGRUPO tamanho, p.PROCONF_ITEM cor, " +
+				" p.QTDE_PECAS_PROG quantidade, b.NUMERO_ROTEIRO roteiro, b.NUMERO_ALTERNATI  alternativa " +
+				" FROM PCPC_040 p, BASI_010 b " +
+				" WHERE p.ORDEM_PRODUCAO = " + ordemProducao;
+
+				if (pacotes.size() > 0) {
+					query += " AND p.ORDEM_CONFECCAO in (" + ConteudoChaveNumerica.parseValueToString(pacotes)+ ") ";
+				}
+
+				query += " AND b.NIVEL_ESTRUTURA = p.PROCONF_NIVEL99 " +
+				" AND b.GRUPO_ESTRUTURA = p.PROCONF_GRUPO  " +
+				" AND b.SUBGRU_ESTRUTURA = p.PROCONF_SUBGRUPO " +
+				" AND b.ITEM_ESTRUTURA = p.PROCONF_ITEM " +
+				" GROUP BY p.ORDEM_PRODUCAO, p.ORDEM_CONFECCAO , p.PERIODO_PRODUCAO ,p.PROCONF_NIVEL99 , p.PROCONF_GRUPO , p.PROCONF_SUBGRUPO , p.PROCONF_ITEM, p.QTDE_PECAS_PROG, b.NUMERO_ROTEIRO, b.NUMERO_ALTERNATI " +
+				" ORDER BY p.ORDEM_PRODUCAO, p.ORDEM_CONFECCAO ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EtiquetasDecoracao.class));
 	}
 }
  

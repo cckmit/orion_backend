@@ -1289,9 +1289,10 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHistAuditoria.class));
 	}
 
-	public List<Integer> findVolumesPedido(int pedido) {
+	public List<Integer> findVolumesPedido(int pedido, int notaFiscal) {
 		String query = " select a.numero_volume from pcpc_320 a "
 				+ " where a.pedido_venda = " + pedido
+				+ " and a.nota_fiscal = " + notaFiscal
 				+ " and not exists ( select 1 from orion_exp_320 b "
 				+ "                        where b.pedido = a.pedido_venda "
 				+ "                        and b.volume = a.numero_volume) ";

@@ -24,22 +24,24 @@ public class ReportService {
 	// METODO PARA GERAR O REPORT A PARTIR DE UM .jrxml E GRAVAR NA PASTA DEFINIDA NO application-dev.properties
 	// EXEMPLO DE DATASOURCE - JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(micromov);
 	//
-    public String generateReport(String reportFormat, JRBeanCollectionDataSource dataSource, String layout, Map<String, Object> parameters) throws FileNotFoundException, JRException {
-        
-        int fileName = (Integer) parameters.get("numMinuta");
-        
+    public String generateReport(String reportFormat, JRBeanCollectionDataSource dataSource, String layout, Map<String, Object> parameters, String reportTittle, boolean insertDataSource) throws FileNotFoundException, JRException {
+
+        JasperPrint jasperPrint = null;
     	File file = ResourceUtils.getFile(configuracoesService.getDiretorioJasper() + layout + ".jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-        	
-        parameters.put("CollectionBeanParam", dataSource);
-        
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
-        
+
+        if (insertDataSource) {
+            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        } else {
+            parameters.put("CollectionBeanParam", dataSource);
+            jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+        }
+
         if (reportFormat.equalsIgnoreCase("pdf")) {
-            JasperExportManager.exportReportToPdfFile(jasperPrint, configuracoesService.getDiretorioTemp() + fileName + ".pdf");
+            JasperExportManager.exportReportToPdfFile(jasperPrint, configuracoesService.getDiretorioTemp() + reportTittle + ".pdf");
         }
         
-        String arquivoGerado = fileName + "." + reportFormat;
+        String arquivoGerado = reportTittle + "." + reportFormat;
 
         return arquivoGerado;
     }

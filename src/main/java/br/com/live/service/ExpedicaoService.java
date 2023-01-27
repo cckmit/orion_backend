@@ -563,7 +563,7 @@ public class ExpedicaoService {
 		int minuta = expedicaoCustom.findNextMinuta();
 
 		for (ConsultaMinutaTransporte dadosMinuta : notasSelecionadas) {
-			volumesPedido = expedicaoCustom.findVolumesPedido(dadosMinuta.pedido);
+			volumesPedido = expedicaoCustom.findVolumesPedido(dadosMinuta.pedido, dadosMinuta.nota);
 
 			for (Integer volume : volumesPedido) {
 				volumesMinutaSave = new VolumesMinutaTransporte(expedicaoCustom.findNextIdVolumesMinuta(),volume, dadosMinuta.pedido,dadosMinuta.nota,
@@ -584,7 +584,7 @@ public class ExpedicaoService {
 
 		Map<String, Object> parameters = setParameters(transportadora, minuta);
 
-		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters, Integer.toString(minuta), false);
 
 		return nomeRelatorioGerado;
 	}
@@ -598,7 +598,7 @@ public class ExpedicaoService {
 
 		Map<String, Object> parameters = setParameters(transportadora, minuta);
 
-		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters, Integer.toString(minuta), false);
 
 		return nomeRelatorioGerado;
 	}

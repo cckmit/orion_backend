@@ -63,10 +63,13 @@ public class OrdemProducaoController {
 	public List<ConsultaPreOrdemProducao> excluir(@RequestBody BodyOrdemProducao body) {
 		return ordemProducaoPlanoMestreService.excluirOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
-	
     @RequestMapping(value = "/find-tags-async-select/{estagio}/{searchVar}", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllTagsAsync(@PathVariable("estagio") int estagio, @PathVariable("searchVar") String searchVar) {
           return ordemProducaoService.findAllOrdensAsync(estagio, searchVar);
     }
-	
+
+	@RequestMapping(value = "/find-ordens-async-select-sem-estagio/{searchVar}", method = RequestMethod.GET)
+	public List<ConteudoChaveAlfaNum> findAllTagsAsync(@PathVariable("searchVar") String searchVar) {
+		return ordemProducaoService.findAllOrdensAsync(0, searchVar);
+	}
 }
