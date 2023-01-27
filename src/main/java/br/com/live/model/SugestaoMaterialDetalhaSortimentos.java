@@ -1,20 +1,16 @@
 package br.com.live.model;
 
-public class SugestaoTecidoDetalhaGradeTamanhos {
+public class SugestaoMaterialDetalhaSortimentos {
 	private int idOrdem;
-	private String cor;	
-	private int ordemTamanho;
-	private String tamanho;
+	private String cor;		
 	private int qtdePrevista;
 	private int qtdeAtendida;
-
-	public SugestaoTecidoDetalhaGradeTamanhos(int idOrdem, String cor, int ordemTamanho, String tamanho, int qtdePrevista, int qtdeAtendida) {
+	
+	public SugestaoMaterialDetalhaSortimentos(int idOrdem, String cor, int qtdePrevista, int qtdeAtendida) {
 		this.idOrdem = idOrdem;
-		this.cor = cor;	
-		this.ordemTamanho = ordemTamanho;
-		this.tamanho = tamanho;
+		this.cor = cor;		
 		this.qtdePrevista = qtdePrevista;
-		this.qtdeAtendida = qtdeAtendida;
+		this.qtdeAtendida = qtdeAtendida; 		
 	}
 
 	public int getIdOrdem() {
@@ -33,22 +29,6 @@ public class SugestaoTecidoDetalhaGradeTamanhos {
 		this.cor = cor;
 	}
 
-	public int getOrdemTamanho() {
-		return ordemTamanho;
-	}
-
-	public void setOrdemTamanho(int ordemTamanho) {
-		this.ordemTamanho = ordemTamanho;
-	}
-
-	public String getTamanho() {
-		return tamanho;
-	}
-
-	public void setTamanho(String tamanho) {
-		this.tamanho = tamanho;
-	}
-
 	public int getQtdePrevista() {
 		return qtdePrevista;
 	}
@@ -63,5 +43,5 @@ public class SugestaoTecidoDetalhaGradeTamanhos {
 
 	public void setQtdeAtendida(int qtdeAtendida) {
 		this.qtdeAtendida = qtdeAtendida;
-	}	
+	}
 }

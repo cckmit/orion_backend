@@ -4,7 +4,7 @@ import java.util.List;
 
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoItem;
-import br.com.live.model.SugestaoReservaTecidosReservados;
+import br.com.live.model.SugestaoReservaMateriaisReservados;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -31,6 +31,6 @@ public class BodySugestaoReservaMateriais {
 	public List<OrdemProducao> listaOrdensLiberar;
 	public List<OrdemProducao> listaOrdensComLembrete;
 	public List<OrdemProducao> listaOrdensComObservacao;
-	public List<SugestaoReservaTecidosReservados> listaTecidosReservar;
+	public List<SugestaoReservaMateriaisReservados> listaTecidosReservar;
 	public int regraReserva;
 }

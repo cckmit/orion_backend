@@ -8,6 +8,7 @@ public class NecessidadeAviamentos {
 	private String sub;
 	private String item;	
 	private double quantidade;
+	private double quantidadeUnit;
 	
 	public NecessidadeAviamentos(int sequencia, String nivel, String grupo, String sub, String item,
 			double quantidade) {
@@ -66,5 +67,13 @@ public class NecessidadeAviamentos {
 
 	public void setQuantidade(double quantidade) {
 		this.quantidade = quantidade;
+	}
+
+	public double getQuantidadeUnit() {
+		return quantidadeUnit;
+	}
+
+	public void setQuantidadeUnit(double quantidadeUnit) {
+		this.quantidadeUnit = quantidadeUnit;
 	}
 }

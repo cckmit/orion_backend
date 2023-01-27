@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodySugestaoReservaMateriais;
 import br.com.live.model.Produto;
-import br.com.live.model.SugestaoReservaTecidos;
+import br.com.live.model.SugestaoReservaMateriais;
 import br.com.live.service.SugestaoReservaMaterialService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -41,7 +41,7 @@ public class SugestaoReservaMaterialController {
 	}	
 	
 	@RequestMapping(value = "/calcular", method = RequestMethod.POST)
-	public SugestaoReservaTecidos calcular(@RequestBody BodySugestaoReservaMateriais body) {
+	public SugestaoReservaMateriais calcular(@RequestBody BodySugestaoReservaMateriais body) {
 		return sugestaoReservaMaterialService.calcularSugestaoReservaPorOrdem(ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao),body.periodoInicio, body.periodoFim, 
 				ConteudoChaveNumerica.parseValueToString(body.embarques),
 				ConteudoChaveAlfaNum.parseValueToString(body.referencias), 

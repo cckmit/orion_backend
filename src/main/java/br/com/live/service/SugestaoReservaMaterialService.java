@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.live.custom.SugestaoReservaMaterialCustom;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.Produto;
-import br.com.live.model.SugestaoReservaTecidosReservados;
-import br.com.live.model.SugestaoReservaTecidos;
+import br.com.live.model.SugestaoReservaMateriaisReservados;
+import br.com.live.model.SugestaoReservaMateriais;
 
 @Service
 @Transactional
@@ -34,7 +34,7 @@ public class SugestaoReservaMaterialService {
 		return sugestaoReservaMaterialCustom.findReferenciasEmOrdensParaLiberacao();				
 	}	
 
-	public SugestaoReservaTecidos calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositosTecidos, String depositosAviamentos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {
+	public SugestaoReservaMateriais calcularSugestaoReservaPorOrdem(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositosTecidos, String depositosAviamentos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {
 		return sugestaoReservaMaterialPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositosTecidos, depositosAviamentos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, percentualMinimoAtender, regraReserva);		
 	}
 	
@@ -42,7 +42,7 @@ public class SugestaoReservaMaterialService {
 		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(2, idUsuario);
 	}	
 	
-	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaTecidosReservados> listaTecidosReservar , boolean urgente, long idUsuarioOrion) {		
+	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaMateriaisReservados> listaTecidosReservar , boolean urgente, long idUsuarioOrion) {		
 		if (!urgente) Collections.sort(listaOrdensLiberar);		
 
 		System.out.println("LIBERAR ORDENS DE PRODUÇÃO");
@@ -54,9 +54,9 @@ public class SugestaoReservaMaterialService {
 		}
 		
 		System.out.println("GRAVAR QUANTIDADES DE TECIDOS DAS ORDENS LIBERADAS");		
-		for (SugestaoReservaTecidosReservados reservar : listaTecidosReservar) {			
-			System.out.println("ORDEM: " + reservar.idOrdem  + " - " + reservar.nivelTecido + "." +  reservar.grupoTecido + "." + reservar.subTecido + "." + reservar.itemTecido + " => " + reservar.qtdeReservado);
-			sugestaoReservaMaterialCustom.gravarTecidosReservados(reservar.idOrdem, reservar.nivelTecido, reservar.grupoTecido, reservar.subTecido, reservar.itemTecido, reservar.qtdeReservado);
+		for (SugestaoReservaMateriaisReservados reservar : listaTecidosReservar) {			
+			System.out.println("ORDEM: " + reservar.idOrdem  + " - " + reservar.nivelMaterial + "." +  reservar.grupoMaterial + "." + reservar.subMaterial + "." + reservar.itemMaterial + " => " + reservar.qtdeReservado);
+			sugestaoReservaMaterialCustom.gravarTecidosReservados(reservar.idOrdem, reservar.nivelMaterial, reservar.grupoMaterial, reservar.subMaterial, reservar.itemMaterial, reservar.qtdeReservado);
 		}
 	}		
 	

@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorTecido {
+public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorMaterial {
 
 	private int idOrdem;
 	private String sortimento;

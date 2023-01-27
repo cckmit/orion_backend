@@ -1,13 +1,13 @@
 package br.com.live.model;
 
-public class SugestaoReservaPorOrdemTecido extends SugestaoReservaPorTecido {
+public class SugestaoReservaPorOrdemMaterial extends SugestaoReservaPorMaterial {
 
 	private long idOrdem;
 	private double qtdeNecessidadeUnit;
 	private double qtdeDisponivelTecidoSubstituto;
 	private double qtdeDisponivelTotal;
 	
-	public SugestaoReservaPorOrdemTecido(long idOrdem, String nivel, String grupo, String sub, String item, String descricao,
+	public SugestaoReservaPorOrdemMaterial(long idOrdem, String nivel, String grupo, String sub, String item, String descricao,
 			String unidade, double qtdeNecessidadeUnit, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido) {
 		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido);
 		this.idOrdem = idOrdem;
