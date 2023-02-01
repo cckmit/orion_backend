@@ -1503,4 +1503,19 @@ public class ExpedicaoCustom {
 		}
 		return listRegras;
 	}
+
+	public int retornaNumeroNotaEmpresa1(int numeroNotaEmp100) {
+		int numeroNotaEmp1 = 0;
+
+		String query = " select n.num_nota_fiscal from obrf_831 m, obrf_782 n " +
+				" where m.num_nota_fiscal = " + numeroNotaEmp100 +
+				" and n.numero_solicitacao = m.numero_solicitacao ";
+		try {
+			numeroNotaEmp1 = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			numeroNotaEmp1 = 0;
+		}
+		return numeroNotaEmp1;
+	}
+
 }
