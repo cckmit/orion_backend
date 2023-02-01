@@ -285,7 +285,7 @@ public class ExpedicaoController {
     @RequestMapping(value = "/volume-allocation", method = RequestMethod.POST)
     public StatusGravacao volumeAllocation(@RequestBody BodyExpedicao body) {
     	String chaveNFe = body.notaFiscal;
-    	int notaFiscal = Integer.parseInt(chaveNFe.substring(28,34));
+    	int notaFiscal = Integer.parseInt(chaveNFe.substring(25,34));
     	return expedicaoService.allocateBox(body.endereco, body.volume, notaFiscal);
     }
     
