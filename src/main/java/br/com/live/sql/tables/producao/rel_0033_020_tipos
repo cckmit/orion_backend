@@ -1,0 +1,6 @@
+CREATE TABLE orion_ind_020(
+        ID                  VARCHAR(50),
+        TIPO                NUMBER(4),
+        SEQUENCIA           NUMBER(4),                                       
+        DESCRICAO           VARCHAR2(200),
+        CONSTRAINT orion_ind_020_pk PRIMARY KEY (ID));

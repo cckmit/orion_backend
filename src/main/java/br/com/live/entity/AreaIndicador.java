@@ -1,39 +1,50 @@
 package br.com.live.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "orion_ind_030")
+@Table( name = "orion_ind_020")
 public class AreaIndicador {
 	
 	@Id
-	public int id;
-	
-	@Column(name = "descricao_area")	
-	public String descricaoArea;
-	
-	public int getId() {
+	public String id;
+	public int tipo;
+	public int sequencia;
+	public String descricao;
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-	public String getDescricaoArea() {
-		return descricaoArea;
+	public int getTipo() {
+		return tipo;
 	}
-	public void setDescricaoArea(String descricaoArea) {
-		this.descricaoArea = descricaoArea;
+	public void setTipo(int tipo) {
+		this.tipo = tipo;
 	}
-	
+	public int getSequencia() {
+		return sequencia;
+	}
+	public void setSequencia(int sequencia) {
+		this.sequencia = sequencia;
+	}
+	public String getDescricao() {
+		return descricao;
+	}
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
 	public AreaIndicador() {
 		
 	}
-	public AreaIndicador(int id, String descricaoArea) {
-		this.id = id;
-		this.descricaoArea = descricaoArea;
+	public AreaIndicador(String id, int tipo, int sequencia, String descricao) {
+		this.id = tipo + "-" + sequencia;
+		this.tipo = tipo;
+		this.sequencia = sequencia;
+		this.descricao = descricao;
 	}
-
+	
 }

@@ -7,16 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.AreaIndicador;
-import br.com.live.entity.DepartamentoIndicador;
-import br.com.live.entity.GrupoIndicador;
 import br.com.live.entity.IndicadoresDiario;
 import br.com.live.entity.IndicadoresMensal;
 import br.com.live.entity.IndicadoresSemanal;
 import br.com.live.entity.ResultadosIndicadorDiario;
 import br.com.live.entity.ResultadosIndicadorMensal;
 import br.com.live.entity.ResultadosIndicadorSemanal;
-import br.com.live.entity.SetorIndicador;
-import br.com.live.entity.UndMedidaIndicador;
 import br.com.live.model.IndicadoresAdministrativos;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -35,31 +31,18 @@ public class IndicadoresCustom {
 		String query = " SELECT a.id value, a.nome_indicador || ' -  ' || " 
 					+ "     DECODE(a.frequencia_monitoramento, 1, 'DIÁRIO', "
 					+ " 	DECODE(a.frequencia_monitoramento, 2, 'SEMANAL', "
-					+ " 	DECODE(a.frequencia_monitoramento, 3, 'MENSAL')))label FROM orion_ind_110 a, orion_ind_020 b, orion_001 c "
-					+ " 	WHERE b.id = a.grupo_indicador "
-		 			+ " 	AND c.id = a.responsavel_registro "
+					+ " 	DECODE(a.frequencia_monitoramento, 3, 'MENSAL')))label FROM orion_ind_110 a, orion_001 c "
+					+ " 	WHERE c.id = a.responsavel_registro "
 					+ " 	AND a.responsavel_registro = ? ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class), idUsuario);
 	}
 	
-	public List<ConteudoChaveNumerica> findGrupo() {
-		String query = " SELECT a.id value, a.id || ' - ' || a.descricao_grupo label FROM orion_ind_020 a GROUP BY a.id, a.descricao_grupo ORDER BY a.id ";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
-	}
-	
-	public List<ConteudoChaveNumerica> findArea() {
-		String query = " SELECT a.id value, a.id || ' - ' || a.descricao_area label FROM orion_ind_030 a GROUP BY a.id, a.descricao_area ORDER BY a.id ";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
-	}
-	
-	public List<ConteudoChaveNumerica> findDepartamento() {
-		String query = " SELECT a.id value, a.id || ' - ' || a.descricao_departamento label FROM orion_ind_040 a GROUP BY a.id, a.descricao_departamento ORDER BY a.id ";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
-	}
-	
-	public List<ConteudoChaveNumerica> findSetor() {
-		String query = " SELECT a.id value, a.id || ' - ' || a.descricao_setor label FROM orion_ind_050 a GROUP BY a.id, a.descricao_setor ORDER BY a.id ";
+	public List<ConteudoChaveNumerica> findArea(int tipo) {
+		String query = " SELECT a.sequencia value, "
+				+ "	   	 a.sequencia || ' - ' || a.descricao label "
+				+ "      FROM orion_ind_020 a "
+				+ "      WHERE a.tipo = '" + tipo + "'";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
@@ -68,169 +51,9 @@ public class IndicadoresCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
-	public List<ConteudoChaveNumerica> findUndMedida() {
-		String query = " SELECT a.id value, a.id || ' - ' || UPPER(a.descricao_und_medida) label FROM orion_ind_120 a ORDER BY a.id";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
-	}
-	
-	public int findNextGrupoIndicador(){
-		
-		int nextgrupo = 0;
-		String query = " SELECT NVL(MAX(a.id), 0) + 1 FROM orion_ind_020 a ";
-		
-		try {
-			nextgrupo = jdbcTemplate.queryForObject(query, Integer.class);
-			
-		} catch (Exception e) {
-			nextgrupo = 0;
-		}
-		return (int) nextgrupo;
-	}
-	
-	public int findNextAreaIndicador(){
-		
-		int nextArea = 0;
-		String query = " SELECT NVL(MAX(a.id), 0) + 1 FROM orion_ind_030 a ";
-		
-		try {
-			nextArea = jdbcTemplate.queryForObject(query, Integer.class);
-			
-		} catch (Exception e) {
-			nextArea = 0;
-		}
-		return (int) nextArea;
-	}
-	
-	public int findNextDepIndicador(){
-		
-		int nextDep = 0;
-		String query = " SELECT NVL(MAX(a.id), 0) + 1 FROM orion_ind_040 a ";
-		
-		try {
-			nextDep = jdbcTemplate.queryForObject(query, Integer.class);
-			
-		} catch (Exception e) {
-			nextDep = 0;
-		}
-		return (int) nextDep;
-	}
-	
-	public int findNextSetorIndicador(){
-		
-		int nextSetor = 0;
-		String query = " SELECT NVL(MAX(a.id), 0) + 1 FROM orion_ind_050 a ";
-		
-		try {
-			nextSetor = jdbcTemplate.queryForObject(query, Integer.class);
-			
-		} catch (Exception e) {
-			nextSetor = 0;
-		}
-		return (int) nextSetor;
-	}
-	
-	public int findNextUndMedIndicador(){
-		
-		int nextUndMed = 0;
-		String query = " SELECT NVL(MAX(a.id), 0) + 1 FROM orion_ind_120 a ";
-		
-		try {
-			nextUndMed = jdbcTemplate.queryForObject(query, Integer.class);
-			
-		} catch (Exception e) {
-			nextUndMed = 0;
-		}
-		return (int) nextUndMed;
-	}
-	
-	public GrupoIndicador cadastrarGrupo(String descricaoGrupo) {
-		
-		int idGrupo = findNextGrupoIndicador();
-		
-		String query = " insert into orion_ind_020(id, descricao_grupo) values (?,?) "; 
-		
-		String desc = capitalize(descricaoGrupo);
-		
-		try {
-			jdbcTemplate.update(query, idGrupo, desc);
-			
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	
-	public AreaIndicador cadastrarArea(String descricaoArea) {
-		
-		int idArea = findNextAreaIndicador();
-		
-		String query = " insert into orion_ind_030(id, descricao_area) values (?,?) "; 
-		
-		String desc = capitalize(descricaoArea);
-		
-		try {
-			jdbcTemplate.update(query, idArea, desc);
-			
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	
-	public DepartamentoIndicador cadastrarDepartamento(String descricaoDepartamento) {
-		
-		int idDep = findNextDepIndicador();
-		
-		String query = " insert into orion_ind_040(id, descricao_departamento) values (?,?) "; 
-		
-		String desc = capitalize(descricaoDepartamento);
-		
-		try {
-			jdbcTemplate.update(query, idDep, desc);
-			
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	
-	public UndMedidaIndicador cadastrarUndMedida(String descricaoUndMed) {
-		
-		int idUndMed = findNextUndMedIndicador();
-		
-		String query = " insert into orion_ind_120(id, descricao_und_medida) values (?,?) "; 
-		
-		String desc = capitalize(descricaoUndMed);
-		
-		try {
-			jdbcTemplate.update(query, idUndMed, desc);
-			
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	
-	public SetorIndicador cadastrarSetor(String descricaoSetor) {
-		
-		int idSetor = findNextSetorIndicador();
-		
-		String query = " insert into orion_ind_050(id, descricao_setor) values (?,?) "; 
-		
-		String desc = capitalize(descricaoSetor);
-		
-		try {
-			jdbcTemplate.update(query, idSetor, desc);
-			
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return null;
-	}
-	
 	public List<IndicadoresMensal> findDadosAno(int ano, int idIndicador) {
 		
-		String query = " SELECT a.id, a.ano, a.codigo, a.descricao, a.janeiro, a.fevereiro, a.marco, a.abril, a.maio, a.junho, a.julho, a.agosto, a.setembro, a.outubro, a.novembro, a.dezembro "
+		String query = " SELECT a.id, a.ano, a.codigo, a.variaveis, a.descricao, a.janeiro, a.fevereiro, a.marco, a.abril, a.maio, a.junho, a.julho, a.agosto, a.setembro, a.outubro, a.novembro, a.dezembro "
 				+ "   FROM orion_ind_010 a WHERE a.ano = '" + ano + "'"
 				+ "   AND a.id_indicador =  '" + idIndicador + "'"
 				+ "   ORDER BY a.codigo ";

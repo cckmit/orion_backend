@@ -1,4 +1,0 @@
-CREATE TABLE orion_ind_120(
-        ID                  NUMBER(4),                               
-        DESCRICAO_UNDMEDIDA VARCHAR2(200),
-        CONSTRAINT orion_ind_120_pk PRIMARY KEY (ID));

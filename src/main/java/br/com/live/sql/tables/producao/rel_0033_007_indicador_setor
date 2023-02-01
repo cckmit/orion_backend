@@ -1,4 +1,0 @@
-CREATE TABLE orion_ind_050(
-        ID              NUMBER(4),                               
-        DESCRICAO_SETOR VARCHAR2(200)
-        CONSTRAINT orion_ind_050_pk PRIMARY KEY (ID));
