@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class ConsultaMinutaTransporte {
 	public int nota;
+	public int empresa;
 	public int serie;
 	public Date emissao;
 	public int pedido;
@@ -127,12 +128,21 @@ public class ConsultaMinutaTransporte {
 		this.status = status;
 	}
 
+	public int getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(int empresa) {
+		this.empresa = empresa;
+	}
+
 	public ConsultaMinutaTransporte() {
 		
 	}
 	
 	public ConsultaMinutaTransporte(int nota, int serie, Date emissao, int pedido, String cliente, int caixas,
-			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco, int volume, int minuta, int tipoMinuta, int status) {
+			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco, int volume, int minuta, int tipoMinuta, int status,
+									int empresa) {
 		this.nota = nota;
 		this.serie = serie;
 		this.emissao = emissao;
@@ -151,5 +161,6 @@ public class ConsultaMinutaTransporte {
 		this.minuta = minuta;
 		this.tipoMinuta = tipoMinuta;
 		this.status = status;
+		this.empresa = empresa;
 	}	
 }

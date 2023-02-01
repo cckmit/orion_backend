@@ -744,7 +744,7 @@ public class ExpedicaoCustom {
 					" and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
 		}
 
-		String query = " select minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
+		String query = " select 1 empresa, minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
 				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
 
 		query += " select a.num_nota_fiscal nota, a.serie_nota_fisc serie, a.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
@@ -861,7 +861,7 @@ public class ExpedicaoCustom {
 				+ "', 'DD/MM/YYYY') " +
 				" and TO_DATE('" + dataEmiFim.replace("-", "/") + "', 'DD/MM/YYYY'))) ";
 
-		String query = " select minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
+		String query = " select 100 empresa, minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
 				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
 
 		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "

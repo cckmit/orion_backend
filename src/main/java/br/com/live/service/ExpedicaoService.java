@@ -564,7 +564,9 @@ public class ExpedicaoService {
 		int minuta = expedicaoCustom.findNextMinuta();
 
 		for (ConsultaMinutaTransporte dadosMinuta : notasSelecionadas) {
-			if (tipoMinuta == ATACADO) {
+			System.out.println(dadosMinuta.empresa);
+
+			if (tipoMinuta == ATACADO && dadosMinuta.empresa == 100) {
 				notaEmpresa1 = expedicaoCustom.retornaNumeroNotaEmpresa1(dadosMinuta.nota);
 			} else {
 				notaEmpresa1 = dadosMinuta.nota;
