@@ -1,11 +1,16 @@
 package br.com.live.service;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.live.entity.Restricoes;
 import br.com.live.entity.RestricoesRolo;
+import br.com.live.model.EtiquetasDecoracao;
 import br.com.live.repository.RestricoesRepository;
 import br.com.live.repository.RestricoesRoloRepository;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,10 +39,11 @@ public class ConfeccaoService {
 	private final MetasProducaoRepository metasProducaoRepository;
 	private final MetasProducaoSemanaRepository metasProducaoSemanaRepository;
 	private final CalendarioCustom calendarioCustom;
+	private final ReportService reportService;
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
 			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository,
-			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom) {
+			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom, ReportService reportService) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
@@ -46,6 +52,7 @@ public class ConfeccaoService {
 		this.metasProducaoRepository = metasProducaoRepository;
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
 		this.calendarioCustom = calendarioCustom;
+		this.reportService = reportService;
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -96,7 +103,11 @@ public class ConfeccaoService {
 	}
 	
 	public List<ConteudoChaveNumerica> findAllPacotesOrdem(int ordemProducao) {
-		return confeccaoCustom.findPacotesOrdem(ordemProducao);
+		return confeccaoCustom.findPacotesOrdem(ordemProducao, true);
+	}
+
+	public List<ConteudoChaveNumerica> findAllPacotesOrdemSemOpcTodos(int ordemProducao) {
+		return confeccaoCustom.findPacotesOrdem(ordemProducao, false);
 	}
 	
 	public List<ConsultaObservacaoOrdemPacote> findAllObsWithQuantidade() {
@@ -206,6 +217,29 @@ public class ConfeccaoService {
 			id = metasProducaoSemanaRepository.findNextId();
 			MetasProducaoSemana metaProducaoSemana = new MetasProducaoSemana(id, idMesAno, numSemanaMes, semana.getQtdeDiasUteis(), semana.getDataInicio(), semana.getDataFim(), qtdePecasMetaSemana, qtdePecasMetaTurno, qtdePecasMetaAjustSemana, qtdePecasMetaAjustTurno);
 			metasProducaoSemanaRepository.save(metaProducaoSemana);
-		}				
-	}	
+		}
+	}
+
+	public String gerarEtiquetasDecoracao(int ordemProducao, List<ConteudoChaveNumerica> pacotes, List<ConteudoChaveNumerica> estagios) throws JRException, FileNotFoundException {
+		List<EtiquetasDecoracao> listOrdens = new ArrayList<>();
+		List<EtiquetasDecoracao> etiquetasEditGeracao = new ArrayList<>();
+		EtiquetasDecoracao dadosEditados = null;
+		String fileName = "";
+		String reportTittle = "ETIQ_" + ordemProducao;
+
+		listOrdens = confeccaoCustom.consultaEtiquetasDecoracao(ordemProducao, pacotes);
+
+		for (EtiquetasDecoracao ordemSelect : listOrdens) {
+			for (ConteudoChaveNumerica estagioSelect : estagios) {
+				dadosEditados = new EtiquetasDecoracao(ordemSelect.ordemProducao, ordemSelect.ordemConfeccao, ordemSelect.alternativa, ordemSelect.roteiro, ordemSelect.nivel, ordemSelect.referencia,
+						ordemSelect.tamanho, ordemSelect.cor, ordemSelect.quantidade, ordemSelect.periodo, estagioSelect.label);
+				etiquetasEditGeracao.add(dadosEditados);
+			}
+		}
+
+		JRBeanCollectionDataSource dataSourceEtiquetas = new JRBeanCollectionDataSource(etiquetasEditGeracao);
+		fileName = reportService.generateReport("pdf", dataSourceEtiquetas, "etiqueta_decoracao", null, reportTittle, true);
+
+		return fileName;
+	}
 }

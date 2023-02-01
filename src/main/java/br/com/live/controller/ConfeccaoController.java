@@ -1,5 +1,6 @@
 package br.com.live.controller;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import br.com.live.body.BodyConfeccao;
@@ -9,6 +10,7 @@ import br.com.live.entity.Restricoes;
 import br.com.live.model.ConsultaRestricoesRolo;
 import br.com.live.model.EstagioProducao;
 
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -246,5 +248,16 @@ public class ConfeccaoController {
 	@RequestMapping(value = "/gerar-ordem-pedidos-personalizados", method = RequestMethod.POST)
 	public void gerarOrdemPedidosPersonalizados(@RequestBody BodyConfeccao body){
 		pedidosCustomizadosService.gerarOrdem(body.solicitacao, body.periodoProducao, body.alternativa, body.roteiro);
+	}
+
+	@RequestMapping(value = "/find-all-pacotes-by-ordem-sem-opc-todos/{ordemProducao}", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findAllPacotesByOrdem(@PathVariable("ordemProducao") int ordemProducao) {
+		return confeccaoService.findAllPacotesOrdemSemOpcTodos(ordemProducao);
+	}
+
+	// GERA RELATÓRIO JASPER COM AS ETIQUETAS DE DECORAÇÃO
+	@RequestMapping(value = "/gerar-etiquetas-decoracao", method = RequestMethod.POST)
+	public String gerarEtiquetasDecoracao(@RequestBody BodyConfeccao body) throws JRException, FileNotFoundException {
+		return confeccaoService.gerarEtiquetasDecoracao(body.ordemProducao, body.pacotes, body.estagios);
 	}
 }

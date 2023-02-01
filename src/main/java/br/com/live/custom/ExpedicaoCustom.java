@@ -1289,9 +1289,10 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHistAuditoria.class));
 	}
 
-	public List<Integer> findVolumesPedido(int pedido) {
+	public List<Integer> findVolumesPedido(int pedido, int notaFiscal) {
 		String query = " select a.numero_volume from pcpc_320 a "
 				+ " where a.pedido_venda = " + pedido
+				+ " and a.nota_fiscal = " + notaFiscal
 				+ " and not exists ( select 1 from orion_exp_320 b "
 				+ "                        where b.pedido = a.pedido_venda "
 				+ "                        and b.volume = a.numero_volume) ";
@@ -1502,4 +1503,19 @@ public class ExpedicaoCustom {
 		}
 		return listRegras;
 	}
+
+	public int retornaNumeroNotaEmpresa1(int numeroNotaEmp100) {
+		int numeroNotaEmp1 = 0;
+
+		String query = " select n.num_nota_fiscal from obrf_831 m, obrf_782 n " +
+				" where m.num_nota_fiscal = " + numeroNotaEmp100 +
+				" and n.numero_solicitacao = m.numero_solicitacao ";
+		try {
+			numeroNotaEmp1 = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			numeroNotaEmp1 = 0;
+		}
+		return numeroNotaEmp1;
+	}
+
 }

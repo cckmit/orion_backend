@@ -35,4 +35,8 @@ public class BodyConfeccao {
 	public int periodoProducao;
 	public int alternativa;
 	public int roteiro;
+
+	public int ordemProducao;
+	public List<ConteudoChaveNumerica> pacotes;
+	public List<ConteudoChaveNumerica> estagios;
 }

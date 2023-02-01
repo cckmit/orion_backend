@@ -228,3 +228,6 @@ values (75, 'Cadastro de Indicadores', 'Administrativo', '/cadastro-indicadores'
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (76, 'Regras da Prioridade dos Pedidos', 'Expedição', '/regras-atu-prioridade-ped');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (77, 'Geração de Etiquetas para Decoração', 'Confecção', '/geracao-etiq-decor');

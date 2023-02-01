@@ -560,10 +560,17 @@ public class ExpedicaoService {
 	private int gravarVolumesMinutaAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, int tipoMinuta, String transportadora) {
 		List<Integer> volumesPedido = new ArrayList<>();
 		VolumesMinutaTransporte volumesMinutaSave = null;
+		int notaEmpresa1 = 0;
 		int minuta = expedicaoCustom.findNextMinuta();
 
 		for (ConsultaMinutaTransporte dadosMinuta : notasSelecionadas) {
-			volumesPedido = expedicaoCustom.findVolumesPedido(dadosMinuta.pedido);
+			if (tipoMinuta == ATACADO) {
+				notaEmpresa1 = expedicaoCustom.retornaNumeroNotaEmpresa1(dadosMinuta.nota);
+			} else {
+				notaEmpresa1 = dadosMinuta.nota;
+			}
+
+			volumesPedido = expedicaoCustom.findVolumesPedido(dadosMinuta.pedido, notaEmpresa1);
 
 			for (Integer volume : volumesPedido) {
 				volumesMinutaSave = new VolumesMinutaTransporte(expedicaoCustom.findNextIdVolumesMinuta(),volume, dadosMinuta.pedido,dadosMinuta.nota,
@@ -584,7 +591,7 @@ public class ExpedicaoService {
 
 		Map<String, Object> parameters = setParameters(transportadora, minuta);
 
-		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters, Integer.toString(minuta), false);
 
 		return nomeRelatorioGerado;
 	}
@@ -598,7 +605,7 @@ public class ExpedicaoService {
 
 		Map<String, Object> parameters = setParameters(transportadora, minuta);
 
-		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters);
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters, Integer.toString(minuta), false);
 
 		return nomeRelatorioGerado;
 	}
