@@ -23,7 +23,7 @@ public class SugestaoReservaMateriais {
 			                        List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto, 
 			                        List<SugestaoReservaPorMaterial> listaSugestaoReservaPorTecido, 
 			                        List<SugestaoReservaPorMaterial> listaSugestaoReservaPorAviamento,
-			                        List<SugestaoReservaMateriaisReservados> listaDetalhaTecidosReservados) {
+			                        List<SugestaoReservaMateriaisReservados> listaDetalhaMateriaisReservados) {
 		// Grid principal de ordens
 		this.listaPriorizadaOrdens = listaPriorizadaPreOrdens;
 		// Detalhamento de peças atentidas por grade (btn Grade Tamanhos)
@@ -39,6 +39,6 @@ public class SugestaoReservaMateriais {
 		// Aba Por Aviamentos
 		this.listaSugestaoReservaPorAviamento = listaSugestaoReservaPorAviamento;
 		// Utilizado para identificar os tecidos liberados (grava na tabela do orion) - TODO deve gravar também os aviamentos 
-		this.listaDetalhaMateriaisReservados = listaDetalhaTecidosReservados;
+		this.listaDetalhaMateriaisReservados = listaDetalhaMateriaisReservados;
 	}
 }

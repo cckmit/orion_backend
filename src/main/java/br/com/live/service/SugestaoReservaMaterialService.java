@@ -42,21 +42,21 @@ public class SugestaoReservaMaterialService {
 		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(2, idUsuario);
 	}	
 	
-	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaMateriaisReservados> listaTecidosReservar , boolean urgente, long idUsuarioOrion) {		
+	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaMateriaisReservados> listaMateriaisReservar , boolean urgente, long idUsuarioOrion) {		
 		if (!urgente) Collections.sort(listaOrdensLiberar);		
 
 		System.out.println("LIBERAR ORDENS DE PRODUÇÃO");
 		for (OrdemProducao ordem : listaOrdensLiberar) {
 			System.out.println("ORDEM: " + ordem.ordemProducao);
-			sugestaoReservaMaterialCustom.excluirTecidosReservadosPorOrdem(ordem.ordemProducao);
+			sugestaoReservaMaterialCustom.excluirMateriaisReservadosPorOrdem(ordem.ordemProducao);
 			ordemProducaoService.baixarEstagioProducao(ordem.ordemProducao, 2, idUsuarioOrion); // Estágio = 2 - ANALISE DE TECIDO
 			ordemProducaoService.gravarSeqPrioridadeDia(ordem.ordemProducao, urgente);
 		}
 		
 		System.out.println("GRAVAR QUANTIDADES DE TECIDOS DAS ORDENS LIBERADAS");		
-		for (SugestaoReservaMateriaisReservados reservar : listaTecidosReservar) {			
+		for (SugestaoReservaMateriaisReservados reservar : listaMateriaisReservar) {			
 			System.out.println("ORDEM: " + reservar.idOrdem  + " - " + reservar.nivelMaterial + "." +  reservar.grupoMaterial + "." + reservar.subMaterial + "." + reservar.itemMaterial + " => " + reservar.qtdeReservado);
-			sugestaoReservaMaterialCustom.gravarTecidosReservados(reservar.idOrdem, reservar.nivelMaterial, reservar.grupoMaterial, reservar.subMaterial, reservar.itemMaterial, reservar.qtdeReservado);
+			sugestaoReservaMaterialCustom.gravarMateriaisReservados(reservar.idOrdem, reservar.nivelMaterial, reservar.grupoMaterial, reservar.subMaterial, reservar.itemMaterial, reservar.qtdeReservado);
 		}
 	}		
 	

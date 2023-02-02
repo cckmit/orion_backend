@@ -100,13 +100,17 @@ public class SugestaoReservaMaterialCustom {
 		+ " and t.item_material = '" + item + "' "
 		+ " and not exists (select 1 from pcpc_040 p "  
 		+ " where p.ordem_producao = t.ordem_producao "  
-		+ " and p.codigo_estagio in (1, 2) " // ANALISE DE TECIDO 
+		+ " and p.codigo_estagio in (1, 2) " // PROGRAMACAO E ANALISE DE TECIDO 
 		+ " and p.qtde_disponivel_baixa > 0) "
 		+ " and exists (select 1 from tmrp_041 o "
 		+ " where o.area_producao = 1 "
 		+ " and o.nr_pedido_ordem = t.ordem_producao "
 		+ " and o.nivel_estrutura = t.nivel_material) "
 		+ " ) reservado ";		
+		
+		
+		// TODO - REVISAR A LÓGICA PARA AVIAMENTO
+		
 		
 		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
@@ -124,19 +128,19 @@ public class SugestaoReservaMaterialCustom {
 		return lembrete; 		
 	}
 	
-	public void gravarTecidosReservados(int idOrdem, String nivelTecido, String grupoTecido, String subTecido, String itemTecido, double quantidade) {		
-		String id = idOrdem + "-" + nivelTecido+ "." + grupoTecido+ "." + subTecido+ "." + itemTecido;				
+	public void gravarMateriaisReservados(int idOrdem, String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, double quantidade) {		
+		String id = idOrdem + "-" + nivelMaterial+ "." + grupoMaterial+ "." + subMaterial+ "." + itemMaterial;				
 		String query = " insert into orion_cfc_200 (id, ordem_producao, nivel_material, grupo_material, sub_material, item_material, quantidade) values (?,?,?,?,?,?,?) "; 
 		
 		try {
-			jdbcTemplate.update(query, id, idOrdem, nivelTecido, grupoTecido, subTecido, itemTecido, quantidade);
+			jdbcTemplate.update(query, id, idOrdem, nivelMaterial, grupoMaterial, subMaterial, itemMaterial, quantidade);
 		} catch (Exception e) {
 			query = " update orion_cfc_200 set quantidade ? where id = ? ";
 			jdbcTemplate.update(query, quantidade, id);
 		}
 	}
 	
-	public void excluirTecidosReservadosPorOrdem(int idOrdem) {
+	public void excluirMateriaisReservadosPorOrdem(int idOrdem) {
 		String query = " delete from orion_cfc_200 where ordem_producao = ? ";
 		jdbcTemplate.update(query, idOrdem);		
 	}

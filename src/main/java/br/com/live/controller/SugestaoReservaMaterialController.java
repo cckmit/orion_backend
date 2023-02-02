@@ -55,12 +55,12 @@ public class SugestaoReservaMaterialController {
 	
 	@RequestMapping(value = "/liberar", method = RequestMethod.POST)
 	public void liberar(@RequestBody BodySugestaoReservaMateriais body) {
-		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, false, body.idUsuarioOrion);
+		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaMateriaisReservar, false, body.idUsuarioOrion);
 	}
 
 	@RequestMapping(value = "/liberar-urgente", method = RequestMethod.POST)
 	public void liberarUrgente(@RequestBody BodySugestaoReservaMateriais body) {
-		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaTecidosReservar, true, body.idUsuarioOrion);
+		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaMateriaisReservar, true, body.idUsuarioOrion);
 	}	
 	
 	@RequestMapping(value = "/gravar-lembrete", method = RequestMethod.POST)

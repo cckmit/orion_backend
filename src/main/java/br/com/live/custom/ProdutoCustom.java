@@ -1410,7 +1410,7 @@ public class ProdutoCustom {
 
 			qtdeAviamento = (consumoAviamento * (float) quantidade);
 
-			aviamentos.add(new NecessidadeAviamentos(dadosEstrutura.sequencia, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subAviamento, itemAviamento, qtdeAviamento));
+			aviamentos.add(new NecessidadeAviamentos(dadosEstrutura.sequencia, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subAviamento, itemAviamento, qtdeAviamento, consumoAviamento));
 		}
 		
 		return aviamentos;

@@ -11,7 +11,7 @@ public class NecessidadeAviamentos {
 	private double quantidadeUnit;
 	
 	public NecessidadeAviamentos(int sequencia, String nivel, String grupo, String sub, String item,
-			double quantidade) {
+			double quantidade, double quantidadeUnit) {
 		super();
 		this.sequencia = sequencia;
 		this.nivel = nivel;
@@ -19,6 +19,7 @@ public class NecessidadeAviamentos {
 		this.sub = sub;
 		this.item = item;
 		this.quantidade = quantidade;
+		this.quantidadeUnit = quantidadeUnit;
 	}
 
 	public int getSequencia() {

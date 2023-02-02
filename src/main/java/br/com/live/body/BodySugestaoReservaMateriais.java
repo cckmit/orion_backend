@@ -31,6 +31,6 @@ public class BodySugestaoReservaMateriais {
 	public List<OrdemProducao> listaOrdensLiberar;
 	public List<OrdemProducao> listaOrdensComLembrete;
 	public List<OrdemProducao> listaOrdensComObservacao;
-	public List<SugestaoReservaMateriaisReservados> listaTecidosReservar;
+	public List<SugestaoReservaMateriaisReservados> listaMateriaisReservar;
 	public int regraReserva;
 }
