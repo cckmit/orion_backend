@@ -231,3 +231,6 @@ values (76, 'Regras da Prioridade dos Pedidos', 'Expedição', '/regras-atu-prio
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (77, 'Geração de Etiquetas para Decoração', 'Confecção', '/geracao-etiq-decor');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (78, 'Pré Cadastro Indicadores', 'Administrativo', '/pre-cadastro-indicadores');
