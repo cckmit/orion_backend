@@ -151,8 +151,8 @@ public class EstoqueProdutoCustom {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
 		+ " where b.descricao like 'DEP N1%' "
-		  + " and b.tipo_volume in (0,1) "
-		  + " and b.considera_tmrp = 1 "
+		+ " and b.tipo_volume in (0,1) "
+		+ " and b.considera_tmrp = 1 "
 		+ " order by b.codigo_deposito " ;
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		
@@ -161,9 +161,9 @@ public class EstoqueProdutoCustom {
 	public List<Deposito> findAllDepositosTecidos() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b "
-		+ " where b.descricao not like '%(IN)% "
-		  + " and b.tipo_volume = 2 "
-		  + " and b.considera_tmrp = 1 "
+		+ " where b.descricao not like '%(IN)%' "
+		+ " and b.tipo_volume = 2 "
+		+ " and b.considera_tmrp = 1 "
 		+ " order by b.codigo_deposito " ;
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Deposito.class));		

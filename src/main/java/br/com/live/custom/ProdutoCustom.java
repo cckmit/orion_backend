@@ -1373,7 +1373,7 @@ public class ProdutoCustom {
 				+ " and (basi_050.item_item = '" + item + "' or basi_050.item_item = '000000') "
 				+ " and basi_050.alternativa_item = " + alternativa
 				+ " and basi_050.nivel_comp in ('1','9') "
-				+ " and a.estagio in (16,50,84,95,96,87) "
+				+ " and basi_050.estagio in (16,50,84,95,96,87) "
 				+ " order by basi_050.sequencia ASC ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaDadosEstrutura.class));

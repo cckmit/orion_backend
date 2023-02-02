@@ -15,7 +15,8 @@ public class OrdemProducao implements Comparable<OrdemProducao> {
 	public int qtdeEstagioCritico;
 	public double tempoProducaoUnit;
 	public double tempoCosturaUnit;	
-	private int qtdeMaxPecasReservaAtende;
+	private int qtdeMaxPecasReservaTecidoAtende;
+	private int qtdeMaxPecasReservaAviamentoAtende;
 	private int seqPrioridade;
 	private String cores;
 	private String lembreteSugestao;	
@@ -87,11 +88,11 @@ public class OrdemProducao implements Comparable<OrdemProducao> {
 	public void setTempoCosturaUnit(double tempoCosturaUnit) {
 		this.tempoCosturaUnit = tempoCosturaUnit;
 	}
-	public int getQtdeMaxPecasReservaAtende() {
-		return qtdeMaxPecasReservaAtende;
+	public int getQtdeMaxPecasReservaTecidoAtende() {
+		return qtdeMaxPecasReservaTecidoAtende;
 	}
-	public void setQtdeMaxPecasReservaAtende(int qtdeMaxPecasReservaAtende) {
-		this.qtdeMaxPecasReservaAtende = qtdeMaxPecasReservaAtende;
+	public void setQtdeMaxPecasReservaTecidoAtende(int qtdeMaxPecasReservaAtende) {
+		this.qtdeMaxPecasReservaTecidoAtende = qtdeMaxPecasReservaAtende;
 	}
 	public int getSeqPrioridade() {
 		return seqPrioridade;
@@ -117,7 +118,12 @@ public class OrdemProducao implements Comparable<OrdemProducao> {
 	public void setObservacao(String observacao) {
 		this.observacao = observacao;
 	}
-	
+	public int getQtdeMaxPecasReservaAviamentoAtende() {
+		return qtdeMaxPecasReservaAviamentoAtende;
+	}
+	public void setQtdeMaxPecasReservaAviamentoAtende(int qtdeMaxPecasReservaAviamentoAtende) {
+		this.qtdeMaxPecasReservaAviamentoAtende = qtdeMaxPecasReservaAviamentoAtende;
+	}
 	public OrdemProducao() {
 		this.ordemProducao = 0;
 		this.referencia = "";
@@ -130,7 +136,8 @@ public class OrdemProducao implements Comparable<OrdemProducao> {
 		this.qtdeEstagioCritico = 0;
 		this.tempoProducaoUnit = 0;
 		this.tempoCosturaUnit = 0;	
-		this.qtdeMaxPecasReservaAtende = 0;
+		this.qtdeMaxPecasReservaTecidoAtende = 0;
+		this.qtdeMaxPecasReservaAviamentoAtende = 0;
 	}	
 	public OrdemProducao(int ordemProducao, String referencia, int Periodo, int nrAlternativa, int nrRoteiro, int qtdePecasProgramada) {
 		super();
