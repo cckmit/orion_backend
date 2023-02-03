@@ -6,8 +6,7 @@ public class SugestaoReservaMateriais {
 
 	public List<OrdemProducao> listaPriorizadaOrdens; // Aba por ordem
 	public List<SugestaoMaterialDetalhaSortimentos> listaGradeDetPrevistoAtendidoPorSortimento; // Botão grade tamanhos
-	public List<SugestaoMaterialDetalhaGradeTamanhos> listaGradeDetPrevistoAtendidoPorTamanho; // Botão grade tamanhos
-	
+	public List<SugestaoMaterialDetalhaGradeTamanhos> listaGradeDetPrevistoAtendidoPorTamanho; // Botão grade tamanhos	
 	public List<SugestaoReservaPorOrdemMaterial> listaSugestaoReservaTecidosPorOrdem; // Grid tecidos da ordem selecionada
 	public List<SugestaoReservaPorOrdemMaterial> listaSugestaoReservaAviamentosPorOrdem; // Grid aviamentos da ordem selecionada
 	public List<SugestaoReservaPorProduto> listaSugestaoReservaPorProduto; // Aba por produto

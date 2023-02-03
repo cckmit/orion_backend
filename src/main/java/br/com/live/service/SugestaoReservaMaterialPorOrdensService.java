@@ -52,7 +52,6 @@ public class SugestaoReservaMaterialPorOrdensService {
 	private List<SugestaoMaterialDetalhaGradeTamanhos> listaGradeDetPrevistoAtendidoPorTamanho;	
 	private Map<String, SugestaoReservaPorMaterial> mapDadosPorTecido;	
 	private Map<String, SugestaoReservaPorMaterial> mapDadosPorAviamento;
-	//private Map<Integer, List<SugestaoReservaPorOrdemSortimento>> mapDadosPorOrdem;
 	private Map<Integer, List<SugestaoReservaPorOrdemSortimento>> mapDadosTecidosPorOrdem;
 	private Map<Integer, List<SugestaoReservaPorOrdemSortimento>> mapDadosAviamentosPorOrdem;
 	private Map<String, SugestaoReservaPorProduto> mapDadosPorProduto;
@@ -91,11 +90,13 @@ public class SugestaoReservaMaterialPorOrdensService {
 		
 		calcularNecessidades();
 		
-		System.out.println("reservarMateriais " + new Date());
-		
+		System.out.println("reservarMateriais - Tecidos " + new Date());		
 		reservarMateriais(TECIDO);
+		
+		System.out.println("reservarMateriais - Aviamentos " + new Date());
 		reservarMateriais(AVIAMENTO);
 		
+		System.out.println("obter dados calculados " + new Date());
 		SugestaoReservaMateriais sugestao = obterDadosSugestaoReserva();
 				
 		limparListasAuxiliares();
@@ -280,7 +281,8 @@ public class SugestaoReservaMaterialPorOrdensService {
 					
 					if (mapDadosPorProduto.containsKey(chave)) {
 						sugestao = mapDadosPorProduto.get(chave);
-						sugestao.setQtdeAtendida(sugestao.getQtdeAtendida() + peca.qtdePecasProgramada);
+						if (tipoMaterial == TECIDO) sugestao.setQtdeAtendidaPorTecido(sugestao.getQtdeAtendidaPorTecido() + peca.qtdePecasProgramada);
+						else sugestao.setQtdeAtendidaPorAviamento(sugestao.getQtdeAtendidaPorAviamento() + peca.qtdePecasProgramada);
 						qtdeTotalAtendida += peca.qtdePecasProgramada;												
 					}										
 					
@@ -299,7 +301,8 @@ public class SugestaoReservaMaterialPorOrdensService {
 	 			if (!listPecasRecalculadas.contains(chave)) { 		 					 								
 					if (mapDadosPorProduto.containsKey(chave)) {
 						sugestao = mapDadosPorProduto.get(chave);
-						sugestao.setQtdeAtendida(sugestao.getQtdeAtendida() + peca.qtdePecasProgramada);
+						if (tipoMaterial == TECIDO) sugestao.setQtdeAtendidaPorTecido(sugestao.getQtdeAtendidaPorTecido() + peca.qtdePecasProgramada);
+						else sugestao.setQtdeAtendidaPorAviamento(sugestao.getQtdeAtendidaPorAviamento() + peca.qtdePecasProgramada);
 						qtdeTotalAtendida += peca.qtdePecasProgramada;
 					}			
 					
@@ -685,19 +688,15 @@ public class SugestaoReservaMaterialPorOrdensService {
 				
 		for (OrdemProducao ordem : listaPriorizadaOrdens) {						
 			//System.out.println("PRIORIDADE: " + prioridade + " ID: " + ordem.ordemProducao + " EMBARQUE: " + ordem.dataEmbarque + " QTDE EST CRITICO: " + ordem.qtdeEstagioCritico + " TEMPO PROD UNIT: " + ordem.tempoProducaoUnit);
-			prioridade++;
-			
+			prioridade++;			
 			ordem.setSeqPrioridade(prioridade);
 			ordem.setCores(ordemProducaoCustom.getCoresOrdem(ordem.ordemProducao));			
-			ordem.setLembreteSugestao(sugestaoReservaMaterialCustom.findLembreteByOrdem(ordem.ordemProducao));
-			
-			List<OrdemProducaoItem> dadosItensOrdem = ordemProducaoCustom.findItensByOrdemProducao(ordem.ordemProducao);
-			
+			ordem.setLembreteSugestao(sugestaoReservaMaterialCustom.findLembreteByOrdem(ordem.ordemProducao));			
+			List<OrdemProducaoItem> dadosItensOrdem = ordemProducaoCustom.findItensByOrdemProducao(ordem.ordemProducao);			
 			//if (ordem.id == 20009) System.out.println("idOrdem " + ordem.id);			
 			for (OrdemProducaoItem item : dadosItensOrdem) {
-				List<NecessidadeTecidos> tecidos = produtoCustom.calcularNecessidadeTecido(ordem.referencia, item.tamanho, item.cor, ordem.nrAlternativa, item.qtdePecasProgramada);
-				List<NecessidadeAviamentos> aviamentos = produtoCustom.calcularNecessidadeAviamento(ordem.referencia, item.tamanho, item.cor, ordem.nrAlternativa, item.qtdePecasProgramada);				
-				
+				List<NecessidadeTecidos> tecidos = produtoCustom.calcularNecessidadeTecido(ordem.referencia, item.tamanho, item.cor, ordem.nrAlternativa, item.qtdePecasProgramada);				
+				List<NecessidadeAviamentos> aviamentos = produtoCustom.calcularNecessidadeAviamento(ordem.referencia, item.tamanho, item.cor, ordem.nrAlternativa, item.qtdePecasProgramada);								
 				Produto peca = produtoCustom.findProduto("1", ordem.referencia, item.tamanho, item.cor);
 
 				guardarQtdesOriginaisPecasPrevistas(ordem.ordemProducao, ordem.referencia, ordem.nrAlternativa, ordem.nrRoteiro, ordem.periodo, item.tamanho, item.cor, item.qtdePecasProgramada, item.ordemTamanho);
@@ -705,17 +704,17 @@ public class SugestaoReservaMaterialPorOrdensService {
 				
 				for (NecessidadeTecidos tecido : tecidos) {															
 					guardarDadosPorTecidoOrdem(ordem, item, tecido);
-				}								
+				}											
 				for (NecessidadeAviamentos aviamento : aviamentos) {
 					guardarDadosPorAviamentoOrdem(ordem, item, aviamento);
-				}
+				}	
 			}
 		}
 	}
 
 	private Map<String, Double> ObtemQtdeEstoqueQtdeEmpenhada(String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, String depositos) {
 		Map<String, Double> mapQtdeEstoqueQtdeEmpenhada = new HashMap<String, Double>();
-		
+
 		double qtdeEstoque = estoqueProdutoCustom.findQtdeEstoqueByProdutoAndDepositos(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositos);					
 		double qtdeEmpenhada = sugestaoReservaMaterialCustom.findQtdeReservadaByProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);
 		
@@ -771,7 +770,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 			sugestao.setQtdePrevista(sugestao.getQtdePrevista() + qtdePrevista);			
 		}
 		else {
-			sugestao = new SugestaoReservaPorProduto(prioridade, nivel, grupo, tamanho, cor, seqTamanho, descricao, alternativa, roteiro, dataEmbarque, qtdeEstagioCritico, tempoProducaoUnit, tempoCosturaUnit, qtdePrevista, 0);	
+			sugestao = new SugestaoReservaPorProduto(prioridade, nivel, grupo, tamanho, cor, seqTamanho, descricao, alternativa, roteiro, dataEmbarque, qtdeEstagioCritico, tempoProducaoUnit, tempoCosturaUnit, qtdePrevista, 0, 0);	
 			mapDadosPorProduto.put(chave, sugestao);		
 		}
 	}

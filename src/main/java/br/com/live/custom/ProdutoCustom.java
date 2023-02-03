@@ -1059,7 +1059,7 @@ public class ProdutoCustom {
 				+ " and b.grupo_estrutura = substitutos.grupo_subst "
 				+ " and b.subgru_estrutura = substitutos.sub_subst "
 				+ " and b.item_estrutura = substitutos.item) ";
-
+		
 		// System.out.println(query);
 
 		try {

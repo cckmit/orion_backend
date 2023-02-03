@@ -17,10 +17,11 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 	private double tempoProducaoUnit;
 	private double tempoCosturaUnit;
 	private int qtdePrevista;
-	private int qtdeAtendida;	
+	private int qtdeAtendidaPorTecido;	
+	private int qtdeAtendidaPorAviamento;
 	private int seqTamanho;
 	
-	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, double tempoCosturaUnit, int qtdePrevista, int qtdeAtendida) {
+	public SugestaoReservaPorProduto(int prioridade, String nivel, String grupo, String tamanho, String cor, int seqTamanho, String descricao, int alternativa, int roteiro, Date dataEmbarque, int qtdeEstagioCritico, double tempoProducaoUnit, double tempoCosturaUnit, int qtdePrevista, int qtdeAtendidaPorTecido, int qtdeAtendidaPorAviamento) {
 		this.prioridade = prioridade;
 		this.nivel = nivel; 
 		this.grupo = grupo; 
@@ -34,7 +35,8 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 		this.tempoProducaoUnit = tempoProducaoUnit;
 		this.tempoCosturaUnit = tempoCosturaUnit;
 		this.qtdePrevista = qtdePrevista; 
-		this.qtdeAtendida = qtdeAtendida; 		
+		this.qtdeAtendidaPorTecido = qtdeAtendidaPorTecido; 		
+		this.qtdeAtendidaPorAviamento = qtdeAtendidaPorAviamento;
 		this.seqTamanho = seqTamanho;
 	}
 	public int getPrioridade() {
@@ -115,11 +117,17 @@ public class SugestaoReservaPorProduto implements Comparable<SugestaoReservaPorP
 	public void setQtdePrevista(int qtdePrevista) {
 		this.qtdePrevista = qtdePrevista;		
 	}
-	public int getQtdeAtendida() {
-		return qtdeAtendida;
+	public int getQtdeAtendidaPorTecido() {
+		return qtdeAtendidaPorTecido;
 	}
-	public void setQtdeAtendida(int qtdeAtendida) {
-		this.qtdeAtendida = qtdeAtendida;		
+	public void setQtdeAtendidaPorTecido(int qtdeAtendidaPorTecido) {
+		this.qtdeAtendidaPorTecido = qtdeAtendidaPorTecido;		
+	}
+	public int getQtdeAtendidaPorAviamento() {
+		return qtdeAtendidaPorAviamento;
+	}
+	public void setQtdeAtendidaPorAviamento(int qtdeAtendidaPorAviamento) {
+		this.qtdeAtendidaPorAviamento = qtdeAtendidaPorAviamento;		
 	}
 	public int getSeqTamanho() {
 		return seqTamanho;
