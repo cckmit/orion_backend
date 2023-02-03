@@ -46,6 +46,14 @@ public class IndicadoresCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
+	public List<ConteudoChaveNumerica> findAreaByTipo(int tipo) {
+		String query = " SELECT a.sequencia value, a.descricao label "
+				+ "      FROM orion_ind_020 a "
+				+ "      WHERE a.tipo = ? "
+				+ "		 ORDER BY a.sequencia ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), tipo);
+	}
+	
 	public List<ConteudoChaveNumerica> findUsuarios() {
 		String query = " SELECT a.id value, a.id || ' - ' || UPPER(a.nome) label FROM orion_001 a WHERE a.situacao = 1 GROUP BY a.id, a.nome ORDER BY a.id ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
@@ -241,5 +249,28 @@ public class IndicadoresCustom {
 			System.out.println(e);
 		}
     }
+	
+	public int findNextSequencia(int tipo) {
+
+		int proxSeq = 0;
+
+		String query = " SELECT NVL(max(a.sequencia),0) + 1 FROM orion_ind_020 a "
+				+ "		WHERE a.tipo = '" + tipo + "'";
+
+		try {
+			proxSeq = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			proxSeq = 0;
+		}
+		return proxSeq;
+	}
+	
+	public AreaIndicador findTipoById(String id) {
+		
+		String query = " SELECT c.id, c.tipo, c.sequencia, c.descricao FROM orion_ind_020 c WHERE c.id = '" + id + "'";
+		
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(AreaIndicador.class));
+		
+	}
 
 }

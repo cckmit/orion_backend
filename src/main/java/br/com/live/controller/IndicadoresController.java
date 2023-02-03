@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyAreaIndicador;
 import br.com.live.body.BodyIndicadores;
 import br.com.live.custom.IndicadoresCustom;
+import br.com.live.entity.AreaIndicador;
 import br.com.live.entity.Indicadores;
 import br.com.live.entity.IndicadoresDiario;
 import br.com.live.entity.IndicadoresMensal;
@@ -20,6 +22,7 @@ import br.com.live.entity.ResultadosIndicadorDiario;
 import br.com.live.entity.ResultadosIndicadorMensal;
 import br.com.live.entity.ResultadosIndicadorSemanal;
 import br.com.live.model.IndicadoresAdministrativos;
+import br.com.live.repository.TipoIndicadorRepository;
 import br.com.live.service.IndicadoresService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -32,11 +35,13 @@ public class IndicadoresController {
 	
 	private IndicadoresCustom indicadoresCustom;
 	private IndicadoresService indicadoresService;
+	private TipoIndicadorRepository tipoIndicadorRepository;
 	
 	@Autowired
-	public IndicadoresController(IndicadoresCustom indicadoresCustom, IndicadoresService indicadoresService) {
+	public IndicadoresController(IndicadoresCustom indicadoresCustom, IndicadoresService indicadoresService, TipoIndicadorRepository tipoIndicadorRepository) {
 		this.indicadoresCustom = indicadoresCustom;
 		this.indicadoresService = indicadoresService;
+		this.tipoIndicadorRepository = tipoIndicadorRepository;
 				
 	}
 	// Carregar os dados do Botão Pesquisar
@@ -84,6 +89,11 @@ public class IndicadoresController {
     public List<ConteudoChaveNumerica> findAllArea(@PathVariable("tipo") int tipo) {
         return indicadoresCustom.findArea(tipo);
 	}
+	// Carregar Tipos de Pré Cadastro de Indicadores
+	@RequestMapping(value = "/find-area/{tipo}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAreaByTipo(@PathVariable("tipo") int tipo) {
+        return indicadoresCustom.findAreaByTipo(tipo);
+	}
 	// Carregar Setor de Indicadores
 	@RequestMapping(value = "/find-all-usuarios", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findAllUsuarios() {
@@ -123,5 +133,17 @@ public class IndicadoresController {
     @RequestMapping(value = "/delete-indicador/{idIndicador}", method = RequestMethod.DELETE)
     public List<Indicadores> deleteIndicador(@PathVariable("idIndicador") int idIndicador) {                  
     	return indicadoresService.deleteIndicador(idIndicador);
+    }
+    //
+    // Salva Novo GRUPO, ÁREA, SETOR, DEPARTAMENTO, UNIDADE MEDIDA 
+    //
+    @RequestMapping(value = "/save-area-indicador", method = RequestMethod.POST)
+    public AreaIndicador saveAreaIndicador(@RequestBody BodyAreaIndicador body) {
+    	return indicadoresService.saveAreaIndicador(body.tipo, body.sequencia, body.descricao);
+    }
+ // Deletar Indicador
+    @RequestMapping(value = "/delete-area/{tipo}/{sequencia}", method = RequestMethod.DELETE)
+    public AreaIndicador deleteArea(@PathVariable("tipo") int tipo, @PathVariable("sequencia") int sequencia) {                  
+    	return indicadoresService.deleteArea(tipo, sequencia);
     }
 }

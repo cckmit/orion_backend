@@ -8,10 +8,12 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import br.com.live.custom.IndicadoresCustom;
+import br.com.live.entity.AreaIndicador;
 import br.com.live.entity.Indicadores;
 import br.com.live.entity.IndicadoresDiario;
 import br.com.live.entity.IndicadoresMensal;
 import br.com.live.entity.IndicadoresSemanal;
+import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.ResultadosIndicadorDiario;
 import br.com.live.entity.ResultadosIndicadorMensal;
 import br.com.live.entity.ResultadosIndicadorSemanal;
@@ -22,6 +24,7 @@ import br.com.live.repository.IndicadoresSemanalRepository;
 import br.com.live.repository.ResultadosIndicadorDiarioRepository;
 import br.com.live.repository.ResultadosIndicadorMensalRepository;
 import br.com.live.repository.ResultadosIndicadorSemanalRepository;
+import br.com.live.repository.TipoIndicadorRepository;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -37,11 +40,12 @@ public class IndicadoresService {
 	private ResultadosIndicadorMensalRepository resultadosIndicadorMensalRepository;
 	private ResultadosIndicadorSemanalRepository resultadosIndicadorSemanalRepository;
 	private ResultadosIndicadorDiarioRepository resultadosIndicadorDiarioRepository;
+	private TipoIndicadorRepository tipoIndicadorRepository;
 	
 	public IndicadoresService(IndicadoresRepository indicadoresRepository, IndicadoresMensalRepository indicadoresMensalRepository, IndicadoresCustom indicadoresCustom,
 			ResultadosIndicadorMensalRepository resultadosIndicadorMensalRepository, IndicadoresSemanalRepository indicadoresSemanalRepository,
 			ResultadosIndicadorSemanalRepository resultadosIndicadorSemanalRepository, IndicadoresDiarioRepository indicadoresDiarioRepository,
-			ResultadosIndicadorDiarioRepository resultadosIndicadorDiarioRepository) {	
+			ResultadosIndicadorDiarioRepository resultadosIndicadorDiarioRepository, TipoIndicadorRepository tipoIndicadorRepository) {	
 		this.indicadoresRepository = indicadoresRepository;
 		this.indicadoresMensalRepository = indicadoresMensalRepository;
 		this.indicadoresCustom = indicadoresCustom;
@@ -50,6 +54,7 @@ public class IndicadoresService {
 		this.resultadosIndicadorSemanalRepository = resultadosIndicadorSemanalRepository;
 		this.indicadoresDiarioRepository = indicadoresDiarioRepository;
 		this.resultadosIndicadorDiarioRepository = resultadosIndicadorDiarioRepository;
+		this.tipoIndicadorRepository = tipoIndicadorRepository; 
 	}
 	
 	public Indicadores saveIndicador(long id, String nomeIndicador, int grupoIndicador, int area, int departamento, int setor, int gestorAvaliado, String unidadeMedida,
@@ -324,6 +329,30 @@ public class IndicadoresService {
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
     public List<Indicadores> deleteIndicador(int idIndicador) {
     	indicadoresRepository.deleteById(idIndicador);
+		return null;
+	}
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public AreaIndicador saveAreaIndicador(int tipo, int sequencia, String descricao) {
+    	int nextSequencia = 0;
+    	AreaIndicador objetoSave;
+    	
+    	if(sequencia == 0) {
+    		nextSequencia = indicadoresCustom.findNextSequencia(tipo);
+    		objetoSave = new AreaIndicador(tipo + "-" + nextSequencia, tipo, nextSequencia, descricao.toUpperCase());
+    		tipoIndicadorRepository.save(objetoSave);
+    	} else {
+    		System.out.println("Entrou" + sequencia);
+    		AreaIndicador dadosTipo = indicadoresCustom.findTipoById(tipo + "-" + sequencia);
+    		dadosTipo.descricao = descricao.toUpperCase();
+    		tipoIndicadorRepository.save(dadosTipo); 
+    	}
+		return null;    	
+    } 
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+    public AreaIndicador deleteArea(int tipo, int sequencia) {
+    	String idArea = tipo + "-" + sequencia;
+    	System.out.println(idArea);
+    	tipoIndicadorRepository.deleteById(idArea);    	
 		return null;
 	}
 }
