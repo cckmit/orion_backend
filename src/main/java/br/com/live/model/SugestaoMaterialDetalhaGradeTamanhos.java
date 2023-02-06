@@ -1,20 +1,22 @@
 package br.com.live.model;
 
-public class SugestaoTecidoDetalhaGradeTamanhos {
+public class SugestaoMaterialDetalhaGradeTamanhos {
 	private int idOrdem;
 	private String cor;	
 	private int ordemTamanho;
 	private String tamanho;
 	private int qtdePrevista;
-	private int qtdeAtendida;
+	private int qtdeAtendidaPorTecido;
+	private int qtdeAtendidaPorAviamento;
 
-	public SugestaoTecidoDetalhaGradeTamanhos(int idOrdem, String cor, int ordemTamanho, String tamanho, int qtdePrevista, int qtdeAtendida) {
+	public SugestaoMaterialDetalhaGradeTamanhos(int idOrdem, String cor, int ordemTamanho, String tamanho, int qtdePrevista, int qtdeAtendidaPorTecido, int qtdeAtendidaPorAviamento) {
 		this.idOrdem = idOrdem;
 		this.cor = cor;	
 		this.ordemTamanho = ordemTamanho;
 		this.tamanho = tamanho;
 		this.qtdePrevista = qtdePrevista;
-		this.qtdeAtendida = qtdeAtendida;
+		this.qtdeAtendidaPorTecido = qtdeAtendidaPorTecido;
+		this.qtdeAtendidaPorAviamento = qtdeAtendidaPorAviamento;
 	}
 
 	public int getIdOrdem() {
@@ -57,11 +59,20 @@ public class SugestaoTecidoDetalhaGradeTamanhos {
 		this.qtdePrevista = qtdePrevista;
 	}
 
-	public int getQtdeAtendida() {
-		return qtdeAtendida;
+	public int getQtdeAtendidaPorTecido() {
+		return qtdeAtendidaPorTecido;
 	}
 
-	public void setQtdeAtendida(int qtdeAtendida) {
-		this.qtdeAtendida = qtdeAtendida;
-	}	
+	public void setQtdeAtendidaPorTecido(int qtdeAtendidaPorTecido) {
+		this.qtdeAtendidaPorTecido = qtdeAtendidaPorTecido;
+	}
+
+	public int getQtdeAtendidaPorAviamento() {
+		return qtdeAtendidaPorAviamento;
+	}
+
+	public void setQtdeAtendidaPorAviamento(int qtdeAtendidaPorAviamento) {
+		this.qtdeAtendidaPorAviamento = qtdeAtendidaPorAviamento;
+	}
+
 }

@@ -1,6 +1,6 @@
 package br.com.live.model;
 
-public class SugestaoReservaPorTecido implements Comparable<SugestaoReservaPorTecido> {
+public class SugestaoReservaPorMaterial implements Comparable<SugestaoReservaPorMaterial> {
 
 	private String nivel;
 	private String grupo;
@@ -16,7 +16,7 @@ public class SugestaoReservaPorTecido implements Comparable<SugestaoReservaPorTe
 	protected Double qtdeSugerido;
 	protected Double qtdeSaldo;
 
-	public SugestaoReservaPorTecido(String nivel, String grupo, String sub, String item, String descricao, String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido) {
+	public SugestaoReservaPorMaterial(String nivel, String grupo, String sub, String item, String descricao, String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido) {
 		this.nivel = nivel; 
 		this.grupo = grupo; 
 		this.sub = sub; 
@@ -134,7 +134,7 @@ public class SugestaoReservaPorTecido implements Comparable<SugestaoReservaPorTe
 		this.substitutosLocalizados = substitutosLocalizados;
 	}
 	@Override
-	public int compareTo(SugestaoReservaPorTecido outroTecido) {
+	public int compareTo(SugestaoReservaPorMaterial outroTecido) {
 		
 		String codOutroTecido = outroTecido.getNivel() + "." + outroTecido.getGrupo() + "." + outroTecido.getSub() + "." + outroTecido.getItem(); 
 		String codTecidoAtual = getNivel() + "." + getGrupo() + "." + getSub() + "." + getItem();

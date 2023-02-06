@@ -1,0 +1,3 @@
+update orion_002 a 
+   set a.descricao = 'Sugestão de Reserva de Materiais'
+where a.id = 28;

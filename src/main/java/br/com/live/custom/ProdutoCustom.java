@@ -26,6 +26,7 @@ import br.com.live.model.CorProduto;
 import br.com.live.model.Embarque;
 import br.com.live.model.LinhaProduto;
 import br.com.live.model.MarcacaoRisco;
+import br.com.live.model.NecessidadeAviamentos;
 import br.com.live.model.NecessidadeTecidos;
 import br.com.live.model.Produto;
 import br.com.live.model.PublicoAlvo;
@@ -711,7 +712,7 @@ public class ProdutoCustom {
 		return jdbcTemplate.queryForObject(query, Double.class);
 	}
 
-	public List<ConsultaDadosEstrutura> findDadosEstrutura(String grupo, String sub, String item, int alternativa) {
+	public List<ConsultaDadosEstrutura> findTecidosEstrutura(String grupo, String sub, String item, int alternativa) {
 
 		String query = " select basi_050.sequencia, basi_050.qtde_camadas qtdeCamadas, "
 				+ " basi_050.sub_item subItem, basi_050.item_item itemItem, "
@@ -950,7 +951,7 @@ public class ProdutoCustom {
 		ConsultaDadosFilete dadosFileteRisco;
 		ConsultaDadosFilete dadosFileteTecido;
 
-		List<ConsultaDadosEstrutura> listaDadosEstrutura = findDadosEstrutura(grupo, sub, item, alternativa);
+		List<ConsultaDadosEstrutura> listaDadosEstrutura = findTecidosEstrutura(grupo, sub, item, alternativa);
 
 		for (ConsultaDadosEstrutura dadosEstrutura : listaDadosEstrutura) {
 			subTecido = dadosEstrutura.subComp;
@@ -1058,7 +1059,7 @@ public class ProdutoCustom {
 				+ " and b.grupo_estrutura = substitutos.grupo_subst "
 				+ " and b.subgru_estrutura = substitutos.sub_subst "
 				+ " and b.item_estrutura = substitutos.item) ";
-
+		
 		// System.out.println(query);
 
 		try {
@@ -1356,5 +1357,62 @@ public class ProdutoCustom {
 		}
 		return caracteristicasProd;
 	}
+	
+	public List<ConsultaDadosEstrutura> findAviamentosEstrutura(String grupo, String sub, String item, int alternativa) {
 
+		String query = " select basi_050.sequencia, basi_050.qtde_camadas qtdeCamadas, "
+				+ " basi_050.sub_item subItem, basi_050.item_item itemItem, "
+				+ " basi_050.nivel_comp nivelComp, basi_050.grupo_comp grupoComp, "
+				+ " basi_050.sub_comp subComp, basi_050.item_comp itemComp, "
+				+ " basi_050.consumo, basi_050.alternativa_comp alternativaComp, "
+				+ " basi_050.percent_perdas percPerdas "
+				+ " from basi_050 "
+				+ " where  basi_050.nivel_item = '1' "
+				+ " and basi_050.grupo_item = '" + grupo + "'"
+				+ " and (basi_050.sub_item = '" + sub + "' or basi_050.sub_item = '000') "
+				+ " and (basi_050.item_item = '" + item + "' or basi_050.item_item = '000000') "
+				+ " and basi_050.alternativa_item = " + alternativa
+				+ " and basi_050.nivel_comp in ('1','9') "
+				+ " and basi_050.estagio in (16,50,84,95,96,87) "
+				+ " order by basi_050.sequencia ASC ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaDadosEstrutura.class));
+	}
+	
+	public List<NecessidadeAviamentos> calcularNecessidadeAviamento(String grupo, String sub, String item, int alternativa, int quantidade) {
+		
+		List<NecessidadeAviamentos> aviamentos = new ArrayList<NecessidadeAviamentos>();
+
+		String subAviamento = "";
+		String itemAviamento = "";
+		double consumoAviamento = 0.0;
+		double qtdeAviamento = 0.0;
+
+		ConsultaDadosCompEstrutura dadosComponente;
+
+		List<ConsultaDadosEstrutura> listaDadosEstrutura = findAviamentosEstrutura(grupo, sub, item, alternativa);
+
+		for (ConsultaDadosEstrutura dadosEstrutura : listaDadosEstrutura) {
+			subAviamento = dadosEstrutura.subComp;
+			itemAviamento = dadosEstrutura.itemComp;
+			consumoAviamento = dadosEstrutura.consumo;
+
+			if ((subAviamento.equalsIgnoreCase("000")) || (consumoAviamento == 0.000000)) {
+				dadosComponente = findDadosComponenteEstrutura(grupo, sub, dadosEstrutura.itemItem, dadosEstrutura.sequencia, alternativa);
+				subAviamento = dadosComponente.sub;
+				consumoAviamento = dadosComponente.consumo;
+			}
+
+			if (itemAviamento.equalsIgnoreCase("000000")) {
+				dadosComponente = findDadosComponenteEstrutura(grupo, dadosEstrutura.subItem, item, dadosEstrutura.sequencia, alternativa);
+				itemAviamento = dadosComponente.item;
+			}
+
+			qtdeAviamento = (consumoAviamento * (float) quantidade);
+
+			aviamentos.add(new NecessidadeAviamentos(dadosEstrutura.sequencia, dadosEstrutura.nivelComp, dadosEstrutura.grupoComp, subAviamento, itemAviamento, qtdeAviamento, consumoAviamento));
+		}
+		
+		return aviamentos;
+	}
 }
