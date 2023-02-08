@@ -1,10 +1,17 @@
 package br.com.live.service;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import br.com.live.model.ConsultaOperacaoXMicromovimentos;
+import br.com.live.model.ConsultaTransportadora;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
 import br.com.live.custom.EngenhariaCustom;
 import br.com.live.entity.ConsumoFiosLinhas;
@@ -45,12 +52,13 @@ public class EngenhariaService {
 	private final MicromovimentosRepository micromovimentosRepository;
 	private final TempoMaquinaCMRepository tempoMaquinaCMRepository;
 	private final OperXMicromvRepository operXMicromvRepository;
+	private final ReportService reportService;
 
 	public EngenhariaService(MarcasFioRepository marcasFioRepository, TiposFioRepository tiposFioRepository,
 			EngenhariaCustom engenhariaCustom, TiposPontoFioRepository tiposPontoFioRepository,
 			TiposPontoRepository tiposPontoRepository, ConsumoFiosLinhasRepository consumoFiosLinhasRepository,
 			ConsumoMetragemFioRepository consumoMetragemFioRepository, MicromovimentosRepository micromovimentosRepository,
-			TempoMaquinaCMRepository tempoMaquinaCMRepository, OperXMicromvRepository operXMicromvRepository) {
+			TempoMaquinaCMRepository tempoMaquinaCMRepository, OperXMicromvRepository operXMicromvRepository, ReportService reportService) {
 		this.marcasFioRepository = marcasFioRepository;
 		this.tiposFioRepository = tiposFioRepository;
 		this.engenhariaCustom = engenhariaCustom;
@@ -61,6 +69,7 @@ public class EngenhariaService {
 		this.micromovimentosRepository = micromovimentosRepository;
 		this.tempoMaquinaCMRepository = tempoMaquinaCMRepository;
 		this.operXMicromvRepository = operXMicromvRepository;
+		this.reportService = reportService;
 	}
 
 	public MarcasFio saveMarcas(int id, String descricao) {
@@ -445,6 +454,28 @@ public class EngenhariaService {
 			operXMicromvRepository.save(dado);
 			seqIncrement = seqIncrement + intervalo;			
 		}
-		
+	}
+
+	public String gerarPdfMicromovimentos(List<ConsultaOperacaoXMicromovimentos> listMicromov, String operacao, String maquina, float interferencia, float tempoNormal) throws JRException, FileNotFoundException {
+		String nomeRelatorioGerado = "";
+
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(listMicromov);
+
+		Map<String, Object> parameters = setParameters(operacao, maquina, interferencia, tempoNormal);
+
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "micromovimentos", parameters, operacao, false);
+
+		return nomeRelatorioGerado;
+	}
+
+	public Map<String, Object> setParameters(String operacao, String maquina, float interferencia, float tempoNormal) {
+
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("operacao", operacao);
+		parameters.put("maquina", maquina);
+		parameters.put("interferencia", interferencia);
+		parameters.put("tempoNormal", tempoNormal);
+
+		return parameters;
 	}
 }
