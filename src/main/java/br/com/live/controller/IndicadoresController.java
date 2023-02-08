@@ -57,7 +57,7 @@ public class IndicadoresController {
 	// Carregar todos os Indicadores do Ano selecionado
 	@RequestMapping(value = "/find-all-mensal/{ano}/{variaveis}/{idIndicador}", method = RequestMethod.GET)
     public List<IndicadoresMensal> findByAno(@PathVariable("ano") int ano, @PathVariable("variaveis") String variaveis, @PathVariable("idIndicador") int idIndicador) {
-        return indicadoresService.insertUpdateTable(ano, variaveis, idIndicador);
+        return indicadoresService.insertUpdateTableMensal(ano, variaveis, idIndicador);
     }
 	// Carregar todos os Resultados do Ano selecionado
 	@RequestMapping(value = "/find-all-mensal-resultado/{ano}/{idIndicador}", method = RequestMethod.GET)
@@ -131,8 +131,8 @@ public class IndicadoresController {
     }
     // Deletar Indicador
     @RequestMapping(value = "/delete-indicador/{idIndicador}", method = RequestMethod.DELETE)
-    public List<Indicadores> deleteIndicador(@PathVariable("idIndicador") int idIndicador) {                  
-    	return indicadoresService.deleteIndicador(idIndicador);
+    public void deleteIndicador(@PathVariable("idIndicador") int idIndicador) {                  
+    	indicadoresService.deleteIndicador(idIndicador);
     }
     //
     // Salva Novo GRUPO, ÁREA, SETOR, DEPARTAMENTO, UNIDADE MEDIDA 

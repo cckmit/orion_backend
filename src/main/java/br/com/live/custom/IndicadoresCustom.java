@@ -94,11 +94,10 @@ public class IndicadoresCustom {
 	
 	public List<ResultadosIndicadorSemanal> findResultadosSemanal(String mes, int ano, int idIndicador) {
 		
-		String query = " SELECT a.id, a.codigo || ' - (' || c.descricao_und_medida || ')' codigo, a.descricao, a.semana_1 semana1, a.semana_2 semana2, a.semana_3 semana3, "
+		String query = " SELECT a.id, a.codigo codigo, a.descricao, a.semana_1 semana1, a.semana_2 semana2, a.semana_3 semana3, "
 				+ "    a.semana_4 semana4, a.semana_5 semana5 "
-				+ "    FROM orion_ind_080 a, orion_ind_110 b, orion_ind_120 c "
+				+ "    FROM orion_ind_080 a, orion_ind_110 b "
 				+ "    WHERE b.id = a.id_indicador "
-				+ "    AND c.id = b.unidade_medida "
 				+ "    AND a.mes = '" + mes + "'"
 				+ "    AND a.ano = " + ano
 				+ "    AND a.id_indicador = " + idIndicador;
@@ -123,13 +122,12 @@ public class IndicadoresCustom {
 
 	public List<ResultadosIndicadorDiario> findResultadosDiarios(String mes, int ano, int idIndicador) {
 		
-		String query = " SELECT a.id, a.codigo || ' - (' || c.descricao_und_medida || ')' codigo, a.descricao, a.dia_1 dia1, a.dia_2 dia2, a.dia_3 dia3, a.dia_4 dia4, a.dia_5 dia5, "
+		String query = " SELECT a.id, a.codigo codigo, a.descricao, a.dia_1 dia1, a.dia_2 dia2, a.dia_3 dia3, a.dia_4 dia4, a.dia_5 dia5, "
 				+ "    a.dia_6 dia6, a.dia_7 dia7, a.dia_8 dia8, a.dia_9 dia9, a.dia_10 dia10, a.dia_11 dia11, a.dia_12 dia12, a.dia_13 dia13, a.dia_14 dia14, a.dia_15 dia15, "
 				+ "    a.dia_16 dia16, a.dia_17 dia17, a.dia_18 dia18, a.dia_19 dia19, a.dia_20 dia20, a.dia_21 dia21, a.dia_22 dia22, a.dia_23 dia23, a.dia_24 dia24, "
 				+ "    a.dia_25 dia25, a.dia_26 dia26, a.dia_27 dia27, a.dia_28 dia28, a.dia_29 dia29, a.dia_30 dia30, a.dia_31 dia31 "
-				+ "    FROM orion_ind_100 a, orion_ind_110 b, orion_ind_120 c "
+				+ "    FROM orion_ind_100 a, orion_ind_110 b "
 				+ "    WHERE b.id = a.id_indicador "
-				+ "    AND c.id = b.unidade_medida "
 				+ "    AND a.mes = '" + mes + "'"
 				+ "    AND a.ano = " + ano
 				+ "    AND a.id_indicador = " + idIndicador;
@@ -271,6 +269,78 @@ public class IndicadoresCustom {
 		
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(AreaIndicador.class));
 		
+	}
+	
+	public void deleteValoresMensais(int idIndicador) {
+		
+		String queryMensal = " DELETE FROM orion_ind_010 WHERE id_indicador = ? ";
+		
+		try {
+			jdbcTemplate.update(queryMensal, idIndicador);
+				
+		} catch (Exception e) {
+			System.out.println(e);
+		} 
+	}
+	
+	public void deleteResultadosMensais(int idIndicador) {
+		
+		String queryResultMensal = " DELETE FROM orion_ind_060 WHERE id_indicador = ? ";
+		
+		try {
+			jdbcTemplate.update(queryResultMensal, idIndicador);
+				
+		} catch (Exception e) {
+			System.out.println(e);
+		} 
+	}
+	
+	public void deleteValoresSemanais(int idIndicador) {
+		
+		String querySemanal = " DELETE FROM orion_ind_070 WHERE id_indicador = ? ";
+		
+		try {
+			jdbcTemplate.update(querySemanal, idIndicador);
+				
+		} catch (Exception e) {
+			System.out.println(e);
+		} 
+	}
+	
+	public void deleteResultadosSemanais(int idIndicador) {
+		
+		String queryResultSemanal = " DELETE FROM orion_ind_080 WHERE id_indicador = ? ";
+		
+		try {
+			jdbcTemplate.update(queryResultSemanal, idIndicador);
+				
+		} catch (Exception e) {
+			System.out.println(e);
+		} 
+	}
+	
+	public void deleteValoresDiarios(int idIndicador) {
+		
+		String queryDiario = " DELETE FROM orion_ind_090 WHERE id_indicador = ? ";
+		
+		try {
+			jdbcTemplate.update(queryDiario, idIndicador);
+				
+		} catch (Exception e) {
+			System.out.println(e);
+		} 
+	}
+	
+	public void deleteResultadosDiarios(int idIndicador) {
+		
+		String queryResultDiario = " DELETE FROM orion_ind_100 WHERE id_indicador = ? ";
+		
+		try {
+			jdbcTemplate.update(queryResultDiario, idIndicador);
+				
+		} catch (Exception e) {
+			System.out.println(e);
+		} 
 	}
 
 }

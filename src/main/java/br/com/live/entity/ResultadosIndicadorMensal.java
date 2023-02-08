@@ -140,7 +140,7 @@ public class ResultadosIndicadorMensal {
 	public ResultadosIndicadorMensal(String id, int idIndicador, int ano, String codigo, String descricao, float janeiro, float fevereiro,
 			float marco, float abril, float maio, float junho, float julho, float agosto, float setembro, float outubro,
 			float novembro, float dezembro) {
-		this.id = id;
+		this.id = idIndicador + "-" + ano + "-resultados";
 		this.idIndicador = idIndicador;
 		this.ano = ano;
 		this.codigo = codigo;

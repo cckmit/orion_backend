@@ -90,10 +90,9 @@ public class IndicadoresService {
 		return dadosIndicador;
 	}
 	// Classe para criar ou atualizar Dados da Tabela Mensal
-	public List<IndicadoresMensal> insertUpdateTable(int ano, String variaveis, int idIndicador) {
+	public List<IndicadoresMensal> insertUpdateTableMensal(int ano, String variaveis, int idIndicador) {
 		IndicadoresMensal dadosMensal = null;
 		List<IndicadoresMensal> listMensal = indicadoresMensalRepository.findByAno(ano, idIndicador);
-		
 		if (listMensal.size() == 0) {
 			String meta = "meta periodo";
 			dadosMensal = new IndicadoresMensal(idIndicador, variaveis, ano, meta, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -119,7 +118,7 @@ public class IndicadoresService {
 		List<ResultadosIndicadorMensal> resultMensal = resultadosIndicadorMensalRepository.findByAno(ano, idIndicador);
 		
 		if (resultMensal.size() == 0) {
-			String idResMensal = ano + "-resultados";
+			String idResMensal = idIndicador + "-" + ano + "-resultados";
 			String res = "resultados";
 			dadosResMensal = new ResultadosIndicadorMensal(idResMensal, idIndicador, ano, res, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			resultadosIndicadorMensalRepository.saveAndFlush(dadosResMensal);			
@@ -169,28 +168,28 @@ public class IndicadoresService {
 		int anoSelect = 0;
 		
 		for(IndicadoresMensal valor : listMetas) {
-			indicadoresMensalRepository.deleteById(valor.ano + "-" + valor.codigo);
+			indicadoresMensalRepository.deleteById(valor.id);
 			anoSelect = valor.ano;
-			
 			saveValores = new IndicadoresMensal(idIndicador, valor.variaveis, valor.ano, valor.codigo, valor.descricao, valor.janeiro, valor.fevereiro, valor.marco, 
-					valor.abril, valor.maio, valor.junho, valor.julho, valor.agosto, valor.setembro, valor.outubro, valor.novembro, valor.dezembro);
+				valor.abril, valor.maio, valor.junho, valor.julho, valor.agosto, valor.setembro, valor.outubro, valor.novembro, valor.dezembro);
 			indicadoresMensalRepository.saveAndFlush(saveValores);			
 		}
-		
 		List<String> listMetaVariavel = retornarVariaveisMensais(idIndicador, anoSelect);
 		ArrayList <String> meses = new ArrayList <String> (
 			      Arrays.asList ("janeiro", "fevereiro", "marco", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"));
 		for(String mes : meses) {
 			String formula = indicadoresCustom.findFormula(idIndicador);
 			double result  = 0;
-			for(String var : listMetaVariavel) {
-				formula = formula.replace(var, indicadoresCustom.retornaValorMensal(idIndicador, mes, anoSelect, var));
+
+			for(String valorFormula : listMetaVariavel) {
+				if(!valorFormula.equals("META PERIODO")) {
+					formula = formula.replace(valorFormula, indicadoresCustom.retornaValorMensal(idIndicador, mes, anoSelect, valorFormula));					
+				}
 			}			
-		
 			Expression expression = new ExpressionBuilder(formula).build();
 
 			try {
-				result = expression.evaluate();	  
+				result = expression.evaluate();	
 				
 			} catch (Exception e) {	
 				result = 0;				
@@ -327,10 +326,18 @@ public class IndicadoresService {
     	return vars;
     }
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-    public List<Indicadores> deleteIndicador(int idIndicador) {
+    public void deleteIndicador(int idIndicador) {
     	indicadoresRepository.deleteById(idIndicador);
-		return null;
+    	deleteValores(idIndicador);
 	}
+    public void deleteValores(int idIndicador){
+    	indicadoresCustom.deleteValoresMensais(idIndicador);
+    	indicadoresCustom.deleteResultadosMensais(idIndicador);
+    	indicadoresCustom.deleteValoresSemanais(idIndicador);
+    	indicadoresCustom.deleteResultadosSemanais(idIndicador);
+    	indicadoresCustom.deleteValoresDiarios(idIndicador);  	
+    	indicadoresCustom.deleteResultadosDiarios(idIndicador);
+    }
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
     public AreaIndicador saveAreaIndicador(int tipo, int sequencia, String descricao) {
     	int nextSequencia = 0;

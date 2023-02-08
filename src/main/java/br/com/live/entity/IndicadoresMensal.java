@@ -147,7 +147,7 @@ public class IndicadoresMensal {
 	public IndicadoresMensal(int idIndicador, String variaveis, int ano, String codigo, String descricao, float janeiro, float fevereiro, float marco,
 			float abril, float maio, float junho, float julho, float agosto, float setembro, float outubro,
 			float novembro, float dezembro) {
-		this.id = ano + "-" + codigo.toUpperCase();
+		this.id = idIndicador + "-" + ano + "-" + codigo.toUpperCase();
 		this.idIndicador = idIndicador;
 		this.variaveis = variaveis;
 		this.ano = ano;
