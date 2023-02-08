@@ -1,13 +1,19 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import br.com.live.custom.ProdutoCustom;
 import br.com.live.custom.SugestaoReservaMaterialCustom;
+import br.com.live.model.ArtigoProduto;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.Produto;
+import br.com.live.model.SugestaoReservaConfigArtigos;
 import br.com.live.model.SugestaoReservaMateriaisReservados;
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.model.SugestaoReservaMateriais;
 
 @Service
@@ -17,13 +23,15 @@ public class SugestaoReservaMaterialService {
 	private final SugestaoReservaMaterialCustom sugestaoReservaMaterialCustom;
 	private final SugestaoReservaMaterialPorOrdensService sugestaoReservaMaterialPorOrdensService;
 	private final OrdemProducaoService ordemProducaoService;
+	private final ProdutoCustom produtoCustom;
 
 	public SugestaoReservaMaterialService(SugestaoReservaMaterialCustom sugestaoReservaMaterialCustom,
 			SugestaoReservaMaterialPorOrdensService sugestaoReservaMaterialPorOrdensService,
-			OrdemProducaoService ordemProducaoService) {		
+			OrdemProducaoService ordemProducaoService, ProdutoCustom produtoCustom) {		
 		this.sugestaoReservaMaterialCustom = sugestaoReservaMaterialCustom;
 		this.sugestaoReservaMaterialPorOrdensService = sugestaoReservaMaterialPorOrdensService;
 		this.ordemProducaoService = ordemProducaoService;
+		this.produtoCustom = produtoCustom;
 	}
 
 	public List<Produto> findTecidosEmOrdensParaLiberacao() {
@@ -70,5 +78,25 @@ public class SugestaoReservaMaterialService {
 		for (OrdemProducao ordem : listaOrdensComObservacao) {
 			ordemProducaoService.gravarObservacao(ordem.getOrdemProducao(), ordem.getObservacao());
 		}
+	}
+	
+	public void gravarConfigArtigos(int coluna, String descricao, int meta, String artigos) {
+		sugestaoReservaMaterialCustom.gravarConfigArtigos(coluna, descricao, meta, artigos);
+	}
+		
+	public List<SugestaoReservaConfigArtigos> findConfigArtigos() {	
+		List<SugestaoReservaConfigArtigos> configArtigos = sugestaoReservaMaterialCustom.findConfigArtigos();
+		for (SugestaoReservaConfigArtigos configuracao : configArtigos) {
+			
+			System.out.println(configuracao.getArtigos());
+			
+			List<ArtigoProduto> artigos = produtoCustom.findArtigosProdutoByCodigos(configuracao.getArtigos());
+			List<ConteudoChaveNumerica> listaArtigos = new ArrayList<ConteudoChaveNumerica>();			
+			for (ArtigoProduto artigo : artigos) {
+				listaArtigos.add(new ConteudoChaveNumerica(artigo.getId(), artigo.getDescricao()));
+			}
+			configuracao.setListaArtigos(listaArtigos);
+		}
+		return configArtigos;
 	}
 }

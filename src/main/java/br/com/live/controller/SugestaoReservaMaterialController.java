@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodySugestaoReservaMateriais;
 import br.com.live.model.Produto;
+import br.com.live.model.SugestaoReservaConfigArtigos;
 import br.com.live.model.SugestaoReservaMateriais;
 import br.com.live.service.SugestaoReservaMaterialService;
 import br.com.live.util.ConteudoChaveAlfaNum;
@@ -29,47 +30,119 @@ public class SugestaoReservaMaterialController {
 	public List<Produto> findTecidosEmOrdensParaLiberacao() {
 		return sugestaoReservaMaterialService.findTecidosEmOrdensParaLiberacao();
 	}
-	
+
 	@RequestMapping(value = "/referencias", method = RequestMethod.GET)
 	public List<Produto> findReferenciasEmOrdensParaLiberacao() {
-		return sugestaoReservaMaterialService.findReferenciasEmOrdensParaLiberacao();				
-	}	
+		return sugestaoReservaMaterialService.findReferenciasEmOrdensParaLiberacao();
+	}
 
 	@RequestMapping(value = "/qtde-pc-liberada-dia/{idUsuario}", method = RequestMethod.GET)
 	public Integer findQtdePecasLiberadasDia(@PathVariable("idUsuario") long idUsuario) {
-		return sugestaoReservaMaterialService.findQtdePecasLiberadasDia(idUsuario);				
-	}	
-	
+		return sugestaoReservaMaterialService.findQtdePecasLiberadasDia(idUsuario);
+	}
+
 	@RequestMapping(value = "/calcular", method = RequestMethod.POST)
 	public SugestaoReservaMateriais calcular(@RequestBody BodySugestaoReservaMateriais body) {
-		return sugestaoReservaMaterialService.calcularSugestaoReservaPorOrdem(ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao),body.periodoInicio, body.periodoFim, 
-				ConteudoChaveNumerica.parseValueToString(body.embarques),
-				ConteudoChaveAlfaNum.parseValueToString(body.referencias), 
-				ConteudoChaveNumerica.parseValueToString(body.estagios), 
-				ConteudoChaveNumerica.parseValueToString(body.artigos), 
-				ConteudoChaveAlfaNum.parseValueToString(body.tecidos), 
-				ConteudoChaveNumerica.parseValueToString(body.depositosTecidos), 
-				ConteudoChaveNumerica.parseValueToString(body.depositosAviamentos),
-				body.isSomenteFlat, body.isDiretoCostura, body.isOrdensSemTecido, body.percentualMinimoAtender, body.regraReserva);		
+		return sugestaoReservaMaterialService.calcularSugestaoReservaPorOrdem(
+				ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao), body.periodoInicio,
+				body.periodoFim, ConteudoChaveNumerica.parseValueToString(body.embarques),
+				ConteudoChaveAlfaNum.parseValueToString(body.referencias),
+				ConteudoChaveNumerica.parseValueToString(body.estagios),
+				ConteudoChaveNumerica.parseValueToString(body.artigos),
+				ConteudoChaveAlfaNum.parseValueToString(body.tecidos),
+				ConteudoChaveNumerica.parseValueToString(body.depositosTecidos),
+				ConteudoChaveNumerica.parseValueToString(body.depositosAviamentos), body.isSomenteFlat,
+				body.isDiretoCostura, body.isOrdensSemTecido, body.percentualMinimoAtender, body.regraReserva);
 	}
-	
+
 	@RequestMapping(value = "/liberar", method = RequestMethod.POST)
 	public void liberar(@RequestBody BodySugestaoReservaMateriais body) {
-		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaMateriaisReservar, false, body.idUsuarioOrion);
+		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaMateriaisReservar, false,
+				body.idUsuarioOrion);
 	}
 
 	@RequestMapping(value = "/liberar-urgente", method = RequestMethod.POST)
 	public void liberarUrgente(@RequestBody BodySugestaoReservaMateriais body) {
-		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaMateriaisReservar, true, body.idUsuarioOrion);
-	}	
-	
+		sugestaoReservaMaterialService.liberarProducao(body.listaOrdensLiberar, body.listaMateriaisReservar, true,
+				body.idUsuarioOrion);
+	}
+
 	@RequestMapping(value = "/gravar-lembrete", method = RequestMethod.POST)
 	public void gravarLembrete(@RequestBody BodySugestaoReservaMateriais body) {
 		sugestaoReservaMaterialService.gravarLembrete(body.listaOrdensComLembrete);
-	}		
-	
+	}
+
 	@RequestMapping(value = "/gravar-observacao-op", method = RequestMethod.POST)
 	public void gravarObservacaoOP(@RequestBody BodySugestaoReservaMateriais body) {
 		sugestaoReservaMaterialService.gravarObservacaoOP(body.listaOrdensComObservacao);
-	}		
+	}
+
+	@RequestMapping(value = "/gravar-config-artigos", method = RequestMethod.POST)
+	public void gravarConfigArtigos(@RequestBody BodySugestaoReservaMateriais body) {		
+		sugestaoReservaMaterialService.gravarConfigArtigos(1, body.descricao1, body.meta1,
+				ConteudoChaveNumerica.parseValueToString(body.artigos1));
+		sugestaoReservaMaterialService.gravarConfigArtigos(2, body.descricao2, body.meta2,
+				ConteudoChaveNumerica.parseValueToString(body.artigos2));
+		sugestaoReservaMaterialService.gravarConfigArtigos(3, body.descricao3, body.meta3,
+				ConteudoChaveNumerica.parseValueToString(body.artigos3));
+		sugestaoReservaMaterialService.gravarConfigArtigos(4, body.descricao4, body.meta4,
+				ConteudoChaveNumerica.parseValueToString(body.artigos4));
+		sugestaoReservaMaterialService.gravarConfigArtigos(5, body.descricao5, body.meta5,
+				ConteudoChaveNumerica.parseValueToString(body.artigos5));
+		sugestaoReservaMaterialService.gravarConfigArtigos(6, body.descricao6, body.meta6,
+				ConteudoChaveNumerica.parseValueToString(body.artigos6));
+		sugestaoReservaMaterialService.gravarConfigArtigos(7, body.descricao7, body.meta7,
+				ConteudoChaveNumerica.parseValueToString(body.artigos7));
+		sugestaoReservaMaterialService.gravarConfigArtigos(8, body.descricao8, body.meta8,
+				ConteudoChaveNumerica.parseValueToString(body.artigos8));
+		sugestaoReservaMaterialService.gravarConfigArtigos(9, body.descricao9, body.meta9,
+				ConteudoChaveNumerica.parseValueToString(body.artigos9));
+	}
+
+	@RequestMapping(value = "/find-config-artigos", method = RequestMethod.GET)
+	public BodySugestaoReservaMateriais findConfigArtigos() {
+		List<SugestaoReservaConfigArtigos> listaConfigArtigos = sugestaoReservaMaterialService.findConfigArtigos();
+		BodySugestaoReservaMateriais bodyRetorno = new BodySugestaoReservaMateriais();
+
+		for (SugestaoReservaConfigArtigos configuracao : listaConfigArtigos) {			
+			if (configuracao.getColuna() == 1) {
+				bodyRetorno.artigos1 = configuracao.getListaArtigos();
+				bodyRetorno.descricao1 = configuracao.getDescricao();
+				bodyRetorno.meta1 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 2) {
+				bodyRetorno.artigos2 = configuracao.getListaArtigos();
+				bodyRetorno.descricao2 = configuracao.getDescricao();
+				bodyRetorno.meta2 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 3) {
+				bodyRetorno.artigos3 = configuracao.getListaArtigos();
+				bodyRetorno.descricao3 = configuracao.getDescricao();
+				bodyRetorno.meta3 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 4) {
+				bodyRetorno.artigos4 = configuracao.getListaArtigos();
+				bodyRetorno.descricao4 = configuracao.getDescricao();
+				bodyRetorno.meta4 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 5) {
+				bodyRetorno.artigos5 = configuracao.getListaArtigos();
+				bodyRetorno.descricao5 = configuracao.getDescricao();
+				bodyRetorno.meta5 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 6) {
+				bodyRetorno.artigos6 = configuracao.getListaArtigos();
+				bodyRetorno.descricao6 = configuracao.getDescricao();
+				bodyRetorno.meta6 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 7) {
+				bodyRetorno.artigos7 = configuracao.getListaArtigos();
+				bodyRetorno.descricao7 = configuracao.getDescricao();
+				bodyRetorno.meta7 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 8) {
+				bodyRetorno.artigos8 = configuracao.getListaArtigos();
+				bodyRetorno.descricao8 = configuracao.getDescricao();
+				bodyRetorno.meta8 = configuracao.getMeta();
+			} else if (configuracao.getColuna() == 9) {
+				bodyRetorno.artigos9 = configuracao.getListaArtigos();
+				bodyRetorno.descricao9 = configuracao.getDescricao();
+				bodyRetorno.meta9 = configuracao.getMeta();
+			}
+		}
+		return bodyRetorno;
+	}
 }

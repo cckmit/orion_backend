@@ -33,4 +33,32 @@ public class BodySugestaoReservaMateriais {
 	public List<OrdemProducao> listaOrdensComObservacao;
 	public List<SugestaoReservaMateriaisReservados> listaMateriaisReservar;
 	public int regraReserva;
+	// Configuracao das colunas de artigos	
+	public List<ConteudoChaveNumerica> artigos1;
+	public List<ConteudoChaveNumerica> artigos2;
+	public List<ConteudoChaveNumerica> artigos3;
+	public List<ConteudoChaveNumerica> artigos4;
+	public List<ConteudoChaveNumerica> artigos5;
+	public List<ConteudoChaveNumerica> artigos6;
+	public List<ConteudoChaveNumerica> artigos7;
+	public List<ConteudoChaveNumerica> artigos8;
+	public List<ConteudoChaveNumerica> artigos9;
+    public String descricao1;
+    public String descricao2;
+    public String descricao3;
+    public String descricao4;
+    public String descricao5;
+    public String descricao6;
+    public String descricao7;
+    public String descricao8;
+    public String descricao9;
+    public int meta1;
+    public int meta2;
+    public int meta3;
+    public int meta4;
+    public int meta5;
+    public int meta6;
+    public int meta7;
+    public int meta8;
+    public int meta9;		
 }
