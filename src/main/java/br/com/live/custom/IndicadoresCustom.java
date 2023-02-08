@@ -71,12 +71,12 @@ public class IndicadoresCustom {
 	
 	public List<ResultadosIndicadorMensal> findResultadosMensal(int ano, int idIndicador) {
 		
-		String query = " SELECT a.id, a.codigo || ' - (' || c.descricao_und_medida || ')' codigo, a.descricao, a.janeiro, a.fevereiro, a.marco, a.abril, a.maio, a.junho, "
-				+ "   a.julho, a.agosto, a.setembro, a.outubro, a.novembro, a.dezembro "
-				+ "   FROM orion_ind_060 a, orion_ind_110 b, orion_ind_120 c WHERE b.id = a.id_indicador "
-				+ "   AND c.id = b.unidade_medida "
-				+ "   AND a.ano = ? "
-				+ "   AND a.id_indicador = ? ";
+		String query = " SELECT a.id, a.codigo, a.descricao, a.janeiro, a.fevereiro, a.marco, a.abril, a.maio, a.junho, a.julho, a.agosto, a.setembro, a.outubro, "
+				+ "       a.novembro, a.dezembro "
+				+ "      FROM orion_ind_060 a, orion_ind_110 b "
+				+ "      WHERE b.id = a.id_indicador "
+				+ "      AND a.ano = ? "
+				+ "      AND a.id_indicador = ? ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResultadosIndicadorMensal.class), ano, idIndicador);
 	}
