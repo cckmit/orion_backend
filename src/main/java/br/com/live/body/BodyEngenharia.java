@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.TempoMaquinaCM;
+import br.com.live.model.ConsultaOperacaoXMicromovimentos;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -64,4 +65,7 @@ public class BodyEngenharia {
 	public List<Long> listaId;
 	
 	public List<String> listaRefenciasFtDigital;
+	public List<ConsultaOperacaoXMicromovimentos> listMicromov;
+	public String operacao;
+	public float tempoNormal;
 }

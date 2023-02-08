@@ -1,7 +1,9 @@
 package br.com.live.controller;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -432,5 +434,9 @@ public class EngenhariaController {
 	public void ResequenciarOperacao(@PathVariable("operacao") int operacao, @PathVariable("intervalo") int intervalo) {
     	engenhariaService.resequenciarOper(operacao, intervalo);
 	}
-    
+
+    @RequestMapping(value = "/gerar-pdf-micromov", method = RequestMethod.POST)
+    public String gerarPdfMicromov(@RequestBody BodyEngenharia body) throws JRException, FileNotFoundException {
+        return engenhariaService.gerarPdfMicromovimentos(body.listMicromov, body.operacao, body.maquina, body.interferencia, body.tempoNormal);
+    }
 }
