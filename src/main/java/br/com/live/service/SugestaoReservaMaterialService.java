@@ -46,10 +46,64 @@ public class SugestaoReservaMaterialService {
 		return sugestaoReservaMaterialPorOrdensService.calcularSugestaoReserva(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, depositosTecidos, depositosAviamentos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, percentualMinimoAtender, regraReserva);		
 	}
 	
-	public int findQtdePecasLiberadasDia(long idUsuario) {
-		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(2, idUsuario);
+	public int findQtdePecasLiberadasDia() {
+		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(2);
+	}	
+
+	public int findQtdeFlatPecasLiberadasDia() {
+		return ordemProducaoService.findQtdePecasFlatApontadaNoDia(2);
 	}	
 	
+	public int[] findQtdePecasLiberadasDiaPorArtigo() {		
+		List<SugestaoReservaConfigArtigos> configArtigos = sugestaoReservaMaterialCustom.findConfigArtigos();		
+		String artigosConfig = "";
+		int quantidade = 0;
+		int qtde1 = 0;
+		int qtde2 = 0;
+		int qtde3 = 0;
+		int qtde4 = 0;
+		int qtde5 = 0;
+		int qtde6 = 0;
+		int qtde7 = 0;
+		int qtde8 = 0;
+		int qtde9 = 0;
+		int qtdeOutros = 0;
+		int [] quantidades = new int[10];
+		
+		for (SugestaoReservaConfigArtigos configuracao : configArtigos) {
+			if ((configuracao.getArtigos() != null) && (!configuracao.getArtigos().isBlank())) {
+				if (artigosConfig.isEmpty()) artigosConfig += configuracao.getArtigos();
+				else artigosConfig += "," + configuracao.getArtigos();
+				
+				quantidade = ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioArtigos(2, true, configuracao.getArtigos());
+	
+				if (configuracao.getColuna() == 1) qtde1 = quantidade;
+				if (configuracao.getColuna() == 2) qtde2 = quantidade;
+				if (configuracao.getColuna() == 3) qtde3 = quantidade;
+				if (configuracao.getColuna() == 4) qtde4 = quantidade;
+				if (configuracao.getColuna() == 5) qtde5 = quantidade;
+				if (configuracao.getColuna() == 6) qtde6 = quantidade;
+				if (configuracao.getColuna() == 7) qtde7 = quantidade;
+				if (configuracao.getColuna() == 8) qtde8 = quantidade;
+				if (configuracao.getColuna() == 9) qtde9 = quantidade;
+			}
+		}
+		qtdeOutros = ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioArtigos(2, false, artigosConfig);		
+		
+		quantidades[0] = qtdeOutros;
+		quantidades[1] = qtde1;
+		quantidades[2] = qtde2;
+		quantidades[3] = qtde3;
+		quantidades[4] = qtde4;
+		quantidades[5] = qtde5;
+		quantidades[6] = qtde6;
+		quantidades[7] = qtde7;
+		quantidades[8] = qtde8;
+		quantidades[9] = qtde9;		
+		
+		return quantidades;
+	}	
+		
 	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaMateriaisReservados> listaMateriaisReservar , boolean urgente, long idUsuarioOrion) {		
 		if (!urgente) Collections.sort(listaOrdensLiberar);		
 
@@ -87,13 +141,10 @@ public class SugestaoReservaMaterialService {
 	public List<SugestaoReservaConfigArtigos> findConfigArtigos() {	
 		List<SugestaoReservaConfigArtigos> configArtigos = sugestaoReservaMaterialCustom.findConfigArtigos();
 		for (SugestaoReservaConfigArtigos configuracao : configArtigos) {
-			
-			System.out.println(configuracao.getArtigos());
-			
 			List<ArtigoProduto> artigos = produtoCustom.findArtigosProdutoByCodigos(configuracao.getArtigos());
 			List<ConteudoChaveNumerica> listaArtigos = new ArrayList<ConteudoChaveNumerica>();			
 			for (ArtigoProduto artigo : artigos) {
-				listaArtigos.add(new ConteudoChaveNumerica(artigo.getId(), artigo.getDescricao()));
+				listaArtigos.add(new ConteudoChaveNumerica(artigo.getId(), artigo.getId() + " - " + artigo.getDescricao()));
 			}
 			configuracao.setListaArtigos(listaArtigos);
 		}

@@ -36,11 +36,65 @@ public class SugestaoReservaMaterialController {
 		return sugestaoReservaMaterialService.findReferenciasEmOrdensParaLiberacao();
 	}
 
-	@RequestMapping(value = "/qtde-pc-liberada-dia/{idUsuario}", method = RequestMethod.GET)
-	public Integer findQtdePecasLiberadasDia(@PathVariable("idUsuario") long idUsuario) {
-		return sugestaoReservaMaterialService.findQtdePecasLiberadasDia(idUsuario);
+	@RequestMapping(value = "/qtde-pc-liberada-dia", method = RequestMethod.GET)
+	public Integer findQtdePecasLiberadasDia() {
+		return sugestaoReservaMaterialService.findQtdePecasLiberadasDia();
 	}
 
+	@RequestMapping(value = "/qtde-pc-liberada-dia-artigos", method = RequestMethod.GET)
+	public BodySugestaoReservaMateriais findQtdePecasLiberadasDiaPorArtigos() {
+		
+		List<SugestaoReservaConfigArtigos> artigos = sugestaoReservaMaterialService.findConfigArtigos();
+		int[] qtdesProduzidas = sugestaoReservaMaterialService.findQtdePecasLiberadasDiaPorArtigo();
+		
+		BodySugestaoReservaMateriais bodyRetorno = new BodySugestaoReservaMateriais(); 
+		
+		bodyRetorno.qtdeFlatProduzida = sugestaoReservaMaterialService.findQtdeFlatPecasLiberadasDia();
+		bodyRetorno.qtdeOutros = qtdesProduzidas[0];
+		bodyRetorno.qtdeProduzida1 = qtdesProduzidas[1];
+		bodyRetorno.qtdeProduzida2 = qtdesProduzidas[2];
+		bodyRetorno.qtdeProduzida3 = qtdesProduzidas[3];
+		bodyRetorno.qtdeProduzida4 = qtdesProduzidas[4];
+		bodyRetorno.qtdeProduzida5 = qtdesProduzidas[5];
+		bodyRetorno.qtdeProduzida6 = qtdesProduzidas[6];
+		bodyRetorno.qtdeProduzida7 = qtdesProduzidas[7];
+		bodyRetorno.qtdeProduzida8 = qtdesProduzidas[8];
+		bodyRetorno.qtdeProduzida9 = qtdesProduzidas[9];
+		
+		for (SugestaoReservaConfigArtigos artigo : artigos) {
+			if (artigo.getColuna() == 1) {
+				bodyRetorno.descricao1 = artigo.getDescricao();
+				bodyRetorno.meta1 = artigo.getMeta();
+			} else if (artigo.getColuna() == 2) {
+				bodyRetorno.descricao2 = artigo.getDescricao();
+				bodyRetorno.meta2 = artigo.getMeta();
+			} else if (artigo.getColuna() == 3) {
+				bodyRetorno.descricao3 = artigo.getDescricao();
+				bodyRetorno.meta3 = artigo.getMeta();
+			} else if (artigo.getColuna() == 4) {
+				bodyRetorno.descricao4 = artigo.getDescricao();
+				bodyRetorno.meta4 = artigo.getMeta();
+			} else if (artigo.getColuna() == 5) {
+				bodyRetorno.descricao5 = artigo.getDescricao();
+				bodyRetorno.meta5 = artigo.getMeta();
+			} else if (artigo.getColuna() == 6) {
+				bodyRetorno.descricao6 = artigo.getDescricao();
+				bodyRetorno.meta6 = artigo.getMeta();
+			} else if (artigo.getColuna() == 7) {
+				bodyRetorno.descricao7 = artigo.getDescricao();
+				bodyRetorno.meta7 = artigo.getMeta();
+			} else if (artigo.getColuna() == 8) {
+				bodyRetorno.descricao8 = artigo.getDescricao();
+				bodyRetorno.meta8 = artigo.getMeta();
+			} else if (artigo.getColuna() == 9) {
+				bodyRetorno.descricao9 = artigo.getDescricao();
+				bodyRetorno.meta9 = artigo.getMeta();
+			}
+		}
+		
+		return bodyRetorno;
+	}
+	
 	@RequestMapping(value = "/calcular", method = RequestMethod.POST)
 	public SugestaoReservaMateriais calcular(@RequestBody BodySugestaoReservaMateriais body) {
 		return sugestaoReservaMaterialService.calcularSugestaoReservaPorOrdem(
