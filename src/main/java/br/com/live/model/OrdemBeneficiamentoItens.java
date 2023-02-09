@@ -19,7 +19,8 @@ public class OrdemBeneficiamentoItens {
     public int roteiro;
     public int deposito;
     public String descDeposito;
-    
+    public int alternativaItem;
+    public int roteiroItem;    
     
 	public String getId() {
 		return id;
@@ -122,15 +123,26 @@ public class OrdemBeneficiamentoItens {
 	}
 	public void setDescDeposito(String descDeposito) {
 		this.descDeposito = descDeposito;
+	}	
+	public int getAlternativaItem() {
+		return alternativaItem;
 	}
-	
+	public void setAlternativaItem(int alternativaItem) {
+		this.alternativaItem = alternativaItem;
+	}
+	public int getRoteiroItem() {
+		return roteiroItem;
+	}
+	public void setRoteiroItem(int roteiroItem) {
+		this.roteiroItem = roteiroItem;
+	}
 	public OrdemBeneficiamentoItens() {
 		
 	}
 	
 	public OrdemBeneficiamentoItens(String id, int ordemProducao, String produto, float rolos, float quilos,
 			float largura, float gramatura, float rendimento, int periodoProducao, String maquina, String um,
-			int tipoOrdem, String observacao, int alternativa, int roteiro, int deposito, String descDeposito) {
+			int tipoOrdem, String observacao, int alternativa, int roteiro, int deposito, String descDeposito, int alternativaItem, int roteiroItem) {
 		this.id = id;
 		this.ordemProducao = ordemProducao;
 		this.produto = produto;
@@ -148,5 +160,15 @@ public class OrdemBeneficiamentoItens {
 		this.roteiro = roteiro;
 		this.deposito = deposito;
 		this.descDeposito = descDeposito;
+		this.alternativaItem = alternativaItem;
+		this.roteiroItem = roteiroItem;
+	}
+	
+	public OrdemBeneficiamentoItens(int ordemProducao, String produto, int alternativaItem, int roteiroItem) {
+		super();
+		this.ordemProducao = ordemProducao;
+		this.produto = produto;
+		this.alternativaItem = alternativaItem;
+		this.roteiroItem = roteiroItem;
 	}
 }

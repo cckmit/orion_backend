@@ -15,5 +15,6 @@ public interface OrdemBeneficiamentoItemRepository extends JpaRepository<OrdemBe
 	OrdemBeneficiamentoItem findById(String id);
 	
 	void deleteById(String id);
+	void deleteByUsuario(String ususario);
 
 }

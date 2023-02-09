@@ -46,6 +46,9 @@ public class OrdemBeneficiamentoItem {
 	public float rendimento;
     
     public int deposito;
+    public int alternativaItem;
+    public int roteiroItem;
+    public String observacao;
     
 	public String getId() {
 		return id;
@@ -131,23 +134,40 @@ public class OrdemBeneficiamentoItem {
 	public void setRendimento(float rendimento) {
 		this.rendimento = rendimento;
 	}
-	
 	public int getDeposito() {
 		return deposito;
 	}
 	public void setDeposito(int deposito) {
 		this.deposito = deposito;
+	}	
+	public int getAlternativaItem() {
+		return alternativaItem;
 	}
-	
+	public void setAlternativaItem(int alternativaItem) {
+		this.alternativaItem = alternativaItem;
+	}
+	public int getRoteiroItem() {
+		return roteiroItem;
+	}
+	public void setRoteiroItem(int roteiroItem) {
+		this.roteiroItem = roteiroItem;
+	}
+	public String getObservacao() {
+		return observacao;
+	}
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
+	}
 	public OrdemBeneficiamentoItem() {
 		
 	}
-	public OrdemBeneficiamentoItem(int sequencia, String usuario, String panoSbgNivel99,
+	public OrdemBeneficiamentoItem(int sequencia, String usuario, int ordemProducao, String panoSbgNivel99,
 			String panoSbgGrupo, String panoSbgSubgrupo, String panoSbgItem, float qtdeRolos, float qtdeQuilos,
-			String undMedida, float larguraTecido, float gramatura, float rendimento, int deposito) {
+			String undMedida, float larguraTecido, float gramatura, float rendimento, int alternativaItem, int roteiroItem, int deposito, String observacao) {
 		this.id = usuario + "-" + sequencia;
 		this.sequencia = sequencia;
 		this.usuario = usuario;
+		this.ordemProducao = ordemProducao;
 		this.panoSbgNivel99 = panoSbgNivel99;
 		this.panoSbgGrupo = panoSbgGrupo;
 		this.panoSbgSubgrupo = panoSbgSubgrupo;
@@ -158,7 +178,10 @@ public class OrdemBeneficiamentoItem {
 		this.larguraTecido = larguraTecido;
 		this.gramatura = gramatura;
 		this.rendimento = rendimento;
+		this.alternativaItem = alternativaItem;
+		this.roteiroItem = roteiroItem;
 		this.deposito = deposito;
+		this.observacao = observacao;
 	}
 	
 	

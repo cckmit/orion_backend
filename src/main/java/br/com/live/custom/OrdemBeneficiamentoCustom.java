@@ -35,13 +35,17 @@ public class OrdemBeneficiamentoCustom {
 	public List<OrdemBeneficiamentoItens> findAllItensOrdens(String usuario) {
 		String query = " SELECT a.id,"
 				+ "		  a.pano_sbg_nivel99 || '.' || a.pano_sbg_grupo || '.' || a.pano_sbg_subgrupo || '.' || a.pano_sbg_item || ' - ' || b.descr_referencia produto, "
+				+ "       a.ordem_producao ordemProducao, "
+				+ "       a.alternativa_item alternativaItem, "
+				+ "       a.roteiro_item roteiroItem, "
 				+ "       a.qtde_rolos rolos, "
 				+ "       a.qtde_quilos quilos, "
 				+ "       a.und_medida um, "
 				+ "       f.largura_1 largura, "
 				+ "       f.gramatura_1 gramatura, "
 				+ "       f.rendimento rendimento, "
-				+ "       a.deposito || ' - ' || g.descricao descDeposito "
+				+ "       a.deposito || ' - ' || g.descricao descDeposito, "
+				+ "       a.observacao observacao "
 				+ "       FROM orion_bnf_110 a, basi_030 b, basi_020 f, basi_205 g "
 				+ "       WHERE b.nivel_estrutura = a.pano_sbg_nivel99 "
 				+ "       AND b.referencia = a.pano_sbg_grupo "
@@ -65,28 +69,22 @@ public class OrdemBeneficiamentoCustom {
 		return numItens;
 	}
 	
-	public List<ConteudoChaveAlfaNum> findProdutos(String referencia) {
+	public List<ConteudoChaveAlfaNum> findProdutos(String produto) {
 		String query = " SELECT a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura value, "
 				+ "       a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura || ' - ' || b.descr_referencia  label FROM basi_010 a, basi_030 b "
 				+ "       WHERE b.nivel_estrutura = a.nivel_estrutura "
 				+ "       AND b.referencia = a.grupo_estrutura "
 				+ "       AND a.nivel_estrutura = 2 "
-				+ "       AND a.grupo_estrutura LIKE '%" + referencia + "%'"
+				+ "       AND a.nivel_estrutura || '.' ||  a.grupo_estrutura || '.' ||  a.subgru_estrutura || '.' || a.item_estrutura LIKE '%" + produto + "%'"
 				+ "       GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.descr_referencia "
 				+ "       ORDER BY a.grupo_estrutura ";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
-	}
-	
-	public List<ConteudoChaveAlfaNum> findUndMedida() {
-		String query = " SELECT c.unidade_medida value, c.unidade_medida || ' - ' || c.descr_unidade label FROM basi_200 c "
-				+ "       GROUP BY c.unidade_medida, c.descr_unidade "
-				+ "       ORDER BY c.unidade_medida ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
 	public List<ConteudoChaveAlfaNum> findDepositos() {
 		String query = " SELECT d.codigo_deposito value, "
 				+ "       d.codigo_deposito || ' - ' || d.descricao label FROM basi_205 d "
+				+ "       WHERE d.descricao NOT LIKE '%(IN)%' "
 				+ "       GROUP BY d.codigo_deposito, d.descricao "
 				+ "       ORDER BY d.codigo_deposito ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
@@ -180,5 +178,38 @@ public class OrdemBeneficiamentoCustom {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+	
+	public void updateOrdemProducao(String id, int ordem) {
+		
+		String query = " UPDATE orion_bnf_110 SET ordem_producao = ? WHERE id = ? "; 
+		
+		try {
+			jdbcTemplate.update(query, ordem, id);
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	public boolean existsRoteiro(String nivel, String grupo, String sub, String item, int alternativaItem, int roteiroItem) {
+		int encontrou = 0;
+
+		String query = " select 1 from mqop_050 "
+				+ " where mqop_050.nivel_estrutura = '" + nivel + "' "
+				+ " and mqop_050.grupo_estrutura   = '" + grupo + "'"
+				+ " and (mqop_050.subgru_estrutura = '" + sub + "' or mqop_050.subgru_estrutura = '000') "
+				+ " and (mqop_050.item_estrutura   = '" + item + "' or mqop_050.item_estrutura   = '000000') "
+				+ " and mqop_050.numero_alternati  = " + alternativaItem
+				+ " and mqop_050.numero_roteiro    = " + roteiroItem
+				+ " and rownum = 1 ";
+
+		try {
+			encontrou = (int) jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+
+		return (encontrou == 1);
 	}
 }

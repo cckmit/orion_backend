@@ -18,6 +18,7 @@ import br.com.live.repository.OrdemBeneficiamentoItemRepository;
 import br.com.live.service.OrdemBeneficiamentoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.StatusGravacao;
 
 @RestController
 @CrossOrigin
@@ -38,19 +39,14 @@ public class OrdemBeneficiamentoController {
     // Encontrar Equipamentos (Máquinas)
     @RequestMapping(value = "/find-all-maquinas/{maquina}", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllMaquina(@PathVariable("maquina") String maquina) {
-          return ordemBeneficiamentoCustom.findMaquinas(maquina); 
+          return ordemBeneficiamentoCustom.findMaquinas(maquina.toUpperCase()); 
     }
     // Encontrar Referencia
-    @RequestMapping(value = "/find-all-produtos/{referencia}", method = RequestMethod.GET)
-    public List<ConteudoChaveAlfaNum> findAllProdutos(@PathVariable("referencia") String referencia) {
-          return ordemBeneficiamentoCustom.findProdutos(referencia); 
+    @RequestMapping(value = "/find-all-produtos/{produto}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllProdutos(@PathVariable("produto") String produto) {
+          return ordemBeneficiamentoCustom.findProdutos(produto); 
     }
-    // Encontrar Unidade de Medida
-    @RequestMapping(value = "/find-all-unidade-medida", method = RequestMethod.GET)
-    public List<ConteudoChaveAlfaNum> findAllUndMedida() {
-          return ordemBeneficiamentoCustom.findUndMedida(); 
-    }
- // Encontrar Unidade de Medida
+    // Encontrar Periodo Producao
     @RequestMapping(value = "/find-all-periodo-producao/{periodoProducao}", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findAllPeriodo(@PathVariable("periodoProducao") int periodoProducao) {
           return ordemBeneficiamentoCustom.findPeriodo(periodoProducao); 
@@ -78,19 +74,19 @@ public class OrdemBeneficiamentoController {
     //
     // Salvar Ordem da Capa
     //
-    @RequestMapping(value = "/save-item-ordem-beneficiamento", method = RequestMethod.POST)
-    public void saveOrdemBeneficiamentoItem(@RequestBody BodyOrdemBeneficiamento body) {                  
-    	ordemBeneficiamentoService.saveItemTemporario(body.id, body.usuario, body.produto, body.qtdeRolos, body.qtdeQuilos, body.undMedida, body.larguraTecido, body.gramatura, body.rendimento,
-    			body.deposito);
+    @RequestMapping(value = "/salvar-item-ordem-beneficiamento", method = RequestMethod.POST)
+    public StatusGravacao saveOrdemBeneficiamentoItem(@RequestBody BodyOrdemBeneficiamento body) {                  
+    	return ordemBeneficiamentoService.salvarItemOrdem(body.id, body.usuario, body.ordemProducao, body.produto, body.qtdeRolos, body.qtdeQuilos, body.larguraTecido, 
+    			body.gramatura, body.rendimento, body.alternativaItem, body.roteiroItem, body.deposito, body.observacao);
     }
     
-    @RequestMapping(value = "/delete-item-ordem/{id}/{usuario}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/deletar-item-ordem/{id}/{usuario}", method = RequestMethod.DELETE)
     public void deleteIdOrdem(@PathVariable("id") String id, @PathVariable("usuario") String usuario) {                  
-    	ordemBeneficiamentoService.deleteIdOrdem(id, usuario);
+    	ordemBeneficiamentoService.deleteItemOrdem(id, usuario);
     }
     
     @RequestMapping(value = "/gerar-ordem-beneficiamento", method = RequestMethod.POST)
-    public String gerarOrdemBeneficiamento(@RequestBody BodyOrdemBeneficiamento body) {                  
+    public List<OrdemBeneficiamentoItens> gerarOrdemBeneficiamento(@RequestBody BodyOrdemBeneficiamento body) {                  
     	return ordemBeneficiamentoService.gerarOrdemBeneficiamento(body.periodoProducao, body.dataPrograma, body.previsaoTermino, body.maquina, body.tipoOrdem, body.usuario);
     }
 

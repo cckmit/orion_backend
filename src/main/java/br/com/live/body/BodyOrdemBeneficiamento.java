@@ -18,6 +18,8 @@ public class BodyOrdemBeneficiamento {
 	public String observacao;
     public int alternativa;
     public int roteiro;
+    public int alternativaItem;
+    public int roteiroItem;
     public int ordemProducao;
 	public String panoSbgNivel99;
 	public String panoSbgGrupo;
