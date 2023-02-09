@@ -104,6 +104,9 @@ public class PrevisaoVendasService {
 		double valorSellIn = 0.000;
 		double valorSellOut = 0.000;
 
+		previsaoVendasItemTamRepository.deleteByIdPrevisaoVendas(idPrevisaoVendas);
+		previsaoVendasItemRepository.deleteByIdPrevisaoVendas(idPrevisaoVendas);
+
 		for (ConsultaPrevisaoVendasItem previsao : previsoesVenda) {
 			valorSellIn = tabelaPrecoCustom.findPrecoProduto(colTabPrecoSellIn, mesTabPrecoSellIn, seqTabPrecoSellIn,
 					previsao.grupo, previsao.item);
@@ -121,12 +124,27 @@ public class PrevisaoVendasService {
 					previsao.setQtdePrevisao((previsao.qtdeVendidaBase * previsao.percAplicar) / 100);
 			}
 
-			PrevisaoVendasItem previsaoVendasItens = new PrevisaoVendasItem(idPrevisaoVendas, previsao.grupo,
-					previsao.item, valorSellIn, valorSellOut, previsao.grupoBase, previsao.itemBase,
-					previsao.qtdeVendidaBase, (double) previsao.percAplicar, previsao.qtdePrevisao);
-			previsaoVendasItemRepository.save(previsaoVendasItens);
-		}
+			try {
+				PrevisaoVendasItem previsaoVendasItens = new PrevisaoVendasItem(idPrevisaoVendas, previsao.grupo,
+						previsao.item, valorSellIn, valorSellOut, previsao.grupoBase, previsao.itemBase,
+						previsao.qtdeVendidaBase, (double) previsao.percAplicar, previsao.qtdePrevisao);
 
+				previsaoVendasItemRepository.save(previsaoVendasItens);
+			} catch (Exception e) {
+				System.out.println("Quantidade já inserida por referência e cor!");
+			}
+
+			if (previsao.subGrupo != null && !previsao.subGrupo.equalsIgnoreCase("")) {
+				try {
+					PrevisaoVendasItemTam previsaoItensTam = new PrevisaoVendasItemTam(idPrevisaoVendas, idPrevisaoVendas + "-" + previsao.grupo + "-" + previsao.item,
+							previsao.grupo, previsao.item, previsao.subGrupo, previsao.qtdePrevisao);
+
+					previsaoVendasItemTamRepository.save(previsaoItensTam);
+				} catch (Exception e) {
+					System.out.println("Quantidade já inserida por tamanho!");
+				}
+			}
+		}
 		return previsaoVendas;
 	}
 

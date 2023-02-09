@@ -17,6 +17,7 @@ public class ConsultaPrevisaoVendasItem {
 	public int qtdeVendidaBase;	           
 	public int percAplicar;	
 	public int qtdePrevisao;
+	public String subGrupo;
 	
 	public String getDescricaoBase() {
 		return descricaoBase;
@@ -137,8 +138,16 @@ public class ConsultaPrevisaoVendasItem {
 	public void setQtdePrevisao(int qtdePrevisao) {
 		this.qtdePrevisao = qtdePrevisao;
 	}
-	
-	private String formatStringValores(String valor) {	
+
+	public String getSubGrupo() {
+		return subGrupo;
+	}
+
+	public void setSubGrupo(String subGrupo) {
+		this.subGrupo = subGrupo;
+	}
+
+	private String formatStringValores(String valor) {
 		String[] separadorDecimal = valor.split("[.]");		
 		String valorInteiro = separadorDecimal[0];
 		if (valorInteiro.equalsIgnoreCase("") || valorInteiro == null) valor = "0" + valor;
