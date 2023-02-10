@@ -869,7 +869,7 @@ public class OrdemProducaoCustom {
 		jdbcTemplate.update(queryInsert);
 	}	
 	
-	public int findQtdePecasApontadaNoDiaPorUsuario(int codEstagio, int codUsuario, String usuarioSystextil) {
+	public int findQtdePecasApontadaNoDia(int codEstagio) {
 
 		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p "
 		+ " where p.pcpc040_estconf = " + codEstagio  		
@@ -882,6 +882,55 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 	
+	public int findQtdePecasApontadaNoDiaPorArtigo(int codEstagio, boolean consideraArtigos, String artigos) {
+
+		String considera = "in";
+		
+		if (!consideraArtigos) considera = "not in";
+		
+		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p " 
+		+ " where p.pcpc040_estconf = " + codEstagio
+   	    + " and p.data_producao = trunc(sysdate) " 
+		+ " and exists (select 1 from pcpc_020 m "
+		+ " where m.ordem_producao = p.ordem_producao " 
+		+ " and m.referencia_peca not like ('TM%')) "
+		+ " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = p.ordem_producao) "
+		+ " and exists (select 1 from pcpc_040 z, basi_030 v "
+        + " where z.periodo_producao = p.pcpc040_perconf "
+        + " and z.ordem_confeccao = p.pcpc040_ordconf "
+        + " and z.codigo_estagio = p.pcpc040_estconf "
+        + " and v.nivel_estrutura = z.proconf_nivel99 "
+        + " and v.referencia = z.proconf_grupo "
+        + " and v.artigo " + considera + " ( " + artigos + " )) ";
+		
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
+	public int findQtdePecasFlatApontadaNoDia(int codEstagio) {
+		
+		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p " 
+		+ " where p.pcpc040_estconf = " + codEstagio
+		+ " and p.data_producao = trunc(sysdate) " 
+		+ " and exists (select 1 from pcpc_020 m " 
+		+ " where m.ordem_producao = p.ordem_producao " 
+		+ " and m.referencia_peca not like ('TM%')) "
+		+ " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = p.ordem_producao) "
+		+ " and exists (select 1 from pcpc_040 z, pcpc_020 v, mqop_050 m " 
+		+ " where z.periodo_producao = p.pcpc040_perconf "
+		+ " and z.ordem_confeccao = p.pcpc040_ordconf "
+		+ " and z.codigo_estagio = p.pcpc040_estconf "                              
+		+ " and v.ordem_producao = z.ordem_producao "                                               
+		+ " and m.nivel_estrutura = '1' "
+		+ " and m.grupo_estrutura = z.proconf_grupo "                
+		+ " and (m.subgru_estrutura = z.proconf_subgrupo or m.subgru_estrutura = '000') " 
+		+ " and (m.item_estrutura =  z.proconf_item or m.item_estrutura = '000000') "
+		+ " and m.numero_alternati = v.alternativa_peca "
+		+ " and m.numero_roteiro = v.roteiro_peca "
+		+ " and m.codigo_operacao in (select y.codigo_operacao from mqop_040 y " 
+		+ " where y.nome_operacao like '%FLAT%')) ";
+				
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
 	
 	public int findUltimaSeqPrioridadeDia() {
 	

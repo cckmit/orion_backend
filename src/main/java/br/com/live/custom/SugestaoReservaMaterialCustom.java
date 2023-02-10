@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.Produto;
+import br.com.live.model.SugestaoReservaConfigArtigos;
 
 @Repository
 public class SugestaoReservaMaterialCustom {
@@ -116,7 +117,7 @@ public class SugestaoReservaMaterialCustom {
 	
 	public String findLembreteByOrdem(int idOrdem) {		
 		String lembrete;
-		String query = " select o.lembrete from orion_210 o where o.ordem_producao = ? ";
+		String query = " select o.lembrete from orion_cfc_210 o where o.ordem_producao = ? ";
 		
 		try {
 			lembrete = jdbcTemplate.queryForObject(query, String.class, idOrdem);
@@ -145,12 +146,33 @@ public class SugestaoReservaMaterialCustom {
 	}
 	
 	public void gravarLembrete(int idOrdem, String lembrete) {	
-		String query = " insert into orion_210 (ordem_producao, lembrete) values (?,?) ";
+		String query = " insert into orion_cfc_210 (ordem_producao, lembrete) values (?,?) ";
 		try {
 			jdbcTemplate.update(query, idOrdem, lembrete);
 		} catch (Exception e) {
-			query = " update orion_210 o set o.lembrete = ? where o.ordem_producao = ? ";
+			query = " update orion_cfc_210 o set o.lembrete = ? where o.ordem_producao = ? ";
 			jdbcTemplate.update(query, lembrete, idOrdem);
 		}		
+	}		
+	
+	public void gravarConfigArtigos(int coluna, String descricao, int meta, String artigos) {
+		String query = " insert into orion_cfc_215 (coluna, descricao, meta, artigos) values (?,?,?,?) ";
+		try {
+			jdbcTemplate.update(query, coluna, descricao, meta, artigos);
+		} catch (Exception e) {
+			query = " update orion_cfc_215 set descricao = ?, meta = ?, artigos = ? where coluna = ? ";
+			jdbcTemplate.update(query, descricao, meta, artigos, coluna);
+		}				
+	}	
+	
+	public List<SugestaoReservaConfigArtigos> findConfigArtigos() {				
+		List<SugestaoReservaConfigArtigos> configArtigos = new ArrayList<SugestaoReservaConfigArtigos>();		
+		String query = " select coluna, descricao, meta, artigos from orion_cfc_215 ";		
+		try {
+			configArtigos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(SugestaoReservaConfigArtigos.class));
+		} catch (Exception e) {
+			configArtigos = new ArrayList<SugestaoReservaConfigArtigos>();
+		}
+		return configArtigos;		
 	}		
 }

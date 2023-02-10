@@ -316,6 +316,16 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoProduto.class));
 	}
 
+	public List<ArtigoProduto> findArtigosProdutoByCodigos(String codigos) {
+
+		String query = "select b.artigo id, b.descr_artigo descricao from basi_290 b"
+				+ " where b.nivel_estrutura = '1' " + 
+				"   and b.artigo in (" + codigos + ")" +
+				" order by b.artigo ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoProduto.class));
+	}
+
 	public List<Colecao> findAllColecoes() {
 
 		String query = " select b.colecao id, b.descr_colecao descricao from basi_140 b "

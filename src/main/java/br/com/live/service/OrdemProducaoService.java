@@ -67,11 +67,17 @@ public class OrdemProducaoService {
 		ordemProducaoCustom.gravarSeqPrioridadeDia(ordemProducao, sequencia);
 	}
 	
-	public int findQtdePecasApontadaNoDiaPorEstagioUsuario(int codEstagio, long idUsuarioOrion) {		
-		Usuario usuario = usuarioService.findByIdUsuario(idUsuarioOrion);
-		int codUsuarioSystextil = usuarioService.findCodigoUsuarioSystextil(idUsuarioOrion);		
-		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorUsuario(codEstagio, codUsuarioSystextil, usuario.usuarioSystextil);
+	public int findQtdePecasApontadaNoDiaPorEstagioUsuario(int codEstagio) {		
+		return ordemProducaoCustom.findQtdePecasApontadaNoDia(codEstagio);
 	}	
+
+	public int findQtdePecasApontadaNoDiaPorEstagioArtigos(int codEstagio, boolean consideraArtigos, String artigos) {		
+		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorArtigo(codEstagio, consideraArtigos, artigos);
+	}	
+	
+	public int findQtdePecasFlatApontadaNoDia(int codEstagio) {
+		return ordemProducaoCustom.findQtdePecasFlatApontadaNoDia(codEstagio);
+	}
 	
 	public void gravarObservacao(int ordemProducao, String observacao) {
 		ordemProducaoCustom.gravarObservacao(ordemProducao, observacao);
