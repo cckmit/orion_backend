@@ -218,7 +218,7 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (72, 'Despacho Atacado', 'Expedição', '/despacho-atacado');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (73, 'Geração de ordem para Beneficiamentoo', 'Confecção', '/geracao-de-ordem-para-beneficiamento');
+values (73, 'Geração de ordem para Beneficiamento', 'Confecção', '/geracao-de-ordem-para-beneficiamento');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (74, 'Caixas Disponíveis', 'Expedição', '/caixas-disponiveis');
@@ -234,3 +234,6 @@ values (77, 'Geração de Etiquetas para Decoração', 'Confecção', '/geracao-
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (78, 'Pré Cadastro Indicadores', 'Administrativo', '/pre-cadastro-indicadores');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (79, 'Painel de Sequenciamento Decorações', 'Confecção', '/painel-seq-decoracoes');
