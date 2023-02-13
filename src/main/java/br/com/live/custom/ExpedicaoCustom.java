@@ -864,9 +864,29 @@ public class ExpedicaoCustom {
 		String query = " select 100 empresa, minuta.nota, minuta.serie, minuta.emissao, minuta.pedido, minuta.cliente, minuta.caixas, minuta.libPaypal, "
 				+ " minuta.pesoBruto, minuta.valorNota, minuta.cidade, minuta.estado from (";
 
-		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
+		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, " +
+				" (SELECT p.NOME_CLIENTE  FROM fatu_050 v, PEDI_010 p " +
+				" WHERE v.NUM_NOTA_FISCAL = i.num_nota_fiscal " +
+				" AND v.CODIGO_EMPRESA = 100 " +
+				" AND p.CGC_9 = v.CGC_9 " +
+				" AND p.CGC_4 = v.CGC_4 " +
+				" AND p.CGC_2 = v.CGC_2) cliente, "
 				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, "
-				+ " (select w.valor_itens_nfis from fatu_050 w where w.num_nota_fiscal = i.num_nota_fiscal and w.codigo_empresa = 100) valorNota, g.cidade, g.estado "
+				+ " (select w.valor_itens_nfis from fatu_050 w where w.num_nota_fiscal = i.num_nota_fiscal and w.codigo_empresa = 100) valorNota, "
+				+ " (SELECT b.CIDADE  FROM fatu_050 v, PEDI_010 p, BASI_160 b "
+				+ " WHERE v.NUM_NOTA_FISCAL = i.num_nota_fiscal "
+				+ " AND v.CODIGO_EMPRESA = 100 "
+				+ " AND p.CGC_9 = v.CGC_9 "
+				+ " AND p.CGC_4 = v.CGC_4 "
+				+ " AND p.CGC_2 = v.CGC_2 "
+				+ " AND b.COD_CIDADE = p.COD_CIDADE) cidade, "
+				+ " (SELECT b.ESTADO  FROM fatu_050 v, PEDI_010 p, BASI_160 b "
+				+ " WHERE v.NUM_NOTA_FISCAL = i.num_nota_fiscal "
+				+ " AND v.CODIGO_EMPRESA = 100 "
+				+ " AND p.CGC_9 = v.CGC_9 "
+				+ " AND p.CGC_4 = v.CGC_4 "
+				+ " AND p.CGC_2 = v.CGC_2 "
+				+ " AND b.COD_CIDADE = p.COD_CIDADE) estado "
 				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g, obrf_782 h, obrf_831 i "
 				+ "     where a.pedido_venda = b.pedido_venda "
 				+ " 		  and a.codigo_empresa in (1) "
@@ -908,9 +928,29 @@ public class ExpedicaoCustom {
 
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 		query += " UNION ";
-		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, c.nome_cliente cliente, "
+		query += " select i.num_nota_fiscal nota, i.serie_nota_fisc serie, i.data_emissao emissao, a.pedido_venda pedido, "
+				+ " (SELECT p.NOME_CLIENTE  FROM fatu_050 v, PEDI_010 p "
+				+ " WHERE v.NUM_NOTA_FISCAL = i.num_nota_fiscal "
+				+ " AND v.CODIGO_EMPRESA = 100 "
+				+ " AND p.CGC_9 = v.CGC_9 "
+				+ " AND p.CGC_4 = v.CGC_4 "
+				+ " AND p.CGC_2 = v.CGC_2) cliente, "
 				+ " count(e.numero_volume) caixas, f.data_liberacao libPaypal, a.peso_bruto pesoBruto, "
-				+ " (select w.valor_itens_nfis from fatu_050 w where w.num_nota_fiscal = i.num_nota_fiscal and w.codigo_empresa = 100) valorNota, g.cidade, g.estado "
+				+ " (select w.valor_itens_nfis from fatu_050 w where w.num_nota_fiscal = i.num_nota_fiscal and w.codigo_empresa = 100) valorNota, "
+				+ " (SELECT b.CIDADE FROM fatu_050 v, PEDI_010 p, BASI_160 b "
+				+ " WHERE v.NUM_NOTA_FISCAL = i.num_nota_fiscal "
+				+ " AND v.CODIGO_EMPRESA = 100 "
+				+ " AND p.CGC_9 = v.CGC_9 "
+				+ " AND p.CGC_4 = v.CGC_4 "
+				+ " AND p.CGC_2 = v.CGC_2 "
+				+ " AND b.COD_CIDADE = p.COD_CIDADE) cidade, "
+				+ " (SELECT b.ESTADO FROM fatu_050 v, PEDI_010 p, BASI_160 b "
+				+ " WHERE v.NUM_NOTA_FISCAL = i.num_nota_fiscal"
+				+ " AND v.CODIGO_EMPRESA = 100 "
+				+ " AND p.CGC_9 = v.CGC_9 "
+				+ " AND p.CGC_4 = v.CGC_4 "
+				+ " AND p.CGC_2 = v.CGC_2 "
+				+ " AND b.COD_CIDADE = p.COD_CIDADE) estado "
 				+ " from fatu_050 a, pedi_100 b, pedi_010 c, pcpc_320 e, expe_003 f, basi_160 g, obrf_782 h, obrf_831 i "
 				+ "     where a.pedido_venda = b.pedido_venda "
 				+ " 		  and a.codigo_empresa in (1) "
@@ -1517,5 +1557,35 @@ public class ExpedicaoCustom {
 		}
 		return numeroNotaEmp1;
 	}
+
+	public int validaVolumeDevolucao(int volume) {
+		int volumeDevolucao = 0;
+
+		String query = "SELECT 1 FROM PCPC_320 a " +
+				" WHERE a.NUMERO_VOLUME = " + volume +
+				" AND EXISTS (SELECT 1 FROM EXPE_003 e WHERE e.NOTA_FISCAL = a.NOTA_FISCAL AND e.STATUS > 0) ";
+
+		try {
+			volumeDevolucao = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			volumeDevolucao = 0;
+		}
+		return volumeDevolucao;
+	}
+
+	public int validaVolumeCancelado(int volume) {
+		int volumeCancelado = 0;
+
+		String query = " SELECT a.COD_CANCELAMENTO FROM PCPC_320 a " +
+				" WHERE a.NUMERO_VOLUME = " + volume;
+
+		try {
+			volumeCancelado = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			volumeCancelado = 0;
+		}
+		return volumeCancelado;
+	}
+
 
 }

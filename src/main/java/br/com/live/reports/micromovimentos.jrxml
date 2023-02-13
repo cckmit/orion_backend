@@ -274,6 +274,21 @@
 					</jr:column>
 					<jr:column width="60" uuid="1ea0581c-da80-4446-aa63-c9faf5ef741f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:tableFooter style="Table_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="60" height="30" uuid="0f95bbc8-cac8-4509-b4a1-c52670f5babf"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<text><![CDATA[Total:]]></text>
+							</staticText>
+						</jr:tableFooter>
 						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="60" height="30" uuid="45709b00-51af-4e5d-b894-9c35762e1cf3"/>
@@ -289,21 +304,6 @@
 								<text><![CDATA[Interferência]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="Table_CH" height="30" rowSpan="1">
-							<staticText>
-								<reportElement x="0" y="0" width="60" height="30" uuid="0f95bbc8-cac8-4509-b4a1-c52670f5babf"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial"/>
-								</textElement>
-								<text><![CDATA[Total:]]></text>
-							</staticText>
-						</jr:columnFooter>
 						<jr:detailCell style="Table_TD" height="30">
 							<textField pattern="#,##0.00#;#,##0.00#-">
 								<reportElement x="0" y="0" width="60" height="30" uuid="4964f504-aaa4-4b9a-b90d-f08ab94c1834"/>
@@ -322,6 +322,21 @@
 					</jr:column>
 					<jr:column width="60" uuid="b65d7617-e385-43cc-a330-7120ec99089d">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:tableFooter style="Table_TH" height="30" rowSpan="1">
+							<textField pattern="#,##0.0000;#,##0.0000-">
+								<reportElement x="0" y="0" width="60" height="30" uuid="773b441c-764a-47cd-87fc-b78efb63369f"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{totalTempo}]]></textFieldExpression>
+							</textField>
+						</jr:tableFooter>
 						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="60" height="30" uuid="f340feea-9ffa-4273-a5dd-d4de51183721"/>
@@ -337,21 +352,6 @@
 								<text><![CDATA[Total Tempo]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="Table_CH" height="30" rowSpan="1">
-							<textField pattern="#,##0.0000;#,##0.0000-">
-								<reportElement x="0" y="0" width="60" height="30" uuid="773b441c-764a-47cd-87fc-b78efb63369f"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Arial" size="8"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$V{totalTempo}]]></textFieldExpression>
-							</textField>
-						</jr:columnFooter>
 						<jr:detailCell style="Table_TD" height="30">
 							<textField pattern="#,##0.0000;#,##0.0000-">
 								<reportElement x="0" y="0" width="60" height="30" uuid="7b06c7ad-745e-4294-8595-333b065b0fab"/>
