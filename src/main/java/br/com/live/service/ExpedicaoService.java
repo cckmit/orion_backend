@@ -785,17 +785,28 @@ public class ExpedicaoService {
 	public StatusGravacao alterarLocalCaixaVolume(int minuta, int volume, int localCaixa) {
 		StatusGravacao status = new StatusGravacao(true, "");
 		int localCaixaVolume = 0;
+		int volumeDevolucao = 0;
+		int volumeCancelado = 0;
 
 		String volumeComp = "" + volume + "";
 		String volumeEdit = volumeComp.substring(0, 7);
-
-		System.out.println(volume);
-		System.out.println(Integer.parseInt(volumeEdit));
 
 		int volumeDentroDaMinuta = expedicaoCustom.validarVolumeDentroMinuta(minuta, Integer.parseInt(volumeEdit));
 		if (volumeDentroDaMinuta == 1) {
 
 			localCaixaVolume = expedicaoCustom.obterLocalCaixaVolume(Integer.parseInt(volumeEdit));
+			volumeDevolucao = expedicaoCustom.validaVolumeDevolucao(Integer.parseInt(volumeEdit));
+			volumeCancelado = expedicaoCustom.validaVolumeCancelado(Integer.parseInt(volumeEdit));
+
+			if (volumeCancelado > 0) {
+				status = new StatusGravacao(false, "ATENÇÃO! Caixa cancelada!");
+				return status;
+			}
+
+			if (volumeDevolucao != 0) {
+				status = new StatusGravacao(false, "ATENÇÃO! Caixa marcada para devolução!");
+				return status;
+			}
 
 			if (localCaixaVolume == localCaixa) {
 				status = new StatusGravacao(false, "Volume já esta com local da caixa " + localCaixa + "" +
