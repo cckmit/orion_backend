@@ -670,7 +670,7 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
 	
-	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido) { 
+	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String estagiosEmProducao, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, boolean isPossuiAgrupadorEstamp) { 
 
 		String query = " select pre_ordens_priorizadas.ordem_producao ordemProducao, "  
 	    + " pre_ordens_priorizadas.periodo_producao periodo, "
@@ -752,7 +752,7 @@ public class OrdemProducaoCustom {
 	    + " and cc.referencia = aa.referencia_peca "
 	    + " and exists (select 1 from pcpc_040 "
 	    + " where pcpc_040.ordem_producao = aa.ordem_producao "	    
- 	    + " and pcpc_040.codigo_estagio = 2 " // ANALISE DE TECIDO
+ 	    + " and pcpc_040.codigo_estagio in (" + estagiosEmProducao + ")" 
 	    + " and pcpc_040.qtde_disponivel_baixa > 0)";
 
 		if (periodoInicial > 0 || periodoFinal > 0)
@@ -793,6 +793,14 @@ public class OrdemProducaoCustom {
 	              + " and m.codigo_operacao in (select y.codigo_operacao from mqop_040 y "
 	              + " where y.nome_operacao like '%FLAT%')) ";
 				
+		if (isPossuiAgrupadorEstamp)
+			query += " and (select count(*) "
+				  + " from mqop_005 m " 
+				  + " where m.est_agrup_est = 10 " // Estágios de estamparia
+				  + " and exists (select 1 from pcpc_040 p " 
+				  + " where p.ordem_producao = aa.ordem_producao "
+				  + " and p.codigo_estagio = m.codigo_estagio)) > 2 ";				
+		
 		if (isDiretoCostura) 
 			query += " and not exists ( select 1 from pcpc_040 pp "		 
 			      + " where pp.ordem_producao = aa.ordem_producao "

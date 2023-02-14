@@ -84,7 +84,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		
 		listaGradeDetPrevistoAtendidoPorSortimento = new ArrayList<SugestaoMaterialDetalhaSortimentos>();
 		listaGradeDetPrevistoAtendidoPorTamanho = new ArrayList<SugestaoMaterialDetalhaGradeTamanhos>();
-		listaPriorizadaOrdens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, embarques, referencias, estagios, artigos, tecidos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido); 
+		listaPriorizadaOrdens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, "2", embarques, referencias, estagios, artigos, tecidos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, false); 
 		
 		System.out.println("calcularNecessidades " + new Date());		
 		
