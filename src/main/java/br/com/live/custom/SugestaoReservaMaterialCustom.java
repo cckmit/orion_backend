@@ -12,7 +12,8 @@ import br.com.live.model.SugestaoReservaConfigArtigos;
 
 @Repository
 public class SugestaoReservaMaterialCustom {
-	
+
+	public static final int ESTAGIO_ANALISE_MATERIAIS = 2;
 	private final JdbcTemplate jdbcTemplate;
 
 	public SugestaoReservaMaterialCustom(JdbcTemplate jdbcTemplate) {
@@ -28,7 +29,7 @@ public class SugestaoReservaMaterialCustom {
 		+ " where p.pcpc0302_orprocor in (select a.ordem_producao from pcpc_020 a, pcpc_040 b "
 		+ " where a.cod_cancelamento = 0 "
 		+ " and b.ordem_producao = a.ordem_producao "
-		+ " and b.codigo_estagio = 2 " // ANALISE DE TECIDO
+		+ " and b.codigo_estagio = ? " // ANALISE DE TECIDO
         + " and b.qtde_disponivel_baixa > 0) "
 		+ " and m.nivel_estrutura = p.tecordco_nivel99 "
 		+ " and m.grupo_estrutura = p.tecordco_grupo "
@@ -38,7 +39,7 @@ public class SugestaoReservaMaterialCustom {
 		+ " order by p.tecordco_nivel99, p.tecordco_grupo, p.tecordco_subgrupo, p.tecordco_item, m.narrativa ";
 		
 		try {
-			produtos= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+			produtos= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class), ESTAGIO_ANALISE_MATERIAIS);
 		} catch (Exception e) {
 			produtos = new ArrayList<Produto> ();
 		}
@@ -55,7 +56,7 @@ public class SugestaoReservaMaterialCustom {
 		+ " where a.cod_cancelamento = 0 "
     	+ " and exists (select 1 from pcpc_040 b "
         + " where b.ordem_producao = a.ordem_producao " 
-        + " and b.codigo_estagio = 2 " // ANALISE DE TECIDO
+        + " and b.codigo_estagio = ? " // ANALISE DE TECIDO
         + " and b.qtde_disponivel_baixa > 0) "
 		+ " and c.nivel_estrutura = '1' "
 		+ " and c.referencia = a.referencia_peca "
@@ -63,7 +64,7 @@ public class SugestaoReservaMaterialCustom {
 		+ " order by a.referencia_peca, c.descr_referencia ";
 		
 		try {
-			produtos= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
+			produtos= jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class), ESTAGIO_ANALISE_MATERIAIS);
 		} catch (Exception e) {
 			produtos = new ArrayList<Produto> ();
 		}

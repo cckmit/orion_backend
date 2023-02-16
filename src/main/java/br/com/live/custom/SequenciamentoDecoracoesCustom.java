@@ -1,6 +1,7 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -13,6 +14,7 @@ import br.com.live.model.Produto;
 @Repository
 public class SequenciamentoDecoracoesCustom {
 
+	public static final String ESTAGIOS_DISTRIB_DECORACOES = "9,31";
 	private final JdbcTemplate jdbcTemplate;
 
 	public SequenciamentoDecoracoesCustom(JdbcTemplate jdbcTemplate) {
@@ -26,7 +28,7 @@ public class SequenciamentoDecoracoesCustom {
 		+ " where a.cod_cancelamento = 0 "
     	+ " and exists (select 1 from pcpc_040 b "
         + " where b.ordem_producao = a.ordem_producao " 
-        + " and b.codigo_estagio in (9,31) " // CENTRO DISTRIBUIÇÃO - DECORAÇÕES
+        + " and b.codigo_estagio in (" + ESTAGIOS_DISTRIB_DECORACOES + ") " // CENTRO DISTRIBUIÇÃO - DECORAÇÕES
         + " and b.qtde_disponivel_baixa > 0) "
 		+ " and c.nivel_estrutura = '1' "
 		+ " and c.referencia = a.referencia_peca "
@@ -42,9 +44,7 @@ public class SequenciamentoDecoracoesCustom {
 	}
 
 	public List<OrdemProducaoEstagios> findProximosEstagiosDecoracoesOrdem(int ordemProducao) {
-			
 		List<OrdemProducaoEstagios> estagios;
-						
 		String query = "select a.ordem_producao ordemProducao, a.sequencia_estagio seqEstagio, a.codigo_estagio codEstagio, a.estagio_anterior codEstagioAnterior, a.estagio_depende codEstagioDepende, sum(a.qtde_a_produzir_pacote) qtdeAProduzir from pcpc_040 a "
 		+ " where a.ordem_producao = ? "
 		+ " and a.qtde_a_produzir_pacote > 0 "
@@ -53,11 +53,28 @@ public class SequenciamentoDecoracoesCustom {
 		+ " order by a.ordem_producao, a.sequencia_estagio, a.codigo_estagio "; 
 		
 		try {
-			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class));
+			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class), ordemProducao);
 		} catch (Exception e) {
 			estagios = new ArrayList<OrdemProducaoEstagios>();
 		}		
 		return estagios;
-	}	
+	}		
 	
+	public String findEnderecoDistribuicao(int ordemProducao) {		
+		String query = " select max(d.endereco) endereco from dist_050 d where d.ordem_producao = ? ";
+		return jdbcTemplate.queryForObject(query, String.class, ordemProducao);
+	}
+	
+	public Date findDataProducaoEstagioAnterior(int ordemProducao) {
+		String query = "select max(z.data_producao) data_producao "
+		+ " from pcpc_040 p, pcpc_045 z " 
+		+ " where p.ordem_producao = ? "
+		+ " and p.codigo_estagio in (" + ESTAGIOS_DISTRIB_DECORACOES + ")"
+		+ " and p.qtde_em_producao_pacote > 0 "
+		+ " and z.pcpc040_perconf = p.periodo_producao " 
+		+ " and z.pcpc040_ordconf = p.ordem_confeccao "
+		+ " and z.pcpc040_estconf = p.estagio_anterior ";
+		
+		return jdbcTemplate.queryForObject(query, Date.class);
+	}
 }

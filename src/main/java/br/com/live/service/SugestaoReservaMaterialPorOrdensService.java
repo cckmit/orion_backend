@@ -33,7 +33,7 @@ import br.com.live.util.CodigoProduto;
 @Service
 @Transactional
 public class SugestaoReservaMaterialPorOrdensService {
-
+	
 	private static final int RESERVAR_QTDE_RECALCULADA = 0; 
 	private static final int TECIDO = 1;
 	private static final int AVIAMENTO = 2;
@@ -84,10 +84,9 @@ public class SugestaoReservaMaterialPorOrdensService {
 		
 		listaGradeDetPrevistoAtendidoPorSortimento = new ArrayList<SugestaoMaterialDetalhaSortimentos>();
 		listaGradeDetPrevistoAtendidoPorTamanho = new ArrayList<SugestaoMaterialDetalhaGradeTamanhos>();
-		listaPriorizadaOrdens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, "2", embarques, referencias, estagios, artigos, tecidos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, false); 
+		listaPriorizadaOrdens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, Integer.toString(SugestaoReservaMaterialCustom.ESTAGIO_ANALISE_MATERIAIS), embarques, referencias, estagios, artigos, tecidos, isSomenteFlat, isDiretoCostura, isOrdensSemTecido, false); 
 		
-		System.out.println("calcularNecessidades " + new Date());		
-		
+		System.out.println("calcularNecessidades " + new Date());				
 		calcularNecessidades();
 		
 		System.out.println("reservarMateriais - Tecidos " + new Date());		
