@@ -343,7 +343,7 @@ public class OrdemProducaoCustom {
 		
 		List<EstagioProducao> estagios;
 		
-		String query = " select m.codigo_estagio estagio, m.descricao from mqop_005 m  where m.codigo_estagio > 0 order by m.codigo_estagio ";
+		String query = " select m.codigo_estagio estagio, m.descricao, m.est_agrup_est estagioAgrupador from mqop_005 m  where m.codigo_estagio > 0 order by m.codigo_estagio ";
 		
 		try {
 			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
@@ -353,6 +353,11 @@ public class OrdemProducaoCustom {
 		
 		return estagios;
 	}	
+	
+	public EstagioProducao getEstagio(int codEstagio) {
+		String query = " select m.codigo_estagio estagio, m.descricao, m.est_agrup_est estagioAgrupador from mqop_005 m  where m.codigo_estagio = ? order by m.codigo_estagio ";
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class), codEstagio);				
+	}
 	
 	public OrdemConfeccao findOrdemConfeccaoByOrdProdPeriodoOrdConfec(int ordemProducao, int periodo, int ordemConfeccao) {
 		

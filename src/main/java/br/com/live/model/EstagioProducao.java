@@ -1,9 +1,9 @@
 package br.com.live.model;
 
 public class EstagioProducao {
-
 	public int estagio;	
-	public String descricao;	
+	public String descricao;
+	public int estagioAgrupador;
 	
 	public int getEstagio() {
 		return estagio;
@@ -17,5 +17,10 @@ public class EstagioProducao {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-	
+	public int getEstagioAgrupador() {
+		return estagioAgrupador;
+	}
+	public void setEstagioAgrupador(int estagioAgrupador) {
+		this.estagioAgrupador = estagioAgrupador;
+	}	
 }

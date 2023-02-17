@@ -43,12 +43,12 @@ public class SequenciamentoDecoracoesCustom {
 		return produtos;
 	}
 
-	public List<OrdemProducaoEstagios> findProximosEstagiosDecoracoesOrdem(int ordemProducao) {
+	public List<OrdemProducaoEstagios> findEstagiosDecoracoesOrdem(int ordemProducao) {
 		List<OrdemProducaoEstagios> estagios;
 		String query = "select a.ordem_producao ordemProducao, a.sequencia_estagio seqEstagio, a.codigo_estagio codEstagio, a.estagio_anterior codEstagioAnterior, a.estagio_depende codEstagioDepende, sum(a.qtde_a_produzir_pacote) qtdeAProduzir from pcpc_040 a "
 		+ " where a.ordem_producao = ? "
 		+ " and a.qtde_a_produzir_pacote > 0 "
-		+ " and a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = 10) "
+		+ " and (a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = 10) or a.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +"))"
 		+ " group by a.ordem_producao, a.sequencia_estagio, a.codigo_estagio, a.estagio_anterior, a.estagio_depende "
 		+ " order by a.ordem_producao, a.sequencia_estagio, a.codigo_estagio "; 
 		
@@ -60,8 +60,11 @@ public class SequenciamentoDecoracoesCustom {
 		return estagios;
 	}		
 	
-	public String findEnderecoDistribuicao(int ordemProducao) {		
-		String query = " select max(d.endereco) endereco from dist_050 d where d.ordem_producao = ? ";
+	public String findEnderecoDistribuicao(int ordemProducao) {
+		String query = " select max(e.box) endereco from dist_050 d, dist_052 e "
+		+ " where d.ordem_producao = ? "
+		+ " and e.endereco = d.endereco ";
+
 		return jdbcTemplate.queryForObject(query, String.class, ordemProducao);
 	}
 	

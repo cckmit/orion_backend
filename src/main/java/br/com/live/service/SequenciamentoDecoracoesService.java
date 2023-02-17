@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.OrdemProducaoCustom;
+import br.com.live.custom.ProdutoCustom;
 import br.com.live.custom.SequenciamentoDecoracoesCustom;
+import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoEstagios;
 
@@ -20,10 +22,12 @@ public class SequenciamentoDecoracoesService {
 	
 	private final SequenciamentoDecoracoesCustom sequenciamentoDecoracoesCustom; 
 	private final OrdemProducaoCustom ordemProducaoCustom;
+	private final ProdutoCustom produtoCustom;
 	
-	public SequenciamentoDecoracoesService(SequenciamentoDecoracoesCustom sequenciamentoDecoracoesCustom, OrdemProducaoCustom ordemProducaoCustom) {
+	public SequenciamentoDecoracoesService(SequenciamentoDecoracoesCustom sequenciamentoDecoracoesCustom, OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom) {
 		this.sequenciamentoDecoracoesCustom = sequenciamentoDecoracoesCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;
+		this.produtoCustom = produtoCustom;
 	}
 	
 	public List<OrdemProducao> consultarOrdens(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String referencias, String artigos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isPossuiAgrupador) {
@@ -34,24 +38,7 @@ public class SequenciamentoDecoracoesService {
 		return ordensSequenciadas;
 	}
 	
-	// TODO - REMOVER
-	private boolean isEstagiosSimultaneos(List<OrdemProducaoEstagios> estagios) {		
-		boolean simultaneos = true;
-		int codEstagioDepende = 0;		
-		for (OrdemProducaoEstagios estagio : estagios) {
-			if ((codEstagioDepende > 0) && (codEstagioDepende != estagio.getCodEstagioDepende())) simultaneos = false;
-			codEstagioDepende = estagio.getCodEstagioDepende(); 
-		}		
-		return simultaneos;
-	}
-	
-	private String getEstagiosAgrupados(List<OrdemProducaoEstagios> estagios) {
-		String estagiosAgrupados="";		
-		return estagiosAgrupados;
-	}
-	
-	/*	
-	
+	/*		
 	SEQUENCIA_ESTAGIO	CODIGO_ESTAGIO	ESTAGIO_ANTERIOR	ESTAGIO_DEPENDE
 	8					31				6					16
 	8					15				6					31
@@ -59,22 +46,34 @@ public class SequenciamentoDecoracoesService {
 	8					10				6					9
 	8					70				6					10
 	8					52				6					36
-		
+	
+	Se o estágio depende for 31 deve desconsiderar os estágios posteriores ao 9		
+	Quando simultaneo deve trazer uma linha para cada estagio	  
+	Quando não for simultaneo deve trazer apenas o próximo
+	Se houver estágio posteriores deve mostrar na coluna agrupador				
 	*/
 	
-	private Map<Integer, List<OrdemProducaoEstagios>> organizarProximosEstagiosPorDependencia(List<OrdemProducaoEstagios> estagios) {
-		List<OrdemProducaoEstagios> proxEstagios;
-		Map<Integer, List<OrdemProducaoEstagios>> mapEstagios = new HashMap<Integer, List<OrdemProducaoEstagios>>();
+	private Map<String, Object> organizarProximosEstagios(List<OrdemProducaoEstagios> estagios) {
+		List<OrdemProducaoEstagios> proxEstagios = new ArrayList<OrdemProducaoEstagios>();
+		Map<String, Object> mapRetorno = new HashMap<String, Object>(); 		 
 		
-		for (OrdemProducaoEstagios estagio : estagios) {			
-			if (mapEstagios.containsKey(estagio.getCodEstagioDepende())) 
-				proxEstagios = mapEstagios.get(estagio.getCodEstagioDepende());
-			else proxEstagios = new ArrayList<OrdemProducaoEstagios>();
+		int codEstagioDistrib = 0;
+		String estagiosAgrupados = "";
+		
+		for (OrdemProducaoEstagios estagioOP : estagios) {
+			EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());
+			if ((codEstagioDistrib > 0) && (estagio.estagioAgrupador == 0)) break;			
+			if (estagio.estagioAgrupador == 0) codEstagioDistrib = estagioOP.getCodEstagio();
 			
-			proxEstagios.add(estagio);			
-			mapEstagios.put(estagio.getCodEstagioDepende(), proxEstagios);
-		}
-		return mapEstagios;
+			if (estagioOP.getCodEstagioDepende() == codEstagioDistrib) proxEstagios.add(estagioOP);
+			if (estagioOP.getCodEstagioDepende() != codEstagioDistrib) {
+				if (estagiosAgrupados.isEmpty()) estagiosAgrupados += estagio.descricao;
+				else estagiosAgrupados += " + " + estagio.descricao;						 
+			}
+		}		
+		mapRetorno.put("proxEstagios", proxEstagios);
+		mapRetorno.put("estagiosAgrupados", estagiosAgrupados);		
+		return mapRetorno;
 	}
 	
 	private List<OrdemProducao> sequenciarOrdensParaDecoracoes(List<OrdemProducao> ordens) {
@@ -87,33 +86,36 @@ public class SequenciamentoDecoracoesService {
 			ordem.setSeqPrioridade(seqPrioridade);
 			ordem.setCores(ordemProducaoCustom.getCoresOrdem(ordem.ordemProducao));			
 			
-			List<OrdemProducaoEstagios> estagios = sequenciamentoDecoracoesCustom.findProximosEstagiosDecoracoesOrdem(ordem.ordemProducao);			
-			Map<Integer, List<OrdemProducaoEstagios>> proximosEstagiosPorDependencia = organizarProximosEstagiosPorDependencia(estagios);
-			
-			// Confirmar com a AMANDA
-			for (Integer estagioDepende : proximosEstagiosPorDependencia.keySet()) {
-				List<OrdemProducaoEstagios> estagiosSeguintes = proximosEstagiosPorDependencia.get(estagioDepende);
-				for (OrdemProducaoEstagios estagio : estagiosSeguintes) {
-				}				
-			}						
+			List<OrdemProducaoEstagios> estagios = sequenciamentoDecoracoesCustom.findEstagiosDecoracoesOrdem(ordem.ordemProducao);			
+			Map<String, Object> dados = organizarProximosEstagios(estagios);
 						
-			// BeanUtils.copyProperties(origem, copia, "id", "idPlanoMestre");
-			System.out.println("=========================================");
-			System.out.println("Prioridade: " + ordem.getSeqPrioridade());
-			System.out.println("Periodo: " + ordem.getPeriodo());
-			System.out.println("OP: " + ordem.getOrdemProducao());
-			System.out.println("Referencia: " + ordem.getReferencia());
-			System.out.println("Cor: " + ordem.getCores());
-			System.out.println("Descricao: " + ordem.getDescrReferencia());
-			System.out.println("Quantidade: " + ordem.getQtdePecasProgramada());			
-			System.out.println("Observacao: " + ordem.getObservacao());
-			System.out.println("Prox Estagio: OBTER INFO");
-			System.out.println("Agrupador: OBTER INFO");
-			System.out.println("Endereco: OBTER INFO => " + sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao()));
-			System.out.println("Data entrada: OBTER INFO" + sequenciamentoDecoracoesCustom.findDataProducaoEstagioAnterior(ordem.getOrdemProducao()));
-			System.out.println("Tempo Unit: OBTER INFO");
-			System.out.println("Tempo Total: OBTER INFO");					
-		
+			List<OrdemProducaoEstagios> proximosEstagios = (List<OrdemProducaoEstagios>) dados.get("proxEstagios");
+			String estagiosAgrupados = (String) dados.get("estagiosAgrupados");
+
+			// Pegar a qtde em producao no próximo estágio 
+						
+			// Confirmar com a AMANDA
+			for (OrdemProducaoEstagios estagioOP : proximosEstagios) {
+				// BeanUtils.copyProperties(origem, copia, "id", "idPlanoMestre");
+				System.out.println("=========================================");
+				System.out.println("Prioridade: " + ordem.getSeqPrioridade());
+				System.out.println("Periodo: " + ordem.getPeriodo());
+				System.out.println("OP: " + ordem.getOrdemProducao());
+				System.out.println("Referencia: " + ordem.getReferencia());
+				System.out.println("Cor: " + ordem.getCores());
+				System.out.println("Descricao: " + ordem.getDescrReferencia());
+				System.out.println("Quantidade: " + ordem.getQtdePecasProgramada());			
+				System.out.println("Observacao: " + ordem.getObservacao());
+				System.out.println("Prox Estagio: " + estagioOP.getCodEstagio());
+				System.out.println("Agrupador: " + estagiosAgrupados);
+				System.out.println("Endereco: OBTER INFO => " + sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao()));
+				System.out.println("Data entrada: OBTER INFO" + sequenciamentoDecoracoesCustom.findDataProducaoEstagioAnterior(ordem.getOrdemProducao()));
+				System.out.println("Tempo Unit: OBTER INFO" + produtoCustom.getTempoProducaoEstagio(null, null, null, null, seqPrioridade, seqPrioridade, seqPrioridade));
+				System.out.println("Tempo Total: OBTER INFO");																
+			}						
+								
+			// TODO - Carregar a quantidade em produção no estágio de distrib (pois pode ter haviado algum lançamento de perda em estágios anteriores
+			
 			/*
 			•	Próximo estágio: Qual o próximo estágio da ordem de produção. 
 			Quando a ordem de produção possuir mais de um estágio de deco-ração 
