@@ -1439,5 +1439,15 @@ public class ProdutoCustom {
 	    + " ) tempo_costura ";
 
 		return jdbcTemplate.queryForObject(query, Double.class, nivel, grupo, sub, item, alternativa, roteiro, estagio);
-	}	
+	}
+	
+	public List<ConteudoChaveAlfaNum> findTecidos(String produto) {
+		String query = " SELECT a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura value, "
+				+ "      a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura || ' - ' || a.narrativa label "
+				+ "     FROM basi_010 a "
+				+ "		WHERE a.nivel_estrutura = '2' "
+				+ "     AND a.nivel_estrutura || a.grupo_estrutura ||  a.subgru_estrutura || a.item_estrutura LIKE '%" + produto + "%'";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
 }

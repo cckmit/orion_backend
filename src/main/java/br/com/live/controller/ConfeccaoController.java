@@ -1,11 +1,13 @@
 package br.com.live.controller;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.List;
 
 import br.com.live.body.BodyConfeccao;
 import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.ConfeccaoCustom;
+import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.Restricoes;
 import br.com.live.model.ConsultaRestricoesRolo;
 import br.com.live.model.EstagioProducao;
@@ -21,19 +23,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyObservacaoPorOp;
 import br.com.live.body.BodyTipoObservacao;
+import br.com.live.entity.EncolhimentoCad;
 import br.com.live.entity.MetasProducao;
 import br.com.live.entity.MetasProducaoSemana;
 import br.com.live.entity.ObservacaoOrdemPacote;
 import br.com.live.entity.PedidoCustomizado;
 import br.com.live.entity.TipoObservacao;
+import br.com.live.model.ConsultaEncolhimentoCad;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.model.ConsultaPedidoCustomizado;
+import br.com.live.repository.EncolhimentoCadRepository;
 import br.com.live.repository.MetasProducaoRepository;
 import br.com.live.repository.MetasProducaoSemanaRepository;
 import br.com.live.repository.ObservacaoOrdemPacoteRepository;
 import br.com.live.repository.TipoObservacaoRepository;
 import br.com.live.service.ConfeccaoService;
 import br.com.live.service.PedidosCustomizadosService;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
@@ -48,13 +54,16 @@ public class ConfeccaoController {
 	private MetasProducaoRepository metasProducaoRepository;
 	private MetasProducaoSemanaRepository metasProducaoSemanaRepository;
 	private CalendarioCustom calendarioCustom;
-	private PedidosCustomizadosService pedidosCustomizadosService; 
+	private PedidosCustomizadosService pedidosCustomizadosService;
+	private EncolhimentoCadRepository encolhimentoCadRepository;
+	private ProdutoCustom produtoCustom;
 
 	@Autowired
 	public ConfeccaoController(ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository,
 			CalendarioCustom calendarioCustom, MetasProducaoRepository metasProducaoRepository, 
 			MetasProducaoSemanaRepository metasProducaoSemanaRepository, ConfeccaoService confeccaoService, ConfeccaoCustom confeccaoCustom,
-			TipoObservacaoRepository tipoObservacaoRepository, PedidosCustomizadosService pedidosCustomizadosService) {
+			TipoObservacaoRepository tipoObservacaoRepository, PedidosCustomizadosService pedidosCustomizadosService,
+			EncolhimentoCadRepository encolhimentoCadRepository, ProdutoCustom produtoCustom) {
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoService = confeccaoService;
@@ -63,6 +72,8 @@ public class ConfeccaoController {
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
 		this.calendarioCustom = calendarioCustom;
 		this.pedidosCustomizadosService = pedidosCustomizadosService;
+		this.encolhimentoCadRepository = encolhimentoCadRepository;
+		this.produtoCustom = produtoCustom;
 	}
 
 	@RequestMapping(value = "/find-all-tipo-obs", method = RequestMethod.GET)
@@ -220,6 +231,11 @@ public class ConfeccaoController {
         return confeccaoService.deleteMetasSemanaById(idMeta);
     }
 	
+	@RequestMapping(value = "/delete-encolhimento-cad/{id}", method = RequestMethod.DELETE)
+    public String deleteEncolhimentoById(@PathVariable("id") int id) {                  
+        return encolhimentoCadRepository.deleteById(id);
+    }
+	
 	@RequestMapping(value = "/find-all-estagios", method = RequestMethod.GET)
 	public List<EstagioProducao> findAllEstagios() {
 		return confeccaoCustom.findAllEstagio();
@@ -260,4 +276,32 @@ public class ConfeccaoController {
 	public String gerarEtiquetasDecoracao(@RequestBody BodyConfeccao body) throws JRException, FileNotFoundException {
 		return confeccaoService.gerarEtiquetasDecoracao(body.ordemProducao, body.pacotes, body.estagios);
 	}
+	
+	@RequestMapping(value = "/carregar-encolhimento-cad", method = RequestMethod.GET)
+	public List<ConsultaEncolhimentoCad> carregarEncolhimentoCad() {
+		return confeccaoCustom.carregarEncolhimentoCad();
+	}
+	
+	@RequestMapping(value = "/find-all-tecido/{produto}", method = RequestMethod.GET)
+	public List<ConteudoChaveAlfaNum> findAllTecido(@PathVariable("produto") String produto) {
+		return produtoCustom.findTecidos(produto);
+	}
+	
+	@RequestMapping(value = "/find-all-item/{id}", method = RequestMethod.GET)
+	public EncolhimentoCad findAllById(@PathVariable("id") int id) {
+		return encolhimentoCadRepository.findById(id);
+	}
+	
+	@RequestMapping(value = "/save-encolhimento-cad", method = RequestMethod.POST)
+	public void saveEncolhimentoCad(@RequestBody BodyConfeccao body) {
+		confeccaoService.saveEncolhimentoCad(body.idCadastro, body.usuario, body.dataRegistro, body.tecido, body.largAcomodacao, body.compAcomodacao,
+				body.largTermo, body.compTermo, body.largEstampa, body.compEstampa, body.largEstampaPoli, body.compEstampaPoli, body.largPolimerizadeira,
+				body.compPolimerizadeira, body.largEstampaPrensa, body.compEstampaPrensa, body.observacao);
+	}
+	
+	@RequestMapping(value = "/calcula-media-por-produto/{produto}", method = RequestMethod.GET)
+	public List<ConsultaEncolhimentoCad> findAllById(@PathVariable("produto") String produto) {
+		return confeccaoService.calcularMediaPorProduto(produto);
+	}
+
 }
