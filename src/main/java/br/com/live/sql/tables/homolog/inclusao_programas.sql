@@ -239,4 +239,4 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (79, 'Painel de Sequenciamento Decorações', 'Confecção', '/painel-seq-decoracoes');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (79, 'Encolhimento CAD', 'Confecção', '/encolhimento-cad');
+values (80, 'Encolhimento CAD', 'Confecção', '/encolhimento-cad');
