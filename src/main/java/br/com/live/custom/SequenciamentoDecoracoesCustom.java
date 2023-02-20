@@ -51,7 +51,7 @@ public class SequenciamentoDecoracoesCustom {
 		+ " and (a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = 10) or a.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +"))"
 		+ " group by a.ordem_producao, a.sequencia_estagio, a.codigo_estagio, a.estagio_anterior, a.estagio_depende "
 		+ " order by a.ordem_producao, a.sequencia_estagio, a.codigo_estagio "; 
-		
+
 		try {
 			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class), ordemProducao);
 		} catch (Exception e) {
@@ -78,6 +78,6 @@ public class SequenciamentoDecoracoesCustom {
 		+ " and z.pcpc040_ordconf = p.ordem_confeccao "
 		+ " and z.pcpc040_estconf = p.estagio_anterior ";
 		
-		return jdbcTemplate.queryForObject(query, Date.class);
+		return jdbcTemplate.queryForObject(query, Date.class, ordemProducao);
 	}
 }

@@ -987,4 +987,21 @@ public class OrdemProducaoCustom {
 				query += " group by a.ordem_producao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
+	
+	public int getQtdeAProduzirEstagio(int ordemProducao, int codEstagio) {		
+		String query = " select nvl(sum(p.qtde_a_produzir_pacote),0) "
+		+ " from pcpc_040 p "
+		+ " where p.ordem_producao = ? "
+		+ " and p.codigo_estagio = ? " ;
+		return jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, codEstagio);				
+	}
+	
+	public int getQtdeAProduzirEstagio(int ordemProducao, int ordemConfeccao, int codEstagio) {		
+		String query = " select nvl(sum(p.qtde_a_produzir_pacote),0) "
+		+ " from pcpc_040 p "
+		+ " where p.ordem_producao = ? "
+		+ " and p.ordem_confeccao = ? "
+		+ " and p.codigo_estagio = ? " ;
+		return jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, ordemConfeccao, codEstagio);
+	}	
 }

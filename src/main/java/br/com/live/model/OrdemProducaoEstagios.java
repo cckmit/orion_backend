@@ -9,6 +9,8 @@ public class OrdemProducaoEstagios {
 	private int codEstagioDepende; 
 	private int qtdeAProduzir;
 	
+	public OrdemProducaoEstagios() {}
+	
 	public OrdemProducaoEstagios(int ordemProducao, int seqEstagio, int codEstagio, int codEstagioAnterior,
 			int codEstagioDepende, int qtdeAProduzir) {
 		super();

@@ -1428,15 +1428,14 @@ public class ProdutoCustom {
 	
 	public double getTempoProducaoEstagio(String nivel, String grupo, String sub, String item, int alternativa, int roteiro, int estagio) {
 	
-	    String query = " (select nvl(sum(m.minutos_homem),0) from mqop_050 m "   
+	    String query = " select nvl(sum(m.minutos_homem),0) from mqop_050 m "   
 	    + " where m.nivel_estrutura = ? " 
 	    + " and m.grupo_estrutura = ? "  
 	    + " and (m.subgru_estrutura = ? or m.subgru_estrutura = '000') "  
 	    + " and (m.item_estrutura = ? or m.item_estrutura = '000000') "  
 	    + " and m.numero_alternati = ? " 
 	    + " and m.numero_roteiro = ? "
-	    + " and m.codigo_estagio = ? " 
-	    + " ) tempo_costura ";
+	    + " and m.codigo_estagio = ? " ;	    
 
 		return jdbcTemplate.queryForObject(query, Double.class, nivel, grupo, sub, item, alternativa, roteiro, estagio);
 	}	

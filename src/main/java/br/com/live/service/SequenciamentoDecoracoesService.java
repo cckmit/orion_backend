@@ -13,6 +13,7 @@ import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.custom.SequenciamentoDecoracoesCustom;
 import br.com.live.model.EstagioProducao;
+import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoEstagios;
 
@@ -56,11 +57,16 @@ public class SequenciamentoDecoracoesService {
 	private Map<String, Object> organizarProximosEstagios(List<OrdemProducaoEstagios> estagios) {
 		List<OrdemProducaoEstagios> proxEstagios = new ArrayList<OrdemProducaoEstagios>();
 		Map<String, Object> mapRetorno = new HashMap<String, Object>(); 		 
+
+		System.out.println("organizarProximosEstagios");
 		
 		int codEstagioDistrib = 0;
 		String estagiosAgrupados = "";
 		
 		for (OrdemProducaoEstagios estagioOP : estagios) {
+			
+			System.out.println("Estagio: " + estagioOP.getCodEstagio());
+			
 			EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());
 			if ((codEstagioDistrib > 0) && (estagio.estagioAgrupador == 0)) break;			
 			if (estagio.estagioAgrupador == 0) codEstagioDistrib = estagioOP.getCodEstagio();
@@ -85,6 +91,8 @@ public class SequenciamentoDecoracoesService {
 			seqPrioridade++;
 			ordem.setSeqPrioridade(seqPrioridade);
 			ordem.setCores(ordemProducaoCustom.getCoresOrdem(ordem.ordemProducao));			
+
+			System.out.println("seqPrioridade: " + seqPrioridade);
 			
 			List<OrdemProducaoEstagios> estagios = sequenciamentoDecoracoesCustom.findEstagiosDecoracoesOrdem(ordem.ordemProducao);			
 			Map<String, Object> dados = organizarProximosEstagios(estagios);
@@ -92,11 +100,26 @@ public class SequenciamentoDecoracoesService {
 			List<OrdemProducaoEstagios> proximosEstagios = (List<OrdemProducaoEstagios>) dados.get("proxEstagios");
 			String estagiosAgrupados = (String) dados.get("estagiosAgrupados");
 
-			// Pegar a qtde em producao no próximo estágio 
-						
+			List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordem.ordemProducao);
+			
 			// Confirmar com a AMANDA
 			for (OrdemProducaoEstagios estagioOP : proximosEstagios) {
 				// BeanUtils.copyProperties(origem, copia, "id", "idPlanoMestre");
+				
+				System.out.println("OP: " + ordem.getOrdemProducao() + " Estagio: " + estagioOP.getCodEstagio());
+				
+				int quantidade=0;
+				int quantidadeTotal=0;
+				double tempo=0;
+				double tempoTotal=0;
+				for (OrdemConfeccao pacote : pacotes) {					
+					quantidade = ordemProducaoCustom.getQtdeAProduzirEstagio(pacote.ordemProducao, pacote.ordemConfeccao, estagioOP.getCodEstagio()); 
+					tempo =	produtoCustom.getTempoProducaoEstagio("1", pacote.getReferencia(), pacote.getTamanho(), pacote.getCor(), pacote.nrAlternativa, pacote.getNrRoteiro(), estagioOP.getCodEstagio());
+					quantidadeTotal += quantidade;
+					tempoTotal += (quantidade * tempo);    
+				}
+				double tempoUnit = tempoTotal / quantidadeTotal;  
+				
 				System.out.println("=========================================");
 				System.out.println("Prioridade: " + ordem.getSeqPrioridade());
 				System.out.println("Periodo: " + ordem.getPeriodo());
@@ -104,14 +127,14 @@ public class SequenciamentoDecoracoesService {
 				System.out.println("Referencia: " + ordem.getReferencia());
 				System.out.println("Cor: " + ordem.getCores());
 				System.out.println("Descricao: " + ordem.getDescrReferencia());
-				System.out.println("Quantidade: " + ordem.getQtdePecasProgramada());			
+				System.out.println("Quantidade: " + quantidadeTotal);
 				System.out.println("Observacao: " + ordem.getObservacao());
 				System.out.println("Prox Estagio: " + estagioOP.getCodEstagio());
 				System.out.println("Agrupador: " + estagiosAgrupados);
-				System.out.println("Endereco: OBTER INFO => " + sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao()));
-				System.out.println("Data entrada: OBTER INFO" + sequenciamentoDecoracoesCustom.findDataProducaoEstagioAnterior(ordem.getOrdemProducao()));
-				System.out.println("Tempo Unit: OBTER INFO" + produtoCustom.getTempoProducaoEstagio(null, null, null, null, seqPrioridade, seqPrioridade, seqPrioridade));
-				System.out.println("Tempo Total: OBTER INFO");																
+				System.out.println("Endereco: " + sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao()));
+				System.out.println("Data entrada: " + sequenciamentoDecoracoesCustom.findDataProducaoEstagioAnterior(ordem.getOrdemProducao()));
+				System.out.println("Tempo Unit: " + tempoUnit);
+				System.out.println("Tempo Total: " + tempoTotal);																
 			}						
 								
 			// TODO - Carregar a quantidade em produção no estágio de distrib (pois pode ter haviado algum lançamento de perda em estágios anteriores
