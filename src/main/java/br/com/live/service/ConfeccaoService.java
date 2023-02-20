@@ -2,6 +2,7 @@ package br.com.live.service;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.com.live.entity.Restricoes;
@@ -16,12 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.ConfeccaoCustom;
+import br.com.live.entity.EncolhimentoCad;
 import br.com.live.entity.MetasProducao;
 import br.com.live.entity.MetasProducaoSemana;
 import br.com.live.entity.ObservacaoOrdemPacote;
 import br.com.live.entity.TipoObservacao;
 import br.com.live.model.CalendarioSemana;
+import br.com.live.model.ConsultaEncolhimentoCad;
 import br.com.live.model.ConsultaObservacaoOrdemPacote;
+import br.com.live.repository.EncolhimentoCadRepository;
 import br.com.live.repository.MetasProducaoRepository;
 import br.com.live.repository.MetasProducaoSemanaRepository;
 import br.com.live.repository.ObservacaoOrdemPacoteRepository;
@@ -40,10 +44,12 @@ public class ConfeccaoService {
 	private final MetasProducaoSemanaRepository metasProducaoSemanaRepository;
 	private final CalendarioCustom calendarioCustom;
 	private final ReportService reportService;
+	private final EncolhimentoCadRepository encolhimentoCadRepository;
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
 			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository,
-			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom, ReportService reportService) {
+			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom, 
+			ReportService reportService, EncolhimentoCadRepository encolhimentoCadRepository) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
@@ -53,6 +59,7 @@ public class ConfeccaoService {
 		this.metasProducaoSemanaRepository = metasProducaoSemanaRepository;
 		this.calendarioCustom = calendarioCustom;
 		this.reportService = reportService;
+		this.encolhimentoCadRepository = encolhimentoCadRepository;
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -241,5 +248,55 @@ public class ConfeccaoService {
 		fileName = reportService.generateReport("pdf", dataSourceEtiquetas, "etiqueta_decoracao", null, reportTittle, true);
 
 		return fileName;
+	}
+	
+	public void saveEncolhimentoCad(int id, int usuario, Date dataRegistro, String tecido, float largAcomodacao, 
+			float compAcomodacao, float largTermo, float compTermo, float largEstampa, float compEstampa, float largEstampaPoli, float compEstampaPoli,
+			float largPolimerizadeira, float compPolimerizadeira, float largEstampaPrensa, float compEstampaPrensa, String observacao) {
+		
+		String[] prodConcat = tecido.split("[.]");
+		String nivel = prodConcat[0];
+		String grupo = prodConcat[1];
+		String subgrupo = prodConcat[2];
+		String item = prodConcat[3];	
+		
+		EncolhimentoCad dados = encolhimentoCadRepository.findById(id);
+		
+		if (dados == null) {
+			int idNew = encolhimentoCadRepository.findNextID();
+			dados = new EncolhimentoCad(idNew, usuario, dataRegistro, nivel, grupo, subgrupo, item, largAcomodacao, compAcomodacao, largTermo, compTermo, largEstampa, compEstampa, 
+										largEstampaPoli, compEstampaPoli, largPolimerizadeira, compPolimerizadeira, largEstampaPrensa, compEstampaPrensa, observacao);
+		} else {
+			dados.usuario = usuario; 
+			dados.dataRegistro = dataRegistro;
+			dados.nivel = nivel;
+			dados.grupo = grupo;
+			dados.subgrupo = subgrupo;
+			dados.item = item;
+			dados.largAcomodacao = largAcomodacao; 
+			dados.compAcomodacao = compAcomodacao;
+			dados.largTermo = largTermo;
+			dados.compTermo = compTermo;
+			dados.largEstampa = largEstampa;
+			dados.compEstampa = compEstampa;
+			dados.largEstampaPoli = largEstampaPoli;
+			dados.compEstampaPoli = compEstampaPoli;
+			dados.largPolimerizadeira = largPolimerizadeira;
+			dados.compPolimerizadeira = compPolimerizadeira;
+			dados.largEstampaPrensa = largEstampaPrensa;
+			dados.compEstampaPrensa = compEstampaPrensa;
+			dados.observacao = observacao;
+		}						
+		encolhimentoCadRepository.save(dados);		
+	}
+	
+	public List<ConsultaEncolhimentoCad> calcularMediaPorProduto(String produto){
+		
+		String[] prodConcat = produto.split("[.]");
+		String nivel = prodConcat[0];
+		String grupo = prodConcat[1];
+		String subgrupo = prodConcat[2];
+		
+		return confeccaoCustom.consultaMediaPorGrupoSubGrupo(nivel, grupo, subgrupo);
 	}
 }
