@@ -314,10 +314,10 @@ public class PoliticaVendasCustom {
 				+ "        AND f.tipo_cliente = e.tipo_cliente  "
 				+ "        GROUP BY a.pedido_venda, e.descr_tipo_clien "
 				+ "        ) pedidos "
-				+ "        WHERE (pedidos.qtde_total_pedi <> pedidos.qtde_total_itens "
-				+ "          OR pedidos.valor_total_pedi <> pedidos.valor_total_itens "
-				+ "          OR TRUNC(pedidos.valor_saldo_pedi) <> TRUNC(pedidos.valor_saldo_itens - (pedidos.valor_saldo_itens * (live_fn_calc_perc_desconto(pedidos.desconto1, pedidos.desconto2, pedidos.desconto3) / 100)))) "
-				+ "        ) REGRAS "
+				+ "        WHERE ((not (pedidos.qtde_total_pedi - pedidos.qtde_total_itens) between -5 and 5) "
+				+ "       OR (not (pedidos.valor_total_pedi - pedidos.valor_total_itens) between -5 and 5 ) "
+				+ "       OR (not (TRUNC(pedidos.valor_saldo_pedi) - TRUNC(pedidos.valor_saldo_itens - (pedidos.valor_saldo_itens * "
+				+ "       (live_fn_calc_perc_desconto(pedidos.desconto1, pedidos.desconto2, pedidos.desconto3) / 100)))) between -5 and 5 ))) REGRAS "
 				+ "        ORDER BY REGRAS.PEDIDO";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DivergenciasPoliticaVendas.class));
