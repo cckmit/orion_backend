@@ -17,6 +17,7 @@ public class MetasDoOrcamentoCustom {
 	}
 	
 	public List<ConsultaMetasOrcamento> findMetasOrcamentoGrid(int ano, int tipoMeta) {
+		
 
 		String query = " select a.id, a.tipo_meta tipoMeta, a.descricao, a.ano, a.valor_mes_1 valorMes1, a.valor_mes_2 valorMes2, a.valor_mes_3 valorMes3, " +
 				" a.valor_mes_4 valorMes4, a.valor_mes_5 valorMes5, a.valor_mes_6 valorMes6, a.valor_mes_7 valorMes7, a.valor_mes_8 valorMes8, " +

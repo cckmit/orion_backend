@@ -30,12 +30,6 @@ public class MetasDoOrcamentoController {
     public List<ConsultaMetasOrcamento> findDadosGrid(@PathVariable("ano") int ano, @PathVariable("tipoMeta") int tipoMeta) {      
         return metasDoOrcamentoService.findDadosGrid(ano, tipoMeta);
     }
-    
-    @RequestMapping(value = "/save-valores", method = RequestMethod.POST)
-    public List<ConsultaMetasOrcamento> saveEstacao(@RequestBody BodyMetasOrcamento body) {                  
-    	metasDoOrcamentoService.saveValoresMetasOrcamento(body.listMetas,body.ano,body.tipoMeta);
-    	return metasDoOrcamentoService.findDadosGrid(body.ano,body.tipoMeta);
-    }
 
 	@RequestMapping(value = "/importar", method = RequestMethod.POST)
 	public List<ConsultaMetasOrcamento> importarMetas(@RequestBody BodyMetasOrcamento body) {
