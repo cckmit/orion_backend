@@ -91,9 +91,10 @@ public class SequenciamentoDecoracoesService {
 			String estagiosAgrupados = (String) dados.get("estagiosAgrupados");
 
 			List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordem.ordemProducao);
-			
-			// Confirmar com a AMANDA
-			for (OrdemProducaoEstagios estagioOP : proximosEstagios) {
+						
+			for (OrdemProducaoEstagios estagioOP : proximosEstagios) {				
+				if (sequenciamentoDecoracoesCustom.isOrdemSequenciada(ordem.ordemProducao, estagioOP.getCodEstagio())) continue;
+				
 				int quantidade=0;
 				int quantidadeTotal=0;
 				double tempo=0;
@@ -116,26 +117,18 @@ public class SequenciamentoDecoracoesService {
 						                                                                ordem.getDescrReferencia(), cores, quantidadeTotal, ordem.getObservacao(), estagioOP.getCodEstagio(),
 						                                                                estagio.getDescricao(), estagiosAgrupados, endereco, dataEntrada, tempoUnit, tempoTotal); 
 				listOrdensParaDecoracoes.add(dadosOrdem);
-				/*
-				System.out.println("=========================================");
-				System.out.println("Prioridade: " + seqPrioridade);
-				System.out.println("Periodo: " + ordem.getPeriodo());
-				System.out.println("OP: " + ordem.getOrdemProducao());
-				System.out.println("Referencia: " + ordem.getReferencia());
-				System.out.println("Cor: " + cores);
-				System.out.println("Descricao: " + ordem.getDescrReferencia());
-				System.out.println("Quantidade: " + quantidadeTotal);
-				System.out.println("Observacao: " + ordem.getObservacao());
-				System.out.println("Prox Estagio: " + estagioOP.getCodEstagio());
-				System.out.println("Agrupador: " + estagiosAgrupados);
-				System.out.println("Endereco: " + endereco);
-				System.out.println("Data entrada: " + dataEntrada);
-				System.out.println("Tempo Unit: " + tempoUnit);
-				System.out.println("Tempo Total: " + tempoTotal);
-				*/
 			}
 		}
 		
 		return listOrdensParaDecoracoes;
 	}	
+	
+	public void incluirOrdensNoSequenciamento(List<DadosSequenciamentoDecoracoes> dadosOrdem) {
+		for (DadosSequenciamentoDecoracoes dadoOrdem : dadosOrdem) {
+			int id = sequenciamentoDecoracoesCustom.findNextId();
+			int sequencia = sequenciamentoDecoracoesCustom.findNextSeqProducao();			
+			sequenciamentoDecoracoesCustom.saveSequenciamento(id, sequencia, dadoOrdem.getOrdemProducao() , dadoOrdem.getCodEstagioProx(), null, null);		
+		}
+	}	
+	
 }

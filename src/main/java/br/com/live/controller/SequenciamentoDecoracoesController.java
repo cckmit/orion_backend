@@ -36,6 +36,11 @@ public class SequenciamentoDecoracoesController {
 		return sequenciamentoDecoracoesCustom.findReferenciasEmOrdensCentroDistrib();
 	}
 
+	@RequestMapping(value = "/ordens-sequenciada", method = RequestMethod.POST) 
+	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas() {		
+		return null;
+	}
+	
 	@RequestMapping(value = "/consultar", method = RequestMethod.POST)
 	public List<DadosSequenciamentoDecoracoes> consultar(@RequestBody BodySequenciamentoDecoracoes body) {		
 		return sequenciamentoDecoracoesService.consultarOrdens(
@@ -48,4 +53,9 @@ public class SequenciamentoDecoracoesController {
 				body.isDiretoCostura, 
 				body.isPossuiAgrupador);		
 	}	
+	
+	@RequestMapping(value = "/incluir-sequenciamento", method = RequestMethod.POST)
+	public void incluirOrdensNoSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
+		sequenciamentoDecoracoesService.incluirOrdensNoSequenciamento(body.listaOrdens);
+	}
 }

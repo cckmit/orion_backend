@@ -80,4 +80,26 @@ public class SequenciamentoDecoracoesCustom {
 		
 		return jdbcTemplate.queryForObject(query, Date.class, ordemProducao);
 	}
+	
+	public boolean isOrdemSequenciada(int ordemProducao, int codEstagio) {
+		Integer count = 0;		
+		String query = "select count(*) from orion_cfc_300 o where o.ordem_producao = ? and o.cod_estagio = ?";
+		count = jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, codEstagio);				
+		return (count > 0);		
+	}
+
+	public int findNextId() {
+		String query="select nvl(max(id),0) + 1 from orion_cfc_300";
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
+	public int findNextSeqProducao() {
+		String query="select nvl(max(sequencia),0) + 1 from orion_cfc_300";
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
+	public void saveSequenciamento(int id, int sequencia, int ordemProducao, int codEstagio, Date dataInicio, Date dataTermino) {		
+		String query = "insert into orion_cfc_300 (id, sequencia, ordem_producao, cod_estagio, data_inicio, data_termino) values (?,?,?,?,?,?)";
+		jdbcTemplate.update(query, id, sequencia, ordemProducao, codEstagio, dataInicio, dataTermino);		
+	}
 }
