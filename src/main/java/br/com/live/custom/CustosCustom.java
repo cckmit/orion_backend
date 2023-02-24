@@ -25,16 +25,13 @@ public class CustosCustom {
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CopiaFichaCustos.class));
     }
 
-    public CopiaFichaCustos findDadosProdutoOrigemCopia(String produto, int empresa, int tipoParam, int mesOrigem, int anoOrigem) {
-        String query = " select a.consumo, a.seq_parametro sequenciaParam, a.descr_parametro descParametro, a.valor_percentual valorPercentual from rcnb_030 a " +
+    public List<CopiaFichaCustos> findDadosProdutoOrigemCopia(String produto, int empresa, int tipoParam) {
+        String query = " select a.consumo, a.seq_parametro sequenciaParam, a.descr_parametro descParametro, a.valor_percentual valorPercentual, a.mes_referencia mesDestino, a.ano_referencia anoDestino from rcnb_030 a " +
                 " where a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura = '" + produto + "' " +
                 " and a.codigo_empresa = " + empresa +
-                " and a.tipo_parametro = " + tipoParam +
-                " and a.mes_referencia = " + mesOrigem +
-                " and a.ano_referencia = " + anoOrigem;
+                " and a.tipo_parametro = " + tipoParam;
 
-        System.out.println(query);
-        return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(CopiaFichaCustos.class));
+        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CopiaFichaCustos.class));
     }
 
     public void inserirParametrosFichaCustos(String nivel, String grupo, String subGrupo, String item, int empresa, int tipoParam, int mesDestino, int anoDestino, float consumo, String descParam, String valorPercentual, int seqParam) {
