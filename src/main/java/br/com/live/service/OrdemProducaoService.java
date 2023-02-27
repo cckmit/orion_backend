@@ -7,6 +7,7 @@ import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaDadosRoteiro;
+import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.model.DadosGeracaoOrdemProducao;
 import br.com.live.model.DadosGeracaoOrdemProducaoItem;
 import br.com.live.model.DadosTagChina;
@@ -85,6 +86,10 @@ public class OrdemProducaoService {
 	
 	public List<ConteudoChaveAlfaNum> findAllOrdensAsync(int estagio, String searchVar) {
 		return ordemProducaoCustom.findOrdensForAsync(estagio, searchVar);
+	}
+	
+	public List<ConteudoChaveAlfaNum> findAllOrdensAsyncComEstagio(List<ConteudoChaveAlfaNum> estagio, String searchVar) {
+		return ordemProducaoCustom.findOrdensForAsyncComEstagio(estagio, searchVar);
 	}
 		
 	private String validarDados(DadosGeracaoOrdemProducao ordem) {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyOrdemProducao;
+import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
@@ -63,9 +64,9 @@ public class OrdemProducaoController {
 	public List<ConsultaPreOrdemProducao> excluir(@RequestBody BodyOrdemProducao body) {
 		return ordemProducaoPlanoMestreService.excluirOrdens(body.idPlanoMestre, body.listaPreOrdens);		
 	}
-    @RequestMapping(value = "/find-tags-async-select/{estagio}/{searchVar}", method = RequestMethod.GET)
-    public List<ConteudoChaveAlfaNum> findAllTagsAsync(@PathVariable("estagio") int estagio, @PathVariable("searchVar") String searchVar) {
-          return ordemProducaoService.findAllOrdensAsync(estagio, searchVar);
+    @RequestMapping(value = "/find-tags-async-select", method = RequestMethod.POST)
+    public List<ConteudoChaveAlfaNum> findAllTagsAsync(@RequestBody BodyOrdemProducao body) {
+          return ordemProducaoService.findAllOrdensAsyncComEstagio(body.listaEstagio, body.searchVar);
     }
 
 	@RequestMapping(value = "/find-ordens-async-select-sem-estagio/{searchVar}", method = RequestMethod.GET)
