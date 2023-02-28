@@ -38,7 +38,7 @@ public class SequenciamentoDecoracoesController {
 
 	@RequestMapping(value = "/ordens-sequenciada", method = RequestMethod.POST) 
 	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas() {		
-		return null;
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
 	}
 	
 	@RequestMapping(value = "/consultar", method = RequestMethod.POST)

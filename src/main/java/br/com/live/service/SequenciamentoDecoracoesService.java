@@ -9,9 +9,11 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.custom.SequenciamentoDecoracoesCustom;
+import br.com.live.model.Calendario;
 import br.com.live.model.DadosSequenciamentoDecoracoes;
 import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
@@ -25,18 +27,20 @@ public class SequenciamentoDecoracoesService {
 	private final SequenciamentoDecoracoesCustom sequenciamentoDecoracoesCustom; 
 	private final OrdemProducaoCustom ordemProducaoCustom;
 	private final ProdutoCustom produtoCustom;
+	private final CalendarioCustom calendarioCustom; 
 	
-	public SequenciamentoDecoracoesService(SequenciamentoDecoracoesCustom sequenciamentoDecoracoesCustom, OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom) {
+	public SequenciamentoDecoracoesService(SequenciamentoDecoracoesCustom sequenciamentoDecoracoesCustom, OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom, CalendarioCustom calendarioCustom) {
 		this.sequenciamentoDecoracoesCustom = sequenciamentoDecoracoesCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;
 		this.produtoCustom = produtoCustom;
+		this.calendarioCustom = calendarioCustom;
 	}
 	
 	public List<DadosSequenciamentoDecoracoes> consultarOrdens(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String referencias, String artigos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isPossuiAgrupador) {
 		System.out.println("Find Ordens");
 		List<OrdemProducao> ordens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, SequenciamentoDecoracoesCustom.ESTAGIOS_DISTRIB_DECORACOES, "", referencias, "", artigos, "", isSomenteFlat, isDiretoCostura, false, isPossuiAgrupador);		
 		System.out.println("Sequenciar Ordens");
-		List<DadosSequenciamentoDecoracoes> ordensSequenciadas = sequenciarOrdensParaDecoracoes(ordens);
+		List<DadosSequenciamentoDecoracoes> ordensSequenciadas = calcularInformacoesDasOrdens(ordens);
 		System.out.println("fim - consultarOrdens");
 		return ordensSequenciadas;
 	}
@@ -80,7 +84,7 @@ public class SequenciamentoDecoracoesService {
 		return mapRetorno;
 	}
 	
-	private List<DadosSequenciamentoDecoracoes> sequenciarOrdensParaDecoracoes(List<OrdemProducao> ordens) {	
+	private List<DadosSequenciamentoDecoracoes> calcularInformacoesDasOrdens(List<OrdemProducao> ordens) {	
 		int seqPrioridade = 0;			
 		List<DadosSequenciamentoDecoracoes> listOrdensParaDecoracoes = new ArrayList<DadosSequenciamentoDecoracoes>(); 
 		
@@ -126,9 +130,48 @@ public class SequenciamentoDecoracoesService {
 	public void incluirOrdensNoSequenciamento(List<DadosSequenciamentoDecoracoes> dadosOrdem) {
 		for (DadosSequenciamentoDecoracoes dadoOrdem : dadosOrdem) {
 			int id = sequenciamentoDecoracoesCustom.findNextId();
-			int sequencia = sequenciamentoDecoracoesCustom.findNextSeqProducao();			
-			sequenciamentoDecoracoesCustom.saveSequenciamento(id, sequencia, dadoOrdem.getOrdemProducao() , dadoOrdem.getCodEstagioProx(), null, null);		
+			int sequencia = sequenciamentoDecoracoesCustom.findNextSeqProducao();					
+			sequenciamentoDecoracoesCustom.saveSequenciamento(id, sequencia, dadoOrdem.getPeriodo(), dadoOrdem.getOrdemProducao(), dadoOrdem.getReferencia(), dadoOrdem.getCores(),  dadoOrdem.getCodEstagioProx(), dadoOrdem.getQuantidade(), dadoOrdem.getEstagiosAgrupados(), dadoOrdem.getEndereco(), dadoOrdem.getDataEntrada(), dadoOrdem.getTempoUnitario(), dadoOrdem.getTempoTotal(), null, null);
 		}
 	}	
 	
+	private Date proximoDia(Date data) {
+		Calendario calendario = calendarioCustom.getProximoDiaUtil(data);
+		return calendario.getData();
+	}
+	
+	public void calcularSequenciamento(Date dataInicial, List<DadosSequenciamentoDecoracoes> ordens) {		
+		double minutosProducaoDia = SequenciamentoDecoracoesCustom.MINUTOS_PRODUCAO_DIA;
+		double minutosSaldo = minutosProducaoDia;
+		double minutosPlanejar = 0;
+		Date dataInicio = dataInicial;
+		Date dataTermino = dataInicial;		
+		int sequencia = 0;
+		
+		for (DadosSequenciamentoDecoracoes ordem : ordens) {
+			sequencia++;
+			minutosPlanejar = ordem.getTempoTotal();
+			
+			while (minutosPlanejar > 0) {							
+				if (minutosPlanejar >= minutosSaldo) {
+					minutosPlanejar -= minutosSaldo;
+					minutosSaldo = minutosProducaoDia;
+					dataTermino = proximoDia(dataTermino);
+				} else {					
+					minutosSaldo -= minutosPlanejar;
+					minutosPlanejar = 0;
+				}								
+			}			
+			
+			// grava a data inicio e fim no estágio da ordem producao
+			sequenciamentoDecoracoesCustom.saveSequenciamento(ordem.getId(), sequencia, dataInicio, dataTermino);						
+			
+			if (minutosSaldo <= 0) {
+				dataInicio = proximoDia(dataTermino);
+				dataTermino = dataInicio; 
+			} else {
+				dataInicio = dataTermino; 
+			}
+		}
+	}	
 }
