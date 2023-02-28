@@ -108,8 +108,8 @@ public class ConfeccaoController {
 	}
 
 	@RequestMapping(value = "/save-observacao", method = RequestMethod.POST)
-	public String saveObservacao(@RequestBody BodyObservacaoPorOp body) {
-		return confeccaoService.saveObservacao(body.estagio, body.ordemProducao, body.ordemConfeccao, body.tipoObservacao, body.obsAdicional);
+	public void saveObservacao(@RequestBody BodyObservacaoPorOp body) {
+		confeccaoService.saveObservacao(ConteudoChaveNumerica.parseValueToListInt(body.listEstagio), ConteudoChaveNumerica.parseValueToListInt(body.listOrdemProducao), body.ordemConfeccao, body.tipoObservacao, body.obsAdicional);
 	}
 	
 	@RequestMapping(value = "/find-all-pacotes-by-ordem/{ordemProducao}", method = RequestMethod.GET)

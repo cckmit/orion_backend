@@ -3,14 +3,17 @@ package br.com.live.body;
 import java.util.List;
 
 import br.com.live.model.ConsultaPreOrdemProducao;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyOrdemProducao {
 
 	public Long idPlanoMestre; 
+	public List<ConteudoChaveAlfaNum> listaEstagio;
 	public List<Long> listaPreOrdens;
 	public List<Integer> listaOrdens;
 	public int estagio;
+	public String searchVar;
 	
 	public List<ConteudoChaveNumerica> ordemProducao;
 	
