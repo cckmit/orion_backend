@@ -684,8 +684,10 @@ public class SugestaoReservaMaterialPorOrdensService {
 		//System.out.println("calcularNecessidades");
 		
 		int prioridade = ordemProducaoCustom.findUltimaSeqPrioridadeDia();
-				
+		int indice = 0;
 		for (OrdemProducao ordem : listaPriorizadaOrdens) {						
+			indice++ ;
+			System.out.println(indice + " - Ordem: " + ordem.ordemProducao);
 			//System.out.println("PRIORIDADE: " + prioridade + " ID: " + ordem.ordemProducao + " EMBARQUE: " + ordem.dataEmbarque + " QTDE EST CRITICO: " + ordem.qtdeEstagioCritico + " TEMPO PROD UNIT: " + ordem.tempoProducaoUnit);
 			prioridade++;			
 			ordem.setSeqPrioridade(prioridade);
