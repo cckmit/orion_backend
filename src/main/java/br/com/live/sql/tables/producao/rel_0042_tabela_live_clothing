@@ -1,0 +1,10 @@
+CREATE TABLE orion_com_300(
+        ID                NUMBER(9),
+        LOJA              VARCHAR2(100),
+        DATA              DATE,
+        QUANTIDADE        NUMBER(4),
+        TICKETS           NUMBER(4),
+        CONVERSAO         NUMBER(12,2),
+        VALOR_DOLAR       NUMBER(12,2),
+        VALOR_REAL        NUMBER(12,2),        
+        CONSTRAINT orion_com_300_pk PRIMARY KEY (ID));

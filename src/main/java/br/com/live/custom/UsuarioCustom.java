@@ -3,6 +3,7 @@ package br.com.live.custom;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.live.util.ConteudoChaveAlfaNum;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -75,20 +76,16 @@ public class UsuarioCustom {
 		return dados;
 	}
 	
-	public String findPathPrograma(long idUsuario, String descricao) {
+	public List<ConteudoChaveAlfaNum> findPathPrograma(long idUsuario, String descricao) {
+
+		System.out.println(idUsuario);
+		System.out.println(descricao);
 		
-		String programaSel;
-		
-		String query = " SELECT max(a.path) FROM orion_002 a, orion_003 b where UPPER(a.descricao) like UPPER('%" + descricao + "%') "
+		String query = " SELECT a.path value, a.descricao label FROM orion_002 a, orion_003 b where UPPER(a.descricao) like UPPER('%" + descricao + "%') "
 				+ " and b.id_usuario = " + idUsuario
 				+ " and a.id = b.id_programa";
 
-		try {
-			programaSel = jdbcTemplate.queryForObject(query, String.class);
-		} catch (Exception e) {
-			programaSel = "";
-		}
-		return programaSel;
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
 	// Localiza apenas pelas principais empresas da LIVE! Por padrão o código sempre é o mesmo, então busca do primeiro registro que encontrar.

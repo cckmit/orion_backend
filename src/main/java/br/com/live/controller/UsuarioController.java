@@ -2,6 +2,7 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.util.ConteudoChaveAlfaNum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,7 +68,7 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value = "programa-like/{idUsuario}/{descricao}", method = RequestMethod.GET)
-	public String findPathPrograma(@PathVariable("idUsuario") long idUsuario, @PathVariable("descricao") String descricao) {
+	public List<ConteudoChaveAlfaNum> findPathPrograma(@PathVariable("idUsuario") long idUsuario, @PathVariable("descricao") String descricao) {
 		return usuarioService.findPathPrograma(idUsuario, descricao);
 	}
 	
