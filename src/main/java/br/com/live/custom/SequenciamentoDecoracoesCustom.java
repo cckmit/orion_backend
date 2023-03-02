@@ -111,13 +111,14 @@ public class SequenciamentoDecoracoesCustom {
 	    + " a.data_termino dataTermino "
 	    + " from orion_cfc_300 a, basi_030 b, pcpc_020 c, mqop_005 d "
 	    + " where b.nivel_estrutura = '1' "
-	    + " and b.referencia = b.referencia "
+	    + " and b.referencia = a.referencia "
 	    + " and c.ordem_producao = a.ordem_producao "
 	    + " and d.codigo_estagio = a.cod_estagio "		
 	    + " and exists (select 1 from pcpc_040 p "
 	    + " where p.ordem_producao = a.ordem_producao "
         + " and p.codigo_estagio = a.cod_estagio "
-        + " and p.qtde_em_producao_pacote > 0) " ;
+        + " and p.qtde_a_produzir_pacote > 0) " 
+        + " order by a.sequencia" ;
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosSequenciamentoDecoracoes.class));
 	}

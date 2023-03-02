@@ -69,8 +69,9 @@ public class SequenciamentoDecoracoesService {
 		
 		for (OrdemProducaoEstagios estagioOP : estagios) {
 			EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());
-			if ((codEstagioDistrib > 0) && (estagio.estagioAgrupador == 0)) break;			
+			if ((codEstagioDistrib > 0) && (estagio.estagioAgrupador == 0)) break;				
 			if (estagio.estagioAgrupador == 0) codEstagioDistrib = estagioOP.getCodEstagio();
+			if (estagio.estagioAgrupador == 0) continue;
 			
 			if (estagioOP.getCodEstagioDepende() == codEstagioDistrib) proxEstagios.add(estagioOP);
 			if (estagioOP.getCodEstagioDepende() != codEstagioDistrib) {
@@ -105,8 +106,8 @@ public class SequenciamentoDecoracoesService {
 				double tempoTotal=0;
 				for (OrdemConfeccao pacote : pacotes) {					
 					quantidade = ordemProducaoCustom.getQtdeAProduzirEstagio(pacote.ordemProducao, pacote.ordemConfeccao, estagioOP.getCodEstagio()); 
-					tempo =	produtoCustom.getTempoProducaoEstagio("1", pacote.getReferencia(), pacote.getTamanho(), pacote.getCor(), pacote.nrAlternativa, pacote.getNrRoteiro(), estagioOP.getCodEstagio());
-					quantidadeTotal += quantidade;
+					tempo =	produtoCustom.getTempoProducaoEstagio("1", pacote.getReferencia(), pacote.getTamanho(), pacote.getCor(), ordem.getNrAlternativa(), ordem.getNrRoteiro(), estagioOP.getCodEstagio());
+					quantidadeTotal += quantidade;					
 					tempoTotal += (quantidade * tempo);    
 				}
 				double tempoUnit = tempoTotal / quantidadeTotal;  
@@ -128,7 +129,13 @@ public class SequenciamentoDecoracoesService {
 	}	
 	
 	public void incluirOrdensNoSequenciamento(List<DadosSequenciamentoDecoracoes> dadosOrdem) {
+		
+		System.out.println("incluirOrdensNoSequenciamento");
+		
 		for (DadosSequenciamentoDecoracoes dadoOrdem : dadosOrdem) {
+			
+			System.out.println("Ordem: " + dadoOrdem.getOrdemProducao() + " - Estagio: " + dadoOrdem.getCodEstagioProx());
+			
 			int id = sequenciamentoDecoracoesCustom.findNextId();
 			int sequencia = sequenciamentoDecoracoesCustom.findNextSeqProducao();					
 			sequenciamentoDecoracoesCustom.saveSequenciamento(id, sequencia, dadoOrdem.getPeriodo(), dadoOrdem.getOrdemProducao(), dadoOrdem.getReferencia(), dadoOrdem.getCores(),  dadoOrdem.getCodEstagioProx(), dadoOrdem.getQuantidade(), dadoOrdem.getEstagiosAgrupados(), dadoOrdem.getEndereco(), dadoOrdem.getDataEntrada(), dadoOrdem.getTempoUnitario(), dadoOrdem.getTempoTotal(), null, null);
@@ -148,6 +155,8 @@ public class SequenciamentoDecoracoesService {
 		Date dataTermino = dataInicial;		
 		int sequencia = 0;
 		
+		System.out.println("calcularSequenciamento");
+		
 		for (DadosSequenciamentoDecoracoes ordem : ordens) {
 			sequencia++;
 			minutosPlanejar = ordem.getTempoTotal();
@@ -162,6 +171,8 @@ public class SequenciamentoDecoracoesService {
 					minutosPlanejar = 0;
 				}								
 			}			
+			
+			System.out.println("ID " + ordem.getId() + " Seq: " + sequencia + " - Data Inicio: " + dataInicio + " - Data Término: " + dataTermino);
 			
 			// grava a data inicio e fim no estágio da ordem producao
 			sequenciamentoDecoracoesCustom.saveSequenciamento(ordem.getId(), sequencia, dataInicio, dataTermino);						
