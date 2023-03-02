@@ -90,14 +90,23 @@ public class SequenciamentoDecoracoesService {
 		List<DadosSequenciamentoDecoracoes> listOrdensParaDecoracoes = new ArrayList<DadosSequenciamentoDecoracoes>(); 
 		
 		for (OrdemProducao ordem : ordens) {
+			
+			System.out.println("OP: " + ordem.ordemProducao);
+			
 			List<OrdemProducaoEstagios> estagios = sequenciamentoDecoracoesCustom.findEstagiosDecoracoesOrdem(ordem.ordemProducao);			
+			
+			System.out.println("est. seq: " + estagios.size());
+			
 			Map<String, Object> dados = organizarProximosEstagios(estagios);						
 			List<OrdemProducaoEstagios> proximosEstagios = (List<OrdemProducaoEstagios>) dados.get("proxEstagios");
 			String estagiosAgrupados = (String) dados.get("estagiosAgrupados");
 
 			List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordem.ordemProducao);
 						
+			//System.out.println(1);
+			
 			for (OrdemProducaoEstagios estagioOP : proximosEstagios) {				
+				//System.out.println(2);
 				if (sequenciamentoDecoracoesCustom.isOrdemSequenciada(ordem.ordemProducao, estagioOP.getCodEstagio())) continue;
 				
 				int quantidade=0;
@@ -115,9 +124,11 @@ public class SequenciamentoDecoracoesService {
 				seqPrioridade++;
 				EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());				
 				String cores = ordemProducaoCustom.getCoresOrdem(ordem.getOrdemProducao());
-				String endereco = sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao());
-				Date dataEntrada = sequenciamentoDecoracoesCustom.findDataProducaoEstagioAnterior(ordem.getOrdemProducao());
-						
+				String endereco = sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao());				
+				Date dataEntrada = sequenciamentoDecoracoesCustom.findDataProducaoEstagioAnterior(ordem.getOrdemProducao());						
+				
+				//System.out.println(3);
+				
 				DadosSequenciamentoDecoracoes dadosOrdem = new DadosSequenciamentoDecoracoes(seqPrioridade, ordem.getPeriodo(), ordem.getOrdemProducao(), ordem.getReferencia(),
 						                                                                ordem.getDescrReferencia(), cores, quantidadeTotal, ordem.getObservacao(), estagioOP.getCodEstagio(),
 						                                                                estagio.getDescricao(), estagiosAgrupados, endereco, dataEntrada, tempoUnit, tempoTotal); 
