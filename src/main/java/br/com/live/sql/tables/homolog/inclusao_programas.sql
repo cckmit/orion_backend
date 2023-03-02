@@ -243,3 +243,6 @@ values (80, 'Encolhimento CAD', 'Confecção', '/encolhimento-cad');
    
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (81, 'Cópia de Parâmetros para Ficha de Custos', 'Custos', '/copia-param-custos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (82, 'Faturamento Live Clothing', 'Comercial', '/faturamento-live-clothing');

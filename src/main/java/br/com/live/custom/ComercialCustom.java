@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import br.com.live.entity.FaturamentoLiveClothing;
 import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.model.ConsultaTpClienteXTabPreco;
 import br.com.live.util.ConteudoChaveAlfaNum;
@@ -83,4 +85,28 @@ public class ComercialCustom {
 		
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTpClienteXTabPreco.class), idCapa, id);
 	}
+	
+	public List<ConteudoChaveAlfaNum> findAllTipoCliente() {
+		
+		String query = " SELECT a.descricao value, UPPER(a.descricao) label FROM orion_150 a GROUP BY a.descricao ORDER BY a.descricao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public List<FaturamentoLiveClothing> findAllFatLiveClothing(){
+		
+		String query = "SELECT a.id id, "
+				+ "		  a.loja loja, "
+				+ "       a.data data, "
+				+ "       a.quantidade quantidade, "
+				+ "       a.tickets tickets, "
+				+ "       a.conversao conversao, "
+				+ "       a.valor_dolar valorDolar, "
+				+ "       a.valor_real valorReal "
+				+ "       FROM orion_com_300 a "
+				+ "       ORDER BY a.data DESC ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(FaturamentoLiveClothing.class));
+	}
+	
 }

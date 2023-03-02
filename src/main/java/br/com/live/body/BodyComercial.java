@@ -3,6 +3,8 @@ package br.com.live.body;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+
 import br.com.live.entity.MetasCategoria;
 import br.com.live.entity.TpClienteXTabPreco;
 
@@ -30,6 +32,14 @@ public class BodyComercial {
 	public String tabela;
 	public Date periodoIni;
 	public Date periodoFim;
+	public int idFaturamento;
+	public String loja;
+	public String data;
+	public int quantidade;
+	public int tickets;
+	public float conversao;
+	public float valorDolar;
+	public float valorReal;
 	
 	public List<MetasCategoria> tabImportar;
 	
