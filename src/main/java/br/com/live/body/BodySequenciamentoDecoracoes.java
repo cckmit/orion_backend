@@ -15,5 +15,6 @@ public class BodySequenciamentoDecoracoes {
 	public boolean isPossuiAgrupador;
 	public int periodoInicio;
 	public int periodoFim; 		
+	public String dataInicioSeq;
 	public List<DadosSequenciamentoDecoracoes> listaOrdens;
 }

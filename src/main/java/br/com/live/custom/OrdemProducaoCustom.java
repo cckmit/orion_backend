@@ -9,14 +9,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;
 import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoItem;
 import br.com.live.util.ConteudoChaveAlfaNum;
-import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
 public class OrdemProducaoCustom {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.service.SequenciamentoDecoracoesService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 import br.com.live.body.BodySequenciamentoDecoracoes;
 import br.com.live.custom.SequenciamentoDecoracoesCustom;
 import br.com.live.model.DadosSequenciamentoDecoracoes;
@@ -36,9 +37,9 @@ public class SequenciamentoDecoracoesController {
 		return sequenciamentoDecoracoesCustom.findReferenciasEmOrdensCentroDistrib();
 	}
 
-	@RequestMapping(value = "/ordens-sequenciada", method = RequestMethod.POST) 
+	@RequestMapping(value = "/ordens-sequenciadas", method = RequestMethod.GET) 
 	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas() {		
-		return null;
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
 	}
 	
 	@RequestMapping(value = "/consultar", method = RequestMethod.POST)
@@ -55,7 +56,14 @@ public class SequenciamentoDecoracoesController {
 	}	
 	
 	@RequestMapping(value = "/incluir-sequenciamento", method = RequestMethod.POST)
-	public void incluirOrdensNoSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
+	public List<DadosSequenciamentoDecoracoes> incluirOrdensNoSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
 		sequenciamentoDecoracoesService.incluirOrdensNoSequenciamento(body.listaOrdens);
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
 	}
+	
+	@RequestMapping(value = "/calcular-sequenciamento", method = RequestMethod.POST)
+	public List<DadosSequenciamentoDecoracoes> calcularSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
+		sequenciamentoDecoracoesService.calcularSequenciamento(FormataData.parseStringToDate(body.dataInicioSeq), body.listaOrdens);
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
+	}	
 }

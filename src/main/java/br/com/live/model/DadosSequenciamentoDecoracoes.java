@@ -3,6 +3,7 @@ package br.com.live.model;
 import java.util.Date;
 
 public class DadosSequenciamentoDecoracoes {
+	private int id;
 	private int seqPrioridade;
 	private int periodo;
 	private int ordemProducao;
@@ -18,12 +19,17 @@ public class DadosSequenciamentoDecoracoes {
 	private Date dataEntrada;
 	private double tempoUnitario;
 	private double tempoTotal;
+	private Date dataInicio;
+	private Date dataTermino;
+
+	public DadosSequenciamentoDecoracoes() {}
 	
-	public DadosSequenciamentoDecoracoes(int seqPrioridade, int periodo, int ordemProducao, String referencia,
+	public DadosSequenciamentoDecoracoes(int id, int seqPrioridade, int periodo, int ordemProducao, String referencia,
 			String descricaoReferencia, String cores, int quantidade, String observacao, int codEstagioProx,
 			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, double tempoUnitario,
-			double tempoTotal) {
-		super();
+			double tempoTotal, Date dataInicio, Date dataTermino) {
+		super();		
+		this.id = id;
 		this.seqPrioridade = seqPrioridade;
 		this.periodo = periodo;
 		this.ordemProducao = ordemProducao;
@@ -39,6 +45,41 @@ public class DadosSequenciamentoDecoracoes {
 		this.dataEntrada = dataEntrada;
 		this.tempoUnitario = tempoUnitario;
 		this.tempoTotal = tempoTotal;
+		this.dataInicio = dataInicio;
+		this.dataTermino = dataTermino;
+	}
+	
+	public DadosSequenciamentoDecoracoes(int seqPrioridade, int periodo, int ordemProducao, String referencia,
+			String descricaoReferencia, String cores, int quantidade, String observacao, int codEstagioProx,
+			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, double tempoUnitario,
+			double tempoTotal) {
+		super();
+		this.id = 0;
+		this.seqPrioridade = seqPrioridade;
+		this.periodo = periodo;
+		this.ordemProducao = ordemProducao;
+		this.referencia = referencia;
+		this.descricaoReferencia = descricaoReferencia;
+		this.cores = cores;
+		this.quantidade = quantidade;
+		this.observacao = observacao;
+		this.codEstagioProx = codEstagioProx;
+		this.descEstagioProx = descEstagioProx;
+		this.estagiosAgrupados = estagiosAgrupados;
+		this.endereco = endereco;
+		this.dataEntrada = dataEntrada;
+		this.tempoUnitario = tempoUnitario;
+		this.tempoTotal = tempoTotal;
+		this.dataInicio = null;
+		this.dataTermino = null;		
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getSeqPrioridade() {
@@ -159,5 +200,21 @@ public class DadosSequenciamentoDecoracoes {
 
 	public void setTempoTotal(double tempoTotal) {
 		this.tempoTotal = tempoTotal;
-	}	
+	}
+
+	public Date getDataInicio() {
+		return dataInicio;
+	}
+
+	public void setDataInicio(Date dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+
+	public Date getDataTermino() {
+		return dataTermino;
+	}
+
+	public void setDataTermino(Date dataTermino) {
+		this.dataTermino = dataTermino;
+	}		
 }
