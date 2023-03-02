@@ -1025,14 +1025,14 @@ public class OrdemProducaoCustom {
 		
 		String query = "SELECT 1 FROM pcpc_040 p "
 				+ "		WHERE p.ordem_producao = ? " 
-				+ "		AND p.codigo_estagio = ? ";
+				+ "		AND p.codigo_estagio = ? "
+				+ "     AND ROWNUM = 1";
 		
 		try {
 			encontrou = jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, codEstagio);
 		} catch (Exception e) {
 			encontrou = 0;
 		}
-
 		return (encontrou == 1);
 		
 	}
