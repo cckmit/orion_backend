@@ -6,6 +6,11 @@ import br.com.live.model.*;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import br.com.live.entity.FaturamentoLiveClothing;
+import br.com.live.model.ConsultaTitulosBloqForn;
+import br.com.live.model.ConsultaTpClienteXTabPreco;
+
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -82,8 +87,24 @@ public class ComercialCustom {
 		
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTpClienteXTabPreco.class), idCapa, id);
 	}
-
-	public long findNextIdImpDescClientes() {
+	
+	public List<FaturamentoLiveClothing> findAllFatLiveClothing(){
+		
+		String query = "SELECT a.id id, "
+				+ "		  a.loja loja, "
+				+ "       a.data data, "
+				+ "       a.quantidade quantidade, "
+				+ "       a.tickets tickets, "
+				+ "       a.conversao conversao, "
+				+ "       a.valor_dolar valorDolar, "
+				+ "       a.valor_real valorReal "
+				+ "       FROM orion_com_300 a "
+				+ "       ORDER BY a.data DESC ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(FaturamentoLiveClothing.class));
+	}
+	
+  public long findNextIdImpDescClientes() {
 		long nextId = 0;
 
 		String query = " select nvl((max(b.id)),0)+1 from orion_com_290 b ";
@@ -156,5 +177,4 @@ public class ComercialCustom {
 				" b.valor_desconto valorSaldo, b.observacao, b.usuario from orion_com_291 b ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
 	}
-
 }

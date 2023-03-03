@@ -30,8 +30,8 @@ public class CustosService {
         custosCustom.inserirParametrosFichaCustos(nivel, grupo, subGrupo, item, empresa, tipoParam, mesDestino, anoDestino, consumo, descParam, valorPercentual, seqParam);
     }
 
-    public void copiarParametrosFichaCustos(int empresa, String produto, int tipoParam, int mesOrigem, int anoOrigem, int anoDestino, int mesDestino, List<String> listProdutosSel) {
-        CopiaFichaCustos dadosOrigem = custosCustom.findDadosProdutoOrigemCopia(produto, empresa, tipoParam, mesOrigem, anoOrigem);
+    public void copiarParametrosFichaCustos(int empresa, String produto, int tipoParam, List<String> listProdutosSel) {
+        List<CopiaFichaCustos> listOrigem = custosCustom.findDadosProdutoOrigemCopia(produto, empresa, tipoParam);
 
         for (String produtosSel : listProdutosSel) {
             String[] prodConcat = produtosSel.split("[.]");
@@ -40,10 +40,12 @@ public class CustosService {
             String subGrupo = prodConcat[2];
             String item = prodConcat[3];
 
-            try {
-                inserirDadosParametrosFichaCustos(nivel,grupo,subGrupo,item,empresa,tipoParam,mesDestino,anoDestino,dadosOrigem.consumo,dadosOrigem.descParametro,dadosOrigem.valorPercentual, dadosOrigem.sequenciaParam);
-            } catch (Exception e) {
-                System.out.println("Ocorreu um erro na cópia dos parametros");
+            for (CopiaFichaCustos dadosOrigem : listOrigem){
+                try {
+                    inserirDadosParametrosFichaCustos(nivel,grupo,subGrupo,item,empresa,tipoParam,dadosOrigem.mesDestino,dadosOrigem.anoDestino,dadosOrigem.consumo,dadosOrigem.descParametro,dadosOrigem.valorPercentual, dadosOrigem.sequenciaParam);
+                } catch (Exception e) {
+                    System.out.println("Ocorreu um erro na cópia dos parametros");
+                }
             }
         }
     }

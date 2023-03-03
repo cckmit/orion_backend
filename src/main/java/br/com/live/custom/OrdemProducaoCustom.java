@@ -988,6 +988,20 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
+	public List<ConteudoChaveAlfaNum> findOrdensForAsyncComEstagio(List<ConteudoChaveAlfaNum> estagio, String searchVar) { 
+		String query = " select a.ordem_producao value, a.ordem_producao label "
+				+ " from pcpc_040 a, pcpc_020 b "
+				+ " where b.ordem_producao = a.ordem_producao "
+				+ " and b.cod_cancelamento = 0 "
+				+ " and (a.qtde_a_produzir_pacote > 0 or a.qtde_conserto > 0) "
+				+ " and a.ordem_producao like '%" + searchVar + "%' "
+				+ " and rownum <= 100 "
+				+ " and a.codigo_estagio IN ( " + ConteudoChaveAlfaNum.parseValueToString(estagio) + " ) "
+				+ " group by a.ordem_producao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
 	public int getQtdeAProduzirEstagio(int ordemProducao, int codEstagio) {		
 		String query = " select nvl(sum(p.qtde_a_produzir_pacote),0) "
 		+ " from pcpc_040 p "
@@ -1003,5 +1017,23 @@ public class OrdemProducaoCustom {
 		+ " and p.ordem_confeccao = ? "
 		+ " and p.codigo_estagio = ? " ;
 		return jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, ordemConfeccao, codEstagio);
-	}	
+	}
+	
+	public boolean existsEstagioOrdemProducao(int ordemProducao, int codEstagio) {
+		
+		int encontrou = 0;
+		
+		String query = "SELECT 1 FROM pcpc_040 p "
+				+ "		WHERE p.ordem_producao = ? " 
+				+ "		AND p.codigo_estagio = ? "
+				+ "     AND ROWNUM = 1";
+		
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, codEstagio);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+		return (encontrou == 1);
+		
+	}
 }

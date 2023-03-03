@@ -3,6 +3,7 @@ package br.com.live.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.live.util.ConteudoChaveAlfaNum;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,7 +96,7 @@ public class UsuarioService {
 		usuarioRepository.deleteById(idUsuario);
 	}
 	
-	public String findPathPrograma(long idUsuario, String descricao) {
+	public List<ConteudoChaveAlfaNum> findPathPrograma(long idUsuario, String descricao) {
 		return usuarioCustom.findPathPrograma(idUsuario, descricao);
 	}
 	

@@ -28,6 +28,6 @@ public class CustosController {
 
     @RequestMapping(value = "/copiar-produtos-ficha-custos", method = RequestMethod.POST)
     public void copyProdutosFichaCustos(@RequestBody BodyCustos body) {
-        custosService.copiarParametrosFichaCustos(body.empresa, body.produtoOrigem, body.tipoParam, body.mesOrigem, body.anoOrigem, body.anoDestino, body.mesDestino, body.listSelecionados);
+        custosService.copiarParametrosFichaCustos(body.empresa, body.produtoOrigem, body.tipoParam, body.listSelecionados);
     }
 }

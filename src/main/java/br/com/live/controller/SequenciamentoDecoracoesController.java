@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.service.SequenciamentoDecoracoesService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 import br.com.live.body.BodySequenciamentoDecoracoes;
 import br.com.live.custom.SequenciamentoDecoracoesCustom;
-import br.com.live.model.OrdemProducao;
+import br.com.live.model.DadosSequenciamentoDecoracoes;
 import br.com.live.model.Produto;
-import br.com.live.model.SugestaoReservaMateriais;
 
 @RestController
 @CrossOrigin
@@ -37,8 +37,13 @@ public class SequenciamentoDecoracoesController {
 		return sequenciamentoDecoracoesCustom.findReferenciasEmOrdensCentroDistrib();
 	}
 
+	@RequestMapping(value = "/ordens-sequenciadas", method = RequestMethod.GET) 
+	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas() {		
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
+	}
+	
 	@RequestMapping(value = "/consultar", method = RequestMethod.POST)
-	public List<OrdemProducao> consultar(@RequestBody BodySequenciamentoDecoracoes body) {		
+	public List<DadosSequenciamentoDecoracoes> consultar(@RequestBody BodySequenciamentoDecoracoes body) {		
 		return sequenciamentoDecoracoesService.consultarOrdens(
 				ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao), 
 				body.periodoInicio, 
@@ -48,6 +53,17 @@ public class SequenciamentoDecoracoesController {
 				body.isSomenteFlat,
 				body.isDiretoCostura, 
 				body.isPossuiAgrupador);		
+	}	
+	
+	@RequestMapping(value = "/incluir-sequenciamento", method = RequestMethod.POST)
+	public List<DadosSequenciamentoDecoracoes> incluirOrdensNoSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
+		sequenciamentoDecoracoesService.incluirOrdensNoSequenciamento(body.listaOrdens);
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
 	}
 	
+	@RequestMapping(value = "/calcular-sequenciamento", method = RequestMethod.POST)
+	public List<DadosSequenciamentoDecoracoes> calcularSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
+		sequenciamentoDecoracoesService.calcularSequenciamento(FormataData.parseStringToDate(body.dataInicioSeq), body.listaOrdens);
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
+	}	
 }

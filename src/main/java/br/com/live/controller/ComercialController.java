@@ -15,8 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.body.BodyComercial;
 import br.com.live.custom.ComercialCustom;
 import br.com.live.entity.BloqueioTitulosForn;
+import br.com.live.entity.FaturamentoLiveClothing;
+import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.TpClienteXTabPreco;
 import br.com.live.entity.TpClienteXTabPrecoItem;
+import br.com.live.model.ConsultaMetasCategoria;
+import br.com.live.model.ConsultaTiposFio;
+import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.repository.TpClienteXTabPrecoRepository;
 import br.com.live.repository.TpClienteXTabPrecoItemRepository;
 import br.com.live.service.ComercialService;
@@ -103,6 +108,25 @@ public class ComercialController {
 		return comercialService.findForncedorBloq(idForn);
 	}
 	//
+    // Encontrar Todos os Faturamentos Live Clothing
+    //
+	@RequestMapping(value = "/find-all-faturamento-live-clothing", method = RequestMethod.GET)
+    public List<FaturamentoLiveClothing> findAllFatLiveClothing() {                  
+        return comercialCustom.findAllFatLiveClothing();
+    }
+	// Encontrar Faturamento por ID
+    //
+	@RequestMapping(value = "/find-faturamento-live-clothing-by-id/{idfaturamento}", method = RequestMethod.GET)
+    public FaturamentoLiveClothing findFatLiveClothingById(@PathVariable("idfaturamento") int idfaturamento) {
+        return comercialService.findFatLiveClothingById(idfaturamento);
+    }
+	// Salvar Faturamento LIVE Clothing
+    //
+    @RequestMapping(value = "/save-faturamento-live-clothing", method = RequestMethod.POST)
+    public void saveFatLiveClothing(@RequestBody BodyComercial body) {                  
+    	comercialService.saveFatLiveClothing(body.idFaturamento, body.loja, body.data, body.quantidade, body.tickets, body.conversao, body.valorDolar, body.valorReal);
+    }
+	//
     // Importar Metas Categorias de Coleções
     //
     @RequestMapping(value = "/importar-metas-estacoes", method = RequestMethod.POST)
@@ -139,28 +163,33 @@ public class ComercialController {
         return tpClienteXTabPrecoItemRepository.findAll();
     }
 
-	@RequestMapping(value = "/importar-desconto-clientes", method = RequestMethod.POST)
-	public StatusGravacao importarDescontoClientes(@RequestBody BodyComercial body) {
-		return comercialService.saveDescontosClientesImportados(body.listClientesDesconto, body.usuario);
-	}
+    @RequestMapping(value = "/delete-faturamento-live-clothing/{idFaturamento}", method = RequestMethod.DELETE)
+    public void deleteFatLiveClothing(@PathVariable("idFaturamento") int idFaturamento) {                  
+    	comercialService.deleteFatLiveClothing(idFaturamento);        
+    }
+    
+ 	  @RequestMapping(value = "/importar-desconto-clientes", method = RequestMethod.POST)
+	  public StatusGravacao importarDescontoClientes(@RequestBody BodyComercial body) {
+		  return comercialService.saveDescontosClientesImportados(body.listClientesDesconto, body.usuario);
+	  }
 
-	@RequestMapping(value = "/consulta-pedidos-com-desconto", method = RequestMethod.GET)
-	public List<PedidosComDescontoAConfirmar> findPedidosComDesc() {
-		return comercialService.prepararPedidosParaAplicarDesconto();
-	}
+	  @RequestMapping(value = "/consulta-pedidos-com-desconto", method = RequestMethod.GET)
+	  public List<PedidosComDescontoAConfirmar> findPedidosComDesc() {
+		  return comercialService.prepararPedidosParaAplicarDesconto();
+	  }
 
-	@RequestMapping(value = "/aplicar-descontos-pedidos", method = RequestMethod.POST)
-	public StatusGravacao aplicarDescontosPedidos(@RequestBody BodyComercial body) {
-		return comercialService.aplicarDescontoEspecialPedidos(body.listClientesDesconto, body.usuario);
-	}
+	  @RequestMapping(value = "/aplicar-descontos-pedidos", method = RequestMethod.POST)
+	  public StatusGravacao aplicarDescontosPedidos(@RequestBody BodyComercial body) {
+		  return comercialService.aplicarDescontoEspecialPedidos(body.listClientesDesconto, body.usuario);
+	  }
 
-	@RequestMapping(value = "/consulta-hist-importacoes", method = RequestMethod.GET)
-	public List<DescontoClientesImportados> findHistImportacoes() {
-		return comercialService.buscarHistoricoImportacoes();
-	}
+	  @RequestMapping(value = "/consulta-hist-importacoes", method = RequestMethod.GET)
+	  public List<DescontoClientesImportados> findHistImportacoes() {
+		  return comercialService.buscarHistoricoImportacoes();
+	  }
 
-	@RequestMapping(value = "/consulta-hist-descontos", method = RequestMethod.GET)
-	public List<ConsultaPedidosPorCliente> findHistoricoDescontos() {
-		return comercialService.buscarHistoricoDescontos();
-	}
+	  @RequestMapping(value = "/consulta-hist-descontos", method = RequestMethod.GET)
+	  public List<ConsultaPedidosPorCliente> findHistoricoDescontos() {
+		  return comercialService.buscarHistoricoDescontos();
+	  }
 }

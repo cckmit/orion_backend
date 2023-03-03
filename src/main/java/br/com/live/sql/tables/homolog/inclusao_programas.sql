@@ -236,5 +236,13 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (78, 'Pré Cadastro Indicadores', 'Administrativo', '/pre-cadastro-indicadores');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (79, 'Painel de Sequenciamento Decorações', 'Confecção', '/painel-seq-decoracoes');
+values (79, 'Painel de Sequenciamento de Decorações', 'Confecção', '/painel-seq-decoracoes');
 
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (80, 'Encolhimento CAD', 'Confecção', '/encolhimento-cad');
+   
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (81, 'Cópia de Parâmetros para Ficha de Custos', 'Custos', '/copia-param-custos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (82, 'Faturamento Live Clothing', 'Comercial', '/faturamento-live-clothing');

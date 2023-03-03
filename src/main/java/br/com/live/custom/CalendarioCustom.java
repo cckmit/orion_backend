@@ -16,17 +16,28 @@ import br.com.live.util.FormataData;
 public class CalendarioCustom {
 
 	private final JdbcTemplate jdbcTemplate;
-
+	private static final String COLUNAS_CALENDARIO = "data_calendario data, dia_util diaUtil, dia_semana diaSemana, numero_semana numeroSemana";
+	
 	public CalendarioCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}	
 
 	public List<Calendario> getCalendarioByMes(int mes, int ano) {		
-		String query = " select a.data_calendario data, a.dia_util diaUtil, a.dia_semana diaSemana, a.numero_semana numeroSemana " 
-		+ " from basi_260 a " 
-		+ " where a.data_calendario between ? and ? ";
+		String query = " select " + COLUNAS_CALENDARIO 
+		+ " from basi_260 " 
+		+ " where data_calendario between ? and ? ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Calendario.class), FormataData.getStartingDay(mes, ano), FormataData.getFinalDay(mes, ano));
+	}
+	
+	public Calendario getProximoDiaUtil(Date data) {
+		String query = " select " + COLUNAS_CALENDARIO 
+		+ " from basi_260 " 
+		+ " where data_calendario > ? "
+		+ " and dia_util = 0 "
+		+ " and rownum = 1 "
+		+ " order by data_calendario " ;		 
+		return jdbcTemplate.queryForObject(query, Calendario.class, data); 
 	}
 	
 	public List<CalendarioSemana> getSemanasByMes(int mes, int ano) {

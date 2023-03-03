@@ -8,6 +8,7 @@ import java.util.List;
 import br.com.live.entity.Restricoes;
 import br.com.live.entity.RestricoesRolo;
 import br.com.live.model.EtiquetasDecoracao;
+import br.com.live.model.OrdemConfeccao;
 import br.com.live.repository.RestricoesRepository;
 import br.com.live.repository.RestricoesRoloRepository;
 import net.sf.jasperreports.engine.JRException;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.CalendarioCustom;
 import br.com.live.custom.ConfeccaoCustom;
+import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.entity.EncolhimentoCad;
 import br.com.live.entity.MetasProducao;
 import br.com.live.entity.MetasProducaoSemana;
@@ -30,6 +32,7 @@ import br.com.live.repository.MetasProducaoRepository;
 import br.com.live.repository.MetasProducaoSemanaRepository;
 import br.com.live.repository.ObservacaoOrdemPacoteRepository;
 import br.com.live.repository.TipoObservacaoRepository;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Service
@@ -45,11 +48,12 @@ public class ConfeccaoService {
 	private final CalendarioCustom calendarioCustom;
 	private final ReportService reportService;
 	private final EncolhimentoCadRepository encolhimentoCadRepository;
+	private final OrdemProducaoCustom ordemProducaoCustom;
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
 			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository,
 			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom, 
-			ReportService reportService, EncolhimentoCadRepository encolhimentoCadRepository) {
+			ReportService reportService, EncolhimentoCadRepository encolhimentoCadRepository, OrdemProducaoCustom ordemProducaoCustom) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
@@ -60,6 +64,7 @@ public class ConfeccaoService {
 		this.calendarioCustom = calendarioCustom;
 		this.reportService = reportService;
 		this.encolhimentoCadRepository = encolhimentoCadRepository;
+		this.ordemProducaoCustom = ordemProducaoCustom; 
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -94,19 +99,23 @@ public class ConfeccaoService {
 		observacaoOrdemPacoteRepository.deleteById(id);
 	}
 
-	public String saveObservacao(int estagio, int ordemProducao, int ordemConfeccao, int tipoObservacao, String obsAdicional) {
-		ObservacaoOrdemPacote dadosObs = observacaoOrdemPacoteRepository.findByIdComposto(estagio + "-" + ordemProducao + "-" + ordemConfeccao);
-		String msgErro = "";
-
-		if (dadosObs == null) {
-				ObservacaoOrdemPacote dadosObsSave = new ObservacaoOrdemPacote(estagio, ordemProducao, ordemConfeccao, tipoObservacao, obsAdicional);
-				observacaoOrdemPacoteRepository.save(dadosObsSave);
-		} else {
-			dadosObs.observacaoAdicional = obsAdicional;
-			observacaoOrdemPacoteRepository.save(dadosObs);
-		}
-
-		return msgErro;
+	public void saveObservacao(List<Integer> listEstagio, List<Integer> listOrdemProducao, int ordemConfeccao, int tipoObservacao, String obsAdicional) {
+						
+			for (Integer ordem : listOrdemProducao) {
+				for (Integer estagio : listEstagio) {
+					ObservacaoOrdemPacote dadosObs = observacaoOrdemPacoteRepository.findByIdComposto(estagio + "-" + ordem + "-" + ordemConfeccao);
+					if (dadosObs == null) {
+						Boolean existsEstagio =  ordemProducaoCustom.existsEstagioOrdemProducao(ordem, estagio);
+						if(existsEstagio == true) {
+							ObservacaoOrdemPacote dadosObsSave = new ObservacaoOrdemPacote(estagio, ordem, ordemConfeccao, tipoObservacao, obsAdicional);
+							observacaoOrdemPacoteRepository.save(dadosObsSave);
+						}
+					} else {
+						dadosObs.observacaoAdicional = obsAdicional;
+						observacaoOrdemPacoteRepository.save(dadosObs);						
+					}
+				}				
+			}
 	}
 	
 	public List<ConteudoChaveNumerica> findAllPacotesOrdem(int ordemProducao) {

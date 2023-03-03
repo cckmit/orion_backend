@@ -13,6 +13,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.ComercialCustom;
 import br.com.live.custom.ProdutoCustom;
+
+import br.com.live.entity.BloqueioTitulosForn;
+import br.com.live.entity.FaturamentoLiveClothing;
+import br.com.live.entity.MetasCategoria;
+import br.com.live.entity.Micromovimentos;
+import br.com.live.entity.TpClienteXTabPreco;
+import br.com.live.entity.TpClienteXTabPrecoItem;
+import br.com.live.model.ConsultaTitulosBloqForn;
+import br.com.live.model.Produto;
+import br.com.live.repository.BloqueioTitulosFornRepository;
+import br.com.live.repository.FaturamentoLiveClothingRepository;
+import br.com.live.repository.MetasCategoriaRepository;
+import br.com.live.repository.TpClienteXTabPrecoItemRepository;
+import br.com.live.repository.TpClienteXTabPrecoRepository;
+import br.com.live.util.FormataData;
+
 import br.com.live.util.StatusGravacao;
 
 @Service
@@ -28,10 +44,12 @@ public class ComercialService {
 	private final ValorDescontoClientesImpRepository valorDescontoClientesImpRepository;
 	private final PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository;
 	private final ControleDescontoClienteRepository controleDescontoClienteRepository;
-	
+	private final FaturamentoLiveClothingRepository faturamentoLiveClothingRepository;
+  
 	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository,
 			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, ValorDescontoClientesImpRepository valorDescontoClientesImpRepository,
-							PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, ControleDescontoClienteRepository controleDescontoClienteRepository) {
+							PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository) {
+
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
 		this.produtoCustom = produtoCustom;
@@ -41,6 +59,7 @@ public class ComercialService {
 		this.valorDescontoClientesImpRepository = valorDescontoClientesImpRepository;
 		this.pedidosGravadosComDescontoRepository = pedidosGravadosComDescontoRepository;
 		this.controleDescontoClienteRepository = controleDescontoClienteRepository;
+    this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
@@ -183,8 +202,34 @@ public class ComercialService {
 		tpClienteXTabPrecoItemRepository.save(dadosItem);
 		return new StatusGravacao(true, "");		
 	}
-
-	public StatusGravacao saveDescontosClientesImportados(List<DescontoClientesImportados> listClientes, String usuario) {
+	
+	public FaturamentoLiveClothing findFatLiveClothingById(int idfaturamento) {
+		return faturamentoLiveClothingRepository.findByIdFaturamento(idfaturamento);
+	}
+	
+	public void saveFatLiveClothing(int idFaturamento, String loja, String data, int quantidade, int tickets, float conversao, float valorDolar, float valorReal) {
+		
+		FaturamentoLiveClothing dadosFat = faturamentoLiveClothingRepository.findById(idFaturamento);
+		
+		if (dadosFat == null) {
+			int id = faturamentoLiveClothingRepository.findNextID(); 
+			dadosFat = new FaturamentoLiveClothing(id, loja, FormataData.parseStringToDate(data), quantidade, tickets, conversao, valorDolar, valorReal);	
+		} else {
+			 dadosFat.loja = loja;
+			 dadosFat.data = FormataData.parseStringToDate(data);
+			 dadosFat.tickets = tickets;
+			 dadosFat.conversao = conversao;
+			 dadosFat.valorDolar = valorDolar;
+			 dadosFat.valorReal = valorReal;
+		}
+		faturamentoLiveClothingRepository.save(dadosFat);
+	}
+	
+	public void deleteFatLiveClothing(int idFaturamento) {
+		faturamentoLiveClothingRepository.deleteById(idFaturamento);
+	}
+  
+  public StatusGravacao saveDescontosClientesImportados(List<DescontoClientesImportados> listClientes, String usuario) {
 		StatusGravacao status = new StatusGravacao(true, "Planilha importada com sucesso! <br />");
 		String errosImportacao = "";
 
@@ -344,5 +389,4 @@ public class ComercialService {
 	public List<ConsultaPedidosPorCliente> buscarHistoricoDescontos() {
 		return comercialCustom.buscarHistoricoDescontos();
 	}
-
 }
