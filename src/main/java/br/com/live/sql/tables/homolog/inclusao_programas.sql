@@ -246,3 +246,6 @@ values (81, 'Cópia de Parâmetros para Ficha de Custos', 'Custos', '/copia-para
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (82, 'Faturamento Live Clothing', 'Comercial', '/faturamento-live-clothing');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (83, 'Cadastro de Chamados', 'Administrativo', '/cadastro-chamados');
