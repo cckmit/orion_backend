@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.com.live.entity.MetasCategoria;
 import br.com.live.entity.TpClienteXTabPreco;
+import br.com.live.model.DescontoClientesImportados;
 
 public class BodyComercial {
 	
@@ -34,5 +35,8 @@ public class BodyComercial {
 	public List<MetasCategoria> tabImportar;
 	
 	public List<TpClienteXTabPreco> tabTpClienteTabPreco;
+
+	public List<DescontoClientesImportados> listClientesDesconto;
+	public String usuario;
 }
 	

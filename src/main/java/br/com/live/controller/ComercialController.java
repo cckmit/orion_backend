@@ -3,6 +3,7 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +17,7 @@ import br.com.live.custom.ComercialCustom;
 import br.com.live.entity.BloqueioTitulosForn;
 import br.com.live.entity.TpClienteXTabPreco;
 import br.com.live.entity.TpClienteXTabPrecoItem;
-import br.com.live.model.ConsultaMetasCategoria;
-import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.repository.TpClienteXTabPrecoRepository;
-import br.com.live.model.ConsultaTpClienteXTabPreco;
 import br.com.live.repository.TpClienteXTabPrecoItemRepository;
 import br.com.live.service.ComercialService;
 import br.com.live.service.EstacaoService;
@@ -140,4 +138,29 @@ public class ComercialController {
     	comercialService.deleteRelacCapa(idCapa);
         return tpClienteXTabPrecoItemRepository.findAll();
     }
+
+	@RequestMapping(value = "/importar-desconto-clientes", method = RequestMethod.POST)
+	public StatusGravacao importarDescontoClientes(@RequestBody BodyComercial body) {
+		return comercialService.saveDescontosClientesImportados(body.listClientesDesconto, body.usuario);
+	}
+
+	@RequestMapping(value = "/consulta-pedidos-com-desconto", method = RequestMethod.GET)
+	public List<PedidosComDescontoAConfirmar> findPedidosComDesc() {
+		return comercialService.prepararPedidosParaAplicarDesconto();
+	}
+
+	@RequestMapping(value = "/aplicar-descontos-pedidos", method = RequestMethod.POST)
+	public StatusGravacao aplicarDescontosPedidos(@RequestBody BodyComercial body) {
+		return comercialService.aplicarDescontoEspecialPedidos(body.listClientesDesconto, body.usuario);
+	}
+
+	@RequestMapping(value = "/consulta-hist-importacoes", method = RequestMethod.GET)
+	public List<DescontoClientesImportados> findHistImportacoes() {
+		return comercialService.buscarHistoricoImportacoes();
+	}
+
+	@RequestMapping(value = "/consulta-hist-descontos", method = RequestMethod.GET)
+	public List<ConsultaPedidosPorCliente> findHistoricoDescontos() {
+		return comercialService.buscarHistoricoDescontos();
+	}
 }
