@@ -5,6 +5,7 @@ public class ConsultaMetasOrcamento {
 	public String id;
 	public int ano;
 	public String descricao;
+	public String modalidade;
 	public int tipoMeta;
 	public float valorMes1;
 	public float valorMes2;
@@ -18,6 +19,7 @@ public class ConsultaMetasOrcamento {
 	public float valorMes10;
 	public float valorMes11;
 	public float valorMes12;
+	public float totalCanal;
 	
 	public String getId() {
 		return id;
@@ -36,6 +38,12 @@ public class ConsultaMetasOrcamento {
 	}
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+	public String getModalidade() {
+		return modalidade;
+	}
+	public void setModalidade(String modalidade) {
+		this.modalidade = modalidade;
 	}
 	public int getTipoMeta() {
 		return tipoMeta;
@@ -114,17 +122,23 @@ public class ConsultaMetasOrcamento {
 	}
 	public void setValorMes12(float valorMes12) {
 		this.valorMes12 = valorMes12;
+	}	
+	public float getTotalCanal() {
+		return totalCanal;
 	}
-	
+	public void setTotalCanal(float totalCanal) {
+		this.totalCanal = totalCanal;
+	}
 	public ConsultaMetasOrcamento() {
 		
 	}
-	public ConsultaMetasOrcamento(String id, int ano, String descricao, int tipoMeta, float valorMes1, float valorMes2,
+	public ConsultaMetasOrcamento(String id, int ano, String descricao, String modalidade, int tipoMeta, float valorMes1, float valorMes2,
 			float valorMes3, float valorMes4, float valorMes5, float valorMes6, float valorMes7, float valorMes8,
-			float valorMes9, float valorMes10, float valorMes11, float valorMes12) {
+			float valorMes9, float valorMes10, float valorMes11, float valorMes12, float totalCanal) {
 		this.id = id;
 		this.ano = ano;
 		this.descricao = descricao;
+		this.modalidade = modalidade;
 		this.tipoMeta = tipoMeta;
 		this.valorMes1 = valorMes1;
 		this.valorMes2 = valorMes2;
@@ -138,5 +152,6 @@ public class ConsultaMetasOrcamento {
 		this.valorMes10 = valorMes10;
 		this.valorMes11 = valorMes11;
 		this.valorMes12 = valorMes12;
+		this.totalCanal = totalCanal;
 	}
 }

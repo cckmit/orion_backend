@@ -86,13 +86,6 @@ public class ComercialCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTpClienteXTabPreco.class), idCapa, id);
 	}
 	
-	public List<ConteudoChaveAlfaNum> findAllTipoCliente() {
-		
-		String query = " SELECT a.descricao value, UPPER(a.descricao) label FROM orion_150 a GROUP BY a.descricao ORDER BY a.descricao ";
-		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
-	}
-	
 	public List<FaturamentoLiveClothing> findAllFatLiveClothing(){
 		
 		String query = "SELECT a.id id, "

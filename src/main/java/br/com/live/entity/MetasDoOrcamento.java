@@ -13,6 +13,7 @@ public class MetasDoOrcamento {
 	public String id;
 	
 	public String descricao;
+	public String modalidade;
 	public int ano;
 	
 	@Column(name = "tipo_meta")
@@ -58,11 +59,12 @@ public class MetasDoOrcamento {
 		
 	}
 
-	public MetasDoOrcamento(String descricao, int ano, int tipoMeta, float valorMes1, float valorMes2,
+	public MetasDoOrcamento(String descricao, String modalidade, int ano, int tipoMeta, float valorMes1, float valorMes2,
 			float valorMes3, float valorMes4, float valorMes5, float valorMes6, float valorMes7, float valorMes8,
 			float valorMes9, float valorMes10, float valorMes11, float valorMes12) {
 		this.id = descricao + "-" + ano + "-" + tipoMeta;
 		this.descricao = descricao;
+		this.modalidade = modalidade;
 		this.ano = ano;
 		this.tipoMeta = tipoMeta;
 		this.valorMes1 = valorMes1;

@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyMetasOrcamento;
+import br.com.live.custom.ComercialCustom;
 import br.com.live.model.ConsultaMetasOrcamento;
 import br.com.live.service.MetasDoOrcamentoService;
+import br.com.live.util.ConteudoChaveAlfaNum;
 
 import java.util.List;
 
@@ -20,15 +22,22 @@ import java.util.List;
 public class MetasDoOrcamentoController {
 	
 	private final MetasDoOrcamentoService metasDoOrcamentoService;
+	private final ComercialCustom comercialCustom;
 	
 	@Autowired
-	public MetasDoOrcamentoController(MetasDoOrcamentoService metasDoOrcamentoService) {
+	public MetasDoOrcamentoController(MetasDoOrcamentoService metasDoOrcamentoService, ComercialCustom comercialCustom) {
 		this.metasDoOrcamentoService = metasDoOrcamentoService;
+		this.comercialCustom = comercialCustom;
 	}
 	
 	@RequestMapping(value = "/find-dados-grid/{ano}/{tipoMeta}", method = RequestMethod.GET)
     public List<ConsultaMetasOrcamento> findDadosGrid(@PathVariable("ano") int ano, @PathVariable("tipoMeta") int tipoMeta) {      
         return metasDoOrcamentoService.findDadosGrid(ano, tipoMeta);
+    }
+	
+	@RequestMapping(value = "/find-all-total-geral/{tipoMeta}/{ano}", method = RequestMethod.GET)
+    public String findtotalGeral(@PathVariable("tipoMeta") int tipoMeta, @PathVariable("ano") int ano) {      
+        return metasDoOrcamentoService.findTotalGeral(tipoMeta, ano);
     }
 
 	@RequestMapping(value = "/importar", method = RequestMethod.POST)
