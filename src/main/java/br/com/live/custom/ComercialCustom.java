@@ -2,6 +2,7 @@ package br.com.live.custom;
 
 import java.util.List;
 
+import br.com.live.model.*;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import br.com.live.entity.FaturamentoLiveClothing;
 import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.model.ConsultaTpClienteXTabPreco;
+
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -102,4 +104,77 @@ public class ComercialCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(FaturamentoLiveClothing.class));
 	}
 	
+  public long findNextIdImpDescClientes() {
+		long nextId = 0;
+
+		String query = " select nvl((max(b.id)),0)+1 from orion_com_290 b ";
+
+		try {
+			nextId = jdbcTemplate.queryForObject(query, Long.class);
+		} catch (Exception e) {
+			nextId = 0;
+		}
+		return nextId;
+	}
+
+	public List<ConsultaPedidosPorCliente> findPedidosPorCliente(int cnpj9, int cnpj4, int cnpj2) {
+		String query = " select a.pedido_venda pedido, a.cli_ped_cgc_cli9 cnpj9, a.cli_ped_cgc_cli4 cnpj4, a.cli_ped_cgc_cli2 cnpj2, a.data_entr_venda dataEmbarque, " +
+				" a.valor_saldo_pedi valorSaldo, a.natop_pv_nat_oper natureza from pedi_100 a " +
+				" where a.situacao_venda <> 10 " +
+				" and a.cod_cancelamento = 0" +
+				" and a.valor_saldo_pedi > 2500 " +
+				" and a.cli_ped_cgc_cli9 = " + cnpj9 +
+				" and a.cli_ped_cgc_cli4 = " + cnpj4 +
+				" and a.cli_ped_cgc_cli2 = " + cnpj2 +
+				" and not exists (select 1 from orion_com_291 b " +
+				"                    where b.pedido = a.pedido_venda) " +
+				" order by a.data_entr_venda desc, a.valor_saldo_pedi desc ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
+	}
+
+	public List<ClientesImportados> findClientesImportados() {
+		String query = " select dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2, dadosCliente.observacao, dadosCliente.valor  from (" +
+				" select c.cnpj_9 cnpj9, c.cnpj_4 cnpj4, c.cnpj_2 cnpj2, c.observacao, sum(c.valor) valor from orion_com_290 c " +
+				" group by c.cnpj_9, c.cnpj_4, c.cnpj_2, c.observacao) dadosCliente " +
+				" where dadosCliente.valor > 0 ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ClientesImportados.class));
+	}
+
+	public void atualizarDescontoEspecialPedido(float desconto, String observacao, int pedido) {
+		String query = " UPDATE pedi_100 " +
+				" SET OBSERVACAO = ?, " +
+				" DESCONTO_ESPECIAL = ? " +
+				" WHERE pedi_100.PEDIDO_VENDA = ? ";
+		jdbcTemplate.update(query, observacao, desconto, pedido);
+	}
+
+	public int validarImportacaoDescontos(int cnpj9,int cnpj4, int cnpj2, String dataPlanilha, float valorPlanilha) {
+		int validaImp = 0;
+
+		String query = " SELECT 1 FROM orion_com_290 m " +
+				" WHERE m.CNPJ_9 = " + cnpj9 +
+				" AND m.CNPJ_4 = " + cnpj4 +
+				" AND m.CNPJ_2 = " + cnpj2 +
+				" AND m.DATA_INSERCAO = TO_DATE ('" + dataPlanilha + "', 'DD/MM/YYYY') " +
+				" AND m.VALOR = " + valorPlanilha;
+		try {
+			validaImp = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			validaImp = 0;
+		}
+
+		return validaImp;
+	}
+
+	public List<DescontoClientesImportados> buscarHistoricoImportacoes() {
+		String query = " select a.id, lpad(a.cnpj_9,9, '0') || lpad(a.cnpj_4,4,'0') || lpad(a.cnpj_2,2,'0') cnpjCliente, " +
+				" a.data_insercao dataInsercao, a.valor valor, a.observacao, a.usuario from orion_com_290 a ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DescontoClientesImportados.class));
+	}
+
+	public List<ConsultaPedidosPorCliente> buscarHistoricoDescontos() {
+		String query = " select b.pedido, lpad(b.cnpj_9,9, '0') || lpad(b.cnpj_4,4,'0') || lpad(b.cnpj_2,2,'0') cnpjCliente, " +
+				" b.valor_desconto valorSaldo, b.observacao, b.usuario from orion_com_291 b ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
+	}
 }

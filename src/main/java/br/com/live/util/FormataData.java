@@ -16,8 +16,15 @@ public class FormataData {
 	public static final int SEXTA = 6;
 	public static final int SABADO = 7;
 	
-	public static Date parseStringToDate(String data) {		
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+	public static Date parseStringToDate(String data) {
+		SimpleDateFormat format = null;
+
+		if (data.contains("-")) {
+			format = new SimpleDateFormat("dd-MM-yyyy");
+		} else {
+			format = new SimpleDateFormat("dd/MM/yyyy");
+		}
+
         Date dataEdit = null;
         try {
         	dataEdit = format.parse(data);

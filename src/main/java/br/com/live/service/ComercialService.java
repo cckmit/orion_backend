@@ -1,13 +1,19 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import br.com.live.entity.*;
+import br.com.live.model.*;
+import br.com.live.repository.*;
+import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.ComercialCustom;
 import br.com.live.custom.ProdutoCustom;
+
 import br.com.live.entity.BloqueioTitulosForn;
 import br.com.live.entity.FaturamentoLiveClothing;
 import br.com.live.entity.MetasCategoria;
@@ -22,6 +28,7 @@ import br.com.live.repository.MetasCategoriaRepository;
 import br.com.live.repository.TpClienteXTabPrecoItemRepository;
 import br.com.live.repository.TpClienteXTabPrecoRepository;
 import br.com.live.util.FormataData;
+
 import br.com.live.util.StatusGravacao;
 
 @Service
@@ -34,17 +41,25 @@ public class ComercialService {
 	private final MetasCategoriaRepository metasCategoriaRepository;
 	private final TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
 	private final TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
+	private final ValorDescontoClientesImpRepository valorDescontoClientesImpRepository;
+	private final PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository;
+	private final ControleDescontoClienteRepository controleDescontoClienteRepository;
 	private final FaturamentoLiveClothingRepository faturamentoLiveClothingRepository;
-	
+  
 	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository,
-			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository) {
+			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, ValorDescontoClientesImpRepository valorDescontoClientesImpRepository,
+							PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository) {
+
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
 		this.produtoCustom = produtoCustom;
 		this.metasCategoriaRepository = metasCategoriaRepository; 
 		this.tpClienteXTabPrecoRepository = tpClienteXTabPrecoRepository;
 		this.tpClienteXTabPrecoItemRepository = tpClienteXTabPrecoItemRepository;
-		this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
+		this.valorDescontoClientesImpRepository = valorDescontoClientesImpRepository;
+		this.pedidosGravadosComDescontoRepository = pedidosGravadosComDescontoRepository;
+		this.controleDescontoClienteRepository = controleDescontoClienteRepository;
+    this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
@@ -212,5 +227,166 @@ public class ComercialService {
 	
 	public void deleteFatLiveClothing(int idFaturamento) {
 		faturamentoLiveClothingRepository.deleteById(idFaturamento);
+	}
+  
+  public StatusGravacao saveDescontosClientesImportados(List<DescontoClientesImportados> listClientes, String usuario) {
+		StatusGravacao status = new StatusGravacao(true, "Planilha importada com sucesso! <br />");
+		String errosImportacao = "";
+
+		for (DescontoClientesImportados cliente : listClientes) {
+			int validarImportacao = 0;
+			ValorDescontoClientesImportados descontoCliente = null;
+
+			int cnpj9 = Integer.parseInt(cliente.cnpjCliente.substring(0,8));
+			int cnpj4 = Integer.parseInt(cliente.cnpjCliente.substring(8,12));
+			int cnpj2 = Integer.parseInt(cliente.cnpjCliente.substring(12,14));
+
+			gravarControleDesconto(cnpj9, cnpj4, cnpj2, cliente.valor);
+
+			// VALIDAR IMPORTAÇÃO
+			validarImportacao = comercialCustom.validarImportacaoDescontos(cnpj9, cnpj4, cnpj2, cliente.dataInsercao, cliente.valor);
+
+			if (validarImportacao != 0) {
+				errosImportacao += " Cliente " + String.format("%09d", cnpj9) + String.format("%04d", cnpj4) + String.format("%02d", cnpj2) +
+						" já possui desconto importado para data de " + cliente.dataInsercao + "! \n";
+			} else  {
+				try {
+					descontoCliente = new ValorDescontoClientesImportados(comercialCustom.findNextIdImpDescClientes(), cnpj9,cnpj4,cnpj2, FormataData.parseStringToDate(cliente.dataInsercao), cliente.valor, cliente.observacao, usuario);
+					valorDescontoClientesImpRepository.saveAndFlush(descontoCliente);
+				} catch (Exception e) {
+					System.out.println("Ocorreu um erro ao gravar o desconto!");
+				}
+			}
+		}
+		if (!errosImportacao.equalsIgnoreCase("")) {
+			status = new StatusGravacao(false, errosImportacao);
+		}
+
+		return status;
+	}
+
+	public void gravarControleDesconto(int cnpj9, int cnpj4, int cnpj2, float valorDesconto) {
+		ControleDescontoCliente controleDesconto = null;
+
+		controleDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + cnpj4 + cnpj2);
+		if (controleDesconto != null) {
+			controleDesconto.valorDesconto = controleDesconto.valorDesconto + valorDesconto;
+		} else {
+			controleDesconto = new ControleDescontoCliente(cnpj9, cnpj4, cnpj2, valorDesconto);
+		}
+		controleDescontoClienteRepository.saveAndFlush(controleDesconto);
+	}
+
+	public List<PedidosComDescontoAConfirmar> prepararPedidosParaAplicarDesconto() {
+		List<ClientesImportados> listClientes = new ArrayList<>();
+		List<PedidosComDescontoAConfirmar> listPedidosComDesconto = new ArrayList<>();
+
+		// Busca todos os clientes que possuem valor de desconto maior que 0 - orion_com_290
+		listClientes = comercialCustom.findClientesImportados();
+
+		for (ClientesImportados dadosCliente : listClientes) {
+			List<ConsultaPedidosPorCliente> listPedidos = new ArrayList<>();
+			ControleDescontoCliente controleDesconto = controleDescontoClienteRepository.findByIdControle(dadosCliente.cnpj9 + dadosCliente.cnpj4 + dadosCliente.cnpj2);
+			float totalDesconto = controleDesconto.valorDesconto;
+
+			if (totalDesconto <= 0) continue;
+
+			// Busca todos os pedidos em aberto com valor saldo maior que R$2500, para o cliente em contexto, ordenando por data e valor
+			listPedidos = comercialCustom.findPedidosPorCliente(dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2);
+
+			for (ConsultaPedidosPorCliente dadosPedido : listPedidos) {
+				float valorDescCalculado = totalDesconto;
+				String obsPedido = " Desconto Total de " + valorDescCalculado;
+
+				// Verifica se o pedido é FRANCHISING -- Aplica somente 50% do desconto
+				if (dadosPedido.natureza == 421 || dadosPedido.natureza == 422) {
+					valorDescCalculado = totalDesconto / 2;
+					obsPedido = " Desconto Total de " + valorDescCalculado;
+				}
+
+				boolean aplicaDesconto = validarDescontoPedido(dadosPedido.valorSaldo, valorDescCalculado);
+				if (!aplicaDesconto) {
+					valorDescCalculado = calcularDescontoMaximoPedido(dadosPedido.valorSaldo);
+					obsPedido = "Desconto Parcial de " + valorDescCalculado;
+				}
+
+				// Inserir os Pedidos que irão aparecer no Grid
+				String cnpjEdit = String.format("%09d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
+
+				PedidosComDescontoAConfirmar pedidos = new PedidosComDescontoAConfirmar(dadosPedido.cnpj9, dadosPedido.cnpj4, dadosPedido.cnpj2, cnpjEdit, dadosPedido.valorSaldo,
+						valorDescCalculado, obsPedido, dadosPedido.dataEmbarque, dadosPedido.pedido);
+				listPedidosComDesconto.add(pedidos);
+
+				totalDesconto -= valorDescCalculado;
+				if (totalDesconto <= 0) break;
+			}
+		}
+		return listPedidosComDesconto;
+	}
+
+	public boolean validarDescontoPedido(float valorPedido, float valorDesconto) {
+		boolean aplicaDesconto = false;
+
+		float percentualAplicado = (valorDesconto * 100) / valorPedido;
+
+		if (percentualAplicado <= 25) {
+			aplicaDesconto = true;
+		}
+		return aplicaDesconto;
+	}
+
+	public float calcularDescontoMaximoPedido(float valorPedido) {
+		float valorCalculado = 0;
+
+		valorCalculado = (valorPedido * 25) / 100;
+
+		return valorCalculado;
+	}
+
+		public StatusGravacao aplicarDescontoEspecialPedidos(List<DescontoClientesImportados> listPedidosConfirmados, String usuario) {
+		PedidosGravadosComDesconto pedidosGravados = null;
+		StatusGravacao status = new StatusGravacao(true, "Processo Conluído com Sucesso!");
+
+		for (DescontoClientesImportados dadosPedido : listPedidosConfirmados) {
+			ControleDescontoCliente dadosDesconto;
+			PedidosGravadosComDesconto pedidosConfirmados;
+
+			int cnpj9 = Integer.parseInt(dadosPedido.cnpjCliente.substring(0,9));
+			int cnpj4 = Integer.parseInt(dadosPedido.cnpjCliente.substring(9,13));
+			int cnpj2 = Integer.parseInt(dadosPedido.cnpjCliente.substring(13,15));
+
+			dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + cnpj4 + cnpj2);
+			pedidosConfirmados = pedidosGravadosComDescontoRepository.findByIdPedido(dadosPedido.pedido);
+
+			if (pedidosConfirmados != null) {
+				status = new StatusGravacao(false, "Pedido " + dadosPedido.pedido + " já foi confirmado! Favor recalcular os descontos!");
+				return status;
+			}
+
+			if (dadosDesconto.valorDesconto > 0) {
+				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido);
+				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario);
+				atualizarControleDesconto(cnpj9, cnpj4, cnpj2, dadosPedido.valor);
+
+				pedidosGravadosComDescontoRepository.save(pedidosGravados);
+			}
+		}
+		return status;
+	}
+
+	public void atualizarControleDesconto(int cnpj9, int cnpj4, int cnpj2, float valorAtual) {
+		ControleDescontoCliente controleDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + cnpj4 + cnpj2);
+		if (controleDesconto != null) {
+			controleDesconto.valorDesconto -= valorAtual;
+			controleDescontoClienteRepository.saveAndFlush(controleDesconto);
+		}
+	}
+
+	public List<DescontoClientesImportados> buscarHistoricoImportacoes() {
+		return comercialCustom.buscarHistoricoImportacoes();
+	}
+
+	public List<ConsultaPedidosPorCliente> buscarHistoricoDescontos() {
+		return comercialCustom.buscarHistoricoDescontos();
 	}
 }
