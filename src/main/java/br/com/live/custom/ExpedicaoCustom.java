@@ -1563,7 +1563,7 @@ public class ExpedicaoCustom {
 
 		String query = "SELECT 1 FROM PCPC_320 a " +
 				" WHERE a.NUMERO_VOLUME = " + volume +
-				" AND EXISTS (SELECT 1 FROM EXPE_003 e WHERE e.NOTA_FISCAL = a.NOTA_FISCAL AND e.STATUS > 0) ";
+				" AND EXISTS (SELECT 1 FROM EXPE_003 e WHERE e.NOTA_FISCAL = a.NOTA_FISCAL AND e.STATUS not in (0,3)) ";
 
 		try {
 			volumeDevolucao = jdbcTemplate.queryForObject(query, Integer.class);
