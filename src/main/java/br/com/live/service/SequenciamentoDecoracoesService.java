@@ -36,11 +36,11 @@ public class SequenciamentoDecoracoesService {
 		this.calendarioCustom = calendarioCustom;
 	}
 	
-	public List<DadosSequenciamentoDecoracoes> consultarOrdens(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String referencias, String artigos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isPossuiAgrupador) {
+	public List<DadosSequenciamentoDecoracoes> consultarOrdens(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, int estagioDistrib, String referencias, String artigos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isPossuiAgrupador) {
 		System.out.println("Find Ordens");
-		List<OrdemProducao> ordens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, SequenciamentoDecoracoesCustom.ESTAGIOS_DISTRIB_DECORACOES, "", referencias, "", artigos, "", isSomenteFlat, isDiretoCostura, false, isPossuiAgrupador);		
+		List<OrdemProducao> ordens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao, periodoInicial, periodoFinal, Integer.toString(estagioDistrib), "", referencias, "", artigos, "", isSomenteFlat, isDiretoCostura, false, isPossuiAgrupador);		
 		System.out.println("Sequenciar Ordens");
-		List<DadosSequenciamentoDecoracoes> ordensSequenciadas = calcularInformacoesDasOrdens(ordens);
+		List<DadosSequenciamentoDecoracoes> ordensSequenciadas = calcularInformacoesDasOrdens(ordens, estagioDistrib);
 		System.out.println("fim - consultarOrdens");
 		return ordensSequenciadas;
 	}
@@ -60,12 +60,9 @@ public class SequenciamentoDecoracoesService {
 	Se houver estágio posteriores deve mostrar na coluna agrupador				
 	*/
 	
-	private Map<String, Object> organizarProximosEstagios(List<OrdemProducaoEstagios> estagios) {
-		List<OrdemProducaoEstagios> proxEstagios = new ArrayList<OrdemProducaoEstagios>();
-		Map<String, Object> mapRetorno = new HashMap<String, Object>(); 		 
-
-		int codEstagioDistrib = 0;
+	private String sequenciarEstagios(List<OrdemProducaoEstagios> estagios, List<OrdemProducaoEstagios> proxEstagios) {		
 		String estagiosAgrupados = "";
+		int codEstagioDistrib = 0;		
 		
 		for (OrdemProducaoEstagios estagioOP : estagios) {
 			EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());
@@ -80,33 +77,20 @@ public class SequenciamentoDecoracoesService {
 				else estagiosAgrupados += " + " + concatCodDescEstagio;
 			}
 		}		
-		mapRetorno.put("proxEstagios", proxEstagios);
-		mapRetorno.put("estagiosAgrupados", estagiosAgrupados);		
-		return mapRetorno;
+		return estagiosAgrupados;
 	}
 	
-	private List<DadosSequenciamentoDecoracoes> calcularInformacoesDasOrdens(List<OrdemProducao> ordens) {	
+	private List<DadosSequenciamentoDecoracoes> calcularInformacoesDasOrdens(List<OrdemProducao> ordens, int estagioDistrib) {	
 		int seqPrioridade = 0;			
 		List<DadosSequenciamentoDecoracoes> listOrdensParaDecoracoes = new ArrayList<DadosSequenciamentoDecoracoes>(); 
 		
 		for (OrdemProducao ordem : ordens) {
-			
-			System.out.println("OP: " + ordem.ordemProducao);
-			
-			List<OrdemProducaoEstagios> estagios = sequenciamentoDecoracoesCustom.findEstagiosDecoracoesOrdem(ordem.ordemProducao);			
-			
-			System.out.println("est. seq: " + estagios.size());
-			
-			Map<String, Object> dados = organizarProximosEstagios(estagios);						
-			List<OrdemProducaoEstagios> proximosEstagios = (List<OrdemProducaoEstagios>) dados.get("proxEstagios");
-			String estagiosAgrupados = (String) dados.get("estagiosAgrupados");
-
+			List<OrdemProducaoEstagios> estagios = sequenciamentoDecoracoesCustom.findEstagiosDecoracoesOrdem(ordem.ordemProducao, estagioDistrib);			
+			List<OrdemProducaoEstagios> proxEstagios = new ArrayList<OrdemProducaoEstagios>();
+			String estagiosAgrupados = sequenciarEstagios(estagios, proxEstagios);			
 			List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordem.ordemProducao);
 						
-			//System.out.println(1);
-			
-			for (OrdemProducaoEstagios estagioOP : proximosEstagios) {				
-				//System.out.println(2);
+			for (OrdemProducaoEstagios estagioOP : proxEstagios) {				
 				if (sequenciamentoDecoracoesCustom.isOrdemSequenciada(ordem.ordemProducao, estagioOP.getCodEstagio())) continue;
 				
 				int quantidade=0;
@@ -126,8 +110,6 @@ public class SequenciamentoDecoracoesService {
 				String cores = ordemProducaoCustom.getCoresOrdem(ordem.getOrdemProducao());
 				String endereco = sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao());				
 				Date dataEntrada = sequenciamentoDecoracoesCustom.findDataProducaoEstagioAnterior(ordem.getOrdemProducao());						
-				
-				//System.out.println(3);
 				
 				DadosSequenciamentoDecoracoes dadosOrdem = new DadosSequenciamentoDecoracoes(seqPrioridade, ordem.getPeriodo(), ordem.getOrdemProducao(), ordem.getReferencia(),
 						                                                                ordem.getDescrReferencia(), cores, quantidadeTotal, ordem.getObservacao(), estagioOP.getCodEstagio(),

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 import br.com.live.model.DadosSequenciamentoDecoracoes;
 import br.com.live.model.OrdemProducaoEstagios;
 import br.com.live.model.Produto;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
 public class SequenciamentoDecoracoesCustom {
@@ -23,9 +25,13 @@ public class SequenciamentoDecoracoesCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<Produto> findReferenciasEmOrdensCentroDistrib() {	
-		List<Produto> produtos;	
-		String query = " select a.referencia_peca grupo, c.descr_referencia narrativa "  
+	public List<ConteudoChaveNumerica> findEstagiosDistribuicao() {		
+		String query = "select m.codigo_estagio value, m.codigo_estagio || ' - ' || m.descricao label from mqop_005 m where m.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +")";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	public List<ConteudoChaveAlfaNum> findReferenciasEmOrdensCentroDistrib() {				
+		String query = " select a.referencia_peca value, a.referencia_peca || ' - ' || c.descr_referencia label "  
 		+ " from pcpc_020 a, basi_030 c "
 		+ " where a.cod_cancelamento = 0 "
     	+ " and exists (select 1 from pcpc_040 b "
@@ -35,27 +41,22 @@ public class SequenciamentoDecoracoesCustom {
 		+ " and c.nivel_estrutura = '1' "
 		+ " and c.referencia = a.referencia_peca "
 		+ " group by a.referencia_peca, c.descr_referencia " 
-		+ " order by a.referencia_peca, c.descr_referencia ";
-		
-		try {
-			produtos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Produto.class));
-		} catch (Exception e) {
-			produtos = new ArrayList<Produto>();
-		}		
-		return produtos;
+		+ " order by a.referencia_peca, c.descr_referencia ";		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 
-	public List<OrdemProducaoEstagios> findEstagiosDecoracoesOrdem(int ordemProducao) {
+	public List<OrdemProducaoEstagios> findEstagiosDecoracoesOrdem(int ordemProducao, int estagioDistrib) {
 		List<OrdemProducaoEstagios> estagios;
-		String query = "select a.ordem_producao ordemProducao, a.sequencia_estagio seqEstagio, a.codigo_estagio codEstagio, a.estagio_anterior codEstagioAnterior, a.estagio_depende codEstagioDepende, sum(a.qtde_a_produzir_pacote) qtdeAProduzir from pcpc_040 a "
+		String query = "select a.ordem_producao ordemProducao, a.seq_operacao seqEstagio, a.codigo_estagio codEstagio, a.estagio_anterior codEstagioAnterior, a.estagio_depende codEstagioDepende, sum(a.qtde_a_produzir_pacote) qtdeAProduzir from pcpc_040 a "
 		+ " where a.ordem_producao = ? "
 		+ " and a.qtde_a_produzir_pacote > 0 "
-		+ " and (a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = 10) or a.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +"))"
-		+ " group by a.ordem_producao, a.sequencia_estagio, a.codigo_estagio, a.estagio_anterior, a.estagio_depende "
-		+ " order by a.ordem_producao, a.sequencia_estagio, a.codigo_estagio "; 
+		+ " and (a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = 10) or a.codigo_estagio = ?)"
+		+ " and a.seq_operacao >= (select min(z.seq_operacao) from pcpc_040 z where z.ordem_producao = a.ordem_producao and z.codigo_estagio = ?) "
+		+ " group by a.ordem_producao, a.seq_operacao, a.codigo_estagio, a.estagio_anterior, a.estagio_depende "
+		+ " order by a.ordem_producao, a.seq_operacao, a.codigo_estagio "; 
 
 		try {
-			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class), ordemProducao);
+			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class), ordemProducao, estagioDistrib, estagioDistrib);
 		} catch (Exception e) {
 			estagios = new ArrayList<OrdemProducaoEstagios>();
 		}		

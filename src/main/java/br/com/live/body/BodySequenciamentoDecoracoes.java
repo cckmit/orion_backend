@@ -8,13 +8,14 @@ import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodySequenciamentoDecoracoes {		
 	public List<ConteudoChaveAlfaNum> referencias;	
-	public List<ConteudoChaveNumerica> artigos;
-	public List<ConteudoChaveAlfaNum> camposSelParaPriorizacao;
+	public List<ConteudoChaveNumerica> artigos;	
+	public List<ConteudoChaveAlfaNum> camposSelParaPriorizacao;	
 	public boolean isSomenteFlat;
 	public boolean isDiretoCostura;
 	public boolean isPossuiAgrupador;
 	public int periodoInicio;
 	public int periodoFim; 		
+	public int estagioDistrib;
 	public String dataInicioSeq;
 	public List<DadosSequenciamentoDecoracoes> listaOrdens;
 }

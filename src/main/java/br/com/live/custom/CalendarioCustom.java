@@ -37,7 +37,8 @@ public class CalendarioCustom {
 		+ " and dia_util = 0 "
 		+ " and rownum = 1 "
 		+ " order by data_calendario " ;		 
-		return jdbcTemplate.queryForObject(query, Calendario.class, data); 
+
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(Calendario.class), data);
 	}
 	
 	public List<CalendarioSemana> getSemanasByMes(int mes, int ano) {

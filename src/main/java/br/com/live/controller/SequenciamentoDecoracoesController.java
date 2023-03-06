@@ -32,8 +32,13 @@ public class SequenciamentoDecoracoesController {
 		this.sequenciamentoDecoracoesCustom = sequenciamentoDecoracoesCustom;
 	}	
 	
+	@RequestMapping(value = "/estagios-distrib", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findEstagiosDistribuicao() {
+		return sequenciamentoDecoracoesCustom.findEstagiosDistribuicao();
+	}
+	
 	@RequestMapping(value = "/referencias", method = RequestMethod.GET)
-	public List<Produto> findTecidosEmOrdensParaLiberacao() {
+	public List<ConteudoChaveAlfaNum> findTecidosEmOrdensParaLiberacao() {
 		return sequenciamentoDecoracoesCustom.findReferenciasEmOrdensCentroDistrib();
 	}
 
@@ -47,7 +52,8 @@ public class SequenciamentoDecoracoesController {
 		return sequenciamentoDecoracoesService.consultarOrdens(
 				ConteudoChaveAlfaNum.parseValueToListString(body.camposSelParaPriorizacao), 
 				body.periodoInicio, 
-				body.periodoFim, 				
+				body.periodoFim, 
+				body.estagioDistrib,
 				ConteudoChaveAlfaNum.parseValueToString(body.referencias),				
 				ConteudoChaveNumerica.parseValueToString(body.artigos),
 				body.isSomenteFlat,
