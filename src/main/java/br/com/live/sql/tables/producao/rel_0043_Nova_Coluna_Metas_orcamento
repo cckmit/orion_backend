@@ -1,0 +1,1 @@
+ALTER TABLE orion_250 ADD modalidade VARCHAR2(100);
