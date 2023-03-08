@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import br.com.live.custom.OrdemBeneficiamentoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.OrdemBeneficiamentoItem;
+import br.com.live.model.AnaliseQualidade;
 import br.com.live.model.OrdemBeneficiamentoItens;
 import br.com.live.model.Produto;
 import br.com.live.repository.OrdemBeneficiamentoItemRepository;
@@ -111,5 +112,5 @@ public class OrdemBeneficiamentoService {
 		ordemBeneficiamentoItemRepository.deleteByUsuario(usuario);
 		return listaOrdensGeradas;		
 	}
-
+	
 }

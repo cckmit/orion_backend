@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.body.BodyOrdemBeneficiamento;
 import br.com.live.custom.OrdemBeneficiamentoCustom;
 import br.com.live.entity.OrdemBeneficiamentoItem;
+import br.com.live.model.AnaliseQualidade;
 import br.com.live.model.OrdemBeneficiamentoItens;
 import br.com.live.repository.OrdemBeneficiamentoItemRepository;
 import br.com.live.service.OrdemBeneficiamentoService;
@@ -55,6 +56,26 @@ public class OrdemBeneficiamentoController {
     @RequestMapping(value = "/find-all-depositos", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllDepositos() {
           return ordemBeneficiamentoCustom.findDepositos(); 
+    }
+    // Encontrar Todas as Ordens de Beneficiamento
+    @RequestMapping(value = "/find-all-ordens-beneficiamento/{ordem}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllOrdensBenef(@PathVariable("ordem") int ordem) {
+          return ordemBeneficiamentoCustom.findAllOrdensBenef(ordem); 
+    }
+    // Encontrar Todas a Analise de Qualidade da Ordem Selecionada
+    @RequestMapping(value = "/find-analise-ordem/{ordem}", method = RequestMethod.GET)
+    public List<AnaliseQualidade> findAnaliseQualidade(@PathVariable("ordem") int ordem) {
+          return ordemBeneficiamentoCustom.findAnalise(ordem); 
+    }
+    // Encontrar Todas a Informações de Lote da Ordem Selecionada
+    @RequestMapping(value = "/find-analise-lote-ordem/{ordem}", method = RequestMethod.GET)
+    public List<AnaliseQualidade> findInfoLote(@PathVariable("ordem") int ordem) {
+          return ordemBeneficiamentoCustom.findInfoLote(ordem); 
+    }
+    // Encontrar Todas a Informações de Rolos da Ordem Selecionada
+    @RequestMapping(value = "/find-analise-rolos-ordem/{ordem}", method = RequestMethod.GET)
+    public List<AnaliseQualidade> findInfoRolos(@PathVariable("ordem") int ordem) {
+          return ordemBeneficiamentoCustom.findInfoRolos(ordem); 
     }
     // Encontrar Todos os Itens do GRID
     @RequestMapping(value = "/find-all-itens-ordem/{usuario}", method = RequestMethod.GET)

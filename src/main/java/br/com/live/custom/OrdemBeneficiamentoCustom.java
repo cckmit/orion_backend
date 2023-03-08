@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import br.com.live.model.AnaliseQualidade;
 import br.com.live.model.OrdemBeneficiamentoItens;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -88,6 +89,13 @@ public class OrdemBeneficiamentoCustom {
 				+ "       GROUP BY d.codigo_deposito, d.descricao "
 				+ "       ORDER BY d.codigo_deposito ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public List<ConteudoChaveNumerica> findAllOrdensBenef(int ordem) {
+		
+		String query = " SELECT a.ordem_producao value, a.ordem_producao label FROM pcpb_010 a WHERE a.ordem_producao LIKE '%" + ordem + "%'";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
 	public long findNextId(){
@@ -211,5 +219,70 @@ public class OrdemBeneficiamentoCustom {
 		}
 
 		return (encontrou == 1);
+	}
+	
+	public List<AnaliseQualidade> findInfoRolos(int ordem) {
+		
+		String query = " SELECT c.codigo_rolo rolo, "
+				+ "       c.peso_bruto peso, "
+				+ "       c.largura largura, "
+				+ "       c.gramatura gramatura "
+				+ "     FROM pcpt_020_025 c, pcpt_020 d, basi_010 e "
+				+ "		WHERE d.ordem_producao = c.ordem_producao "
+				+ "		AND d.area_producao = c.area_producao "
+				+ "		AND d.codigo_rolo = c.codigo_rolo "
+				+ "		AND e.nivel_estrutura = d.panoacab_nivel99 "
+				+ "		AND e.grupo_estrutura = d.panoacab_grupo "
+				+ "		AND e.subgru_estrutura = d.panoacab_subgrupo "
+				+ "		AND e.item_estrutura = d.panoacab_item "
+				+ "		AND c.ordem_producao = ? "
+				+ "     ORDER BY c.codigo_rolo ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class), ordem);
+	}
+	
+	public List<AnaliseQualidade> findAnalise(int ordem) {
+		
+		String query = " SELECT MIN(c.ordem_producao) ordemTecelagem, "
+				+ "       d.ordem_producao ordemBeneficiamento, "
+				+ "       d.panoacab_nivel99 || '.' || d.panoacab_grupo || '.' || d.panoacab_subgrupo || '.' || d.panoacab_item codigoTecido, "
+				+ "       e.narrativa descricaoTecido, "
+				+ "       NVL(c.ordem_tingimento_rolo, 0) ordemTingimentoRolo, "
+				+ "       f.data_informacao data "
+				+ "       FROM pcpt_020_025 c, pcpt_020 d, basi_010 e, pcpb_070 f "
+				+ "		WHERE d.ordem_producao = c.ordem_producao "
+				+ "		AND d.area_producao = c.area_producao "
+				+ "		AND d.codigo_rolo = c.codigo_rolo "
+				+ "		AND e.nivel_estrutura = d.panoacab_nivel99 "
+				+ "		AND e.grupo_estrutura = d.panoacab_grupo "
+				+ "		AND e.subgru_estrutura = d.panoacab_subgrupo "
+				+ "		AND e.item_estrutura = d.panoacab_item "
+				+ "		AND f.ordem_producao (+) = c.ordem_producao "
+				+ "		AND c.ordem_producao = " + ordem
+				+ "		GROUP BY d.ordem_producao, d.panoacab_nivel99, d.panoacab_grupo, d.panoacab_subgrupo, d.panoacab_item, "
+				+ "       c.ordem_tingimento_rolo, e.narrativa, f.data_informacao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class));
+	}
+	
+	public List<AnaliseQualidade> findInfoLote(int ordem) {
+		
+		String query = " SELECT NVL(COLUNA_1, 0) COLUNA1, NVL(COLUNA_2, 0) COLUNA2, NVL(COLUNA_3, 0) COLUNA3, NVL(COLUNA_4, 0) COLUNA4, NVL(COLUNA_5, 0) COLUNA5 "
+				+ "		FROM ( "
+				+ "         SELECT n.descricao descricao, m.valor_01 valor "
+				+ "  		FROM pcpb_075 m "
+				+ "  		JOIN hdoc_001 n ON n.codigo = m.codigo_informacao "
+				+ "  		WHERE n.tipo = 33 "
+				+ "  		AND m.ordem_producao = " + ordem
+				+ ")"
+				+ "PIVOT ( "
+				+ "  MAX(valor) "
+				+ "  FOR descricao IN ('ESTABILIDADE DIMENSIONAL LARGURA' AS coluna_1, "
+                + "					   'ESTABILIDADE DIMENSIONAL COMPRIMENTO' AS coluna_2, "
+                + "					   'SOLIDEZ A LAVAGEM' AS coluna_3, "
+                + "                    'ELAST. E ALONG. LARGURA' AS coluna_4, " 
+                + "                    'ELAST. E ALONG. COMPRIMENTO' AS coluna_5))";
+	
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class));
 	}
 }

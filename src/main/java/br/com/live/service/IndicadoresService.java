@@ -348,7 +348,6 @@ public class IndicadoresService {
     		objetoSave = new AreaIndicador(tipo + "-" + nextSequencia, tipo, nextSequencia, descricao.toUpperCase());
     		tipoIndicadorRepository.save(objetoSave);
     	} else {
-    		System.out.println("Entrou" + sequencia);
     		AreaIndicador dadosTipo = indicadoresCustom.findTipoById(tipo + "-" + sequencia);
     		dadosTipo.descricao = descricao.toUpperCase();
     		tipoIndicadorRepository.save(dadosTipo); 
@@ -358,7 +357,6 @@ public class IndicadoresService {
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
     public AreaIndicador deleteArea(int tipo, int sequencia) {
     	String idArea = tipo + "-" + sequencia;
-    	System.out.println(idArea);
     	tipoIndicadorRepository.deleteById(idArea);    	
 		return null;
 	}
