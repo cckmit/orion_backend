@@ -7,6 +7,7 @@ import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodySequenciamentoDecoracoes {		
+	public int codEstagioSequenciar;
 	public List<ConteudoChaveAlfaNum> referencias;	
 	public List<ConteudoChaveNumerica> artigos;	
 	public List<ConteudoChaveAlfaNum> camposSelParaPriorizacao;	

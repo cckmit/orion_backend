@@ -122,13 +122,9 @@ public class SequenciamentoDecoracoesService {
 	}	
 	
 	public void incluirOrdensNoSequenciamento(List<DadosSequenciamentoDecoracoes> dadosOrdem) {
-		
 		System.out.println("incluirOrdensNoSequenciamento");
-		
-		for (DadosSequenciamentoDecoracoes dadoOrdem : dadosOrdem) {
-			
-			System.out.println("Ordem: " + dadoOrdem.getOrdemProducao() + " - Estagio: " + dadoOrdem.getCodEstagioProx());
-			
+		for (DadosSequenciamentoDecoracoes dadoOrdem : dadosOrdem) {			
+			System.out.println("Ordem: " + dadoOrdem.getOrdemProducao() + " - Estagio: " + dadoOrdem.getCodEstagioProx());			
 			int id = sequenciamentoDecoracoesCustom.findNextId();
 			int sequencia = sequenciamentoDecoracoesCustom.findNextSeqProducao();					
 			sequenciamentoDecoracoesCustom.saveSequenciamento(id, sequencia, dadoOrdem.getPeriodo(), dadoOrdem.getOrdemProducao(), dadoOrdem.getReferencia(), dadoOrdem.getCores(),  dadoOrdem.getCodEstagioProx(), dadoOrdem.getQuantidade(), dadoOrdem.getEstagiosAgrupados(), dadoOrdem.getEndereco(), dadoOrdem.getDataEntrada(), dadoOrdem.getTempoUnitario(), dadoOrdem.getTempoTotal(), null, null);
@@ -140,7 +136,7 @@ public class SequenciamentoDecoracoesService {
 		return calendario.getData();
 	}
 	
-	public void calcularSequenciamento(Date dataInicial, List<DadosSequenciamentoDecoracoes> ordens) {		
+	public void calcularSequenciamento(int codEstagioSequenciar, Date dataInicial, List<DadosSequenciamentoDecoracoes> ordens) {		
 		double minutosProducaoDia = SequenciamentoDecoracoesCustom.MINUTOS_PRODUCAO_DIA;
 		double minutosSaldo = minutosProducaoDia;
 		double minutosPlanejar = 0;
@@ -150,7 +146,14 @@ public class SequenciamentoDecoracoesService {
 		
 		System.out.println("calcularSequenciamento");
 		
-		for (DadosSequenciamentoDecoracoes ordem : ordens) {
+		// TODO - Pegar a última sequência CONFIRMADA para o estágio.
+		
+		for (DadosSequenciamentoDecoracoes ordem : ordens) {			
+			// Deve sequenciar apenas as ordens do estágio marcado para sequenciar
+			if (ordem.getCodEstagioProx() != codEstagioSequenciar) continue;
+			// Deve sequenciar apenas as ordens que ainda não foram confirmadas
+			if (ordem.getConfirmado() == 1) continue;
+			
 			sequencia++;
 			minutosPlanejar = ordem.getTempoTotal();
 			

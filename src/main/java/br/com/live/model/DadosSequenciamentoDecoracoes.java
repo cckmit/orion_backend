@@ -21,6 +21,7 @@ public class DadosSequenciamentoDecoracoes {
 	private double tempoTotal;
 	private Date dataInicio;
 	private Date dataTermino;
+	private int confirmado;
 
 	public DadosSequenciamentoDecoracoes() {}
 	
@@ -216,5 +217,13 @@ public class DadosSequenciamentoDecoracoes {
 
 	public void setDataTermino(Date dataTermino) {
 		this.dataTermino = dataTermino;
-	}		
+	}
+
+	public int getConfirmado() {
+		return confirmado;
+	}
+
+	public void setConfirmado(int confirmado) {
+		this.confirmado = confirmado;
+	}
 }

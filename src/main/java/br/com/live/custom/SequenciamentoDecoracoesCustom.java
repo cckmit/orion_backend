@@ -17,6 +17,7 @@ import br.com.live.util.ConteudoChaveNumerica;
 @Repository
 public class SequenciamentoDecoracoesCustom {
 
+	public static final int ESTAGIO_AGRUPADOR_DECORACOES = 10;
 	public static final String ESTAGIOS_DISTRIB_DECORACOES = "9,31";
 	public static final double MINUTOS_PRODUCAO_DIA = 984; // Turno1: 496 + Turno2: 488 => 984 minutos 
 	private final JdbcTemplate jdbcTemplate;
@@ -26,8 +27,13 @@ public class SequenciamentoDecoracoesCustom {
 	}
 
 	public List<ConteudoChaveNumerica> findEstagiosDistribuicao() {		
-		String query = "select m.codigo_estagio value, m.codigo_estagio || ' - ' || m.descricao label from mqop_005 m where m.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +")";
+		String query = "select m.codigo_estagio value, m.codigo_estagio || ' - ' || m.descricao label from mqop_005 m where m.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +") order by m.codigo_estagio";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	public List<ConteudoChaveNumerica> findEstagiosSequenciar() {		
+		String query = "select m.codigo_estagio value, m.codigo_estagio || ' - ' || m.descricao label from mqop_005 m where m.est_agrup_est = ? order by m.codigo_estagio";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), ESTAGIO_AGRUPADOR_DECORACOES);
 	}
 	
 	public List<ConteudoChaveAlfaNum> findReferenciasEmOrdensCentroDistrib() {				
@@ -50,13 +56,13 @@ public class SequenciamentoDecoracoesCustom {
 		String query = "select a.ordem_producao ordemProducao, a.seq_operacao seqEstagio, a.codigo_estagio codEstagio, a.estagio_anterior codEstagioAnterior, a.estagio_depende codEstagioDepende, sum(a.qtde_a_produzir_pacote) qtdeAProduzir from pcpc_040 a "
 		+ " where a.ordem_producao = ? "
 		+ " and a.qtde_a_produzir_pacote > 0 "
-		+ " and (a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = 10) or a.codigo_estagio = ?)"
+		+ " and (a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = ?) or a.codigo_estagio = ?)"
 		+ " and a.seq_operacao >= (select min(z.seq_operacao) from pcpc_040 z where z.ordem_producao = a.ordem_producao and z.codigo_estagio = ?) "
 		+ " group by a.ordem_producao, a.seq_operacao, a.codigo_estagio, a.estagio_anterior, a.estagio_depende "
 		+ " order by a.ordem_producao, a.seq_operacao, a.codigo_estagio "; 
 
 		try {
-			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class), ordemProducao, estagioDistrib, estagioDistrib);
+			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class), ordemProducao, ESTAGIO_AGRUPADOR_DECORACOES, estagioDistrib, estagioDistrib);
 		} catch (Exception e) {
 			estagios = new ArrayList<OrdemProducaoEstagios>();
 		}		
@@ -91,7 +97,7 @@ public class SequenciamentoDecoracoesCustom {
 		return (count > 0);		
 	}
 
-	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas() {
+	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas(int codEstagio) {
 		
 		String query = " select a.id, "
 	    + " a.sequencia seqPrioridade, "
@@ -109,19 +115,21 @@ public class SequenciamentoDecoracoesCustom {
 	    + " a.tempo_unit tempoUnitario, " 
 	    + " a.tempo_total tempoTotal, "
 	    + " a.data_inicio dataInicio, "
-	    + " a.data_termino dataTermino "
+	    + " a.data_termino dataTermino, "
+	    + " a.confirmado "
 	    + " from orion_cfc_300 a, basi_030 b, pcpc_020 c, mqop_005 d "
-	    + " where b.nivel_estrutura = '1' "
+	    + " where a.cod_estagio = ? "
+	    + " and b.nivel_estrutura = '1' "
 	    + " and b.referencia = a.referencia "
 	    + " and c.ordem_producao = a.ordem_producao "
-	    + " and d.codigo_estagio = a.cod_estagio "		
+	    + " and d.codigo_estagio = a.cod_estagio "	    
 	    + " and exists (select 1 from pcpc_040 p "
 	    + " where p.ordem_producao = a.ordem_producao "
         + " and p.codigo_estagio = a.cod_estagio "
         + " and p.qtde_a_produzir_pacote > 0) " 
         + " order by a.sequencia" ;
 				
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosSequenciamentoDecoracoes.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosSequenciamentoDecoracoes.class), codEstagio);
 	}
 	
 	public int findNextId() {

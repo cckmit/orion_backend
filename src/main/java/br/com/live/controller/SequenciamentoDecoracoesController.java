@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,15 +37,20 @@ public class SequenciamentoDecoracoesController {
 	public List<ConteudoChaveNumerica> findEstagiosDistribuicao() {
 		return sequenciamentoDecoracoesCustom.findEstagiosDistribuicao();
 	}
-	
+
+	@RequestMapping(value = "/estagios-sequenciar", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findEstagiosSequenciar() {
+		return sequenciamentoDecoracoesCustom.findEstagiosSequenciar();
+	}
+
 	@RequestMapping(value = "/referencias", method = RequestMethod.GET)
 	public List<ConteudoChaveAlfaNum> findTecidosEmOrdensParaLiberacao() {
 		return sequenciamentoDecoracoesCustom.findReferenciasEmOrdensCentroDistrib();
 	}
 
-	@RequestMapping(value = "/ordens-sequenciadas", method = RequestMethod.GET) 
-	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas() {		
-		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
+	@RequestMapping(value = "/ordens-sequenciadas/{codEstagio}", method = RequestMethod.GET) 
+	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas(@PathVariable("codEstagio") int codEstagio) {		
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(codEstagio);
 	}
 	
 	@RequestMapping(value = "/consultar", method = RequestMethod.POST)
@@ -62,14 +68,13 @@ public class SequenciamentoDecoracoesController {
 	}	
 	
 	@RequestMapping(value = "/incluir-sequenciamento", method = RequestMethod.POST)
-	public List<DadosSequenciamentoDecoracoes> incluirOrdensNoSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
-		sequenciamentoDecoracoesService.incluirOrdensNoSequenciamento(body.listaOrdens);
-		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
+	public void incluirOrdensNoSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
+		sequenciamentoDecoracoesService.incluirOrdensNoSequenciamento(body.listaOrdens);		
 	}
 	
 	@RequestMapping(value = "/calcular-sequenciamento", method = RequestMethod.POST)
 	public List<DadosSequenciamentoDecoracoes> calcularSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
-		sequenciamentoDecoracoesService.calcularSequenciamento(FormataData.parseStringToDate(body.dataInicioSeq), body.listaOrdens);
-		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas();
+		sequenciamentoDecoracoesService.calcularSequenciamento(body.codEstagioSequenciar, FormataData.parseStringToDate(body.dataInicioSeq), body.listaOrdens);
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagioSequenciar);
 	}	
 }
