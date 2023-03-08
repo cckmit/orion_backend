@@ -803,6 +803,8 @@ public class ExpedicaoService {
 				return status;
 			}
 
+			System.out.println("volumeDevolucao: " + volumeDevolucao + " // volumeEdit: " + volumeEdit);
+
 			if (volumeDevolucao != 0) {
 				status = new StatusGravacao(false, "ATENÇÃO! Caixa marcada para devolução!");
 				return status;

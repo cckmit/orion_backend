@@ -44,7 +44,7 @@ public class PrevisaoVendas {
 		this.id = id;
 		this.descricao = descricao.toUpperCase();
 		this.colecao = colecao; 
-		this.colTabPrecoSellIn = colTabPrecoSellIn; 
+		this.colTabPrecoSellIn = colTabPrecoSellIn;
 		this.mesTabPrecoSellIn = mesTabPrecoSellIn;
 		this.seqTabPrecoSellIn = seqTabPrecoSellIn;
 		this.colTabPrecoSellOut = colTabPrecoSellOut; 

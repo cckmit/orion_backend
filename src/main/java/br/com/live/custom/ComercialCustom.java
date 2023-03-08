@@ -142,7 +142,7 @@ public class ComercialCustom {
 
 	public void atualizarDescontoEspecialPedido(float desconto, String observacao, int pedido) {
 		String query = " UPDATE pedi_100 " +
-				" SET OBSERVACAO = ?, " +
+				" SET OBSERVACAO = pedi_100.observacao || CHR(10) || " + observacao + ", " +
 				" DESCONTO_ESPECIAL = ? " +
 				" WHERE pedi_100.PEDIDO_VENDA = ? ";
 		jdbcTemplate.update(query, observacao, desconto, pedido);
@@ -176,5 +176,10 @@ public class ComercialCustom {
 		String query = " select b.pedido, lpad(b.cnpj_9,9, '0') || lpad(b.cnpj_4,4,'0') || lpad(b.cnpj_2,2,'0') cnpjCliente, " +
 				" b.valor_desconto valorSaldo, b.observacao, b.usuario from orion_com_291 b ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
+	}
+
+	public List<DescontoClientesImportados> buscarSaldosClientes() {
+		String query = " select g.cnpj_9 || g.cnpj_4 || g.cnpj_2 id, lpad(g.cnpj_9,9, '0') || lpad(g.cnpj_4,4,'0') || lpad(g.cnpj_2,2,'0') cnpjCliente, g.valor_desconto valor from orion_com_292 g ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DescontoClientesImportados.class));
 	}
 }

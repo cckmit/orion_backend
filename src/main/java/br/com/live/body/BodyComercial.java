@@ -7,6 +7,7 @@ import javax.persistence.Column;
 
 import br.com.live.entity.MetasCategoria;
 import br.com.live.entity.TpClienteXTabPreco;
+import br.com.live.model.ConsultaPedidosPorCliente;
 import br.com.live.model.DescontoClientesImportados;
 
 public class BodyComercial {
@@ -47,6 +48,8 @@ public class BodyComercial {
 	public List<TpClienteXTabPreco> tabTpClienteTabPreco;
 
 	public List<DescontoClientesImportados> listClientesDesconto;
+	public List<ConsultaPedidosPorCliente> listPedidosSel;
 	public String usuario;
+	public String cnpjCliente;
 }
 	

@@ -4,6 +4,7 @@ package br.com.live.controller;
 import java.util.List;
 
 import br.com.live.model.*;
+import javassist.runtime.Desc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -168,28 +169,54 @@ public class ComercialController {
     	comercialService.deleteFatLiveClothing(idFaturamento);        
     }
     
- 	  @RequestMapping(value = "/importar-desconto-clientes", method = RequestMethod.POST)
-	  public StatusGravacao importarDescontoClientes(@RequestBody BodyComercial body) {
-		  return comercialService.saveDescontosClientesImportados(body.listClientesDesconto, body.usuario);
-	  }
+	@RequestMapping(value = "/importar-desconto-clientes", method = RequestMethod.POST)
+	public StatusGravacao importarDescontoClientes(@RequestBody BodyComercial body) {
+		return comercialService.saveDescontosClientesImportados(body.listClientesDesconto, body.usuario);
+	}
 
-	  @RequestMapping(value = "/consulta-pedidos-com-desconto", method = RequestMethod.GET)
-	  public List<PedidosComDescontoAConfirmar> findPedidosComDesc() {
-		  return comercialService.prepararPedidosParaAplicarDesconto();
-	  }
+	@RequestMapping(value = "/consulta-pedidos-com-desconto", method = RequestMethod.GET)
+	public List<PedidosComDescontoAConfirmar> findPedidosComDesc() {
+		return comercialService.prepararPedidosParaAplicarDesconto();
+	}
 
-	  @RequestMapping(value = "/aplicar-descontos-pedidos", method = RequestMethod.POST)
-	  public StatusGravacao aplicarDescontosPedidos(@RequestBody BodyComercial body) {
-		  return comercialService.aplicarDescontoEspecialPedidos(body.listClientesDesconto, body.usuario);
-	  }
+	@RequestMapping(value = "/aplicar-descontos-pedidos", method = RequestMethod.POST)
+	public StatusGravacao aplicarDescontosPedidos(@RequestBody BodyComercial body) {
+		return comercialService.aplicarDescontoEspecialPedidos(body.listClientesDesconto, body.usuario);
+	}
 
-	  @RequestMapping(value = "/consulta-hist-importacoes", method = RequestMethod.GET)
-	  public List<DescontoClientesImportados> findHistImportacoes() {
-		  return comercialService.buscarHistoricoImportacoes();
-	  }
+	@RequestMapping(value = "/consulta-hist-importacoes", method = RequestMethod.GET)
+	public List<DescontoClientesImportados> findHistImportacoes() {
+		return comercialService.buscarHistoricoImportacoes();
+	}
 
-	  @RequestMapping(value = "/consulta-hist-descontos", method = RequestMethod.GET)
-	  public List<ConsultaPedidosPorCliente> findHistoricoDescontos() {
-		  return comercialService.buscarHistoricoDescontos();
-	  }
+	@RequestMapping(value = "/consulta-hist-descontos", method = RequestMethod.GET)
+	public List<ConsultaPedidosPorCliente> findHistoricoDescontos() {
+		return comercialService.buscarHistoricoDescontos();
+	}
+
+	@RequestMapping(value = "/consulta-saldos-clientes", method = RequestMethod.GET)
+	public List<DescontoClientesImportados> findSaldosClientes() {
+		return comercialService.buscarSaldosClientes();
+	}
+
+	@RequestMapping(value = "/find-pedidos-aplicar-saldo/{cnpjCliente}", method = RequestMethod.GET)
+	public List<ConsultaPedidosPorCliente> findSaldosClientes(@PathVariable("cnpjCliente") String cnpjCliente) {
+
+		int cnpj9 = Integer.parseInt(cnpjCliente.substring(0,8));
+		int cnpj4 = Integer.parseInt(cnpjCliente.substring(8,9));
+		int cnpj2 = Integer.parseInt(cnpjCliente.substring(9,11));
+
+		return comercialCustom.findPedidosPorCliente(cnpj9,cnpj4,cnpj2);
+	}
+
+	@RequestMapping(value = "/aplicar-saldo-descontos-pedidos", method = RequestMethod.POST)
+	public void findSaldosClientes(@RequestBody BodyComercial body) {
+
+		int cnpj9 = Integer.parseInt(body.cnpjCliente.substring(0,8));
+		int cnpj4 = Integer.parseInt(body.cnpjCliente.substring(8,9));
+		int cnpj2 = Integer.parseInt(body.cnpjCliente.substring(9,11));
+
+		comercialService.aplicarSaldosDescontoPedidos(body.listPedidosSel, cnpj9, cnpj4, cnpj2, body.usuario);
+	}
+
 }

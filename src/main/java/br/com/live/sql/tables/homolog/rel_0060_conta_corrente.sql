@@ -21,7 +21,7 @@ CREATE TABLE orion_com_290 (
                 CONSTRAINT orion_com_291_pk PRIMARY KEY (pedido));
 
         CREATE TABLE orion_com_292 (
-                       id_controle   number(20),
+                       id_controle   varchar2(20),
                        cnpj_9 number(9),
                        cnpj_4 number(4),
                        cnpj_2 number(2),

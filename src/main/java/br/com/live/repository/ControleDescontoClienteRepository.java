@@ -13,5 +13,5 @@ public interface ControleDescontoClienteRepository extends JpaRepository<Control
     List<ControleDescontoCliente> findAll();
 
     @Query("SELECT u FROM ControleDescontoCliente u where u.idControle = :idControle")
-    ControleDescontoCliente findByIdControle(int idControle);
+    ControleDescontoCliente findByIdControle(String idControle);
 }

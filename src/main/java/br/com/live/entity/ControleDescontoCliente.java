@@ -11,7 +11,7 @@ public class ControleDescontoCliente {
 
     @Id
     @Column(name = "id_controle")
-    public int idControle;
+    public String idControle;
 
     @Column(name = "cnpj_9")
     public int cnpj9;
@@ -25,11 +25,11 @@ public class ControleDescontoCliente {
     @Column(name = "valor_desconto")
     public float valorDesconto;
 
-    public int getIdControle() {
+    public String getIdControle() {
         return idControle;
     }
 
-    public void setIdControle(int idControle) {
+    public void setIdControle(String idControle) {
         this.idControle = idControle;
     }
 
@@ -69,7 +69,7 @@ public class ControleDescontoCliente {
     }
 
     public ControleDescontoCliente(int cnpj9, int cnpj4, int cnpj2, float valorDesconto) {
-        this.idControle = cnpj9 + cnpj4 + cnpj2;
+        this.idControle = cnpj9 + "-" + cnpj4 + "-" + cnpj2;
         this.cnpj9 = cnpj9;
         this.cnpj4 = cnpj4;
         this.cnpj2 = cnpj2;

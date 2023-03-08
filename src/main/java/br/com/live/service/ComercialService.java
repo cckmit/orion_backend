@@ -241,8 +241,6 @@ public class ComercialService {
 			int cnpj4 = Integer.parseInt(cliente.cnpjCliente.substring(8,12));
 			int cnpj2 = Integer.parseInt(cliente.cnpjCliente.substring(12,14));
 
-			gravarControleDesconto(cnpj9, cnpj4, cnpj2, cliente.valor);
-
 			// VALIDAR IMPORTAÇÃO
 			validarImportacao = comercialCustom.validarImportacaoDescontos(cnpj9, cnpj4, cnpj2, cliente.dataInsercao, cliente.valor);
 
@@ -251,6 +249,7 @@ public class ComercialService {
 						" já possui desconto importado para data de " + cliente.dataInsercao + "! \n";
 			} else  {
 				try {
+					gravarControleDesconto(cnpj9, cnpj4, cnpj2, cliente.valor);
 					descontoCliente = new ValorDescontoClientesImportados(comercialCustom.findNextIdImpDescClientes(), cnpj9,cnpj4,cnpj2, FormataData.parseStringToDate(cliente.dataInsercao), cliente.valor, cliente.observacao, usuario);
 					valorDescontoClientesImpRepository.saveAndFlush(descontoCliente);
 				} catch (Exception e) {
@@ -261,14 +260,13 @@ public class ComercialService {
 		if (!errosImportacao.equalsIgnoreCase("")) {
 			status = new StatusGravacao(false, errosImportacao);
 		}
-
 		return status;
 	}
 
 	public void gravarControleDesconto(int cnpj9, int cnpj4, int cnpj2, float valorDesconto) {
 		ControleDescontoCliente controleDesconto = null;
 
-		controleDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + cnpj4 + cnpj2);
+		controleDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
 		if (controleDesconto != null) {
 			controleDesconto.valorDesconto = controleDesconto.valorDesconto + valorDesconto;
 		} else {
@@ -286,42 +284,47 @@ public class ComercialService {
 
 		for (ClientesImportados dadosCliente : listClientes) {
 			List<ConsultaPedidosPorCliente> listPedidos = new ArrayList<>();
-			ControleDescontoCliente controleDesconto = controleDescontoClienteRepository.findByIdControle(dadosCliente.cnpj9 + dadosCliente.cnpj4 + dadosCliente.cnpj2);
+			ControleDescontoCliente controleDesconto = controleDescontoClienteRepository.findByIdControle(dadosCliente.cnpj9 + "-" + dadosCliente.cnpj4 + "-" + dadosCliente.cnpj2);
 			float totalDesconto = controleDesconto.valorDesconto;
 
 			if (totalDesconto <= 0) continue;
 
-			// Busca todos os pedidos em aberto com valor saldo maior que R$2500, para o cliente em contexto, ordenando por data e valor
-			listPedidos = comercialCustom.findPedidosPorCliente(dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2);
-
-			for (ConsultaPedidosPorCliente dadosPedido : listPedidos) {
-				float valorDescCalculado = totalDesconto;
-				String obsPedido = " Desconto Total de " + valorDescCalculado;
-
-				// Verifica se o pedido é FRANCHISING -- Aplica somente 50% do desconto
-				if (dadosPedido.natureza == 421 || dadosPedido.natureza == 422) {
-					valorDescCalculado = totalDesconto / 2;
-					obsPedido = " Desconto Total de " + valorDescCalculado;
-				}
-
-				boolean aplicaDesconto = validarDescontoPedido(dadosPedido.valorSaldo, valorDescCalculado);
-				if (!aplicaDesconto) {
-					valorDescCalculado = calcularDescontoMaximoPedido(dadosPedido.valorSaldo);
-					obsPedido = "Desconto Parcial de " + valorDescCalculado;
-				}
-
-				// Inserir os Pedidos que irão aparecer no Grid
-				String cnpjEdit = String.format("%09d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
-
-				PedidosComDescontoAConfirmar pedidos = new PedidosComDescontoAConfirmar(dadosPedido.cnpj9, dadosPedido.cnpj4, dadosPedido.cnpj2, cnpjEdit, dadosPedido.valorSaldo,
-						valorDescCalculado, obsPedido, dadosPedido.dataEmbarque, dadosPedido.pedido);
-				listPedidosComDesconto.add(pedidos);
-
-				totalDesconto -= valorDescCalculado;
-				if (totalDesconto <= 0) break;
-			}
+			calcularDescontoPedidos(listPedidosComDesconto, dadosCliente, totalDesconto);
 		}
 		return listPedidosComDesconto;
+	}
+
+	private void calcularDescontoPedidos(List<PedidosComDescontoAConfirmar> listPedidosComDesconto, ClientesImportados dadosCliente, float totalDesconto) {
+		List<ConsultaPedidosPorCliente> listPedidos;
+		// Busca todos os pedidos em aberto com valor saldo maior que R$2500, para o cliente em contexto, ordenando por data e valor
+		listPedidos = comercialCustom.findPedidosPorCliente(dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2);
+
+		for (ConsultaPedidosPorCliente dadosPedido : listPedidos) {
+			float valorDescCalculado = totalDesconto;
+			String obsPedido = " Desconto Total de " + valorDescCalculado;
+
+			// Verifica se o pedido é FRANCHISING -- Aplica somente 50% do desconto
+			if (dadosPedido.natureza == 421 || dadosPedido.natureza == 422) {
+				valorDescCalculado = totalDesconto / 2;
+				obsPedido = " Desconto Total de " + valorDescCalculado;
+			}
+
+			boolean aplicaDesconto = validarDescontoPedido(dadosPedido.valorSaldo, valorDescCalculado);
+			if (!aplicaDesconto) {
+				valorDescCalculado = calcularDescontoMaximoPedido(dadosPedido.valorSaldo);
+				obsPedido = "Desconto Parcial de " + valorDescCalculado;
+			}
+
+			// Inserir os Pedidos que irão aparecer no Grid
+			String cnpjEdit = String.format("%09d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
+
+			PedidosComDescontoAConfirmar pedidos = new PedidosComDescontoAConfirmar(dadosPedido.cnpj9, dadosPedido.cnpj4, dadosPedido.cnpj2, cnpjEdit, dadosPedido.valorSaldo,
+					valorDescCalculado, obsPedido, dadosPedido.dataEmbarque, dadosPedido.pedido);
+			listPedidosComDesconto.add(pedidos);
+
+			totalDesconto -= valorDescCalculado;
+			if (totalDesconto <= 0) break;
+		}
 	}
 
 	public boolean validarDescontoPedido(float valorPedido, float valorDesconto) {
@@ -343,7 +346,7 @@ public class ComercialService {
 		return valorCalculado;
 	}
 
-		public StatusGravacao aplicarDescontoEspecialPedidos(List<DescontoClientesImportados> listPedidosConfirmados, String usuario) {
+	public StatusGravacao aplicarDescontoEspecialPedidos(List<DescontoClientesImportados> listPedidosConfirmados, String usuario) {
 		PedidosGravadosComDesconto pedidosGravados = null;
 		StatusGravacao status = new StatusGravacao(true, "Processo Conluído com Sucesso!");
 
@@ -355,7 +358,7 @@ public class ComercialService {
 			int cnpj4 = Integer.parseInt(dadosPedido.cnpjCliente.substring(9,13));
 			int cnpj2 = Integer.parseInt(dadosPedido.cnpjCliente.substring(13,15));
 
-			dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + cnpj4 + cnpj2);
+			dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
 			pedidosConfirmados = pedidosGravadosComDescontoRepository.findByIdPedido(dadosPedido.pedido);
 
 			if (pedidosConfirmados != null) {
@@ -375,7 +378,7 @@ public class ComercialService {
 	}
 
 	public void atualizarControleDesconto(int cnpj9, int cnpj4, int cnpj2, float valorAtual) {
-		ControleDescontoCliente controleDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + cnpj4 + cnpj2);
+		ControleDescontoCliente controleDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
 		if (controleDesconto != null) {
 			controleDesconto.valorDesconto -= valorAtual;
 			controleDescontoClienteRepository.saveAndFlush(controleDesconto);
@@ -388,5 +391,40 @@ public class ComercialService {
 
 	public List<ConsultaPedidosPorCliente> buscarHistoricoDescontos() {
 		return comercialCustom.buscarHistoricoDescontos();
+	}
+
+	public List<DescontoClientesImportados> buscarSaldosClientes() {
+		return comercialCustom.buscarSaldosClientes();
+	}
+
+	public void aplicarSaldosDescontoPedidos(List<ConsultaPedidosPorCliente> pedidosSelect, int cnpj9, int cnpj4, int cnpj2, String usuario) {
+		ControleDescontoCliente dadosDesconto;
+		List<DescontoClientesImportados> listPedidosComDesconto = new ArrayList<>();
+
+		dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
+
+		for (ConsultaPedidosPorCliente dadosPedido : pedidosSelect) {
+			float valorDescCalculado = dadosDesconto.valorDesconto / pedidosSelect.size();
+
+			String obsPedido = " Desconto Total de " + valorDescCalculado;
+
+			if (dadosPedido.natureza == 421 || dadosPedido.natureza == 422) {
+				valorDescCalculado = valorDescCalculado / 2;
+				obsPedido = " Desconto Total de " + valorDescCalculado;
+			}
+
+			boolean aplicaDesconto = validarDescontoPedido(dadosPedido.valorSaldo, valorDescCalculado);
+			if (!aplicaDesconto) {
+				valorDescCalculado = calcularDescontoMaximoPedido(dadosPedido.valorSaldo);
+				obsPedido = "Desconto Parcial de " + valorDescCalculado;
+			}
+
+			String cnpjEdit = String.format("%09d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
+
+			DescontoClientesImportados pedidos = new DescontoClientesImportados(0,cnpjEdit,valorDescCalculado, FormataData.parseDateToString(dadosPedido.dataEmbarque), obsPedido, dadosPedido.pedido, usuario);
+			listPedidosComDesconto.add(pedidos);
+		}
+
+		aplicarDescontoEspecialPedidos(listPedidosComDesconto, usuario);
 	}
 }
