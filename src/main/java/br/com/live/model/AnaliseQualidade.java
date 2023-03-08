@@ -1,6 +1,5 @@
 package br.com.live.model;
 
-import javax.persistence.Column;
 
 public class AnaliseQualidade {
 	
@@ -12,15 +11,10 @@ public class AnaliseQualidade {
 	public int ordemBeneficiamento;
 	public String codigoTecido;
 	public String descricaoTecido;
-	public int ordemTingimento;
 	public String data;
 	public String narrativa;
-	public float coluna1;	
-	public float coluna2;	
-	public float coluna3;	
-	public float coluna4;	
-	public float coluna5;
-	
+	public String descricaoLote;
+	public float valorLote;	
 	
 	public int getRolo() {
 		return rolo;
@@ -70,12 +64,6 @@ public class AnaliseQualidade {
 	public void setDescricaoTecido(String descricaoTecido) {
 		this.descricaoTecido = descricaoTecido;
 	}
-	public int getOrdemTingimento() {
-		return ordemTingimento;
-	}
-	public void setOrdemTingimento(int ordemTingimento) {
-		this.ordemTingimento = ordemTingimento;
-	}
 	public String getData() {
 		return data;
 	}
@@ -88,42 +76,23 @@ public class AnaliseQualidade {
 	public void setNarrativa(String narrativa) {
 		this.narrativa = narrativa;
 	}
-	public float getColuna1() {
-		return coluna1;
+	public String getDescricaoLote() {
+		return descricaoLote;
 	}
-	public void setColuna1(float coluna1) {
-		this.coluna1 = coluna1;
+	public void setDescricaoLote(String descricaoLote) {
+		this.descricaoLote = descricaoLote;
 	}
-	public float getColuna2() {
-		return coluna2;
+	public float getValorLote() {
+		return valorLote;
 	}
-	public void setColuna2(float coluna2) {
-		this.coluna2 = coluna2;
-	}
-	public float getColuna3() {
-		return coluna3;
-	}
-	public void setColuna3(float coluna3) {
-		this.coluna3 = coluna3;
-	}
-	public float getColuna4() {
-		return coluna4;
-	}
-	public void setColuna4(float coluna4) {
-		this.coluna4 = coluna4;
-	}
-	public float getColuna5() {
-		return coluna5;
-	}
-	public void setColuna5(float coluna5) {
-		this.coluna5 = coluna5;
+	public void setValorLote(float valorLote) {
+		this.valorLote = valorLote;
 	}
 	public AnaliseQualidade() {
 		
 	}
-	public AnaliseQualidade(int rolo, float peso, float largura, float gramatura, int ordemTecelagem,
-			int ordemBeneficiamento, String codigoTecido, String descricaoTecido, int ordemTingimento, String data, String narrativa, float coluna1, float coluna2, float coluna3,
-			float coluna4, float coluna5) {
+	public AnaliseQualidade(int rolo, float peso, float largura, float gramatura, int ordemTecelagem, int ordemBeneficiamento, String codigoTecido, 
+			String descricaoTecido, String data, String narrativa, String descricaoLote, float valorLote) {
 		this.rolo = rolo;
 		this.peso = peso;
 		this.largura = largura;
@@ -132,15 +101,10 @@ public class AnaliseQualidade {
 		this.ordemBeneficiamento = ordemBeneficiamento;
 		this.codigoTecido = codigoTecido;
 		this.descricaoTecido = descricaoTecido;
-		this.ordemTingimento = ordemTingimento;
 		this.data = data;
-		this.narrativa = narrativa;
-		this.coluna1 = coluna1;
-		this.coluna2 = coluna2;
-		this.coluna3 = coluna3;
-		this.coluna4 = coluna4;
-		this.coluna5 = coluna5;
-		
+		this.narrativa = narrativa;		
+		this.descricaoLote = descricaoLote;
+		this.valorLote = valorLote;
 	}
 	
 		

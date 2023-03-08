@@ -243,11 +243,10 @@ public class OrdemBeneficiamentoCustom {
 	
 	public List<AnaliseQualidade> findAnalise(int ordem) {
 		
-		String query = " SELECT MIN(c.ordem_producao) ordemTecelagem, "
+		String query = " SELECT MIN(NVL(c.numero_ob, 0)) ordemTecelagem, "
 				+ "       d.ordem_producao ordemBeneficiamento, "
 				+ "       d.panoacab_nivel99 || '.' || d.panoacab_grupo || '.' || d.panoacab_subgrupo || '.' || d.panoacab_item codigoTecido, "
 				+ "       e.narrativa descricaoTecido, "
-				+ "       NVL(c.ordem_tingimento_rolo, 0) ordemTingimentoRolo, "
 				+ "       f.data_informacao data "
 				+ "       FROM pcpt_020_025 c, pcpt_020 d, basi_010 e, pcpb_070 f "
 				+ "		WHERE d.ordem_producao = c.ordem_producao "
@@ -267,22 +266,12 @@ public class OrdemBeneficiamentoCustom {
 	
 	public List<AnaliseQualidade> findInfoLote(int ordem) {
 		
-		String query = " SELECT NVL(COLUNA_1, 0) COLUNA1, NVL(COLUNA_2, 0) COLUNA2, NVL(COLUNA_3, 0) COLUNA3, NVL(COLUNA_4, 0) COLUNA4, NVL(COLUNA_5, 0) COLUNA5 "
-				+ "		FROM ( "
-				+ "         SELECT n.descricao descricao, m.valor_01 valor "
-				+ "  		FROM pcpb_075 m "
-				+ "  		JOIN hdoc_001 n ON n.codigo = m.codigo_informacao "
-				+ "  		WHERE n.tipo = 33 "
-				+ "  		AND m.ordem_producao = " + ordem
-				+ ")"
-				+ "PIVOT ( "
-				+ "  MAX(valor) "
-				+ "  FOR descricao IN ('ESTABILIDADE DIMENSIONAL LARGURA' AS coluna_1, "
-                + "					   'ESTABILIDADE DIMENSIONAL COMPRIMENTO' AS coluna_2, "
-                + "					   'SOLIDEZ A LAVAGEM' AS coluna_3, "
-                + "                    'ELAST. E ALONG. LARGURA' AS coluna_4, " 
-                + "                    'ELAST. E ALONG. COMPRIMENTO' AS coluna_5))";
+		String query = " SELECT n.descricao descricaoLote, m.valor_01 valorLote "
+				+ "   FROM pcpb_075 M "
+				+ "   JOIN hdoc_001 n ON n.codigo = m.codigo_informacao "
+				+ "   WHERE n.tipo = 33 "
+				+ "   AND m.ordem_producao = ? ";
 	
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class), ordem);
 	}
 }

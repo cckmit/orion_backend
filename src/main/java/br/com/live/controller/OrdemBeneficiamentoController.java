@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyEngenharia;
 import br.com.live.body.BodyOrdemBeneficiamento;
 import br.com.live.custom.OrdemBeneficiamentoCustom;
 import br.com.live.entity.OrdemBeneficiamentoItem;
 import br.com.live.model.AnaliseQualidade;
+import br.com.live.model.ConsultaTempoMaquinaCM;
 import br.com.live.model.OrdemBeneficiamentoItens;
 import br.com.live.repository.OrdemBeneficiamentoItemRepository;
 import br.com.live.service.OrdemBeneficiamentoService;
@@ -99,8 +101,7 @@ public class OrdemBeneficiamentoController {
     public StatusGravacao saveOrdemBeneficiamentoItem(@RequestBody BodyOrdemBeneficiamento body) {                  
     	return ordemBeneficiamentoService.salvarItemOrdem(body.id, body.usuario, body.ordemProducao, body.produto, body.qtdeRolos, body.qtdeQuilos, body.larguraTecido, 
     			body.gramatura, body.rendimento, body.alternativaItem, body.roteiroItem, body.deposito, body.observacao);
-    }
-    
+    }    
     @RequestMapping(value = "/deletar-item-ordem/{id}/{usuario}", method = RequestMethod.DELETE)
     public void deleteIdOrdem(@PathVariable("id") String id, @PathVariable("usuario") String usuario) {                  
     	ordemBeneficiamentoService.deleteItemOrdem(id, usuario);

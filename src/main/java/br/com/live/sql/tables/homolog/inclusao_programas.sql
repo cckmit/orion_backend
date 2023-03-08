@@ -252,3 +252,6 @@ values (83, 'Análise de Qualidade', 'Beneficiamento', '/analise-de-qualidade');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (84, 'Cadastro de Chamados', 'Administrativo', '/cadastro-chamados');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (86, 'Lançamentos Contábeis - Importação', 'Contabilidade', '/lancamentos-contabeis-importacao');
