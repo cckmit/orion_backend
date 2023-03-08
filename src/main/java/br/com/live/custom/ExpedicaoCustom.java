@@ -190,7 +190,7 @@ public class ExpedicaoCustom {
 				+ " and a.ordem_producao = " + ordemProducao
 				+ " and a.ordem_confeccao = " + ordemConfeccao
 				+ " and a.sequencia = " + sequencia
-				+ " and a.estoque_tag = 4 ";
+				+ " and a.estoque_tag <> 1 ";
 
 		try {
 			flagEstoque = jdbcTemplate.queryForObject(query, Integer.class);

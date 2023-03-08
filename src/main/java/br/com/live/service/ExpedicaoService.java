@@ -121,7 +121,8 @@ public class ExpedicaoService {
 			existeEndereco = expedicaoCustom.validarGravacaoEndereco(periodo, ordem, pacote, sequencia);
 
 			if (flagEmEstoque == 1) {
-				msgErro = "Este TAG já foi faturado!";
+				msgErro = "Situação do TAG diferente de 1 (Em Estoque)!";
+				return msgErro;
 			}
 
 			if ((existeEndereco != null) && (!existeEndereco.equals("")) && (!existeEndereco.equals("ENDERECAR"))) {

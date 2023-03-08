@@ -142,7 +142,7 @@ public class ComercialCustom {
 
 	public void atualizarDescontoEspecialPedido(float desconto, String observacao, int pedido) {
 		String query = " UPDATE pedi_100 " +
-				" SET OBSERVACAO = pedi_100.observacao || CHR(10) || " + observacao + ", " +
+				" SET OBSERVACAO = ?, " +
 				" DESCONTO_ESPECIAL = ? " +
 				" WHERE pedi_100.PEDIDO_VENDA = ? ";
 		jdbcTemplate.update(query, observacao, desconto, pedido);
