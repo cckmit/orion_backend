@@ -53,6 +53,10 @@ public class SugestaoReservaMaterialService {
 	public int findQtdeFlatPecasLiberadasDia() {
 		return ordemProducaoService.findQtdePecasFlatApontadaNoDia(2);
 	}	
+
+	public double findQtdeMinutosFlatLiberadasDia() {
+		return ordemProducaoService.findQtdeMinutosFlatApontadaNoDia(2);
+	}	
 	
 	public int[] findQtdePecasLiberadasDiaPorArtigo() {		
 		List<SugestaoReservaConfigArtigos> configArtigos = sugestaoReservaMaterialCustom.findConfigArtigos();		
@@ -103,7 +107,57 @@ public class SugestaoReservaMaterialService {
 		
 		return quantidades;
 	}	
+
+	public double[] findQtdeMinutosLiberadosDiaPorArtigo() {		
+		List<SugestaoReservaConfigArtigos> configArtigos = sugestaoReservaMaterialCustom.findConfigArtigos();		
+		String artigosConfig = "";
+		double quantidade = 0;
+		double qtde1 = 0;
+		double qtde2 = 0;
+		double qtde3 = 0;
+		double qtde4 = 0;
+		double qtde5 = 0;
+		double qtde6 = 0;
+		double qtde7 = 0;
+		double qtde8 = 0;
+		double qtde9 = 0;
+		double qtdeOutros = 0;
+		double [] quantidades = new double[10];
 		
+		for (SugestaoReservaConfigArtigos configuracao : configArtigos) {
+			if ((configuracao.getArtigos() != null) && (!configuracao.getArtigos().isBlank())) {
+				if (artigosConfig.isEmpty()) artigosConfig += configuracao.getArtigos();
+				else artigosConfig += "," + configuracao.getArtigos();
+				
+				quantidade = ordemProducaoService.findQtdeMinutosApontadoNoDiaPorEstagioArtigos(2, true, configuracao.getArtigos());
+	
+				if (configuracao.getColuna() == 1) qtde1 = quantidade;
+				if (configuracao.getColuna() == 2) qtde2 = quantidade;
+				if (configuracao.getColuna() == 3) qtde3 = quantidade;
+				if (configuracao.getColuna() == 4) qtde4 = quantidade;
+				if (configuracao.getColuna() == 5) qtde5 = quantidade;
+				if (configuracao.getColuna() == 6) qtde6 = quantidade;
+				if (configuracao.getColuna() == 7) qtde7 = quantidade;
+				if (configuracao.getColuna() == 8) qtde8 = quantidade;
+				if (configuracao.getColuna() == 9) qtde9 = quantidade;
+			}
+		}
+		qtdeOutros = ordemProducaoService.findQtdeMinutosApontadoNoDiaPorEstagioArtigos(2, false, artigosConfig);		
+		
+		quantidades[0] = qtdeOutros;
+		quantidades[1] = qtde1;
+		quantidades[2] = qtde2;
+		quantidades[3] = qtde3;
+		quantidades[4] = qtde4;
+		quantidades[5] = qtde5;
+		quantidades[6] = qtde6;
+		quantidades[7] = qtde7;
+		quantidades[8] = qtde8;
+		quantidades[9] = qtde9;		
+		
+		return quantidades;
+	}	
+	
 	public void liberarProducao(List<OrdemProducao> listaOrdensLiberar, List<SugestaoReservaMateriaisReservados> listaMateriaisReservar , boolean urgente, long idUsuarioOrion) {		
 		if (!urgente) Collections.sort(listaOrdensLiberar);		
 
@@ -134,8 +188,8 @@ public class SugestaoReservaMaterialService {
 		}
 	}
 	
-	public void gravarConfigArtigos(int coluna, String descricao, int meta, String artigos) {
-		sugestaoReservaMaterialCustom.gravarConfigArtigos(coluna, descricao, meta, artigos);
+	public void gravarConfigArtigos(int coluna, String descricao, int meta, String artigos, int metaMinutos) {
+		sugestaoReservaMaterialCustom.gravarConfigArtigos(coluna, descricao, meta, artigos, metaMinutos);
 	}
 		
 	public List<SugestaoReservaConfigArtigos> findConfigArtigos() {	

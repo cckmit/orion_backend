@@ -918,6 +918,41 @@ public class OrdemProducaoCustom {
 		
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
+
+	public double findQtdeMinutosApontadoNoDiaPorArtigo(int codEstagio, boolean consideraArtigos, String artigos) {
+
+		String considera = "in";
+		
+		if (!consideraArtigos) considera = "not in";
+		
+		String query = "select nvl(sum(minutos_costura.total),0) total "
+		+ " from ( "		
+		+ " select nvl((select sum(m.minutos_homem) from mqop_050 m " 
+		+ " where m.nivel_estrutura = z.proconf_nivel99 "
+		+ " and m.grupo_estrutura = z.proconf_grupo "
+		+ " and (m.subgru_estrutura = z.proconf_subgrupo or m.subgru_estrutura = '000') " 
+        + " and (m.item_estrutura = z.proconf_item or m.item_estrutura = '000000') " 
+        + " and m.numero_alternati = y.alternativa_peca "
+        + " and m.numero_roteiro = y.roteiro_peca "
+        + " and m.codigo_estagio = 20 ),0) * nvl(sum(p.qtde_produzida),0) total "    
+        + " from pcpc_045 p, pcpc_040 z, pcpc_020 y, basi_030 v " 
+   	    + " where p.pcpc040_estconf = " + codEstagio
+		+ " and p.data_producao = trunc(sysdate) "
+		+ " and z.periodo_producao = p.pcpc040_perconf " 
+		+ " and z.ordem_confeccao = p.pcpc040_ordconf " 
+		+ " and z.codigo_estagio = p.pcpc040_estconf "
+		+ " and y.ordem_producao = z.ordem_producao "
+		+ " and v.nivel_estrutura = z.proconf_nivel99 " 
+		+ " and v.referencia = z.proconf_grupo "
+		+ " and exists (select 1 from pcpc_020 m " 
+		+ " where m.ordem_producao = p.ordem_producao " 
+		+ " and m.referencia_peca not like ('TM%')) "
+		+ " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = p.ordem_producao) " 		   
+		+ " and v.artigo " + considera + " ( " + artigos + " ) "
+		+ " group by z.proconf_nivel99, z.proconf_grupo, z.proconf_subgrupo, z.proconf_item, y.alternativa_peca, y.roteiro_peca) minutos_costura";
+		
+		return jdbcTemplate.queryForObject(query, Double.class);
+	}
 	
 	public int findQtdePecasFlatApontadaNoDia(int codEstagio) {
 		
@@ -944,6 +979,44 @@ public class OrdemProducaoCustom {
 				
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
+
+	public double findQtdeMinutosFlatApontadaNoDia(int codEstagio) {
+		
+		String query = " select sum(minutos_costura.total) total "
+		+ " from ( "
+		+ " select nvl((select sum(m.minutos_homem) from mqop_050 m " 
+		+ " where m.nivel_estrutura = z.proconf_nivel99 "
+		+ " and m.grupo_estrutura = z.proconf_grupo "
+		+ " and (m.subgru_estrutura = z.proconf_subgrupo or m.subgru_estrutura = '000') " 
+		+ " and (m.item_estrutura = z.proconf_item or m.item_estrutura = '000000') " 
+		+ " and m.numero_alternati = y.alternativa_peca "
+		+ " and m.numero_roteiro = y.roteiro_peca "
+		+ " and m.codigo_estagio = 20 ),0) * nvl(sum(p.qtde_produzida),0) total "    
+		+ " from pcpc_045 p, pcpc_040 z, pcpc_020 y, basi_030 v " 
+		+ " where p.pcpc040_estconf = " + codEstagio
+		+ " and p.data_producao = trunc(sysdate) " 
+		+ " and z.periodo_producao = p.pcpc040_perconf " 
+		+ " and z.ordem_confeccao = p.pcpc040_ordconf " 
+		+ " and z.codigo_estagio = p.pcpc040_estconf " 
+		+ " and y.ordem_producao = z.ordem_producao "
+		+ " and v.nivel_estrutura = z.proconf_nivel99 " 
+		+ " and v.referencia = z.proconf_grupo " 
+		+ " and exists (select 1 from pcpc_020 m " 
+		+ " where m.ordem_producao = p.ordem_producao " 
+		+ " and m.referencia_peca not like ('TM%')) " 
+		+ " and exists (select 1 from pcpc_032 w where w.pcpc0302_orprocor = p.ordem_producao) " 
+		+ " and exists (select 1 from mqop_050 m " 
+		+ " where m.nivel_estrutura = z.proconf_nivel99 "
+		+ " and m.grupo_estrutura = z.proconf_grupo "
+		+ " and (m.subgru_estrutura = z.proconf_subgrupo or m.subgru_estrutura = '000') " 
+		+ " and (m.item_estrutura = z.proconf_item or m.item_estrutura = '000000') " 
+		+ " and m.numero_alternati = y.alternativa_peca "
+		+ " and m.numero_roteiro = y.roteiro_peca "
+		+ " and m.codigo_operacao in (select w.codigo_operacao from mqop_040 w where w.nome_operacao like '%FLAT%')) "    
+		+ " group by z.proconf_nivel99, z.proconf_grupo, z.proconf_subgrupo, z.proconf_item, y.alternativa_peca, y.roteiro_peca) minutos_costura ";
+		
+		return jdbcTemplate.queryForObject(query, Double.class);
+	}	
 	
 	public int findUltimaSeqPrioridadeDia() {
 	

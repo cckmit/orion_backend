@@ -156,19 +156,19 @@ public class SugestaoReservaMaterialCustom {
 		}		
 	}		
 	
-	public void gravarConfigArtigos(int coluna, String descricao, int meta, String artigos) {
-		String query = " insert into orion_cfc_215 (coluna, descricao, meta, artigos) values (?,?,?,?) ";
+	public void gravarConfigArtigos(int coluna, String descricao, int meta, String artigos, int metaMinutos) {
+		String query = " insert into orion_cfc_215 (coluna, descricao, meta, artigos, meta_minutos) values (?,?,?,?,?) ";
 		try {
-			jdbcTemplate.update(query, coluna, descricao, meta, artigos);
+			jdbcTemplate.update(query, coluna, descricao, meta, artigos, metaMinutos);
 		} catch (Exception e) {
-			query = " update orion_cfc_215 set descricao = ?, meta = ?, artigos = ? where coluna = ? ";
-			jdbcTemplate.update(query, descricao, meta, artigos, coluna);
+			query = " update orion_cfc_215 set descricao = ?, meta = ?, artigos = ?, meta_minutos = ? where coluna = ? ";
+			jdbcTemplate.update(query, descricao, meta, artigos, metaMinutos, coluna);
 		}				
 	}	
 	
 	public List<SugestaoReservaConfigArtigos> findConfigArtigos() {				
 		List<SugestaoReservaConfigArtigos> configArtigos = new ArrayList<SugestaoReservaConfigArtigos>();		
-		String query = " select coluna, descricao, meta, artigos from orion_cfc_215 ";		
+		String query = " select coluna, descricao, meta, artigos, meta_minutos metaMinutos from orion_cfc_215 ";		
 		try {
 			configArtigos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(SugestaoReservaConfigArtigos.class));
 		} catch (Exception e) {

@@ -75,11 +75,19 @@ public class OrdemProducaoService {
 	public int findQtdePecasApontadaNoDiaPorEstagioArtigos(int codEstagio, boolean consideraArtigos, String artigos) {		
 		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorArtigo(codEstagio, consideraArtigos, artigos);
 	}	
+
+	public double findQtdeMinutosApontadoNoDiaPorEstagioArtigos(int codEstagio, boolean consideraArtigos, String artigos) {		
+		return ordemProducaoCustom.findQtdeMinutosApontadoNoDiaPorArtigo(codEstagio, consideraArtigos, artigos);
+	}	
 	
 	public int findQtdePecasFlatApontadaNoDia(int codEstagio) {
 		return ordemProducaoCustom.findQtdePecasFlatApontadaNoDia(codEstagio);
 	}
-	
+
+	public double findQtdeMinutosFlatApontadaNoDia(int codEstagio) {
+		return ordemProducaoCustom.findQtdeMinutosFlatApontadaNoDia(codEstagio);
+	}
+
 	public void gravarObservacao(int ordemProducao, String observacao) {
 		ordemProducaoCustom.gravarObservacao(ordemProducao, observacao);
 	}

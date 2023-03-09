@@ -61,6 +61,15 @@ public class BodySugestaoReservaMateriais {
     public int meta7;
     public int meta8;
     public int meta9;
+    public int metaMinutos1;
+    public int metaMinutos2;
+    public int metaMinutos3;
+    public int metaMinutos4;
+    public int metaMinutos5;
+    public int metaMinutos6;
+    public int metaMinutos7;
+    public int metaMinutos8;
+    public int metaMinutos9;
     // Retorno das qtdes produzidas por artigos configurados
     public int qtdeProduzida1;
     public int qtdeProduzida2;
@@ -73,4 +82,15 @@ public class BodySugestaoReservaMateriais {
     public int qtdeProduzida9;
     public int qtdeOutros;
     public int qtdeFlatProduzida;
+    public double minutosProduzidos1;
+    public double minutosProduzidos2;
+    public double minutosProduzidos3;
+    public double minutosProduzidos4;
+    public double minutosProduzidos5;
+    public double minutosProduzidos6;
+    public double minutosProduzidos7;
+    public double minutosProduzidos8;
+    public double minutosProduzidos9;
+    public double minutosOutros;
+    public double minutosFlatProduzidos;
 }

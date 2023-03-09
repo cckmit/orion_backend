@@ -10,16 +10,18 @@ public class SugestaoReservaConfigArtigos {
 	private String descricao;
 	private int meta;
 	private String artigos;
+	private int metaMinutos;
 	private List<ConteudoChaveNumerica> listaArtigos;
 	
 	public SugestaoReservaConfigArtigos() {}
 	
-	public SugestaoReservaConfigArtigos(int coluna, String descricao, int meta, String artigos) {
+	public SugestaoReservaConfigArtigos(int coluna, String descricao, int meta, String artigos, int metaMinutos) {
 		super();
 		this.coluna = coluna;
 		this.descricao = descricao;
 		this.meta = meta;
 		this.artigos = artigos;
+		this.metaMinutos = metaMinutos;
 	}
 
 	public int getColuna() {
@@ -60,5 +62,13 @@ public class SugestaoReservaConfigArtigos {
 
 	public void setListaArtigos(List<ConteudoChaveNumerica> listaArtigos) {
 		this.listaArtigos = listaArtigos;
+	}
+
+	public int getMetaMinutos() {
+		return metaMinutos;
+	}
+
+	public void setMetaMinutos(int metaMinutos) {
+		this.metaMinutos = metaMinutos;
 	}	
 }

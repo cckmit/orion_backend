@@ -1,0 +1,1 @@
+alter table orion_cfc_215 add meta_minutos number(9) default 0;
