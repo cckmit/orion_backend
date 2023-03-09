@@ -255,3 +255,6 @@ values (84, 'Cadastro de Chamados', 'Administrativo', '/cadastro-chamados');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (86, 'Lançamentos Contábeis - Importação', 'Contabilidade', '/lancamentos-contabeis-importacao');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (87, 'Gestão de Ativos TI', 'TI', '/gestao-ativos-ti');
