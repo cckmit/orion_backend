@@ -17,7 +17,6 @@ import br.com.live.util.FormataData;
 import br.com.live.body.BodySequenciamentoDecoracoes;
 import br.com.live.custom.SequenciamentoDecoracoesCustom;
 import br.com.live.model.DadosSequenciamentoDecoracoes;
-import br.com.live.model.Produto;
 
 @RestController
 @CrossOrigin
@@ -74,7 +73,13 @@ public class SequenciamentoDecoracoesController {
 	
 	@RequestMapping(value = "/calcular-sequenciamento", method = RequestMethod.POST)
 	public List<DadosSequenciamentoDecoracoes> calcularSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
-		sequenciamentoDecoracoesService.calcularSequenciamento(body.codEstagioSequenciar, FormataData.parseStringToDate(body.dataInicioSeq), body.listaOrdens);
-		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagioSequenciar);
+		sequenciamentoDecoracoesService.calcularSequenciamento(body.codEstagio, FormataData.parseStringToDate(body.dataInicioSeq), body.listaOrdens);
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagio);
+	}
+	
+	@RequestMapping(value = "/confirmar-sequenciamento", method = RequestMethod.POST)
+	public List<DadosSequenciamentoDecoracoes> confirmarSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {
+		sequenciamentoDecoracoesService.confirmarSequenciamento(body.codEstagio, body.listaOrdens);
+		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagio);
 	}	
 }

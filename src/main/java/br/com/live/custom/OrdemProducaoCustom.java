@@ -982,7 +982,7 @@ public class OrdemProducaoCustom {
 
 	public double findQtdeMinutosFlatApontadaNoDia(int codEstagio) {
 		
-		String query = " select sum(minutos_costura.total) total "
+		String query = " select nvl(sum(minutos_costura.total),0) total "
 		+ " from ( "
 		+ " select nvl((select sum(m.minutos_homem) from mqop_050 m " 
 		+ " where m.nivel_estrutura = z.proconf_nivel99 "

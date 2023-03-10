@@ -136,49 +136,65 @@ public class SequenciamentoDecoracoesService {
 		return calendario.getData();
 	}
 	
+	private void calcularOcupacaoOrdem(Date dataInicio, Date dataTermino, double minutosPlanejar, double minutosRestantesNoDia) {
+	    while (minutosPlanejar > 0) {              
+	        if (minutosPlanejar >= minutosRestantesNoDia) {
+	            minutosPlanejar -= minutosRestantesNoDia;
+	            minutosRestantesNoDia = SequenciamentoDecoracoesCustom.MINUTOS_PRODUCAO_DIA;
+	            dataInicio = proximoDia(dataInicio);
+	        } else {                    
+	            minutosRestantesNoDia -= minutosPlanejar;
+	            minutosPlanejar = 0;
+	        }                               
+	    }	    
+	}
+	
+	private void calcularProximoDiaDisponivel(double minutosRestantesNoDia, Date dataInicio, Date dataTermino) {			
+		if (minutosRestantesNoDia <= 0) {
+			dataInicio = proximoDia(dataTermino);
+			dataTermino = dataInicio; 
+		} else {
+			dataInicio = dataTermino; 
+		}
+	}
+	
 	public void calcularSequenciamento(int codEstagioSequenciar, Date dataInicial, List<DadosSequenciamentoDecoracoes> ordens) {		
 		double minutosProducaoDia = SequenciamentoDecoracoesCustom.MINUTOS_PRODUCAO_DIA;
-		double minutosSaldo = minutosProducaoDia;
+		double minutosRestantesNoDia = minutosProducaoDia;
 		double minutosPlanejar = 0;
 		Date dataInicio = dataInicial;
 		Date dataTermino = dataInicial;		
-		int sequencia = 0;
-		
-		System.out.println("calcularSequenciamento");
-		
+		int sequencia = 0;		
+		System.out.println("calcularSequenciamento: " + codEstagioSequenciar);		
 		// TODO - Pegar a última sequência CONFIRMADA para o estágio.
 		
-		for (DadosSequenciamentoDecoracoes ordem : ordens) {			
+		
+		
+		
+		for (DadosSequenciamentoDecoracoes ordem : ordens) {						
+			System.out.println(ordem.getOrdemProducao());			
 			// Deve sequenciar apenas as ordens do estágio marcado para sequenciar
 			if (ordem.getCodEstagioProx() != codEstagioSequenciar) continue;
 			// Deve sequenciar apenas as ordens que ainda não foram confirmadas
 			if (ordem.getConfirmado() == 1) continue;
-			
 			sequencia++;
 			minutosPlanejar = ordem.getTempoTotal();
-			
-			while (minutosPlanejar > 0) {							
-				if (minutosPlanejar >= minutosSaldo) {
-					minutosPlanejar -= minutosSaldo;
-					minutosSaldo = minutosProducaoDia;
-					dataTermino = proximoDia(dataTermino);
-				} else {					
-					minutosSaldo -= minutosPlanejar;
-					minutosPlanejar = 0;
-				}								
-			}			
-			
-			System.out.println("ID " + ordem.getId() + " Seq: " + sequencia + " - Data Inicio: " + dataInicio + " - Data Término: " + dataTermino);
-			
+			calcularOcupacaoOrdem(dataInicio, dataTermino, minutosPlanejar, minutosRestantesNoDia);
+			System.out.println("ID " + ordem.getId() + " Seq: " + sequencia + " - Data Inicio: " + dataInicio + " - Data Término: " + dataTermino);			
 			// grava a data inicio e fim no estágio da ordem producao
-			sequenciamentoDecoracoesCustom.saveSequenciamento(ordem.getId(), sequencia, dataInicio, dataTermino);						
-			
-			if (minutosSaldo <= 0) {
-				dataInicio = proximoDia(dataTermino);
-				dataTermino = dataInicio; 
-			} else {
-				dataInicio = dataTermino; 
-			}
+			sequenciamentoDecoracoesCustom.saveSequenciamento(ordem.getId(), sequencia, dataInicio, dataTermino);									
+			calcularProximoDiaDisponivel(minutosRestantesNoDia, dataInicio, dataTermino);
 		}
 	}	
+	
+	public void confirmarSequenciamento(int codEstagio, List<DadosSequenciamentoDecoracoes> ordens) {		
+		System.out.println("confirmarSequenciamento");
+		int confirmado = 1;
+		for (DadosSequenciamentoDecoracoes ordem : ordens) {
+			System.out.println("Ordem: " + ordem.getOrdemProducao());
+			if (ordem.getDataInicio() == null) continue;
+			System.out.println("Salvou: " + ordem.getOrdemProducao());
+			sequenciamentoDecoracoesCustom.saveSequenciamento(ordem.getId(), confirmado);
+		}
+	}
 }
