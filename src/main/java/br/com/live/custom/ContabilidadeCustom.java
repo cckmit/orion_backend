@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -35,7 +36,7 @@ public class ContabilidadeCustom {
 	public int findNextLote() {
 		int nextLote = 0;
 		
-		String query = " SELECT MAX(b.lote) FROM cont_600 b ";
+		String query = " SELECT MAX(b.lote) + 1 FROM cont_600 b ";
 
 		try {
 			nextLote = jdbcTemplate.queryForObject(query, Integer.class);
@@ -47,7 +48,7 @@ public class ContabilidadeCustom {
 	
 	public int findNextNumLancto() {
 		int nextNumLancto;
-		String query = " SELECT MAX(a.numero_lanc) FROM cont_600 a ";
+		String query = " SELECT MAX(a.numero_lanc) + 1 FROM cont_600 a ";
 
 		try {
 			nextNumLancto = jdbcTemplate.queryForObject(query, Integer.class);
@@ -55,6 +56,42 @@ public class ContabilidadeCustom {
 			nextNumLancto = 0;
 		}
 		return nextNumLancto;
+	}
+	
+	public int findEmpresa(int empresa) {
+		int existsEmpresa;
+		String query = " SELECT 1 FROM fatu_500 a WHERE a.codigo_empresa = " + empresa;
+
+		try {
+			existsEmpresa = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existsEmpresa = 0;
+		}
+		return existsEmpresa;
+	}
+	
+	public int findCentroCusto(int centroCusto) {
+		int existsCCusto;
+		String query = " SELECT 1 FROM basi_185 a WHERE a.centro_custo = " + centroCusto;
+
+		try {
+			existsCCusto = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existsCCusto = 0;
+		}
+		return existsCCusto;
+	}
+	
+	public int findHistoricoContabil(int historicoContabil) {
+		int existsHistContabil;
+		String query = " SELECT 1 FROM cont_010 c WHERE c.codigo_historico = " + historicoContabil;
+
+		try {
+			existsHistContabil = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existsHistContabil = 0;
+		}
+		return existsHistContabil;
 	}
 	
 	public int findOrigem(int origem) {
@@ -69,6 +106,19 @@ public class ContabilidadeCustom {
 		return existsOrigem;
 	}
 	
+	public int findContaContabil(int contaReduzida) {
+		int existsContaReduzida;
+		String query = " SELECT 1 FROM cont_535 d WHERE d.cod_reduzido = " + contaReduzida 
+				+ "      GROUP BY d.cod_reduzido ";
+
+		try {
+			existsContaReduzida = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existsContaReduzida = 0;
+		}
+		return existsContaReduzida;
+	}
+	
 	public String findUserSystextil(int idUsuario) {
 		
 		String usuario = "";
@@ -80,7 +130,19 @@ public class ContabilidadeCustom {
 		return usuario;
 	}
 	
-	public List<ConsultaLanctoContabeis> findAllLanctoContabeis() {
+	public String findContaContabByContaRed(int contaReduzida) {
+		
+		String contaContabil = "";
+		
+		String query = " SELECT d.conta_contabil contaContabil FROM cont_535 d WHERE d.cod_reduzido = ? "
+				+ "     AND d.data_cadastro = (SELECT MAX(g.data_cadastro) FROM cont_535 g WHERE g.cod_reduzido = ? ) ";
+		
+		contaContabil = jdbcTemplate.queryForObject(query, String.class, contaReduzida, contaReduzida);
+		
+		return contaContabil;
+	}
+	
+	public List<ConsultaLanctoContabeis> findAllLanctoContabeis(String usuario) {
 		String query = " select a.id id, "
 				+ "       a.filial_lancto filialLancto, "
 				+ "       a.exercicio exercicio, "
@@ -97,10 +159,54 @@ public class ContabilidadeCustom {
 				+ "       a.lote lote, "
 				+ "       a.numero_lanc numeroLanc, "
 				+ "       a.seq_lanc seqLanc, "
-				+ "       a.periodo periodo "
-				+ "       FROM orion_cnt_010 a ";
+				+ "       a.periodo periodo, "
+				+ "       a.status status "
+				+ "       FROM orion_cnt_010 a "
+				+ "       WHERE a.usuario = '" + usuario + "'";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));
+	}
+	
+	public String findCriticasById(int id) {
+		
+		String criticas = "";
+		
+		String query = " SELECT a.criticas FROM orion_cnt_010 a WHERE a.id = " + id;
+		
+		try {
+			criticas = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			criticas = "";
+		}
+
+		return criticas;
+	}
+	
+	public void inserirLanctoContabilSystextil(int codEmpresa, int filialLancto, int exercicio, int origem, String contaContabil, int contaReduzida, String debitoCredito,
+			float valorLancto, int centroCusto, int histContabil, Date dataLancto, String complHistor1, Date datainsercao, String programa, String usuario, int lote,
+			int numeroLanc, int seqLanc, int periodo, int status) {
+		
+		String query = " insert into cont_600(cod_empresa, exercicio, numero_lanc, seq_lanc, origem, lote, periodo, conta_contabil, conta_reduzida, centro_custo, debito_credito, "
+				+ "         hist_contabil, compl_histor1, data_lancto, valor_lancto, filial_lancto, prg_gerador, usuario, datainsercao) "
+				+ "         values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+		
+		jdbcTemplate.update(query, codEmpresa, exercicio, numeroLanc, seqLanc, origem, lote, periodo, contaContabil, contaReduzida ,centroCusto, debitoCredito, histContabil, 
+				complHistor1, dataLancto, valorLancto, filialLancto, programa, usuario, datainsercao);
+	}
+	
+	public int findStatusByLancto(String usuario) {
+		
+		int status = 0;
+		
+		String query = " SELECT 1 FROM orion_cnt_010 x WHERE x.status = 0 AND x.usuario = ? GROUP BY x.status " + usuario;
+				
+		try {
+			status = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			status = 1;
+		}
+
+		return status;
 	}
 
 }

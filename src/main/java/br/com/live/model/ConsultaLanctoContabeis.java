@@ -5,27 +5,39 @@ import java.util.Date;
 public class ConsultaLanctoContabeis {
 	
 	public int id;
+	public int codEmpresa;
 	public int filialLancto;
     public int exercicio;
     public int origem;
+    public String contaContabil;
 	public int contaReduzida;
 	public String debitoCredito;
 	public float valorLancto;
 	public int centroCusto;
 	public int histContabil;
-	public Date dataLancto;
+	public String dataLancto;
 	public String complHistor1;    
 	public String datainsercao;
+	public String programa;
 	public String usuario;
 	public int lote;
 	public int numeroLanc;
 	public int seqLanc;	  
     public int periodo;
+    public int status;
+    public String criticas;
+    
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public int getCodEmpresa() {
+		return codEmpresa;
+	}
+	public void setCodEmpresa(int codEmpresa) {
+		this.codEmpresa = codEmpresa;
 	}
 	public int getFilialLancto() {
 		return filialLancto;
@@ -44,6 +56,12 @@ public class ConsultaLanctoContabeis {
 	}
 	public void setOrigem(int origem) {
 		this.origem = origem;
+	}
+	public String getContaContabil() {
+		return contaContabil;
+	}
+	public void setContaContabil(String contaContabil) {
+		this.contaContabil = contaContabil;
 	}
 	public int getContaReduzida() {
 		return contaReduzida;
@@ -75,10 +93,10 @@ public class ConsultaLanctoContabeis {
 	public void setHistContabil(int histContabil) {
 		this.histContabil = histContabil;
 	}
-	public Date getDataLancto() {
+	public String getDataLancto() {
 		return dataLancto;
 	}
-	public void setDataLancto(Date dataLancto) {
+	public void setDataLancto(String dataLancto) {
 		this.dataLancto = dataLancto;
 	}
 	public String getComplHistor1() {
@@ -92,6 +110,12 @@ public class ConsultaLanctoContabeis {
 	}
 	public void setDatainsercao(String datainsercao) {
 		this.datainsercao = datainsercao;
+	}
+	public String getPrograma() {
+		return programa;
+	}
+	public void setPrograma(String programa) {
+		this.programa = programa;
 	}
 	public String getUsuario() {
 		return usuario;
@@ -123,18 +147,32 @@ public class ConsultaLanctoContabeis {
 	public void setPeriodo(int periodo) {
 		this.periodo = periodo;
 	}
-	
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public String getCriticas() {
+		return criticas;
+	}
+	public void setCriticas(String criticas) {
+		this.criticas = criticas;
+	}
 	public ConsultaLanctoContabeis() {
 		
 	}
-	public ConsultaLanctoContabeis(int id, int filialLancto, int exercicio, int origem,
-			int contaReduzida, String debitoCredito, float valorLancto, int centroCusto, int histContabil,
-			Date dataLancto, String complHistor1, String datainsercao, String usuario, int lote, int numeroLanc,
-			int seqLanc, int periodo) {
+	public ConsultaLanctoContabeis(int id, int codEmpresa, int filialLancto, int exercicio, int origem,
+			String contaContabil, int contaReduzida, String debitoCredito, float valorLancto, int centroCusto,
+			int histContabil, String dataLancto, String complHistor1, String datainsercao, String programa,
+			String usuario, int lote, int numeroLanc, int seqLanc, int periodo, int status, String criticas) {
+	
 		this.id = id;
+		this.codEmpresa = codEmpresa;
 		this.filialLancto = filialLancto;
 		this.exercicio = exercicio;
 		this.origem = origem;
+		this.contaContabil = contaContabil;
 		this.contaReduzida = contaReduzida;
 		this.debitoCredito = debitoCredito;
 		this.valorLancto = valorLancto;
@@ -143,11 +181,14 @@ public class ConsultaLanctoContabeis {
 		this.dataLancto = dataLancto;
 		this.complHistor1 = complHistor1;
 		this.datainsercao = datainsercao;
+		this.programa = programa;
 		this.usuario = usuario;
 		this.lote = lote;
 		this.numeroLanc = numeroLanc;
 		this.seqLanc = seqLanc;
 		this.periodo = periodo;
+		this.status = status;
+		this.criticas = criticas;
 	}
-  
+	
 }

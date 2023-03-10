@@ -52,6 +52,8 @@ public class LancamentoContabeisImport {
 	public int seqLanc;	
   
     public int periodo;
+    public int status;
+    public String criticas;
 
 	public int getId() {
 		return id;
@@ -155,14 +157,25 @@ public class LancamentoContabeisImport {
 	public void setPeriodo(int periodo) {
 		this.periodo = periodo;
 	}
-	
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	public String getCriticas() {
+		return criticas;
+	}
+	public void setCriticas(String criticas) {
+		this.criticas = criticas;
+	}
 	public LancamentoContabeisImport() {
 		
 	}
 	public LancamentoContabeisImport(int id, int filialLancto, int exercicio, int origem,
 			int contaReduzida, String debitoCredito, float valorLancto, int centroCusto, int histContabil,
 			Date dataLancto, String complHistor1, Date datainsercao, String usuario, int lote, int numeroLanc,
-			int seqLanc, int periodo) {
+			int seqLanc, int periodo, int status, String criticas) {
 		this.id = id;
 		this.filialLancto = filialLancto;
 		this.exercicio = exercicio;
@@ -180,6 +193,8 @@ public class LancamentoContabeisImport {
 		this.numeroLanc = numeroLanc;
 		this.seqLanc = seqLanc;
 		this.periodo = periodo;
+		this.status = status;
+		this.criticas = criticas;
 	}
 	
 }

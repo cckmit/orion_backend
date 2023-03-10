@@ -16,5 +16,8 @@ public interface LanctoContabilImportacaoRepository extends JpaRepository<Lancam
 	@Query(" SELECT c FROM LancamentoContabeisImport c where c.id = :id ")
 	LancamentoContabeisImport findByIdLancto(int id);
 	
+	@Query(" SELECT d FROM LancamentoContabeisImport d where d.usuario = :usuario ")
+	List<LancamentoContabeisImport> findByUser(String usuario);
+	
 	void deleteById(int id);
 }
