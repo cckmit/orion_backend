@@ -34,7 +34,7 @@ public class CustosCustom {
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(CopiaFichaCustos.class));
     }
 
-    public void inserirParametrosFichaCustos(String nivel, String grupo, String subGrupo, String item, int empresa, int tipoParam, int mesDestino, int anoDestino, float consumo, String descParam, String valorPercentual, int seqParam) {
+    public void  inserirParametrosFichaCustos(String nivel, String grupo, String subGrupo, String item, int empresa, int tipoParam, int mesDestino, int anoDestino, float consumo, String descParam, String valorPercentual, int seqParam) {
 
         String query = " insert into rcnb_030 (codigo_empresa, nivel_estrutura, grupo_estrutura, subgru_estrutura, item_estrutura, tipo_parametro, " +
                 " seq_parametro, mes_referencia, ano_referencia, cnpj9, cnpj4, cnpj2, colecao, consumo, descr_parametro, valor_percentual) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";

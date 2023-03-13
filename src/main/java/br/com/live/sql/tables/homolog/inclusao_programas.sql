@@ -254,6 +254,9 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (84, 'Cadastro de Chamados', 'Administrativo', '/cadastro-chamados');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (85, 'Conta Corrente de Cashback', 'Comercial', '/conta-corrente-cashback');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (86, 'Lançamentos Contábeis - Importação', 'Contabilidade', '/lancamentos-contabeis-importacao');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)

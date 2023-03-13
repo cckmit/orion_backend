@@ -182,4 +182,18 @@ public class ComercialCustom {
 		String query = " select g.cnpj_9 || g.cnpj_4 || g.cnpj_2 id, lpad(g.cnpj_9,9, '0') || lpad(g.cnpj_4,4,'0') || lpad(g.cnpj_2,2,'0') cnpjCliente, g.valor_desconto valor from orion_com_292 g ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DescontoClientesImportados.class));
 	}
+	
+	public int findNaturezaPedido(int pedido) {
+		int natureza = 0;
+		
+		String query = " select a.natop_pv_nat_oper from pedi_100 a"
+				+ " where a.pedido_venda = " + pedido;
+		
+		try {
+			natureza = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			natureza = 0;
+		}
+		return natureza;
+	}
 }

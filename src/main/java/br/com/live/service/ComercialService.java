@@ -300,12 +300,13 @@ public class ComercialService {
 		listPedidos = comercialCustom.findPedidosPorCliente(dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2);
 
 		for (ConsultaPedidosPorCliente dadosPedido : listPedidos) {
-			float valorDescCalculado = totalDesconto;
+			float valorDescCalculado = totalDesconto;;
 			String obsPedido = " Desconto Total de " + valorDescCalculado;
-
+			
 			// Verifica se o pedido é FRANCHISING -- Aplica somente 50% do desconto
 			if (dadosPedido.natureza == 421 || dadosPedido.natureza == 422) {
-				valorDescCalculado = totalDesconto / 2;
+				totalDesconto = totalDesconto / 2;
+				valorDescCalculado = totalDesconto;
 				obsPedido = " Desconto Total de " + valorDescCalculado;
 			}
 
@@ -353,6 +354,7 @@ public class ComercialService {
 		for (DescontoClientesImportados dadosPedido : listPedidosConfirmados) {
 			ControleDescontoCliente dadosDesconto;
 			PedidosGravadosComDesconto pedidosConfirmados;
+			int naturezaPedido = comercialCustom.findNaturezaPedido(dadosPedido.pedido);
 
 			int cnpj9 = Integer.parseInt(dadosPedido.cnpjCliente.substring(0,9));
 			int cnpj4 = Integer.parseInt(dadosPedido.cnpjCliente.substring(9,13));
@@ -367,6 +369,11 @@ public class ComercialService {
 			}
 
 			if (dadosDesconto.valorDesconto > 0) {
+				// Verifica se o pedido é FRANCHISING
+				if (naturezaPedido == 421 || naturezaPedido == 422) {
+					dadosPedido.valor = dadosPedido.valor * 2;
+				}
+				
 				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido);
 				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario);
 				atualizarControleDesconto(cnpj9, cnpj4, cnpj2, dadosPedido.valor);
