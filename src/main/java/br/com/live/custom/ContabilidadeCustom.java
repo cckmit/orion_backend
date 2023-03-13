@@ -196,16 +196,15 @@ public class ContabilidadeCustom {
 	
 	public int findStatusByLancto(String usuario) {
 		
-		int status = 0;
+		int status = 1;
 		
-		String query = " SELECT 1 FROM orion_cnt_010 x WHERE x.status = 0 AND x.usuario = ? GROUP BY x.status " + usuario;
+		String query = " SELECT 1 FROM orion_cnt_010 x WHERE x.status = 1 AND x.usuario = ? GROUP BY x.status ";
 				
 		try {
-			status = jdbcTemplate.queryForObject(query, Integer.class);
+			status = jdbcTemplate.queryForObject(query, Integer.class, usuario);
 		} catch (Exception e) {
-			status = 1;
+			status = 0;
 		}
-
 		return status;
 	}
 

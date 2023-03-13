@@ -87,31 +87,31 @@ public class ContabilidadeService {
 	
 	public RetornoLancamentoCont importarLancamentosContabeis(List<ConsultaLanctoContabeis> listLancto, String usuario, String datainsercao) {
 		// Deletando tudo na Tabela orion_cnt_010
-		lanctoContabilImportacaoRepository.deleteAll();
+		lanctoContabilImportacaoRepository.deleteByUsuario(usuario);
 		RetornoLancamentoCont listRetorno = null;
 		
 		LancamentoContabeisImport lanctoContabil = null;
 		int sequencia = 1;
 		int status = 1;
-		String criticas = "";
 		String[] periodoConcat = datainsercao.split("[-]");
         String periodo = periodoConcat[1];
         
 		for (ConsultaLanctoContabeis dadosLancto : listLancto) {
 			int id = contabilidadeCustom.findNextId();
+			String criticasByLancto = "";
 			String origem = validarOrigem(dadosLancto.origem);
 			String contaReduzida = validarContaContabil(dadosLancto.contaReduzida);
 			String empresa = validarEmpresa(dadosLancto.filialLancto);
 			String centroCusto = validarCentroCusto(dadosLancto.centroCusto);
 			String histContabil = validarHistoricoContabil(dadosLancto.histContabil);
-			if(origem  == "" && contaReduzida  == "" && empresa == "" && centroCusto == "" && histContabil == "") {
+			criticasByLancto = incrementarCriticas(empresa, origem, contaReduzida, centroCusto, histContabil);
+			if(criticasByLancto.length() <= 4) {
 				status = 0;
 			}
 			try {
-				criticas = (empresa + "/" + origem + "/" + contaReduzida + "/" + centroCusto + "/" + histContabil);				
 				lanctoContabil = new LancamentoContabeisImport(id, dadosLancto.filialLancto, dadosLancto.exercicio, dadosLancto.origem, dadosLancto.contaReduzida,
 						dadosLancto.debitoCredito, dadosLancto.valorLancto, dadosLancto.centroCusto, dadosLancto.histContabil, FormataData.parseStringToDate(dadosLancto.dataLancto), dadosLancto.complHistor1,
-						FormataData.parseStringToDate(datainsercao), usuario, 0, 0, sequencia, Integer.parseInt(periodo), status, criticas);
+						FormataData.parseStringToDate(datainsercao), usuario, 0, 0, sequencia, Integer.parseInt(periodo), status, criticasByLancto.strip());
 				lanctoContabilImportacaoRepository.saveAndFlush(lanctoContabil);
 				sequencia += 1;				
 			} catch (Exception e) {
@@ -121,6 +121,24 @@ public class ContabilidadeService {
 		}
 		listRetorno = new RetornoLancamentoCont(contabilidadeCustom.findStatusByLancto(usuario), contabilidadeCustom.findAllLanctoContabeis(usuario));
 		return listRetorno;
+	}
+	
+	public String incrementarCriticas(String empresa, String origem, String contaReduzida, String centroCusto, String histContabil) {
+		
+		String criticas = "";
+		
+		if(empresa != null) {
+			criticas = criticas.strip() + "\n" + empresa + "\n";
+		} if(origem != null) {
+			criticas = criticas.strip() + "\n" + origem + "\n";	
+		} if(contaReduzida != null) {
+			criticas = criticas.strip() + "\n" + contaReduzida + "\n";
+		} if(centroCusto != null) {
+			criticas = criticas.strip() + "\n" + centroCusto + "\n";
+		}if(histContabil != null) {
+			criticas = criticas.strip() + "\n" + histContabil + "\n";
+		}
+		return criticas;
 	}
 	
 	public int salvarSystextil(String usuario) {
@@ -139,6 +157,7 @@ public class ContabilidadeService {
 						dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
 			}
 			mensagem = 1;
+			lanctoContabilImportacaoRepository.deleteByUsuario(usuario);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
