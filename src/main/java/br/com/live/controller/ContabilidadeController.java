@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.body.BodyContabilidade;
 import br.com.live.custom.ContabilidadeCustom;
 import br.com.live.model.ConsultaLanctoContabeis;
+import br.com.live.model.RetornoLancamentoCont;
 import br.com.live.service.ContabilidadeService;
 
 
@@ -36,9 +37,19 @@ public class ContabilidadeController {
         return contabilidadeCustom.findUserSystextil(idUsuario);
     }
     
+    @RequestMapping(value = "/save-systextil", method = RequestMethod.POST)
+    public int salvarSystextil(@RequestBody BodyContabilidade body) {                  
+    	return contabilidadeService.salvarSystextil(body.usuario);
+    }
+    
+    @RequestMapping(value = "/find-criticas-by-id/{id}", method = RequestMethod.GET)
+    public String findCriticasById(@PathVariable("id") int id) {                  
+        return contabilidadeCustom.findCriticasById(id);
+    }
+    
     @RequestMapping(value = "/importar-lancamentos-contabeis", method = RequestMethod.POST)
-    public List<ConsultaLanctoContabeis> importarLancamentosContabeis(@RequestBody BodyContabilidade body) {                  
-    	contabilidadeService.importarLancamentosContabeis(body.tabImportarLanctoContab, body.usuario, body.datainsercao);
-    	return contabilidadeCustom.findAllLanctoContabeis();
+    public RetornoLancamentoCont importarLancamentosContabeis(@RequestBody BodyContabilidade body) {                  
+    	return contabilidadeService.importarLancamentosContabeis(body.tabImportarLanctoContab, body.usuario, body.datainsercao);
+    	 
     }
 }

@@ -19,7 +19,9 @@ public class SequenciamentoDecoracoesCustom {
 
 	public static final int ESTAGIO_AGRUPADOR_DECORACOES = 10;
 	public static final String ESTAGIOS_DISTRIB_DECORACOES = "9,31";
-	public static final double MINUTOS_PRODUCAO_DIA = 984; // Turno1: 496 + Turno2: 488 => 984 minutos 
+	public static final double MINUTOS_PRODUCAO_DIA = 984; // Turno1: 496 + Turno2: 488 => 984 minutos 	
+	public static final int ORDEM_CONFIRMAR = 0;
+	public static final int ORDEM_CONFIRMADA = 1;	
 	private final JdbcTemplate jdbcTemplate;
 
 	public SequenciamentoDecoracoesCustom(JdbcTemplate jdbcTemplate) {
@@ -98,7 +100,6 @@ public class SequenciamentoDecoracoesCustom {
 	}
 
 	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas(int codEstagio) {
-		
 		String query = " select a.id, "
 	    + " a.sequencia seqPrioridade, "
 	    + " a.ordem_producao ordemProducao, "
@@ -118,7 +119,7 @@ public class SequenciamentoDecoracoesCustom {
 	    + " a.data_termino dataTermino, "
 	    + " a.confirmado "
 	    + " from orion_cfc_300 a, basi_030 b, pcpc_020 c, mqop_005 d "
-	    + " where a.cod_estagio = ? "
+	    + " where a.cod_estagio = ? "	    
 	    + " and b.nivel_estrutura = '1' "
 	    + " and b.referencia = a.referencia "
 	    + " and c.ordem_producao = a.ordem_producao "
@@ -126,7 +127,7 @@ public class SequenciamentoDecoracoesCustom {
 	    + " and exists (select 1 from pcpc_040 p "
 	    + " where p.ordem_producao = a.ordem_producao "
         + " and p.codigo_estagio = a.cod_estagio "
-        + " and p.qtde_a_produzir_pacote > 0) " 
+        + " and p.qtde_a_produzir_pacote > 0) "                        
         + " order by a.sequencia" ;
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosSequenciamentoDecoracoes.class), codEstagio);
@@ -150,5 +151,10 @@ public class SequenciamentoDecoracoesCustom {
 	public void saveSequenciamento(int id, int sequencia, Date dataInicio, Date dataTermino) {
 		String query = "update orion_cfc_300 set sequencia = ?, data_inicio = ?, data_termino = ? where id = ?";
 		jdbcTemplate.update(query, sequencia, dataInicio, dataTermino, id);
+	}
+	
+	public void saveSequenciamento(int id, int confirmado) {
+		String query = "update orion_cfc_300 set confirmado = ? where id = ?";
+		jdbcTemplate.update(query, confirmado, id);
 	}
 }
