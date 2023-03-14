@@ -1107,13 +1107,18 @@ public class ExpedicaoCustom {
 		List<ConsultaTag> historicoEnderecos = new ArrayList<ConsultaTag>();
 
 		String query = " select a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) numeroTag, "
-				+ " a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item produto, a.data_hora data, a.tipo, a.usuario, a.endereco "
+				+ " a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item produto, a.data_hora data, a.tipo, a.usuario, "
+				+ " CASE "
+				+ "      WHEN a.endereco LIKE '% - 0%' "
+				+ "   THEN SUBSTR(a.endereco, 0, 7) || ' - Zerado' "
+				+ "ELSE a.endereco "
+				+ "END endereco "
 				+ " from orion_exp_300 a "
 				+ " where trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('"
 				+ dataFim + "', 'dd-MM-yyyy') ";
 
 		if (endereco != null && !endereco.equalsIgnoreCase("")) {
-			query += " and a.endereco = '" + endereco + "' ";
+			query += " and SUBSTR(a.endereco, 0, 7) = '" + endereco + "' ";
 		}
 		if (usuario != null && !usuario.equalsIgnoreCase("")) {
 			query += " and a.usuario in (" + usuario + ")";
@@ -1139,7 +1144,7 @@ public class ExpedicaoCustom {
 				+ dataFim + "', 'dd-MM-yyyy') ";
 
 		if (endereco != null && !endereco.equalsIgnoreCase("")) {
-			query += " and a.endereco = '" + endereco + "' ";
+			query += " and SUBSTR(a.endereco, 0, 7) = '" + endereco + "' ";
 		}
 		if (usuario != null && !usuario.equalsIgnoreCase("")) {
 			query += " and a.usuario in (" + usuario + ")";

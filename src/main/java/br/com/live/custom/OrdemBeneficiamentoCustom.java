@@ -93,7 +93,8 @@ public class OrdemBeneficiamentoCustom {
 	
 	public List<ConteudoChaveNumerica> findAllOrdensBenef(int ordem) {
 		
-		String query = " SELECT a.ordem_producao value, a.ordem_producao label FROM pcpb_010 a WHERE a.ordem_producao LIKE '%" + ordem + "%'";
+		String query = " SELECT a.ordem_producao value, a.ordem_producao label FROM pcpb_010 a WHERE a.ordem_producao LIKE '%" + ordem + "%'"
+				+ "  AND EXISTS (SELECT 1 FROM pcpb_070 s WHERE s.ordem_producao = a.ordem_producao) ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
@@ -243,12 +244,12 @@ public class OrdemBeneficiamentoCustom {
 	
 	public List<AnaliseQualidade> findAnalise(int ordem) {
 		
-		String query = " SELECT MIN(NVL(c.numero_ob, 0)) ordemTecelagem, "
-				+ "       d.ordem_producao ordemBeneficiamento, "
-				+ "       d.panoacab_nivel99 || '.' || d.panoacab_grupo || '.' || d.panoacab_subgrupo || '.' || d.panoacab_item codigoTecido, "
-				+ "       e.narrativa descricaoTecido, "
-				+ "       f.data_informacao data "
-				+ "       FROM pcpt_020_025 c, pcpt_020 d, basi_010 e, pcpb_070 f "
+		String query = " SELECT MIN(NVL(c.ordem_producao, 0)) ordemTecelagem, "
+				+ "         NVL(c.numero_ob, 0) ordemBeneficiamento, "
+				+ "         d.panoacab_nivel99 || '.' || d.panoacab_grupo || '.' || d.panoacab_subgrupo || '.' || d.panoacab_item codigoTecido, "
+				+ "         e.narrativa descricaoTecido, "
+				+ "         f.data_informacao data "
+				+ "     FROM pcpt_020_025 c, pcpt_020 d, basi_010 e, pcpb_070 f "
 				+ "		WHERE d.ordem_producao = c.ordem_producao "
 				+ "		AND d.area_producao = c.area_producao "
 				+ "		AND d.codigo_rolo = c.codigo_rolo "
@@ -257,9 +258,9 @@ public class OrdemBeneficiamentoCustom {
 				+ "		AND e.subgru_estrutura = d.panoacab_subgrupo "
 				+ "		AND e.item_estrutura = d.panoacab_item "
 				+ "		AND f.ordem_producao (+) = c.ordem_producao "
-				+ "		AND c.ordem_producao = " + ordem
+				+ "		AND c.numero_ob = " + ordem
 				+ "		GROUP BY d.ordem_producao, d.panoacab_nivel99, d.panoacab_grupo, d.panoacab_subgrupo, d.panoacab_item, "
-				+ "       c.ordem_tingimento_rolo, e.narrativa, f.data_informacao ";
+				+ "       c.ordem_tingimento_rolo, e.narrativa, f.data_informacao, c.numero_ob ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class));
 	}

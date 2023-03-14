@@ -634,6 +634,10 @@ public class ExpedicaoService {
 		return expedicaoCustom.showCountPartsAllocation(allocation);
 	}
 	
+	public int salvarlog(String allocation) {
+		return expedicaoCustom.showCountPartsAllocation(allocation);
+	}
+	
 	public void clearAllocation(String allocation) {
 		expedicaoCustom.clearAllocation(allocation);
 	}
