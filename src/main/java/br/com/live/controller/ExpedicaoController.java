@@ -259,7 +259,8 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/count-parts-allocation/{allocation}", method = RequestMethod.GET)
     public int countPartsAllocation(@PathVariable("allocation") String allocation) {
-    	return expedicaoCustom.showCountPartsAllocation(allocation);
+    	return expedicaoService.salvarlog(allocation);
+    	
     }
     
     @RequestMapping(value = "/find-allocations/{startAllocation}/{endAllocation}", method = RequestMethod.GET)
