@@ -82,7 +82,8 @@ public class SequenciamentoDecoracoesCustom {
 		+ " and z.seq_operacao <= (select y.seq_operacao from pcpc_040 y "  
 		+ " where y.ordem_producao = z.ordem_producao "
 		+ " and y.ordem_confeccao = z.ordem_confeccao "
-		+ " and y.codigo_estagio = ?) " ;
+		+ " and y.codigo_estagio = ?) " 
+		+ " and rownum = 1 ";
 
 		try {
 			encontrou = jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, codEstagio);
@@ -94,7 +95,7 @@ public class SequenciamentoDecoracoesCustom {
 	}
 	
 	public String findEnderecoDistribuicao(int ordemProducao) {
-		String query = " select max(e.box) endereco from dist_050 d, dist_052 e "
+		String query = " select nvl(max(e.box),'') endereco from dist_050 d, dist_052 e "
 		+ " where d.ordem_producao = ? "
 		+ " and e.endereco = d.endereco ";
 

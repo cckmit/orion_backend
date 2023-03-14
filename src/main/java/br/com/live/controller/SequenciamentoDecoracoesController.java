@@ -80,9 +80,9 @@ public class SequenciamentoDecoracoesController {
 	}
 	
 	@RequestMapping(value = "/confirmar-sequenciamento", method = RequestMethod.POST)
-	public List<DadosSequenciamentoDecoracoes> confirmarSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {
+	public ResponseEntity<List<DadosSequenciamentoDecoracoes>> confirmarSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {
 		sequenciamentoDecoracoesService.confirmarSequenciamento(body.codEstagio, body.listaOrdens);
-		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagio);
+		return new ResponseEntity<> (sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagio), HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/remover-ordem-sequenciamento/{codEstagio}/{id}", method = RequestMethod.DELETE)
