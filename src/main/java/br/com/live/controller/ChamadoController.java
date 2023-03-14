@@ -43,7 +43,7 @@ public class ChamadoController {
 
     @RequestMapping(value = "/save-chamado", method = RequestMethod.POST)
     public void saveChamado(@RequestBody BodyChamado body) {
-        chamadoService.saveChamado(body.codChamado, body.tituloChamado, body.codRequerente, body.codTecnico, body.codArea, body.codDepartamento, body.codSetor, body.impacto, body.descricaoChamado, body.dataChamado);
+        chamadoService.saveChamado(body.codChamado, body.tituloChamado, body.codTecnico, body.codArea, body.codDepartamento, body.codSetor, body.impacto, body.descricaoChamado, body.dataChamado, body.nomeRequerente, body.dataAnalise, body.dataEntregaDes, body.dataEntregaUsuario);
     }
 
     @RequestMapping(value = "/delete-by-id/{codChamado}", method = RequestMethod.DELETE)

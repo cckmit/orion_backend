@@ -17,9 +17,6 @@ public class Chamado {
     @Column(name = "titulo_chamado")
     public String tituloChamado;
 
-    @Column(name = "cod_requerente")
-    public int codRequerente;
-
     @Column(name = "cod_tecnico")
     public int codTecnico;
 
@@ -32,7 +29,7 @@ public class Chamado {
     @Column(name = "cod_setor")
     public int codSetor;
 
-    public boolean impacto;
+    public int impacto;
 
     @Column(name = "descricao_chamado")
     public String descricaoChamado;
@@ -40,14 +37,25 @@ public class Chamado {
     @Column(name = "data_chamado")
     public Date dataChamado;
 
+    @Column(name = "nome_requerente")
+    public String nomeRequerente;
+
+    @Column(name = "data_analise")
+    public Date dataAnalise;
+
+    @Column(name = "data_entrega_des")
+    public Date dataEntregaDes;
+
+    @Column(name = "data_entrega_usuario")
+    public Date dataEntregaUsuario;
+
     public Chamado(){
 
     }
 
-    public Chamado(int codChamado, String tituloChamado, int codRequerente, int codTecnico, int codArea, int codDepartamento, int codSetor, boolean impacto, String descricaoChamado, Date dataChamado) {
+    public Chamado(int codChamado, String tituloChamado, int codTecnico, int codArea, int codDepartamento, int codSetor, int impacto, String descricaoChamado, Date dataChamado, String nomeRequerente, Date dataAnalise, Date dataEntregaDes, Date dataEntregaUsuario) {
         this.codChamado = codChamado;
         this.tituloChamado = tituloChamado;
-        this.codRequerente = codRequerente;
         this.codTecnico = codTecnico;
         this.codArea = codArea;
         this.codDepartamento = codDepartamento;
@@ -55,5 +63,9 @@ public class Chamado {
         this.impacto = impacto;
         this.descricaoChamado = descricaoChamado;
         this.dataChamado = dataChamado;
+        this.nomeRequerente = nomeRequerente;
+        this.dataAnalise = dataAnalise;
+        this.dataEntregaDes = dataEntregaDes;
+        this.dataEntregaUsuario = dataEntregaUsuario;
     }
 }

@@ -18,10 +18,10 @@ public class ChamadoCustom {
     public List<ConsultaChamado> findAllChamados() {
 
         String query = "SELECT o.cod_chamado codChamado, o.titulo_chamado tituloChamado, o.impacto, o.descricao_chamado descricaoChamado, " +
-                "o.data_chamado dataChamado, r.nome nomeRequerente, t.nome nomeTecnico, o.cod_area codArea, o.cod_departamento codDepartamento, o.cod_setor codSetor, " +
+                "o.data_chamado dataChamado, o.nome_requerente nomeRequerente, o.data_analise dataAnalise, o.data_entrega_des dataEntregaDes, " +
+                "o.data_entrega_usuario dataEntregaUsuario, t.nome nomeTecnico, o.cod_area codArea, o.cod_departamento codDepartamento, o.cod_setor codSetor, " +
                 "y.descricao descricaoArea, u.descricao descricaoDepartamento, i.descricao descricaoSetor " +
                 "FROM ORION_ADM_010 o " +
-                "JOIN ORION_001 r ON o.cod_requerente = r.id " +
                 "JOIN ORION_001 t ON o.cod_tecnico = t.id " +
                 "JOIN ORION_IND_020 y ON o.cod_area = y.sequencia " +
                 "JOIN ORION_IND_020 u ON o.cod_departamento = u.sequencia " +
@@ -37,10 +37,10 @@ public class ChamadoCustom {
     public List<ConsultaChamado> findAllChamadosByData (String dataInicio, String dataFim) {
 
         String query = "SELECT o.cod_chamado codChamado, o.titulo_chamado tituloChamado, o.impacto, o.descricao_chamado descricaoChamado, " +
-                "o.data_chamado dataChamado, r.nome nomeRequerente, t.nome nomeTecnico, o.cod_area codArea, o.cod_departamento codDepartamento, o.cod_setor codSetor, " +
+                "o.data_chamado dataChamado, o.nome_requerente nomeRequerente, o.data_analise dataAnalise, o.data_entrega_des dataEntregaDes, o.data_entrega_usuario dataEntregaUsuario, " +
+                "t.nome nomeTecnico, o.cod_area codArea, o.cod_departamento codDepartamento, o.cod_setor codSetor, " +
                 "y.descricao descricaoArea, u.descricao descricaoDepartamento, i.descricao descricaoSetor " +
                 "FROM ORION_ADM_010 o " +
-                "JOIN ORION_001 r ON o.cod_requerente = r.id " +
                 "JOIN ORION_001 t ON o.cod_tecnico = t.id " +
                 "JOIN ORION_IND_020 y ON o.cod_area = y.sequencia " +
                 "JOIN ORION_IND_020 u ON o.cod_departamento = u.sequencia " +

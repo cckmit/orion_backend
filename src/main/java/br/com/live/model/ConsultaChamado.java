@@ -6,12 +6,11 @@ public class ConsultaChamado {
 
     public int codChamado;
     public String tituloChamado;
-    public int codRequerente;
     public int codTecnico;
     public int codArea;
     public int codSetor;
     public int codDepartamento;
-    public boolean impacto;
+    public int impacto;
     public String descricaoChamado;
     public Date dataChamado;
     public String nomeRequerente;
@@ -19,17 +18,20 @@ public class ConsultaChamado {
     public String descricaoArea;
     public String descricaoDepartamento;
     public String descricaoSetor;
+    public Date dataAnalise;
+    public Date dataEntregaDes;
+    public Date dataEntregaUsuario;
 
     public ConsultaChamado(){
 
     }
 
-    public ConsultaChamado(int codChamado, String tituloChamado, int codRequerente, int codTecnico, int codArea, int codSetor,
-                           int codDepartamento, boolean impacto, String descricaoChamado, Date dataChamado, String nomeRequerente,
-                           String nomeTecnico, String descricaoArea, String descricaoDepartamento, String descricaoSetor) {
+    public ConsultaChamado(int codChamado, String tituloChamado, int codTecnico, int codArea, int codSetor,
+                           int codDepartamento, int impacto, String descricaoChamado, Date dataChamado, String nomeRequerente,
+                           String nomeTecnico, String descricaoArea, String descricaoDepartamento, String descricaoSetor,
+                           Date dataAnalise, Date dataEntregaDes, Date dataEntregaUsuario) {
         this.codChamado = codChamado;
         this.tituloChamado = tituloChamado;
-        this.codRequerente = codRequerente;
         this.codTecnico = codTecnico;
         this.codArea = codArea;
         this.codSetor = codSetor;
@@ -42,6 +44,33 @@ public class ConsultaChamado {
         this.descricaoArea = descricaoArea;
         this.descricaoDepartamento = descricaoDepartamento;
         this.descricaoSetor = descricaoSetor;
+        this.dataAnalise = dataAnalise;
+        this.dataEntregaDes = dataEntregaDes;
+        this.dataEntregaUsuario = dataEntregaUsuario;
+    }
+
+    public Date getDataAnalise() {
+        return dataAnalise;
+    }
+
+    public void setDataAnalise(Date dataAnalise) {
+        this.dataAnalise = dataAnalise;
+    }
+
+    public Date getDataEntregaDes() {
+        return dataEntregaDes;
+    }
+
+    public void setDataEntregaDes(Date dataEntregaDes) {
+        this.dataEntregaDes = dataEntregaDes;
+    }
+
+    public Date getDataEntregaUsuario() {
+        return dataEntregaUsuario;
+    }
+
+    public void setDataEntregaUsuario(Date dataEntregaUsuario) {
+        this.dataEntregaUsuario = dataEntregaUsuario;
     }
 
     public int getCodChamado() {
@@ -58,14 +87,6 @@ public class ConsultaChamado {
 
     public void setTituloChamado(String tituloChamado) {
         this.tituloChamado = tituloChamado;
-    }
-
-    public int getCodRequerente() {
-        return codRequerente;
-    }
-
-    public void setCodRequerente(int codRequerente) {
-        this.codRequerente = codRequerente;
     }
 
     public int getCodTecnico() {
@@ -100,11 +121,11 @@ public class ConsultaChamado {
         this.codDepartamento = codDepartamento;
     }
 
-    public boolean isImpacto() {
+    public int isImpacto() {
         return impacto;
     }
 
-    public void setImpacto(boolean impacto) {
+    public void setImpacto(int impacto) {
         this.impacto = impacto;
     }
 

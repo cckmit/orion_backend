@@ -20,19 +20,22 @@ public class ChamadoService {
         return chamadoRepository.findByCodChamado(codChamado);
     }
 
-    public Chamado saveChamado(int codChamado, String tituloChamado, int codRequerente, int codTecnico, int codArea,
-                               int codDepartamento, int codSetor, boolean impacto, String descricaoChamado, String dataChamado) {
+    public Chamado saveChamado(int codChamado, String tituloChamado, int codTecnico, int codArea,
+                               int codDepartamento, int codSetor, int impacto, String descricaoChamado, String dataChamado,
+                               String nomeRequerente, String dataAnalise, String dataEntregaDes, String dataEntregaUsuario) {
 
         Chamado dadosChamado = null;
 
+        System.out.println(dataAnalise + " / " + dataEntregaDes + " / " + dataEntregaUsuario);
+
         dadosChamado = chamadoRepository.findByCodChamado(codChamado);
 
+        System.out.println("dataAnalise: " + dataAnalise + " dataEntregaDes" + dataEntregaDes + " dataEntregaUsuario" + dataEntregaUsuario);
+
         if (dadosChamado == null) {
-           dadosChamado = new Chamado(codChamado, tituloChamado,codRequerente, codTecnico, codArea,
-                   codDepartamento, codSetor, impacto, descricaoChamado, FormataData.parseStringToDate(dataChamado));
+           dadosChamado = new Chamado(codChamado, tituloChamado, codTecnico, codArea, codDepartamento, codSetor, impacto, descricaoChamado, FormataData.parseStringToDate(dataChamado), nomeRequerente, FormataData.parseStringToDate(dataAnalise), FormataData.parseStringToDate(dataEntregaDes), FormataData.parseStringToDate(dataEntregaUsuario));
         } else {
             dadosChamado.tituloChamado = tituloChamado;
-            dadosChamado.codRequerente = codRequerente;
             dadosChamado.codTecnico = codTecnico;
             dadosChamado.codArea = codArea;
             dadosChamado.codDepartamento = codDepartamento;
@@ -40,6 +43,10 @@ public class ChamadoService {
             dadosChamado.impacto = impacto;
             dadosChamado.descricaoChamado = descricaoChamado;
             dadosChamado.dataChamado = FormataData.parseStringToDate(dataChamado);
+            dadosChamado.nomeRequerente = nomeRequerente;
+            dadosChamado.dataAnalise = FormataData.parseStringToDate(dataAnalise);
+            dadosChamado.dataEntregaDes = FormataData.parseStringToDate(dataEntregaDes);
+            dadosChamado.dataEntregaUsuario = FormataData.parseStringToDate(dataEntregaUsuario);
         }
         chamadoRepository.save(dadosChamado);
 
