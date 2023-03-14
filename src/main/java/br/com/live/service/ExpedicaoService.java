@@ -638,15 +638,15 @@ public class ExpedicaoService {
 		return expedicaoCustom.showCountPartsAllocation(allocation);
 	}
 	
-	public void clearAllocation(String allocation) {
-		expedicaoCustom.clearAllocation(allocation);
+	public void clearAllocation(String allocation, String usuarioSystextil) {
+		expedicaoCustom.clearAllocation(allocation, usuarioSystextil);
 	}
 	
 	public void clearMultiAllocation(String allocation, int deposito) {
 		expedicaoCustom.clearAllocationEstq110(allocation, deposito);
 	}
 	
-	public void clearMultiAllocations(List<String> allocations) {
+	public void clearMultiAllocations(List<String> allocations, String usuarioSystextil) {
 		int deposito = 0;
 		
 		for (String allocation : allocations) {
@@ -657,7 +657,7 @@ public class ExpedicaoService {
 			} else {
 				deposito = 4;
 			}
-			clearAllocation(allocation);
+			clearAllocation(allocation, usuarioSystextil);
 			clearMultiAllocation(allocation, deposito);
 		}
 	}

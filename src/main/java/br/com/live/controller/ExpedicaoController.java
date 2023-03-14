@@ -254,7 +254,7 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/limpar-endereco", method = RequestMethod.POST)
     public void cleanEndereco(@RequestBody BodyExpedicao body) {
-    	expedicaoService.clearAllocation(body.endereco);
+    	expedicaoService.clearAllocation(body.endereco, body.usuarioSystextil);
     }
     
     @RequestMapping(value = "/count-parts-allocation/{allocation}", method = RequestMethod.GET)
@@ -270,7 +270,7 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/clear-multi-allocations", method = RequestMethod.POST)
     public void cleanMultiAllocations(@RequestBody BodyExpedicao body) {
-    	expedicaoService.clearMultiAllocations(body.enderecos);
+    	expedicaoService.clearMultiAllocations(body.enderecos, body.usuarioSystextil);
     }
     
     @RequestMapping(value = "/validate-warehouse", method = RequestMethod.POST)

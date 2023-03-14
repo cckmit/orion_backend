@@ -22,6 +22,7 @@ public class BodyExpedicao {
 	public int cestoFim;
 	public int codCaixa;
 	public int usuario;
+	public String usuarioSystextil;
 	public String ruaInicio;
 	public String ruaFim;
 	public int volume;
