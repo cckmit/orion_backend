@@ -113,4 +113,30 @@ public class OrdemBeneficiamentoService {
 		return listaOrdensGeradas;		
 	}
 	
+	//public String gerarPdfLaudo(List<ConsultaChamado> chamados, String dataInicio, String dataFim) throws JRException, FileNotFoundException {
+
+	//	String nomeRelatorioGerado = "";
+
+	//	JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(chamados);
+
+	//	Map<String, Object> parameters = setParameters(dataInicio, dataFim);
+
+	//	nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "chamados", parameters, "chamados", false);
+
+	//	return nomeRelatorioGerado;
+	//	}
+
+	//public Map<String, Object> setParameters(String dataInicio, String dataFim) {
+
+	//	Map<String, Object> parameters = new HashMap<>();
+	//	parameters.put("dataInicio", dataInicio);
+	//	parameters.put("dataFim", dataFim);
+
+	//	return parameters;
+	//	}
+
+	//public void deleteByCodChamado(int codChamado) {
+	//	chamadoRepository.deleteByCodChamado(codChamado);
+	//	}
+	
 }
