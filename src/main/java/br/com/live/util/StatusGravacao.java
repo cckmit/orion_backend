@@ -1,5 +1,6 @@
 package br.com.live.util;
 
+@Deprecated // Evite utilizar essa classe, tente utilizar a MensagemErroException.
 public class StatusGravacao {
 
 	private boolean concluido;

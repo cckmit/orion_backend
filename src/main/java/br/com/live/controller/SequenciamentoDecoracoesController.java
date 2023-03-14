@@ -3,6 +3,8 @@ package br.com.live.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,5 +83,11 @@ public class SequenciamentoDecoracoesController {
 	public List<DadosSequenciamentoDecoracoes> confirmarSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {
 		sequenciamentoDecoracoesService.confirmarSequenciamento(body.codEstagio, body.listaOrdens);
 		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagio);
-	}	
+	}
+	
+	@RequestMapping(value = "/remover-ordem-sequenciamento/{codEstagio}/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<List<DadosSequenciamentoDecoracoes>> removerSequenciamento(@PathVariable("codEstagio") int codEstagio, @PathVariable("id") int id) {
+		sequenciamentoDecoracoesService.removerOrdemProducaoSequenciamento(id);
+		return new ResponseEntity<> (sequenciamentoDecoracoesCustom.findOrdensSequenciadas(codEstagio), HttpStatus.OK);
+	}		
 }

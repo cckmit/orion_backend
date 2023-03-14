@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.model.DadosSequenciamentoDecoracoes;
 import br.com.live.model.OrdemProducaoEstagios;
-import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -21,7 +20,9 @@ public class SequenciamentoDecoracoesCustom {
 	public static final String ESTAGIOS_DISTRIB_DECORACOES = "9,31";
 	public static final double MINUTOS_PRODUCAO_DIA = 984; // Turno1: 496 + Turno2: 488 => 984 minutos 	
 	public static final int ORDEM_CONFIRMAR = 0;
-	public static final int ORDEM_CONFIRMADA = 1;	
+	public static final int ORDEM_CONFIRMADA = 1;
+	public static final String CAMPOS_DADOS_SEQUENCIAMENTO = " a.id,a.sequencia seqPrioridade,a.ordem_producao ordemProducao,a.referencia referencia,b.descr_referencia descricaoReferencia,a.cores,a.quantidade,c.observacao,a.cod_estagio codEstagioProx,d.descricao descEstagioProx,a.estagios_agrupados estagiosAgrupados,a.endereco,a.data_entrada dataEntrada,a.tempo_unit tempoUnitario,a.tempo_total tempoTotal,a.data_inicio dataInicio,a.data_termino dataTermino,a.confirmado ";
+	
 	private final JdbcTemplate jdbcTemplate;
 
 	public SequenciamentoDecoracoesCustom(JdbcTemplate jdbcTemplate) {
@@ -71,6 +72,27 @@ public class SequenciamentoDecoracoesCustom {
 		return estagios;
 	}		
 	
+	public boolean estagioDistribuicaoEmAberto(int ordemProducao, int codEstagio) {
+		int encontrou;
+
+		String query = "select 1 from pcpc_040 z "
+		+ " where z.ordem_producao = ? "
+		+ " and z.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +") "
+		+ " and z.qtde_em_producao_pacote > 0 "                            
+		+ " and z.seq_operacao <= (select y.seq_operacao from pcpc_040 y "  
+		+ " where y.ordem_producao = z.ordem_producao "
+		+ " and y.ordem_confeccao = z.ordem_confeccao "
+		+ " and y.codigo_estagio = ?) " ;
+
+		try {
+			encontrou = jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, codEstagio);
+		} catch (Exception e) {
+			encontrou = 0;
+		}
+		
+		return (encontrou == 1);		
+	}
+	
 	public String findEnderecoDistribuicao(int ordemProducao) {
 		String query = " select max(e.box) endereco from dist_050 d, dist_052 e "
 		+ " where d.ordem_producao = ? "
@@ -99,25 +121,24 @@ public class SequenciamentoDecoracoesCustom {
 		return (count > 0);		
 	}
 
+	public DadosSequenciamentoDecoracoes findSequenciamentoDecoracoesById(int id) {
+		String query = " select " + CAMPOS_DADOS_SEQUENCIAMENTO 
+	    + " from orion_cfc_300 a, basi_030 b, pcpc_020 c, mqop_005 d "
+	    + " where a.id = ? "	    
+	    + " and b.nivel_estrutura = '1' "
+	    + " and b.referencia = a.referencia "
+	    + " and c.ordem_producao = a.ordem_producao "
+	    + " and d.codigo_estagio = a.cod_estagio "	    
+	    + " and exists (select 1 from pcpc_040 p "
+	    + " where p.ordem_producao = a.ordem_producao "
+        + " and p.codigo_estagio = a.cod_estagio "
+        + " and p.qtde_a_produzir_pacote > 0) "                        
+        + " order by a.sequencia" ;
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(DadosSequenciamentoDecoracoes.class), id);
+	}
+	
 	public List<DadosSequenciamentoDecoracoes> findOrdensSequenciadas(int codEstagio) {
-		String query = " select a.id, "
-	    + " a.sequencia seqPrioridade, "
-	    + " a.ordem_producao ordemProducao, "
-	    + " a.referencia referencia, "
-	    + " b.descr_referencia descricaoReferencia, "
-	    + " a.cores, "
-	    + " a.quantidade, "
-	    + " c.observacao, "
-	    + " a.cod_estagio codEstagioProx, "
-	    + " d.descricao descEstagioProx, "
-	    + " a.estagios_agrupados estagiosAgrupados, "
-	    + " a.endereco, "
-	    + " a.data_entrada dataEntrada, "
-	    + " a.tempo_unit tempoUnitario, " 
-	    + " a.tempo_total tempoTotal, "
-	    + " a.data_inicio dataInicio, "
-	    + " a.data_termino dataTermino, "
-	    + " a.confirmado "
+		String query = " select " + CAMPOS_DADOS_SEQUENCIAMENTO 
 	    + " from orion_cfc_300 a, basi_030 b, pcpc_020 c, mqop_005 d "
 	    + " where a.cod_estagio = ? "	    
 	    + " and b.nivel_estrutura = '1' "
@@ -143,6 +164,16 @@ public class SequenciamentoDecoracoesCustom {
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 	
+	public int findNextSeqProducaoByEstagio(int codEstagio) {		
+		String query="select nvl(max(sequencia),0) from orion_cfc_300 where cod_estagio = ?";
+		return jdbcTemplate.queryForObject(query, Integer.class, codEstagio);
+	}
+
+	public int findLastSeqProducaoByEstagioDesconsiderandoOrdens(int codEstagio, String ordens) {		
+		String query="select nvl(max(sequencia),0) from orion_cfc_300 where cod_estagio = ? and ordem_producao not in("+ ordens +")";
+		return jdbcTemplate.queryForObject(query, Integer.class, codEstagio);
+	}
+	
 	public void saveSequenciamento(int id, int sequencia, int periodo, int ordemProducao, String referencia, String cores, int codEstagio, int quantidade, String estagiosAgrupados, String endereco, Date dataEntrada, double tempoUnit, double tempoTotal, Date dataInicio, Date dataTermino) {		
 		String query = "insert into orion_cfc_300 (id, sequencia, periodo, ordem_producao, referencia, cores, cod_estagio, quantidade, estagios_agrupados, endereco, data_entrada, tempo_unit, tempo_total, data_inicio, data_termino) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		jdbcTemplate.update(query, id, sequencia, periodo, ordemProducao, referencia, cores, codEstagio, quantidade, estagiosAgrupados, endereco, dataEntrada, tempoUnit, tempoTotal, dataInicio, dataTermino);
@@ -157,4 +188,9 @@ public class SequenciamentoDecoracoesCustom {
 		String query = "update orion_cfc_300 set confirmado = ? where id = ?";
 		jdbcTemplate.update(query, confirmado, id);
 	}
+	
+	public void deleteOrdemProducao(int id) {
+		String query = "delete from orion_cfc_300 where id = ?";
+		jdbcTemplate.update(query, id);
+	}	
 }
