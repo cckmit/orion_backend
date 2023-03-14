@@ -236,11 +236,10 @@ public class SequenciamentoDecoracoesService {
 
 	public void confirmarSequenciamento(int codEstagio, List<DadosSequenciamentoDecoracoes> ordens) {
 		System.out.println("confirmarSequenciamento");		
-		for (DadosSequenciamentoDecoracoes ordem : ordens) {
-			System.out.println("Ordem: " + ordem.getOrdemProducao());
+		for (DadosSequenciamentoDecoracoes ordem : ordens) {			
 			if (ordem.getDataInicio() == null)
-				continue;
-			System.out.println("Salvou: " + ordem.getOrdemProducao());
+				throw new MensagemErroException("Existem ordens sem as datas de inicio e fim calculadas! Calcule primeiro antes de confirmar o sequenciamento!");
+			System.out.println("Ordem: " + ordem.getOrdemProducao());
 			sequenciamentoDecoracoesCustom.saveSequenciamento(ordem.getId(), SequenciamentoDecoracoesCustom.ORDEM_CONFIRMADA);
 		}
 	}
@@ -252,7 +251,11 @@ public class SequenciamentoDecoracoesService {
 		if (ordemSequenciada.getConfirmado() == SequenciamentoDecoracoesCustom.ORDEM_CONFIRMADA)
 			throw new MensagemErroException("Ordem de produção confirmada para o estágio!");		
 		// não permitir remover ordens com o estágio de distribuição baixado
-		if (sequenciamentoDecoracoesCustom.estagioDistribuicaoEmAberto(ordemSequenciada.getOrdemProducao(),ordemSequenciada.getCodEstagioProx()))
+		
+		System.out.println("ORDEM: " + ordemSequenciada.getOrdemProducao() + " - EST: " + ordemSequenciada.getCodEstagioProx());
+		System.out.println("RETORNO: " + sequenciamentoDecoracoesCustom.estagioDistribuicaoEmAberto(ordemSequenciada.getOrdemProducao(),ordemSequenciada.getCodEstagioProx()));
+		
+		if (!sequenciamentoDecoracoesCustom.estagioDistribuicaoEmAberto(ordemSequenciada.getOrdemProducao(),ordemSequenciada.getCodEstagioProx()))
 			throw new MensagemErroException("Ordem de produção não possui estágio de distribuição em aberto!");		
 		sequenciamentoDecoracoesCustom.deleteOrdemProducao(id);
 	}	
