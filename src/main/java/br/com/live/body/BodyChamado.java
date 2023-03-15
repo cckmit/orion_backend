@@ -1,5 +1,10 @@
 package br.com.live.body;
 
+import br.com.live.model.ConsultaChamado;
+
+import java.util.Date;
+import java.util.List;
+
 public class BodyChamado {
     public int codChamado;
     public String tituloChamado;
@@ -14,4 +19,8 @@ public class BodyChamado {
     public String dataAnalise;
     public String dataEntregaDes;
     public String dataEntregaUsuario;
+
+    public List<ConsultaChamado> listChamados;
+    public String dataInicio;
+    public String dataFim;
 }

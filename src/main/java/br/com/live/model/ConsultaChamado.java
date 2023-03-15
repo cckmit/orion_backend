@@ -49,6 +49,14 @@ public class ConsultaChamado {
         this.dataEntregaUsuario = dataEntregaUsuario;
     }
 
+    public int getImpacto() {
+        return impacto;
+    }
+
+    public void setImpacto(int impacto) {
+        this.impacto = impacto;
+    }
+
     public Date getDataAnalise() {
         return dataAnalise;
     }
@@ -119,14 +127,6 @@ public class ConsultaChamado {
 
     public void setCodDepartamento(int codDepartamento) {
         this.codDepartamento = codDepartamento;
-    }
-
-    public int isImpacto() {
-        return impacto;
-    }
-
-    public void setImpacto(int impacto) {
-        this.impacto = impacto;
     }
 
     public String getDescricaoChamado() {
