@@ -414,4 +414,14 @@ public class ExpedicaoController {
     	expedicaoService.deleteRegraPrioridadeTipoClientePedido(tipoCliente);
         return expedicaoService.findAllRegraTipoCliente();
     }
+
+    @RequestMapping(value = "/obter-quant-caixas-lidas-minuta/{minuta}/{localCaixa}", method = RequestMethod.GET)
+    public int findQuantCaixasLidas(@PathVariable("minuta") int minuta, @PathVariable("localCaixa") int localCaixa) {
+        return expedicaoCustom.totalCaixasLidasDespacho(minuta, localCaixa);
+    }
+
+    @RequestMapping(value = "/verificar-todos-volumes-alocados/{minuta}", method = RequestMethod.GET)
+    public int findQuantCaixasLidas(@PathVariable("minuta") int minuta) {
+        return expedicaoCustom.verificaTodosVolumesAlocados(minuta);
+    }
 }

@@ -1404,6 +1404,20 @@ public class ExpedicaoCustom {
 	public int validarVolumesMinuta(int minuta) {
 		int localCaixa = 0;
 
+		String query = " select min(b.local_caixa) from orion_exp_320 a, pcpc_320 b "
+				+ " where b.numero_volume = a.volume "
+				+ " and a.minuta = " + minuta;
+		try {
+			localCaixa = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			localCaixa = 0;
+		}
+		return localCaixa;
+	}
+
+	public int verificaTodosVolumesAlocados(int minuta) {
+		int localCaixa = 0;
+
 		String query = " select b.local_caixa from orion_exp_320 a, pcpc_320 b "
 				+ " where b.numero_volume = a.volume "
 				+ " and a.minuta = " + minuta
@@ -1448,6 +1462,22 @@ public class ExpedicaoCustom {
 			totalCaixas = 0;
 		}
 		return totalCaixas;
+	}
+
+	public int totalCaixasLidasDespacho(int minuta, int statusVolume) {
+		int totalCaixasLidas = 0;
+
+		String query = " select count(*) from orion_exp_320 a, pcpc_320 b " +
+				" where a.minuta = " + minuta +
+				" and b.numero_volume = a.volume " +
+				" and b.local_caixa = " + statusVolume;
+		try {
+			totalCaixasLidas = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			totalCaixasLidas = 0;
+		}
+
+		return totalCaixasLidas;
 	}
 
 	public String obterTransportadoraMinuta(int minuta) {
