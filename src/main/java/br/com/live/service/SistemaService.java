@@ -24,7 +24,6 @@ public class SistemaService {
         if (sistema == null) {
             sistema = new Sistema(sistemaRepository.findNextId(), nomeSistema, objetivo, bancoDeDados, tipo, fornecedor, cnpj, endereco, formaPagto, temContrato, contrato, ambiente, usuariosAtivos, capacidadeUsuarios);
         } else {
-            sistema.id = id;
             sistema.nomeSistema = nomeSistema;
             sistema.objetivo = objetivo;
             sistema.bancoDeDados = bancoDeDados;

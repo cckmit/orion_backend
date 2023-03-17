@@ -16,7 +16,7 @@ public class Servidor {
     public String nomeServidor;
 
     @Column(name = "maquina_fisica")
-    public int maquinaFisica;
+    public boolean maquinaFisica;
 
     @Column(name = "sistema_operacional")
     public String sistemaOperacional;
@@ -28,7 +28,7 @@ public class Servidor {
     public String aplicacoes;
     public byte[] documentacao;
 
-    public Servidor(int id, String nomeServidor, int maquinaFisica, String sistemaOperacional, String ip, int hd, int memoria, String processador, String aplicacoes, byte[] documentacao) {
+    public Servidor(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional, String ip, int hd, int memoria, String processador, String aplicacoes, byte[] documentacao) {
         this.id = id;
         this.nomeServidor = nomeServidor;
         this.maquinaFisica = maquinaFisica;
@@ -59,11 +59,11 @@ public class Servidor {
         this.nomeServidor = nomeServidor;
     }
 
-    public int getMaquinaFisica() {
+    public boolean getMaquinaFisica() {
         return maquinaFisica;
     }
 
-    public void setMaquinaFisica(int maquinaFisica) {
+    public void setMaquinaFisica(boolean maquinaFisica) {
         this.maquinaFisica = maquinaFisica;
     }
 

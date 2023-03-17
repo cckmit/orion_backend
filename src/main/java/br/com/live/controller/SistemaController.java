@@ -23,7 +23,9 @@ public class SistemaController {
     }
 
     @RequestMapping(value = "/find-all-sistemas", method = RequestMethod.GET)
-    public List<Sistema> findAllSistemas() { return sistemaRepository.findAll(); }
+    public List<Sistema> findAllSistemas() {
+        return sistemaRepository.findAll();
+    }
 
     @RequestMapping(value = "/find-sistema-by-id/{id}", method = RequestMethod.GET)
     public Sistema findByIdSistema(@PathVariable("id") int id) {
