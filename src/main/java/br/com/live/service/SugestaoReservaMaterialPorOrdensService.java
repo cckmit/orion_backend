@@ -1,5 +1,6 @@
 package br.com.live.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -15,6 +16,7 @@ import br.com.live.custom.EstoqueProdutoCustom;
 import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.custom.SugestaoReservaMaterialCustom;
+import br.com.live.custom.SuprimentoCustom;
 import br.com.live.model.NecessidadeAviamentos;
 import br.com.live.model.NecessidadeTecidos;
 import br.com.live.model.OrdemProducao;
@@ -42,6 +44,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 	private final ProdutoCustom produtoCustom;
 	private final EstoqueProdutoCustom estoqueProdutoCustom;
 	private final OrdemProducaoCustom ordemProducaoCustom;	
+	private final SuprimentoCustom suprimentoCustom; 
 
 	private int regraReserva;
 	private String depositosTecidos;
@@ -63,11 +66,12 @@ public class SugestaoReservaMaterialPorOrdensService {
 	public SugestaoReservaMaterialPorOrdensService(SugestaoReservaMaterialCustom sugestaoReservaMaterialCustom, 
 			ProdutoCustom produtoCustom, 
 			EstoqueProdutoCustom estoqueProdutoCustom,
-			OrdemProducaoCustom ordemProducaoCustom) {						
+			OrdemProducaoCustom ordemProducaoCustom, SuprimentoCustom suprimentoCustom) {						
 		this.sugestaoReservaMaterialCustom = sugestaoReservaMaterialCustom;
 		this.produtoCustom = produtoCustom;
 		this.estoqueProdutoCustom = estoqueProdutoCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;		
+		this.suprimentoCustom = suprimentoCustom;
 	}
 
 	public SugestaoReservaMateriais calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositosTecidos, String depositosAviamentos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {		
@@ -98,8 +102,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		System.out.println("obter dados calculados " + new Date());
 		SugestaoReservaMateriais sugestao = obterDadosSugestaoReserva();
 				
-		limparListasAuxiliares();
-		
+		limparListasAuxiliares();		
 		System.out.println("fim do calculo de sugestao de reserva de tecidos " + new Date());
 		
 		return sugestao;
@@ -166,7 +169,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 						//if (item.getQtdeDisponivel() > sugestaoReservaPorOrdemTecido.getQtdeDisponivel()) sugestaoReservaPorOrdemTecido.setQtdeDisponivel(item.getQtdeDisponivel());
 					}
 				} else {
-					SugestaoReservaPorOrdemMaterial sugestaoReservaPorOrdemMaterial = new SugestaoReservaPorOrdemMaterial(idOrdem, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getDescricao(), item.getUnidade(), item.getQtdeNecessidadeUnit(), item.getQtdeNecessidade(), item.getQtdeEstoque(), item.getQtdeEmpenhada(), item.getQtdeSugerido());
+					SugestaoReservaPorOrdemMaterial sugestaoReservaPorOrdemMaterial = new SugestaoReservaPorOrdemMaterial(idOrdem, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getDescricao(), item.getUnidade(), item.getQtdeNecessidadeUnit(), item.getQtdeNecessidade(), item.getQtdeEstoque(), item.getQtdeEmpenhada(), item.getQtdeSugerido(), item.getPedidoCompraAberto(), item.getDataEntregaPedidoCompra(), item.getQtdeReceber());
 					sugestaoReservaPorOrdemMaterial.setQtdeDisponivel(item.getQtdeDisponivel());
 					sugestaoReservaPorOrdemMaterial.setQtdeDisponivelTecidoSubstituto(item.getQtdeDisponivelTecidoSubstituto());
 					//if (sugestaoReservaPorOrdemTecido.getQtdeDisponivel() > item.getQtdeDisponivel()) sugestaoReservaPorOrdemTecido.setQtdeDisponivel(item.getQtdeDisponivel());
@@ -367,9 +370,6 @@ public class SugestaoReservaMaterialPorOrdensService {
 			
 			//System.out.println("codTecido: " + codTecido + " - qtdeNecessidade: " + qtdeNecessidade + " - saldo: " + saldoDisponivel);
 				
-			// O conceito de tecido substitulo não é mais utilizado pela LIVE!
-			//if ((tipoMaterial == TECIDO) && (qtdeNecessidade > saldoDisponivel)) saldoDisponivel += obterQtdeSaldoTecidosSubstitutos(codigoProduto.getNivel(), codigoProduto.getGrupo(), codigoProduto.getSub(), codigoProduto.getItem());
-			
 			if (qtdeNecessidade > saldoDisponivel) {
 				if (saldoDisponivel > 0) percentual = (saldoDisponivel / qtdeNecessidade) * 100;
 				else percentual = 0.0;
@@ -407,21 +407,6 @@ public class SugestaoReservaMaterialPorOrdensService {
 			confirmaRecalculoApenasSeAtendeQtdeMinima(ordem, tipoMaterial);
 			recalcularNecessidadeTecidosDaOrdem(ordem, tipoMaterial);
 		}
-	}
-
-	private double obterQtdeSaldoTecidosSubstitutos(String nivelTecido, String grupoTecido, String subTecido, String itemTecido) {
-		
-		double qtdeSubstitutos = 0;
-		
-		List<Produto> substitutos = produtoCustom.findTecidosSubstitutos(nivelTecido, grupoTecido, subTecido, itemTecido);
-		
-		for (Produto substituto : substitutos) {			
-			String codTecido = new CodigoProduto(substituto.getNivel(), substituto.getGrupo(), substituto.getSub(), substituto.getItem()).getCodigo();				
-			SugestaoReservaPorMaterial dadosTecido = mapDadosPorTecido.get(codTecido);			
-			if (dadosTecido.getQtdeSaldo() > 0) qtdeSubstitutos += dadosTecido.getQtdeSaldo();
-		}
-		
-		return qtdeSubstitutos;
 	}
 
 	private void recalcularQtdePecasDaOrdem(OrdemProducao ordem, int tipoMaterial, String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, double percentualMaximoPecas) {
@@ -612,18 +597,11 @@ public class SugestaoReservaMaterialPorOrdensService {
 		double qtdeFaltaTecido = materialOrdem.getQtdeNecessidade() - materialOrdem.getQtdeNecessidadeCalculada();
 		double qtdeSaldoTecido = material.getQtdeSaldo();		
 		
-		// Conceito de tecido substituto não é mais utilizado
-		double qtdeSaldoSubstitutos = 0 ; // obterQtdeSaldoTecidosSubstitutos(materialOrdem.getNivel(), materialOrdem.getGrupo(), materialOrdem.getSub(), materialOrdem.getItem());		
-		
 		if (qtdeSaldoTecido < 0) qtdeSaldoTecido = 0;
-		if (qtdeSaldoSubstitutos < 0) qtdeSaldoSubstitutos = 0;
-		
-		double qtdeSaldoTotalTecido = qtdeSaldoTecido + qtdeSaldoSubstitutos; 		
-		materialOrdem.setQtdeDisponivelTecidoSubstituto(qtdeSaldoSubstitutos);
+		double qtdeSaldoTotalTecido = qtdeSaldoTecido; 		
 		
 		// System.out.println("qtdeSaldoTotalTecido: " + qtdeSaldoTotalTecido + "  - qtdeReservar: " + qtdeReservar);		
-		// if (tecidoOrdem.getIdOrdem() == 343831) System.out.println("qtdeSaldoTotalTecido: " + qtdeSaldoTotalTecido + "  - qtdeReservar: " + qtdeReservar); 
-				
+		// if (tecidoOrdem.getIdOrdem() == 343831) System.out.println("qtdeSaldoTotalTecido: " + qtdeSaldoTotalTecido + "  - qtdeReservar: " + qtdeReservar); 				
 		materialOrdem.setQtdeDisponivel(qtdeSaldoTecido);
 		
 		if (qtdeSaldoTotalTecido > 0) {		
@@ -633,8 +611,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 			
 			materialOrdem.setQtdeSugerido(materialOrdem.getQtdeSugerido() + qtdeReservada);
 			
-			// System.out.println("qtdeReservada: " + qtdeReservada);
-			
+			// System.out.println("qtdeReservada: " + qtdeReservada);			
 			if (qtdeReservada <= qtdeSaldoTecido) {
 				material.setQtdeSugerido(material.getQtdeSugerido() + qtdeReservada);
 				guardarDadosMateriaisReservados(materialOrdem.getIdOrdem(), material.getNivel(), material.getGrupo(), material.getSub(), material.getItem(), qtdeReservada);
@@ -644,36 +621,8 @@ public class SugestaoReservaMaterialPorOrdensService {
 				if (qtdeSaldoTecido > 0.0) {
 					material.setQtdeSugerido(material.getQtdeSugerido() + qtdeSaldoTecido);
 					guardarDadosMateriaisReservados(materialOrdem.getIdOrdem(), material.getNivel(), material.getGrupo(), material.getSub(), material.getItem(), qtdeSaldoTecido);
-				}
-								
-				/* Conceito de tecido substituto não é mais utilizado
-				double qtdeSugerirSubstitutos = qtdeReservada - qtdeSaldoTecido;				
-				double qtdeSugerirSubstituto = 0;							
-				if (tipoMaterial == TECIDO) {
-					List<Produto> substitutos = produtoCustom.findTecidosSubstitutos(materialOrdem.getNivel(), materialOrdem.getGrupo(), materialOrdem.getSub(), materialOrdem.getItem());
-					
-					//if (tecidoOrdem.getIdOrdem() == 321338) System.out.println(tecidoOrdem.getNivel() + "." + tecidoOrdem.getGrupo() + "." + tecidoOrdem.getSub() + "." + tecidoOrdem.getItem()); 									
-					//if (tecidoOrdem.getIdOrdem() == 319584) System.out.println("AVALIA SUBSTITUTOS");
-					
-					for (Produto substituto : substitutos) {
-						if (qtdeSugerirSubstitutos <= 0.0) break;
-						//if (tecidoOrdem.getIdOrdem() == 321338) System.out.println(tecidoOrdem.getIdOrdem() + " - " + substituto.getGrupo());
-						qtdeSugerirSubstituto = qtdeSugerirSubstitutos;
-						SugestaoReservaPorMaterial dadosSubstituto = mapDadosPorMaterial.get(new CodigoProduto(substituto.getNivel(), substituto.getGrupo(), substituto.getSub(), substituto.getItem()).getCodigo());
-						if (qtdeSugerirSubstituto > dadosSubstituto.getQtdeSaldo()) qtdeSugerirSubstituto = dadosSubstituto.getQtdeSaldo();
-						if (qtdeSugerirSubstituto <= 0.0) continue;
-						//if (tecidoOrdem.getIdOrdem() == 319584) System.out.println("substitutos: " + new CodigoProduto(substituto.getNivel(), substituto.getGrupo(), substituto.getSub(), substituto.getItem()).getCodigo() + " - qtdeSugerirSubstituto: " + qtdeSugerirSubstituto );
-						//System.out.println("substituto: " + new CodigoProduto(substituto.getNivel(), substituto.getGrupo(), substituto.getSub(), substituto.getItem()).getCodigo() + " - qtdeSugerirSubstituto: " + qtdeSugerirSubstituto + " - dadosSubstituto.getQtdeSaldo(): " + dadosSubstituto.getQtdeSaldo());
-						dadosSubstituto.setQtdeSugerido(dadosSubstituto.getQtdeSugerido() + qtdeSugerirSubstituto);
-						guardarDadosMateriaisReservados(materialOrdem.getIdOrdem(), dadosSubstituto.getNivel(), dadosSubstituto.getGrupo(), dadosSubstituto.getSub(), dadosSubstituto.getItem(), qtdeSugerirSubstituto);
-						qtdeSugerirSubstitutos -= qtdeSugerirSubstituto;
-					}
-				}*/				
+				}								
 			}
-			
-			//System.out.println("tecido ordem disponivel-> " + tecidoOrdem.getQtdeDisponivel());
-			//System.out.println("tecido ordem sugerido-> " + tecidoOrdem.getQtdeSugerido());
-			//System.out.println("tecido ordem saldo-> " + tecidoOrdem.getQtdeSaldo());
 		}				
 		//System.out.println("Qtde falta tecido: " + qtdeFaltaTecido);		
 		// Se ficar um saldo a ser atendido do tecido principal, deve ser considerado também para a reserva, caso contrário ocorrerá erros nos próximos calculos.
@@ -713,8 +662,8 @@ public class SugestaoReservaMaterialPorOrdensService {
 		}
 	}
 
-	private Map<String, Double> ObtemQtdeEstoqueQtdeEmpenhada(String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, String depositos) {
-		Map<String, Double> mapQtdeEstoqueQtdeEmpenhada = new HashMap<String, Double>();
+	private Map<String, Object> ObterQtdeEstoqueQtdeEmpenhada(String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, String depositos) {
+		Map<String, Object> mapQtdeEstoqueQtdeEmpenhada = new HashMap<String, Object>();
 
 		double qtdeEstoque = estoqueProdutoCustom.findQtdeEstoqueByProdutoAndDepositos(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositos);					
 		double qtdeEmpenhada = sugestaoReservaMaterialCustom.findQtdeReservadaByProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);
@@ -725,26 +674,40 @@ public class SugestaoReservaMaterialPorOrdensService {
 		return mapQtdeEstoqueQtdeEmpenhada;
 	}
 
-	private void guardarDadosPorMaterialOrdem(OrdemProducao ordem, OrdemProducaoItem item, int seqMaterial, String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, double qtdeNecessaria, double qtdeUnitaria, String depositos) {
-		Produto dadosMaterial = produtoCustom.findProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);					
+	private Map<String, Object> obterDadosComplementares(String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, String depositos) {
 		
-		Map<String, Double> mapQtdeEstoqueQtdeEmpenhada = ObtemQtdeEstoqueQtdeEmpenhada(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositos);
+		Map<String, Object> mapQtdeEstoqueQtdeEmpenhada = ObterQtdeEstoqueQtdeEmpenhada(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositos);
+		Map<String, Object> mapPedidoAndDataEntrega = suprimentoCustom.findDadosPedidoCompraMaisProximoByItem(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);
+		Map<String, Object> mapRetorno = new HashMap<String, Object> ();
 		
-		double qtdeEstoque = mapQtdeEstoqueQtdeEmpenhada.get("qtdeEstoque");					
-		double qtdeEmpenhada = mapQtdeEstoqueQtdeEmpenhada.get("qtdeEmpenhada");
-		
-		if (nivelMaterial.equalsIgnoreCase("2")) guardarDadosPorTecido(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, dadosMaterial.getNarrativa(), dadosMaterial.getUnidade(), qtdeNecessaria, qtdeEstoque, qtdeEmpenhada, true);
-		else guardarDadosPorAviamento(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, dadosMaterial.getNarrativa(), dadosMaterial.getUnidade(), qtdeNecessaria, qtdeEstoque, qtdeEmpenhada); 		
-		
-		guardarDadosPorOrdem(ordem.ordemProducao, item.cor, seqMaterial, nivelMaterial, grupoMaterial, subMaterial, itemMaterial, dadosMaterial.getNarrativa(), dadosMaterial.getUnidade(), qtdeUnitaria, qtdeNecessaria, qtdeEstoque, qtdeEmpenhada);
+		double qtdeEstoque = mapQtdeEstoqueQtdeEmpenhada.containsKey("qtdeEstoque") ? (double) mapQtdeEstoqueQtdeEmpenhada.get("qtdeEstoque") : 0;					
+		double qtdeEmpenhada = mapQtdeEstoqueQtdeEmpenhada.containsKey("qtdeEmpenhada") ?  (double) mapQtdeEstoqueQtdeEmpenhada.get("qtdeEmpenhada") : 0;
+		BigDecimal pedidoCompra = mapPedidoAndDataEntrega.containsKey("num_ped_compra") ? (BigDecimal) mapPedidoAndDataEntrega.get("num_ped_compra") : new BigDecimal(0);
+		BigDecimal qtdeSaldoReceber = mapPedidoAndDataEntrega.containsKey("qtde_saldo_item") ? (BigDecimal) mapPedidoAndDataEntrega.get("qtde_saldo_item") : new BigDecimal(0);
+		Date dataEntrega = mapPedidoAndDataEntrega.containsKey("data_prev_entr") ?  (Date) mapPedidoAndDataEntrega.get("data_prev_entr") : null;
+				
+		mapRetorno.put("qtdeEstoque", qtdeEstoque);
+		mapRetorno.put("qtdeEmpenhada", qtdeEmpenhada);
+		mapRetorno.put("pedidoCompra", pedidoCompra.intValue());
+		mapRetorno.put("qtdeSaldoReceber", qtdeSaldoReceber.doubleValue());
+		mapRetorno.put("dataEntrega", dataEntrega);
+						
+		return mapRetorno;
+	}
+	
+	private void guardarDadosPorMaterialOrdem(OrdemProducao ordem, OrdemProducaoItem item, int seqMaterial, String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, double qtdeNecessaria, double qtdeUnitaria) {
+		Produto dadosMaterial = produtoCustom.findProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);							
+		if (nivelMaterial.equalsIgnoreCase("2")) guardarDadosPorTecido(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, dadosMaterial.getNarrativa(), dadosMaterial.getUnidade(), qtdeNecessaria);
+		else guardarDadosPorAviamento(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, dadosMaterial.getNarrativa(), dadosMaterial.getUnidade(), qtdeNecessaria); 		
+		guardarDadosPorOrdem(ordem.ordemProducao, item.cor, seqMaterial, nivelMaterial, grupoMaterial, subMaterial, itemMaterial, dadosMaterial.getNarrativa(), dadosMaterial.getUnidade(), qtdeUnitaria, qtdeNecessaria);
 	}
 	
 	private void guardarDadosPorTecidoOrdem(OrdemProducao ordem, OrdemProducaoItem item, NecessidadeTecidos tecido) {
-		guardarDadosPorMaterialOrdem(ordem, item, tecido.getSequencia(), tecido.getNivel(), tecido.getGrupo(), tecido.getSub(), tecido.getItem(), tecido.getQtdeKg(), tecido.getQtdeKgUnit(), this.depositosTecidos);		
+		guardarDadosPorMaterialOrdem(ordem, item, tecido.getSequencia(), tecido.getNivel(), tecido.getGrupo(), tecido.getSub(), tecido.getItem(), tecido.getQtdeKg(), tecido.getQtdeKgUnit());		
 	}
  
 	private void guardarDadosPorAviamentoOrdem(OrdemProducao ordem, OrdemProducaoItem item, NecessidadeAviamentos aviamento) {
-		guardarDadosPorMaterialOrdem(ordem, item, aviamento.getSequencia(), aviamento.getNivel(), aviamento.getGrupo(), aviamento.getSub(), aviamento.getItem(), aviamento.getQuantidade(), aviamento.getQuantidadeUnit(), this.depositosAviamentos);		
+		guardarDadosPorMaterialOrdem(ordem, item, aviamento.getSequencia(), aviamento.getNivel(), aviamento.getGrupo(), aviamento.getSub(), aviamento.getItem(), aviamento.getQuantidade(), aviamento.getQuantidadeUnit());		
 	}
 		
 	private void guardarQtdesOriginaisPecasPrevistas(int idOrdem, String grupo, int alternativa, int roteiro, int periodo, String sub, String item, int qtdeProgramada, int ordemTamanho) {		
@@ -774,67 +737,52 @@ public class SugestaoReservaMaterialPorOrdensService {
 			sugestao = new SugestaoReservaPorProduto(prioridade, nivel, grupo, tamanho, cor, seqTamanho, descricao, alternativa, roteiro, dataEmbarque, qtdeEstagioCritico, tempoProducaoUnit, tempoCosturaUnit, qtdePrevista, 0, 0);	
 			mapDadosPorProduto.put(chave, sugestao);		
 		}
-	}
- 
-	private void guardarDadosPorTecido(String nivelTecido, String grupoTecido, String subTecido, String itemTecido, String descricaoTecido, String unidadeTecido, double qtdeKg, double qtdeEstoque, double qtdeEmpenhada, boolean guardarDadosSubstituto) {
-		//System.out.println("guardarDadosPorTecido");
-		
+	} 
+
+	private void guardarDadosPorTecido(String nivelTecido, String grupoTecido, String subTecido, String itemTecido, String descricaoTecido, String unidadeTecido, double qtdeKg) {
+		//System.out.println("guardarDadosPorTecido");		
 		String codTecido = new CodigoProduto(nivelTecido, grupoTecido, subTecido, itemTecido).getCodigo();
-		
-		//System.out.println(codTecido + " -> kg: " + qtdeKg); 
 		
 		if (mapDadosPorTecido.containsKey(codTecido)) {			
 			SugestaoReservaPorMaterial sugestao = mapDadosPorTecido.get(codTecido);
 			sugestao.setQtdeNecessidade(sugestao.getQtdeNecessidade() + qtdeKg);
-
-			/* Conceito não utilizado mais...
-			if (guardarDadosSubstituto) {
-				if (!sugestao.isSubstitutosLocalizados()) {
-					guardarDadosPorTecidoSubstituto(nivelTecido, grupoTecido, subTecido, itemTecido);
-					sugestao.setSubstitutosLocalizados(true);
-				}
-			}*/
 		} else {			
-			SugestaoReservaPorMaterial sugestao = new SugestaoReservaPorMaterial(nivelTecido, grupoTecido, subTecido,
-					itemTecido, descricaoTecido, unidadeTecido, qtdeKg, qtdeEstoque, qtdeEmpenhada, 0);			
-			mapDadosPorTecido.put(codTecido, sugestao);
 			
-			/* Conceito não utilizado mais...
-			if (guardarDadosSubstituto) { 
-				guardarDadosPorTecidoSubstituto(nivelTecido, grupoTecido, subTecido, itemTecido);
-				sugestao.setSubstitutosLocalizados(true);
-			}*/
+			Map<String, Object> mapDados = obterDadosComplementares(nivelTecido, grupoTecido, subTecido, itemTecido, this.depositosTecidos);
+			double qtdeEstoque = (double) mapDados.get("qtdeEstoque");
+			double qtdeEmpenhada = (double) mapDados.get("qtdeEmpenhada");
+			int pedidoCompra = (int) mapDados.get("pedidoCompra");
+			double qtdeSaldoReceber = (double) mapDados.get("qtdeSaldoReceber");
+			Date dataEntrega = (Date) mapDados.get("dataEntrega");			
+			
+			SugestaoReservaPorMaterial sugestao = new SugestaoReservaPorMaterial(nivelTecido, grupoTecido, subTecido,
+					itemTecido, descricaoTecido, unidadeTecido, qtdeKg, qtdeEstoque, qtdeEmpenhada, 0, pedidoCompra, dataEntrega, qtdeSaldoReceber);			
+			mapDadosPorTecido.put(codTecido, sugestao);			
 		}
 	}
  
-	private void guardarDadosPorAviamento(String nivelAviamento, String grupoAviamento, String subAviamento, String itemAviamento, String descricaoAviamento, String unidadeAviamento, double quantidade, double qtdeEstoque, double qtdeEmpenhada) {
+	private void guardarDadosPorAviamento(String nivelAviamento, String grupoAviamento, String subAviamento, String itemAviamento, String descricaoAviamento, String unidadeAviamento, double quantidade) {
 		//System.out.println("guardarDadosPorAviamento");
-		
 		String codAviamento = new CodigoProduto(nivelAviamento, grupoAviamento, subAviamento, itemAviamento).getCodigo();
-		
-		//System.out.println(codTecido + " -> kg: " + qtdeKg); 
 		
 		if (mapDadosPorAviamento.containsKey(codAviamento)) {			
 			SugestaoReservaPorMaterial sugestao = mapDadosPorAviamento.get(codAviamento);
 			sugestao.setQtdeNecessidade(sugestao.getQtdeNecessidade() + quantidade);
 		} else {			
+
+			Map<String, Object> mapDados = obterDadosComplementares(nivelAviamento, grupoAviamento, subAviamento, itemAviamento, this.depositosAviamentos);
+			double qtdeEstoque = (double) mapDados.get("qtdeEstoque");
+			double qtdeEmpenhada = (double) mapDados.get("qtdeEmpenhada");
+			int pedidoCompra = (int) mapDados.get("pedidoCompra");
+			double qtdeSaldoReceber = (double) mapDados.get("qtdeSaldoReceber");
+			Date dataEntrega = (Date) mapDados.get("dataEntrega");
+			
 			SugestaoReservaPorMaterial sugestao = new SugestaoReservaPorMaterial(nivelAviamento, grupoAviamento, subAviamento,
-					itemAviamento, descricaoAviamento, unidadeAviamento, quantidade, qtdeEstoque, qtdeEmpenhada, 0);			
+					itemAviamento, descricaoAviamento, unidadeAviamento, quantidade, qtdeEstoque, qtdeEmpenhada, 0, pedidoCompra, dataEntrega, qtdeSaldoReceber);			
 			mapDadosPorAviamento.put(codAviamento, sugestao);			
 		}
 	}
 	
-	private void guardarDadosPorTecidoSubstituto(String nivelTecido, String grupoTecido, String subTecido, String itemTecido) {
-		
-		List<Produto> substitutos = produtoCustom.findTecidosSubstitutos(nivelTecido, grupoTecido, subTecido, itemTecido);
-		
-		for (Produto substituto : substitutos) {						
-			Produto dadosTecido = produtoCustom.findProduto(substituto.getNivel(), substituto.getGrupo(), substituto.getSub(), substituto.getItem());					
-			Map<String, Double> mapQtdeEstoqueQtdeEmpenhada = ObtemQtdeEstoqueQtdeEmpenhada(substituto.getNivel(), substituto.getGrupo(), substituto.getSub(), substituto.getItem(), this.depositosTecidos);			
-			guardarDadosPorTecido(substituto.getNivel(), substituto.getGrupo(), substituto.getSub(), substituto.getItem(), dadosTecido.getNarrativa(), dadosTecido.getUnidade(), 0, (double) mapQtdeEstoqueQtdeEmpenhada.get("qtdeEstoque"), (double) mapQtdeEstoqueQtdeEmpenhada.get("qtdeEmpenhada"), false);
-		}
-	}
-
 	private boolean contemMaterialNaOrdem(int idOrdem, String nivelMaterial) {
 		if (nivelMaterial.equalsIgnoreCase("2")) return mapDadosTecidosPorOrdem.containsKey(idOrdem);
 		else return mapDadosAviamentosPorOrdem.containsKey(idOrdem);				
@@ -849,11 +797,17 @@ public class SugestaoReservaMaterialPorOrdensService {
 		if (nivelMaterial.equalsIgnoreCase("2")) mapDadosTecidosPorOrdem.put(idOrdem, materiais);
 		else mapDadosAviamentosPorOrdem.put(idOrdem, materiais);
 	}
-	
+
 	private void guardarDadosPorOrdem(int idOrdem, String sortimento, int sequencia, String nivelMaterial, String grupoMaterial,
-			String subMaterial, String itemMaterial, String descricaoMaterial, String unidadeMaterial, double qtdeKgUnit, double qtdeKg, double qtdeEstoque, double qtdeEmpenhada) {
+			String subMaterial, String itemMaterial, String descricaoMaterial, String unidadeMaterial, double qtdeKgUnit, double qtdeKg) {
 		//System.out.println("guardarDadosPorOrdem");		
-		
+
+		String codMaterial = new CodigoProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial).getCodigo();
+		SugestaoReservaPorMaterial dadosMaterial;
+
+		if (nivelMaterial.equalsIgnoreCase("2")) dadosMaterial = mapDadosPorTecido.get(codMaterial);
+		else dadosMaterial = mapDadosPorAviamento.get(codMaterial);		
+
 		if (contemMaterialNaOrdem(idOrdem, nivelMaterial)) {
 			List<SugestaoReservaPorOrdemSortimento> materiais = obterListaMateriaisPorNivel(idOrdem, nivelMaterial);
 			Stream<SugestaoReservaPorOrdemSortimento> stream = materiais.stream().filter(t -> t.getSortimento().equals(sortimento) && t.getSequencia() == sequencia && t.getNivel().equals(nivelMaterial) && t.getGrupo().equals(grupoMaterial) && t.getSub().equals(subMaterial) && t.getItem().equals(itemMaterial));			
@@ -864,14 +818,14 @@ public class SugestaoReservaMaterialPorOrdensService {
 				}
 			} else {
 				SugestaoReservaPorOrdemSortimento sugestao = new SugestaoReservaPorOrdemSortimento(idOrdem, sortimento, sequencia, nivelMaterial, grupoMaterial, subMaterial, itemMaterial, descricaoMaterial, unidadeMaterial,
-						qtdeKg, qtdeEstoque, qtdeEmpenhada, 0, qtdeKgUnit);
+						qtdeKg, dadosMaterial.getQtdeEstoque(), dadosMaterial.getQtdeEmpenhada(), 0, qtdeKgUnit, dadosMaterial.getPedidoCompraAberto(), dadosMaterial.getDataEntregaPedidoCompra(), dadosMaterial.getQtdeReceber());
 				materiais.add(sugestao);
 			}
 		} else {
 			List<SugestaoReservaPorOrdemSortimento> materiais = new ArrayList<SugestaoReservaPorOrdemSortimento>();
 			
 			SugestaoReservaPorOrdemSortimento sugestao = new SugestaoReservaPorOrdemSortimento(idOrdem, sortimento, sequencia, nivelMaterial, grupoMaterial, subMaterial, itemMaterial, descricaoMaterial, unidadeMaterial,
-					qtdeKg, qtdeEstoque, qtdeEmpenhada, 0, qtdeKgUnit);			
+					qtdeKg, dadosMaterial.getQtdeEstoque(), dadosMaterial.getQtdeEmpenhada(), 0, qtdeKgUnit, dadosMaterial.getPedidoCompraAberto(), dadosMaterial.getDataEntregaPedidoCompra(), dadosMaterial.getQtdeReceber());
 			materiais.add(sugestao);			
 			guardarListaMateriaisNaOrdem(idOrdem, nivelMaterial, materiais);
 		}

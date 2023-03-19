@@ -1,5 +1,7 @@
 package br.com.live.model;
 
+import java.util.Date;
+
 public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorMaterial {
 
 	private int idOrdem;
@@ -9,16 +11,21 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorMateria
 	private double qtdeNecessidadeRecalculada;
 	private double qtdeDisponivelTecidoSubstituto;
 	private boolean recalculado;	
-	
-	
+	private int pedidoCompraAberto;
+	private Date dataEntregaPedidoCompra;
+	private double qtdeReceber;
+		
 	public SugestaoReservaPorOrdemSortimento(int idOrdem, String sortimento, int sequencia, String nivel, String grupo, String sub, String item, String descricao,
-			String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, double qtdeNecessidadeUnit) {
-		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido);
+			String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, double qtdeNecessidadeUnit, int pedidoCompraAberto, Date dataEntregaPedidoCompra, double qtdeReceber) {
+		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido, pedidoCompraAberto, dataEntregaPedidoCompra, qtdeReceber);
 		this.idOrdem = idOrdem;
 		this.sortimento = sortimento;
 		this.sequencia = sequencia;
 		this.qtdeNecessidadeUnit = qtdeNecessidadeUnit;
-		this.recalculado = false;		
+		this.recalculado = false;
+		this.pedidoCompraAberto = pedidoCompraAberto;
+		this.dataEntregaPedidoCompra = dataEntregaPedidoCompra;
+		this.qtdeReceber = qtdeReceber;
 	}
 
 	public int getIdOrdem() {
@@ -102,4 +109,29 @@ public class SugestaoReservaPorOrdemSortimento extends SugestaoReservaPorMateria
 		this.qtdeDisponivelTecidoSubstituto = qtdeTecidoSubstituto;
 		acertaSaldo();
 	}
+	
+	public int getPedidoCompraAberto() {
+		return pedidoCompraAberto;
+	}
+
+	public void setPedidoCompraAberto(int pedidoCompraAberto) {
+		this.pedidoCompraAberto = pedidoCompraAberto;
+	}
+
+	public Date getDataEntregaPedidoCompra() {
+		return dataEntregaPedidoCompra;
+	}
+
+	public void setDataEntregaPedidoCompra(Date dataEntregaPedidoCompra) {
+		this.dataEntregaPedidoCompra = dataEntregaPedidoCompra;
+	}
+
+	public double getQtdeReceber() {
+		return qtdeReceber;
+	}
+
+	public void setQtdeReceber(double qtdeReceber) {
+		this.qtdeReceber = qtdeReceber;
+	}
+	
 }

@@ -1,5 +1,7 @@
 package br.com.live.model;
 
+import java.util.Date;
+
 public class SugestaoReservaPorOrdemMaterial extends SugestaoReservaPorMaterial {
 
 	private long idOrdem;
@@ -8,8 +10,8 @@ public class SugestaoReservaPorOrdemMaterial extends SugestaoReservaPorMaterial 
 	private double qtdeDisponivelTotal;
 	
 	public SugestaoReservaPorOrdemMaterial(long idOrdem, String nivel, String grupo, String sub, String item, String descricao,
-			String unidade, double qtdeNecessidadeUnit, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido) {
-		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido);
+			String unidade, double qtdeNecessidadeUnit, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, int pedidoCompraAberto, Date dataEntregaPedidoCompra, double qtdeReceber) {
+		super(nivel, grupo, sub, item, descricao, unidade, qtdeNecessidade, qtdeEstoque, qtdeEmpenhada, qtdeSugerido, pedidoCompraAberto, dataEntregaPedidoCompra, qtdeReceber);
 		this.idOrdem = idOrdem;
 		this.qtdeNecessidadeUnit = qtdeNecessidadeUnit; 
 	}

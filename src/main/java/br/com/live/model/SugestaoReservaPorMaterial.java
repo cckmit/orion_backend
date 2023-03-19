@@ -1,5 +1,7 @@
 package br.com.live.model;
 
+import java.util.Date;
+
 public class SugestaoReservaPorMaterial implements Comparable<SugestaoReservaPorMaterial> {
 
 	private String nivel;
@@ -15,8 +17,11 @@ public class SugestaoReservaPorMaterial implements Comparable<SugestaoReservaPor
 	protected Double qtdeDisponivel;
 	protected Double qtdeSugerido;
 	protected Double qtdeSaldo;
+	private int pedidoCompraAberto;
+	private Date dataEntregaPedidoCompra;
+	private double qtdeReceber;
 
-	public SugestaoReservaPorMaterial(String nivel, String grupo, String sub, String item, String descricao, String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido) {
+	public SugestaoReservaPorMaterial(String nivel, String grupo, String sub, String item, String descricao, String unidade, double qtdeNecessidade, double qtdeEstoque, double qtdeEmpenhada, double qtdeSugerido, int pedidoCompraAberto, Date dataEntregaPedidoCompra, double qtdeReceber) {
 		this.nivel = nivel; 
 		this.grupo = grupo; 
 		this.sub = sub; 
@@ -27,6 +32,9 @@ public class SugestaoReservaPorMaterial implements Comparable<SugestaoReservaPor
 		this.qtdeEstoque = qtdeEstoque;
 		this.qtdeEmpenhada = qtdeEmpenhada;		
 		this.qtdeSugerido = qtdeSugerido;
+		this.pedidoCompraAberto = pedidoCompraAberto;
+		this.dataEntregaPedidoCompra = dataEntregaPedidoCompra;
+		this.qtdeReceber = qtdeReceber;
 		acertaSaldos();
 	}
 	
@@ -140,5 +148,29 @@ public class SugestaoReservaPorMaterial implements Comparable<SugestaoReservaPor
 		String codTecidoAtual = getNivel() + "." + getGrupo() + "." + getSub() + "." + getItem();
 		
 		return (codTecidoAtual.compareToIgnoreCase(codOutroTecido));			
+	}
+
+	public int getPedidoCompraAberto() {
+		return pedidoCompraAberto;
+	}
+
+	public void setPedidoCompraAberto(int pedidoCompraAberto) {
+		this.pedidoCompraAberto = pedidoCompraAberto;
+	}
+
+	public Date getDataEntregaPedidoCompra() {
+		return dataEntregaPedidoCompra;
+	}
+
+	public void setDataEntregaPedidoCompra(Date dataEntregaPedidoCompra) {
+		this.dataEntregaPedidoCompra = dataEntregaPedidoCompra;
+	}
+
+	public double getQtdeReceber() {
+		return qtdeReceber;
+	}
+
+	public void setQtdeReceber(double qtdeReceber) {
+		this.qtdeReceber = qtdeReceber;
 	}
 }

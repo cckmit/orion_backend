@@ -1,8 +1,10 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -205,6 +207,29 @@ public class SuprimentoCustom {
 		+ "	to_date('16/11/1989 ' || to_CHAR(sysdate,'hh24:mi'),'dd/mm/yyyy hh24:mi')) ";
 		
 		jdbcTemplate.update(query, numeroRequisicao, sequencia, nivel, grupo, sub, item, qtdeRequisitada, codTransacao, deposito, centroCustoDestino, narrativaProduto);
+	}
+	
+	public Map<String, Object> findDadosPedidoCompraMaisProximoByItem(String nivel, String grupo, String sub, String item) {		
+		Map<String, Object> registro;				
+		
+		String query = "select * from supr_100 " 
+		+ " where item_100_nivel99 = ? "
+		+ " and item_100_grupo = ? "
+		+ " and item_100_subgrupo = ? "
+		+ " and item_100_item = ? "
+		+ " and qtde_saldo_item > 0 "
+		+ " and cod_cancelamento = 0 "
+		+ " and situacao_item < 3 "
+		+ " and rownum = 1 "
+		+ " order by data_prev_entr "; 
+
+		try {
+			registro = jdbcTemplate.queryForMap(query, nivel, grupo, sub, item);	
+		} catch (Exception e) {			
+			registro = new HashMap<String, Object>();
+		}
+	    
+	    return registro;
 	}
 	
 }
