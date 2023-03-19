@@ -3,7 +3,7 @@ package br.com.live.model;
 public class Servidor {
     private int id;
     private String nomeServidor;
-    private int maquinaFisica;
+    private boolean maquinaFisica;
     private String sistemaOperacional;
     private String ip;
     private int hd;
@@ -12,7 +12,7 @@ public class Servidor {
     private String aplicacoes;
     private byte[] documentacao;
 
-    public Servidor(int id, String nomeServidor, int maquinaFisica, String sistemaOperacional, String ip, int hd, int memoria, String processador, String aplicacoes, byte[] documentacao) {
+    public Servidor(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional, String ip, int hd, int memoria, String processador, String aplicacoes, byte[] documentacao) {
         this.id = id;
         this.nomeServidor = nomeServidor;
         this.maquinaFisica = maquinaFisica;
@@ -41,11 +41,11 @@ public class Servidor {
         this.nomeServidor = nomeServidor;
     }
 
-    public int getMaquinaFisica() {
+    public boolean getMaquinaFisica() {
         return maquinaFisica;
     }
 
-    public void setMaquinaFisica(int maquinaFisica) {
+    public void setMaquinaFisica(boolean maquinaFisica) {
         this.maquinaFisica = maquinaFisica;
     }
 

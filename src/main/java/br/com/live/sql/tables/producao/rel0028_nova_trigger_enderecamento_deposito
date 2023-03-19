@@ -45,7 +45,7 @@ CREATE TABLE orion_exp_300 (
              data_hora Date,
              tipo varchar2(1),
              usuario varchar2(100),
-             endereco varchar2(7));
+             endereco varchar2(10));
 comment on table orion_exp_300 is 'Tabela de Log dos Tag's endereçados';
 
 CREATE INDEX INDX_ORION_EXP_300_ENDERECO ON orion_exp_300 (endereco);

@@ -2,7 +2,6 @@ package br.com.live.service;
 
 import br.com.live.entity.Servidor;
 import br.com.live.repository.ServidorRepository;
-import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,47 +22,10 @@ public class ServidorService {
 
         List<Servidor> servidores = servidorRepository.findAll();
 
-
-        for (Servidor servidor : servidores) {
-            byte[] arquivoBytes = servidor.getDocumentacao();
-
-            String extensaoAquivo = obterExtensaoArquivo(arquivoBytes);
-
-            File arquivo = byteArrayToFile(arquivoBytes, "C:\\tempArquivos\\Doc-" + servidor.nomeServidor + "." + extensaoAquivo);
-            byte[] documentacaoBytes = fileToByteArray(arquivo);
-            servidor.setDocumentacao(documentacaoBytes);
-        }
         return servidores;
     }
 
-    public static String obterExtensaoArquivo(byte[] arquivoBytes) {
-        Tika tika = new Tika();
-        String tipoMIME = tika.detect(arquivoBytes);
-        return tipoMIME.split("/")[1];
-    }
-
-    private File byteArrayToFile(byte[] byteArray, String fileName) throws IOException {
-        File file = new File(fileName);
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(byteArray);
-        fos.close();
-        return file;
-    }
-
-    private byte[] fileToByteArray(File file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(file);
-             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = fis.read(buffer)) > -1) {
-                bos.write(buffer, 0, len);
-            }
-            bos.flush();
-            return bos.toByteArray();
-        }
-    }
-
-    public void saveServidor(int id, String nomeServidor, int maquinaFisica, String sistemaOperacional, String ip, int hd, int memoria, String processador, String aplicacoes, byte[] documentacao) {
+    public void saveServidor(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional, String ip, int hd, int memoria, String processador, String aplicacoes, byte[] documentacao) {
 
         Servidor servidor = null;
 
