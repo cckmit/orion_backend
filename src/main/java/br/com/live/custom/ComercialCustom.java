@@ -140,12 +140,27 @@ public class ComercialCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ClientesImportados.class));
 	}
 
-	public void atualizarDescontoEspecialPedido(float desconto, String observacao, int pedido) {
+	public void atualizarDescontoEspecialPedido(float desconto, String observacao, int pedido, String observacaoImportacao) {
+		String observacaoAtual = findObservacaoPedi(pedido);
+
 		String query = " UPDATE pedi_100 " +
-				" SET OBSERVACAO = ?, " +
+				" SET OBSERVACAO = '" + observacaoAtual + "' || chr(13) || '" + observacao + "' || chr(13) || '" + observacaoImportacao + "', "  +
 				" DESCONTO_ESPECIAL = ? " +
 				" WHERE pedi_100.PEDIDO_VENDA = ? ";
-		jdbcTemplate.update(query, observacao, desconto, pedido);
+		jdbcTemplate.update(query, desconto, pedido);
+	}
+
+	public String findObservacaoPedi(int pedido) {
+		String observacao = "";
+
+		String query = " select pedi_100.observacao from pedi_100 " +
+				" where pedi_100.pedido_venda = " + pedido;
+		try {
+			observacao = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			observacao = "";
+		}
+		return observacao;
 	}
 
 	public int validarImportacaoDescontos(int cnpj9,int cnpj4, int cnpj2, String dataPlanilha, float valorPlanilha) {
@@ -173,8 +188,9 @@ public class ComercialCustom {
 	}
 
 	public List<ConsultaPedidosPorCliente> buscarHistoricoDescontos() {
-		String query = " select b.pedido, lpad(b.cnpj_9,9, '0') || lpad(b.cnpj_4,4,'0') || lpad(b.cnpj_2,2,'0') cnpjCliente, " +
-				" b.valor_desconto valorSaldo, b.observacao, b.usuario from orion_com_291 b ";
+		String query = " select b.pedido, c.cod_ped_cliente pedidoCliente, lpad(b.cnpj_9,9, '0') || lpad(b.cnpj_4,4,'0') || lpad(b.cnpj_2,2,'0') cnpjCliente, " +
+				" b.valor_desconto valorSaldo, b.observacao, b.usuario from orion_com_291 b, pedi_100 c" +
+				" where c.pedido_venda = b.pedido ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
 	}
 

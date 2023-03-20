@@ -354,6 +354,8 @@ public class ComercialService {
 		for (DescontoClientesImportados dadosPedido : listPedidosConfirmados) {
 			ControleDescontoCliente dadosDesconto;
 			PedidosGravadosComDesconto pedidosConfirmados;
+			ValorDescontoClientesImportados dadosCashBack;
+
 			int naturezaPedido = comercialCustom.findNaturezaPedido(dadosPedido.pedido);
 
 			int cnpj9 = Integer.parseInt(dadosPedido.cnpjCliente.substring(0,9));
@@ -361,6 +363,7 @@ public class ComercialService {
 			int cnpj2 = Integer.parseInt(dadosPedido.cnpjCliente.substring(13,15));
 
 			dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
+			dadosCashBack = valorDescontoClientesImpRepository.findObservacao(cnpj9, cnpj4, cnpj2);
 			pedidosConfirmados = pedidosGravadosComDescontoRepository.findByIdPedido(dadosPedido.pedido);
 
 			if (pedidosConfirmados != null) {
@@ -374,7 +377,7 @@ public class ComercialService {
 					dadosPedido.valor = dadosPedido.valor * 2;
 				}
 				
-				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido);
+				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido, dadosCashBack.observacao);
 				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario);
 				atualizarControleDesconto(cnpj9, cnpj4, cnpj2, dadosPedido.valor);
 

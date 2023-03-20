@@ -13,6 +13,7 @@ public class ConsultaPedidosPorCliente {
     public String usuario;
     public String cnpjCliente;
     public String observacao;
+    public String pedidoCliente;
 
     public int getPedido() {
         return pedido;
@@ -92,6 +93,14 @@ public class ConsultaPedidosPorCliente {
 
     public void setObservacao(String observacao) {
         this.observacao = observacao;
+    }
+
+    public String getPedidoCliente() {
+        return pedidoCliente;
+    }
+
+    public void setPedidoCliente(String pedidoCliente) {
+        this.pedidoCliente = pedidoCliente;
     }
 
     public ConsultaPedidosPorCliente() {
