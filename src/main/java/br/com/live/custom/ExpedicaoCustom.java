@@ -1113,7 +1113,7 @@ public class ExpedicaoCustom {
 		String query = " select a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) numeroTag, "
 				+ " a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item produto, a.data_hora data, a.tipo, a.usuario, "
 				+ " CASE "
-				+ "      WHEN a.endereco LIKE '% - 0%' "
+				+ "      WHEN a.endereco LIKE '%-0%' "
 				+ "   THEN SUBSTR(a.endereco, 0, 7) || ' - Zerado' "
 				+ "ELSE a.endereco "
 				+ "END endereco "
