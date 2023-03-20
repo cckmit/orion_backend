@@ -227,7 +227,8 @@ public class OrdemBeneficiamentoCustom {
 		String query = " SELECT c.codigo_rolo rolo, "
 				+ "       c.peso_bruto peso, "
 				+ "       c.largura largura, "
-				+ "       c.gramatura gramatura "
+				+ "       c.gramatura gramatura, "
+				+ "       NVL(c.cod_nuance, 0) nuance "
 				+ "     FROM pcpt_020_025 c, pcpt_020 d, basi_010 e "
 				+ "		WHERE d.ordem_producao = c.ordem_producao "
 				+ "		AND d.area_producao = c.area_producao "
@@ -244,34 +245,48 @@ public class OrdemBeneficiamentoCustom {
 	
 	public List<AnaliseQualidade> findAnalise(int ordem) {
 		
-		String query = " SELECT MIN(NVL(c.ordem_producao, 0)) ordemTecelagem, "
-				+ "         NVL(c.numero_ob, 0) ordemBeneficiamento, "
-				+ "         d.panoacab_nivel99 || '.' || d.panoacab_grupo || '.' || d.panoacab_subgrupo || '.' || d.panoacab_item codigoTecido, "
-				+ "         e.narrativa descricaoTecido, "
-				+ "         f.data_informacao data "
-				+ "     FROM pcpt_020_025 c, pcpt_020 d, basi_010 e, pcpb_070 f "
-				+ "		WHERE d.ordem_producao = c.ordem_producao "
-				+ "		AND d.area_producao = c.area_producao "
-				+ "		AND d.codigo_rolo = c.codigo_rolo "
-				+ "		AND e.nivel_estrutura = d.panoacab_nivel99 "
-				+ "		AND e.grupo_estrutura = d.panoacab_grupo "
-				+ "		AND e.subgru_estrutura = d.panoacab_subgrupo "
-				+ "		AND e.item_estrutura = d.panoacab_item "
-				+ "		AND f.ordem_producao (+) = c.ordem_producao "
-				+ "		AND c.numero_ob = " + ordem
-				+ "		GROUP BY d.ordem_producao, d.panoacab_nivel99, d.panoacab_grupo, d.panoacab_subgrupo, d.panoacab_item, "
-				+ "       c.ordem_tingimento_rolo, e.narrativa, f.data_informacao, c.numero_ob ";
+		String query = " SELECT NVL(a.ordem_producao, 0) ordemTecelagem, "
+				+ "       NVL(a.numero_ob, 0) ordemBeneficiamento, "
+				+ "       b.nivel || '.' || b.grupo || '.' || b.subgrupo || '.' || b.item codigoTecido, "
+				+ "       c.narrativa descricaoTecido, "
+				+ "       DECODE(b.data_03, null, DECODE(b.data_02, null, b.data_01 , b.data_02), b.data_03) data "
+				+ "       FROM pcpt_020_025 a, basi_400 b, basi_010 c "
+				+ "       WHERE b.nivel = a.panoacab_nivel99 "
+				+ "       AND b.grupo = a.panoacab_grupo "
+				+ "       AND b.subgrupo = a.panoacab_subgrupo "
+				+ "       AND b.item = a.panoacab_item "
+				+ "       AND c.nivel_estrutura = a.panoacab_nivel99 "
+				+ "       AND c.grupo_estrutura = a.panoacab_grupo "
+				+ "       AND c.subgru_estrutura = a.panoacab_subgrupo "
+				+ "       AND c.item_estrutura = a.panoacab_item "
+				+ "       AND a.ordem_producao = ? "
+				+ "       GROUP BY a.ordem_producao,a.numero_ob, b.nivel, b.grupo, b.subgrupo, b.item, c.narrativa, b.data_03, b.data_02, b.data_01 ";
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class), ordem);
 	}
 	
 	public List<AnaliseQualidade> findInfoLote(int ordem) {
 		
-		String query = " SELECT n.descricao descricaoLote, m.valor_01 valorLote "
-				+ "   FROM pcpb_075 M "
-				+ "   JOIN hdoc_001 n ON n.codigo = m.codigo_informacao "
-				+ "   WHERE n.tipo = 33 "
-				+ "   AND m.ordem_producao = ? ";
+		String query = " SELECT m.codigo_informacao cod, "
+				+ "       n.descricao descricaoLote, "
+				+ "       m.valor_01 valorLote, "
+				+ "       o.valor_02 min, "
+				+ "       o.valor_03 max, "
+				+ "       DECODE(m.situacao, 0, 'ACEITO/APROVADO', "
+				+ "       DECODE(m.situacao, 1, 'REPROCESSAR', "
+				+ "       DECODE(m.situacao, 2, 'REJEITADO', "
+				+ "       DECODE(m.situacao, 3, 'A SER INFORMADO')))) situacao "
+				+ "       FROM pcpb_075 M, basi_400 o, hdoc_001 n "
+				+ "       WHERE o.nivel = m.nivel_estrutura "
+				+ "       AND o.grupo = m.grupo_estrutura "
+				+ "       AND o.subgrupo = m.subgru_estrutura "
+				+ "       AND (o.item = m.item_estrutura OR o.item = '000000') "
+				+ "       AND o.tipo_informacao = m.tipo_informacao "
+				+ "       AND o.codigo_informacao = m.codigo_informacao "
+				+ "       AND n.codigo = m.codigo_informacao "
+				+ "       AND n.tipo = 33 "
+				+ "       AND o.tipo_informacao = 33 "
+				+ "       AND m.ordem_producao = ? ";
 	
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class), ordem);
 	}

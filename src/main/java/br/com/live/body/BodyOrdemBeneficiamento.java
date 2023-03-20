@@ -2,11 +2,13 @@ package br.com.live.body;
 
 import java.util.Date;
 
+
 public class BodyOrdemBeneficiamento {
 	
 	public String id;
 	public int sequencia;
 	public String usuario;
+	public int ordem;
 	public int periodoProducao;
 	public Date dataPrograma;
 	public Date previsaoTermino;

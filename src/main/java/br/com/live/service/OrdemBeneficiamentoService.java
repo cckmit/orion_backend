@@ -1,9 +1,11 @@
 package br.com.live.service;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Map;
+import java.util.HashMap;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -12,10 +14,14 @@ import br.com.live.custom.OrdemBeneficiamentoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.OrdemBeneficiamentoItem;
 import br.com.live.model.AnaliseQualidade;
+import br.com.live.model.ConsultaMinutaTransporte;
+import br.com.live.model.ConsultaTransportadora;
 import br.com.live.model.OrdemBeneficiamentoItens;
 import br.com.live.model.Produto;
 import br.com.live.repository.OrdemBeneficiamentoItemRepository;
 import br.com.live.util.StatusGravacao;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 
 @Transactional
@@ -25,13 +31,15 @@ public class OrdemBeneficiamentoService {
 	private final OrdemBeneficiamentoItemRepository ordemBeneficiamentoItemRepository;
 	private final OrdemBeneficiamentoCustom ordemBeneficiamentoCustom;
 	private final ProdutoCustom produtoCustom;
+	private final ReportService reportService;
 	
 	public OrdemBeneficiamentoService(OrdemBeneficiamentoItemRepository ordemBeneficiamentoItemRepository, OrdemBeneficiamentoCustom ordemBeneficiamentoCustom, 
-			ProdutoCustom produtoCustom) {
+			ProdutoCustom produtoCustom, ReportService reportService) {
 		
 		this.ordemBeneficiamentoItemRepository = ordemBeneficiamentoItemRepository;
 		this.ordemBeneficiamentoCustom = ordemBeneficiamentoCustom;
 		this.produtoCustom = produtoCustom;
+		this.reportService = reportService;
 	}
 	public StatusGravacao salvarItemOrdem(String id, String usuario, int ordemProducao, String produto, float qtdeRolos, float qtdeQuilos, float larguraTecido, 
 			float gramatura, float rendimento, int alternativaItem, int roteiroItem, int deposito, String observacao) {
@@ -113,30 +121,32 @@ public class OrdemBeneficiamentoService {
 		return listaOrdensGeradas;		
 	}
 	
-	//public String gerarPdfLaudo(List<ConsultaChamado> chamados, String dataInicio, String dataFim) throws JRException, FileNotFoundException {
+	public Map<String, Object> setParameters(int ordem, JRBeanCollectionDataSource dataSourceLote, JRBeanCollectionDataSource dataSourceRolos) {
+		
+		Map<String, Object> parameters = new HashMap<>();
+		
+		parameters.put("ordem", ordem);
+		parameters.put("listLote", dataSourceLote);
+		parameters.put("listRolos", dataSourceRolos);
+		
+		return parameters;
+	}
+	public String gerarPdfLaudo(int ordem) throws FileNotFoundException, JRException {
+		
+		List<AnaliseQualidade> listaAnalise = ordemBeneficiamentoCustom.findAnalise(ordem);
+		List<AnaliseQualidade> listaLote = ordemBeneficiamentoCustom.findInfoLote(ordem);
+		List<AnaliseQualidade> listaRolos = ordemBeneficiamentoCustom.findInfoRolos(ordem);
+		
+		String nomeRelatorioGerado = "";
+		
+		JRBeanCollectionDataSource dataSourceAnalise = new JRBeanCollectionDataSource(listaAnalise);
+		JRBeanCollectionDataSource dataSourceLote = new JRBeanCollectionDataSource(listaLote);
+		JRBeanCollectionDataSource dataSourceRolos = new JRBeanCollectionDataSource(listaRolos);
 
-	//	String nomeRelatorioGerado = "";
+		Map<String, Object> parameters = setParameters(ordem, dataSourceLote, dataSourceRolos);
 
-	//	JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(chamados);
+		nomeRelatorioGerado = reportService.generateReport("pdf", dataSourceAnalise, "analise_qualidade", parameters, "Laudo_Qualidade_" + ordem, false);
 
-	//	Map<String, Object> parameters = setParameters(dataInicio, dataFim);
-
-	//	nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "chamados", parameters, "chamados", false);
-
-	//	return nomeRelatorioGerado;
-	//	}
-
-	//public Map<String, Object> setParameters(String dataInicio, String dataFim) {
-
-	//	Map<String, Object> parameters = new HashMap<>();
-	//	parameters.put("dataInicio", dataInicio);
-	//	parameters.put("dataFim", dataFim);
-
-	//	return parameters;
-	//	}
-
-	//public void deleteByCodChamado(int codChamado) {
-	//	chamadoRepository.deleteByCodChamado(codChamado);
-	//	}
-	
+		return nomeRelatorioGerado;
+	}	
 }

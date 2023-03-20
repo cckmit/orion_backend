@@ -1,5 +1,6 @@
 package br.com.live.model;
 
+import java.util.Date;
 
 public class AnaliseQualidade {
 	
@@ -11,10 +12,15 @@ public class AnaliseQualidade {
 	public int ordemBeneficiamento;
 	public String codigoTecido;
 	public String descricaoTecido;
-	public String data;
+	public Date data;
 	public String narrativa;
 	public String descricaoLote;
 	public float valorLote;	
+	public int cod;
+	public float min;
+	public float max;
+	public String situacao;
+	public String nuance;	
 	
 	public int getRolo() {
 		return rolo;
@@ -64,10 +70,10 @@ public class AnaliseQualidade {
 	public void setDescricaoTecido(String descricaoTecido) {
 		this.descricaoTecido = descricaoTecido;
 	}
-	public String getData() {
+	public Date getData() {
 		return data;
 	}
-	public void setData(String data) {
+	public void setData(Date data) {
 		this.data = data;
 	}
 	public String getNarrativa() {
@@ -88,11 +94,41 @@ public class AnaliseQualidade {
 	public void setValorLote(float valorLote) {
 		this.valorLote = valorLote;
 	}
+	public int getCod() {
+		return cod;
+	}
+	public void setCod(int cod) {
+		this.cod = cod;
+	}
+	public float getMin() {
+		return min;
+	}
+	public void setMin(float min) {
+		this.min = min;
+	}
+	public float getMax() {
+		return max;
+	}
+	public void setMax(float max) {
+		this.max = max;
+	}
+	public String getSituacao() {
+		return situacao;
+	}
+	public void setSituacao(String situacao) {
+		this.situacao = situacao;
+	}
+	public String getNuance() {
+		return nuance;
+	}
+	public void setNuance(String nuance) {
+		this.nuance = nuance;
+	}
 	public AnaliseQualidade() {
 		
 	}
 	public AnaliseQualidade(int rolo, float peso, float largura, float gramatura, int ordemTecelagem, int ordemBeneficiamento, String codigoTecido, 
-			String descricaoTecido, String data, String narrativa, String descricaoLote, float valorLote) {
+			String descricaoTecido, Date data, String narrativa, String descricaoLote, float valorLote, int cod, float min, float max, String situacao, String nuance) {
 		this.rolo = rolo;
 		this.peso = peso;
 		this.largura = largura;
@@ -105,6 +141,11 @@ public class AnaliseQualidade {
 		this.narrativa = narrativa;		
 		this.descricaoLote = descricaoLote;
 		this.valorLote = valorLote;
+		this.cod = cod;
+		this.min = min;
+		this.max = max;
+		this.situacao = situacao;
+		this.nuance = nuance;
 	}
 	
 		

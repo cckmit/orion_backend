@@ -1054,13 +1054,16 @@ public class ExpedicaoCustom {
 		}
 		return situacao;
 	}
-
+	
+	
 	public void clearAllocation(String oldAllocation, String usuarioSystextil) {
+		
 		String query = " UPDATE pcpc_330 a "
-				+ " SET endereco = ? "
-				+ " WHERE a.endereco = ? "
-				+ " AND a.live_user_endereco = ? ";
-		jdbcTemplate.update(query, "", oldAllocation, usuarioSystextil);
+						+ " SET endereco = ? "
+						+ " WHERE a.endereco = ? "
+						+ " AND a.live_user_endereco = ? ";
+				jdbcTemplate.update(query, "", oldAllocation, usuarioSystextil);
+		
 	}
 
 	public List<ConsultaTag> findAllocations(String startAllocation, String endAllocation) {

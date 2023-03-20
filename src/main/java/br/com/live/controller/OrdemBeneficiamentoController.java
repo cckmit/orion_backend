@@ -1,5 +1,6 @@
 package br.com.live.controller;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyEngenharia;
+import br.com.live.body.BodyMinutaTransporte;
 import br.com.live.body.BodyOrdemBeneficiamento;
 import br.com.live.custom.OrdemBeneficiamentoCustom;
 import br.com.live.entity.OrdemBeneficiamentoItem;
@@ -22,6 +24,7 @@ import br.com.live.service.OrdemBeneficiamentoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.StatusGravacao;
+import net.sf.jasperreports.engine.JRException;
 
 @RestController
 @CrossOrigin
@@ -110,6 +113,12 @@ public class OrdemBeneficiamentoController {
     @RequestMapping(value = "/gerar-ordem-beneficiamento", method = RequestMethod.POST)
     public List<OrdemBeneficiamentoItens> gerarOrdemBeneficiamento(@RequestBody BodyOrdemBeneficiamento body) {                  
     	return ordemBeneficiamentoService.gerarOrdemBeneficiamento(body.periodoProducao, body.dataPrograma, body.previsaoTermino, body.maquina, body.tipoOrdem, body.usuario);
+    }
+    
+    @RequestMapping(value = "/gerar-pdf-laudo", method = RequestMethod.POST)
+    public String gerarPdfLaudo(@RequestBody BodyOrdemBeneficiamento body) throws FileNotFoundException, JRException {
+    	System.out.println("Entrou");
+    	return ordemBeneficiamentoService.gerarPdfLaudo(body.ordem);
     }
 
 }
