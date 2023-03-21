@@ -7,7 +7,6 @@ import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.Usuario;
 import br.com.live.model.ConsultaDadosRoteiro;
-import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.model.DadosGeracaoOrdemProducao;
 import br.com.live.model.DadosGeracaoOrdemProducaoItem;
 import br.com.live.model.DadosTagChina;
@@ -36,6 +35,10 @@ public class OrdemProducaoService {
 
 	public List<EstagioProducao> findAllEstagios() {
 		return ordemProducaoCustom.findAllEstagios();
+	}
+
+	public List<EstagioProducao> findAllEstagiosDecoracaoOrdemProducao(int ordemProducao) {
+		return ordemProducaoCustom.findAllEstagiosDecoracaoOrdemProducao(ordemProducao);
 	}
 	
 	public List<OrdemProducao> findAllTagsExportacaoChina() {
@@ -99,7 +102,11 @@ public class OrdemProducaoService {
 	public List<ConteudoChaveAlfaNum> findAllOrdensAsyncComEstagio(List<ConteudoChaveAlfaNum> estagio, String searchVar) {
 		return ordemProducaoCustom.findOrdensForAsyncComEstagio(estagio, searchVar);
 	}
-		
+
+	public List<ConteudoChaveAlfaNum> findOrdensForAsyncEstagioDecoracao(String searchVar) {
+		return ordemProducaoCustom.findOrdensForAsyncEstagioDecoracao(searchVar);
+	}
+
 	private String validarDados(DadosGeracaoOrdemProducao ordem) {
 		boolean existeEstrutura = true;
 		boolean existeRoteiro = true;

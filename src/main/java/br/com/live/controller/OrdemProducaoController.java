@@ -39,6 +39,11 @@ public class OrdemProducaoController {
     public List<EstagioProducao> findAll() {
           return ordemProducaoService.findAllEstagios();
     }
+
+	@RequestMapping(value = "/estagios-producao-decoracao-op/{ordemProducao}", method = RequestMethod.GET)
+	public List<EstagioProducao> findAllEstagiosDecoracaoOrdemProducao(@PathVariable("ordemProducao") int ordemProducao) {
+		return ordemProducaoService.findAllEstagiosDecoracaoOrdemProducao(ordemProducao);
+	}
     
     @RequestMapping(value = "/find-tags-china", method = RequestMethod.GET)
     public List<OrdemProducao> findAllTagsChina() {
@@ -72,5 +77,10 @@ public class OrdemProducaoController {
 	@RequestMapping(value = "/find-ordens-async-select-sem-estagio/{searchVar}", method = RequestMethod.GET)
 	public List<ConteudoChaveAlfaNum> findAllTagsAsync(@PathVariable("searchVar") String searchVar) {
 		return ordemProducaoService.findAllOrdensAsync(0, searchVar);
+	}
+
+	@RequestMapping(value = "/find-ordens-async-select-estagio-decoracao/{searchVar}", method = RequestMethod.GET)
+	public List<ConteudoChaveAlfaNum> findOrdensForAsyncEstagioDecoracao(@PathVariable("searchVar") String searchVar) {
+		return ordemProducaoService.findOrdensForAsyncEstagioDecoracao(searchVar);
 	}
 }
