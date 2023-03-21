@@ -1055,15 +1055,13 @@ public class ExpedicaoCustom {
 		return situacao;
 	}
 	
-	
 	public void clearAllocation(String oldAllocation, String usuarioSystextil) {
 		
 		String query = " UPDATE pcpc_330 a "
-						+ " SET endereco = ? "
-						+ " WHERE a.endereco = ? "
-						+ " AND a.live_user_endereco = ? ";
-				jdbcTemplate.update(query, "", oldAllocation, usuarioSystextil);
-		
+				+ "    SET endereco = ? , "
+				+ "    live_user_endereco = ? "
+				+ "    WHERE a.endereco = ? ";
+				jdbcTemplate.update(query, "", usuarioSystextil, oldAllocation);
 	}
 
 	public List<ConsultaTag> findAllocations(String startAllocation, String endAllocation) {
@@ -1131,11 +1129,13 @@ public class ExpedicaoCustom {
 			query += " and a.tipo = '" + tipoMov + "' ";
 		}
 		query += " order by a.data_hora ";
+		System.out.println(query);
 		try {
 			historicoEnderecos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 		} catch (Exception e) {
 			historicoEnderecos = new ArrayList<ConsultaTag>();
 		}
+		
 		return historicoEnderecos;
 	}
 
