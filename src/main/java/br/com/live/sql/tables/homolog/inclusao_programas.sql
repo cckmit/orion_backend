@@ -261,3 +261,6 @@ values (86, 'Lançamentos Contábeis - Importação', 'Contabilidade', '/lancame
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (87, 'Gestão de Ativos TI', 'TI', '/gestao-ativos-ti');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (88, 'Fechamento de Comissões', 'Financeiro', '/fechamento-de-comissoes');
