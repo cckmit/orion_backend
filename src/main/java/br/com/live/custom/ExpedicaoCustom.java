@@ -1383,10 +1383,10 @@ public class ExpedicaoCustom {
 
 	public List<ConsultaMinutaTransporte> consultaRelatorioMinutas(int minuta, String dataInicio, String dataFim) {
 
-		String query = " select minGeradas.minuta, minGeradas.tipoMinuta, minGeradas.nota, minGeradas.serie, minGeradas.pedido, nvl(minGeradas.status, 0) status from ";
+		String query = " select minGeradas.minuta, minGeradas.tipoMinuta, minGeradas.nota, minGeradas.serie, minGeradas.pedido, nvl(minGeradas.status, 0) status, minGeradas.usuario, minGeradas.data from ";
 
 		query += " ( ";
-		query += " select a.minuta, a.tipo_minuta tipoMinuta, a.nota, a.serie, a.pedido, (select 1 from pcpc_320 b " +
+		query += " select a.minuta, a.tipo_minuta tipoMinuta, a.nota, a.serie, a.usuario, a.data_hora_geracao data, a.pedido, (select 1 from pcpc_320 b " +
 				"                                                                        where b. pedido_venda = a.pedido "
 				+
 				"                                                                        and b.local_caixa = 9 " +
@@ -1397,7 +1397,7 @@ public class ExpedicaoCustom {
 		if (minuta > 0) {
 			query += " and a.minuta = " + minuta;
 		}
-		query += " group by a.minuta, a.tipo_minuta, a.nota, a.serie, a.pedido ";
+		query += " group by a.minuta, a.tipo_minuta, a.nota, a.serie, a.pedido, a.usuario, a.data_hora_geracao ";
 		query += " order by a.minuta, a.nota ";
 		query += " ) minGeradas ";
 
@@ -1626,5 +1626,31 @@ public class ExpedicaoCustom {
 		return volumeCancelado;
 	}
 
+	public List<ConsultaMinutaTransporte> findMinutaReimpressao(int minuta) {
+		String query = " select a.minuta, a.nota, a.serie, b.data_emissao emissao, a.cliente, a.cidade, a.estado, (select count(*) from pcpc_320 w " +
+				"                                                                                           where w.pedido_venda = a.pedido " +
+				"                                                                                           and w.nota_fiscal = a.nota " +
+				"                                                                                           and w.serie_nota = a.serie) caixas, " +
+				" a.peso_bruto pesoBruto, a.valor_nota valorNota from orion_exp_320 a, fatu_050 b " +
+				" where a.minuta = " + minuta +
+				" and b.num_nota_fiscal = a.nota " +
+				" and b.serie_nota_fisc = a.serie " +
+				" group by a.minuta, a.nota, a.serie, b.data_emissao, a.cliente, a.cidade, a.estado, a.caixas, a.peso_bruto, a.valor_nota, a.pedido " +
+				" order by a.nota ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
+	}
 
+	public String obterTransportadoraMinutaGerada(int minuta) {
+		String transportadora = "";
+
+		String query = " select a.transportadora from orion_exp_320 a " +
+				" where a.minuta = " + minuta +
+				" group by a.transportadora ";
+		try {
+			transportadora = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			transportadora = "";
+		}
+		return transportadora;
+	}
 }

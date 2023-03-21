@@ -37,4 +37,5 @@ public class BodyMinutaTransporte {
 	public List<Integer> notasRemoveSelect;
 	public int localCaixaVolume;
 	public int volume;
+	public String usuario;
 }

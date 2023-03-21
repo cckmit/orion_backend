@@ -558,14 +558,13 @@ public class ExpedicaoService {
 		return parameters;
 	}
 
-	private int gravarVolumesMinutaAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, int tipoMinuta, String transportadora) {
+	private int gravarVolumesMinutaAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, int tipoMinuta, String transportadora, String usuario) {
 		List<Integer> volumesPedido = new ArrayList<>();
 		VolumesMinutaTransporte volumesMinutaSave = null;
 		int notaEmpresa1 = 0;
 		int minuta = expedicaoCustom.findNextMinuta();
 
 		for (ConsultaMinutaTransporte dadosMinuta : notasSelecionadas) {
-			System.out.println(dadosMinuta.empresa);
 
 			if (tipoMinuta == ATACADO && dadosMinuta.empresa == 100) {
 				notaEmpresa1 = expedicaoCustom.retornaNumeroNotaEmpresa1(dadosMinuta.nota);
@@ -577,20 +576,20 @@ public class ExpedicaoService {
 
 			for (Integer volume : volumesPedido) {
 				volumesMinutaSave = new VolumesMinutaTransporte(expedicaoCustom.findNextIdVolumesMinuta(),volume, dadosMinuta.pedido,dadosMinuta.nota,
-						Integer.toString(dadosMinuta.serie), dadosMinuta.cliente, dadosMinuta
-						.libPaypal, dadosMinuta.pesoBruto, dadosMinuta.valorNota, minuta, new Date(), tipoMinuta, transportadora);
+						Integer.toString(dadosMinuta.serie), dadosMinuta.cliente, dadosMinuta.libPaypal, dadosMinuta.pesoBruto, dadosMinuta.valorNota, minuta,
+						new Date(), tipoMinuta, transportadora, dadosMinuta.cidade, dadosMinuta.estado, usuario);
 				volumesMinutaRepository.saveAndFlush(volumesMinutaSave);
 			}
 		}
 		return minuta;
 	}
 
-	public String gerarMinutaTransporteAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, String transportadora) throws FileNotFoundException, JRException {
+	public String gerarMinutaTransporteAtacado(List<ConsultaMinutaTransporte> notasSelecionadas, String transportadora, String usuario) throws FileNotFoundException, JRException {
 		String nomeRelatorioGerado = "";
 		
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(notasSelecionadas);
 
-		int minuta = gravarVolumesMinutaAtacado(notasSelecionadas, ATACADO, transportadora);
+		int minuta = gravarVolumesMinutaAtacado(notasSelecionadas, ATACADO, transportadora, usuario);
 
 		Map<String, Object> parameters = setParameters(transportadora, minuta);
 
@@ -598,13 +597,23 @@ public class ExpedicaoService {
 
 		return nomeRelatorioGerado;
 	}
+
+	public String reemitirMinutaTransporte(int numeroMinuta) throws JRException, FileNotFoundException {
+		List<ConsultaMinutaTransporte> listMinutas = expedicaoCustom.findMinutaReimpressao(numeroMinuta);
+		String transportadora = expedicaoCustom.obterTransportadoraMinutaGerada(numeroMinuta);
+
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(listMinutas);
+		Map<String, Object> parameters = setParameters(transportadora, numeroMinuta);
+
+		return reportService.generateReport("pdf", dataSource, "minuta_transporte", parameters, Integer.toString(numeroMinuta), false);
+	}
 	
-	public String gerarMinutaTransporteEcommerce(List<ConsultaMinutaTransporte> notasSelecionadas, String transportadora) throws FileNotFoundException, JRException {
+	public String gerarMinutaTransporteEcommerce(List<ConsultaMinutaTransporte> notasSelecionadas, String transportadora, String usuario) throws FileNotFoundException, JRException {
 		String nomeRelatorioGerado = "";
 
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(notasSelecionadas);
 
-		int minuta = gravarVolumesMinutaAtacado(notasSelecionadas, ECOMMERCE, transportadora);
+		int minuta = gravarVolumesMinutaAtacado(notasSelecionadas, ECOMMERCE, transportadora, usuario);
 
 		Map<String, Object> parameters = setParameters(transportadora, minuta);
 

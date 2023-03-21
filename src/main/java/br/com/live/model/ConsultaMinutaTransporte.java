@@ -22,6 +22,8 @@ public class ConsultaMinutaTransporte {
 	public int minuta;
 	public int tipoMinuta;
 	public int status;
+	public String usuario;
+	public Date data;
 	
 	public int getNota() {
 		return nota;
@@ -136,14 +138,29 @@ public class ConsultaMinutaTransporte {
 		this.empresa = empresa;
 	}
 
+	public String getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	public Date getData() {
+		return data;
+	}
+
+	public void setData(Date data) {
+		this.data = data;
+	}
+
 	public ConsultaMinutaTransporte() {
 		
 	}
-	
-	public ConsultaMinutaTransporte(int nota, int serie, Date emissao, int pedido, String cliente, int caixas,
-			Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco, int volume, int minuta, int tipoMinuta, int status,
-									int empresa) {
+
+	public ConsultaMinutaTransporte(int nota, int empresa, int serie, Date emissao, int pedido, String cliente, int caixas, Date libPaypal, float pesoBruto, float valorNota, String cidade, String estado, int caixa, String local, String endereco, int volume, int minuta, int tipoMinuta, int status, String usuario, Date data) {
 		this.nota = nota;
+		this.empresa = empresa;
 		this.serie = serie;
 		this.emissao = emissao;
 		this.pedido = pedido;
@@ -161,6 +178,7 @@ public class ConsultaMinutaTransporte {
 		this.minuta = minuta;
 		this.tipoMinuta = tipoMinuta;
 		this.status = status;
-		this.empresa = empresa;
-	}	
+		this.usuario = usuario;
+		this.data = data;
+	}
 }

@@ -35,13 +35,16 @@ public class VolumesMinutaTransporte {
     public int tipoMinuta;
 
     public String transportadora;
+    public String cidade;
+    public String estado;
+    public String usuario;
 
     public VolumesMinutaTransporte() {
 
     }
 
     public VolumesMinutaTransporte(long id, int volume, int pedido, int nota, String serie, String cliente, Date dataLiberacao, Float pesoBruto, Float valorNota, int minuta,
-                                   Date dataHoraGeracao, int tipoMinuta, String transportadora) {
+                                   Date dataHoraGeracao, int tipoMinuta, String transportadora, String cidade, String estado, String usuario) {
         this.id = id;
         this.volume = volume;
         this.pedido = pedido;
@@ -55,5 +58,8 @@ public class VolumesMinutaTransporte {
         this.dataHoraGeracao = dataHoraGeracao;
         this.tipoMinuta = tipoMinuta;
         this.transportadora = transportadora;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.usuario = usuario;
     }
 }

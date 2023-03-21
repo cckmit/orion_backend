@@ -229,12 +229,12 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/gerar-minuta-atacado", method = RequestMethod.POST)
     public String gerarMinutaAtacado(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return expedicaoService.gerarMinutaTransporteAtacado(body.notasSelecionadas, body.transportadora);
+    	return expedicaoService.gerarMinutaTransporteAtacado(body.notasSelecionadas, body.transportadora, body.usuario);
     }
     
     @RequestMapping(value = "/gerar-minuta-ecommerce", method = RequestMethod.POST)
     public String gerarMinutaTransporteEcommerce(@RequestBody BodyMinutaTransporte body) throws FileNotFoundException, JRException {
-    	return expedicaoService.gerarMinutaTransporteEcommerce(body.notasSelecionadas, body.transportadora);
+    	return expedicaoService.gerarMinutaTransporteEcommerce(body.notasSelecionadas, body.transportadora, body.usuario);
     }
     
     @RequestMapping(value = "/find-volumes-sem-leitura-ecommerce", method = RequestMethod.POST)
@@ -424,4 +424,10 @@ public class ExpedicaoController {
     public int findQuantCaixasLidas(@PathVariable("minuta") int minuta) {
         return expedicaoCustom.verificaTodosVolumesAlocados(minuta);
     }
+
+    @RequestMapping(value = "/reemitir-minutas-geradas/{minuta}", method = RequestMethod.GET)
+    public String reemitirMinutasGeradas(@PathVariable("minuta") int minuta) throws JRException, FileNotFoundException {
+        return expedicaoService.reemitirMinutaTransporte(minuta);
+    }
+
 }
