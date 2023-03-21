@@ -1,0 +1,6 @@
+alter table mqop_005
+add (live_estagio_decoracao number(1) default 0);
+
+update mqop_005
+set live_estagio_decoracao = 1
+where codigo_estagio in (10, 15, 61, 99, 85, 7, 25, 56, 52, 18, 53, 51);

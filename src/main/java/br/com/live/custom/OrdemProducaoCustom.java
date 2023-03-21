@@ -352,8 +352,30 @@ public class OrdemProducaoCustom {
 		}
 		
 		return estagios;
-	}	
-	
+	}
+
+	public List<EstagioProducao> findAllEstagiosDecoracaoOrdemProducao(int ordemProducao) {
+
+		List<EstagioProducao> estagios;
+
+		final int ESTAGIO_DEGORACAO = 1;
+
+		String query = " select DISTINCT m.codigo_estagio estagio, m.descricao from mqop_005 m, pcpc_040 p " +
+				"where m.codigo_estagio = p.codigo_estagio " +
+				"and p.ordem_producao = " + ordemProducao +
+				"and m.codigo_estagio > 0 " +
+				"and m.live_estagio_decoracao = " + ESTAGIO_DEGORACAO +
+				"order by m.codigo_estagio ";
+		try {
+			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
+
+		} catch (Exception e) {
+			estagios = new ArrayList<EstagioProducao> ();
+		}
+
+		return estagios;
+	}
+
 	public EstagioProducao getEstagio(int codEstagio) {
 		String query = " select m.codigo_estagio estagio, m.descricao, m.est_agrup_est estagioAgrupador from mqop_005 m  where m.codigo_estagio = ? order by m.codigo_estagio ";
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class), codEstagio);				
@@ -1072,6 +1094,21 @@ public class OrdemProducaoCustom {
 				+ " and a.codigo_estagio IN ( " + ConteudoChaveAlfaNum.parseValueToString(estagio) + " ) "
 				+ " group by a.ordem_producao ";
 		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+
+	public List<ConteudoChaveAlfaNum> findOrdensForAsyncEstagioDecoracao(String searchVar) {
+
+		String query = " select a.ordem_producao value, a.ordem_producao label "
+				+ " from pcpc_040 a, pcpc_020 b "
+				+ " where b.ordem_producao = a.ordem_producao "
+				+ " and b.cod_cancelamento = 0 "
+				+ " and a.qtde_a_produzir_pacote > 0 "
+				+ " and a.ordem_producao like '%" + searchVar + "%' "
+				+ " and a.codigo_estagio IN ( select codigo_estagio from mqop_005 where live_estagio_decoracao = 1 ) "
+				+ " and rownum <= 100 "
+				+ " group by a.ordem_producao ";
+
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
