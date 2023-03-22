@@ -82,6 +82,18 @@ public class ContabilidadeCustom {
 		return existsCCusto;
 	}
 	
+	public int findCentroCustoInativo(int centroCusto) {
+		int existsCCustoIn;
+		String query = " SELECT 1 FROM basi_185 a WHERE a.centro_custo = " + centroCusto
+				+ "    AND a.descricao NOT LIKE '%(IN)%' ";
+		try {
+			existsCCustoIn = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existsCCustoIn = 0;
+		}
+		return existsCCustoIn;
+	}
+	
 	public int findHistoricoContabil(int historicoContabil) {
 		int existsHistContabil;
 		String query = " SELECT 1 FROM cont_010 c WHERE c.codigo_historico = " + historicoContabil;

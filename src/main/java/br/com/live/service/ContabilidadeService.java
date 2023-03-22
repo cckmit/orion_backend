@@ -52,6 +52,17 @@ public class ContabilidadeService {
 		return mensagem;
 	}
 	
+	public String validarCentroCustoInativo(int centroCusto){
+		
+		int extistsCCustoIn = contabilidadeCustom.findCentroCustoInativo(centroCusto);
+		String mensagem = "";
+		
+		if(extistsCCustoIn == 0) {
+			mensagem = "Centro de Custo Inativo";						
+		}
+		return mensagem;
+	}
+	
 	public String validarOrigem(int origem){
 		
 		int extistsOrigem = contabilidadeCustom.findOrigem(origem);
@@ -103,9 +114,10 @@ public class ContabilidadeService {
 			String contaReduzida = validarContaContabil(dadosLancto.contaReduzida);
 			String empresa = validarEmpresa(dadosLancto.filialLancto);
 			String centroCusto = validarCentroCusto(dadosLancto.centroCusto);
+			String centroCustoInativo = validarCentroCustoInativo(dadosLancto.centroCusto);
 			String histContabil = validarHistoricoContabil(dadosLancto.histContabil);
-			criticasByLancto = incrementarCriticas(empresa, origem, contaReduzida, centroCusto, histContabil);
-			if(criticasByLancto.length() <= 4) {
+			criticasByLancto = incrementarCriticas(empresa, origem, contaReduzida, centroCusto, histContabil, centroCustoInativo);
+			if(criticasByLancto.length() <= 5) {
 				status = 0;
 			}
 			try {
@@ -123,7 +135,7 @@ public class ContabilidadeService {
 		return listRetorno;
 	}
 	
-	public String incrementarCriticas(String empresa, String origem, String contaReduzida, String centroCusto, String histContabil) {
+	public String incrementarCriticas(String empresa, String origem, String contaReduzida, String centroCusto, String histContabil, String centroCustoInativo) {
 		
 		String criticas = "";
 		
@@ -135,8 +147,10 @@ public class ContabilidadeService {
 			criticas = criticas.strip() + "\n" + contaReduzida + "\n";
 		} if(centroCusto != null) {
 			criticas = criticas.strip() + "\n" + centroCusto + "\n";
-		}if(histContabil != null) {
+		} if(histContabil != null) {
 			criticas = criticas.strip() + "\n" + histContabil + "\n";
+		} if(centroCustoInativo != null) {
+			criticas = criticas.strip() + "\n" + centroCustoInativo + "\n";
 		}
 		return criticas;
 	}

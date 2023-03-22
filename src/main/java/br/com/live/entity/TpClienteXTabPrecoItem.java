@@ -21,7 +21,7 @@ public class TpClienteXTabPrecoItem {
 	public int catalogo;
 	
 	@Column (name = "tipo_cliente")
-	public int tipo_cliente; // TODO - ARRUMAR PARA tipoCliente
+	public int tipoCliente; // TODO - ARRUMAR PARA tipoCliente
 	
 	@Column(name = "col_tab_entr")
 	public int colTabEntr;
@@ -55,12 +55,12 @@ public class TpClienteXTabPrecoItem {
 		this.catalogo = catalogo;
 	}
 
-	public int getTipo_cliente() {
-		return tipo_cliente;
+	public int getTipoCliente() {
+		return tipoCliente;
 	}
 
-	public void setTipo_cliente(int tipo_cliente) {
-		this.tipo_cliente = tipo_cliente;
+	public void setTipoCliente(int tipoCliente) {
+		this.tipoCliente = tipoCliente;
 	}
 
 	public int getColTabEntr() {
@@ -115,13 +115,13 @@ public class TpClienteXTabPrecoItem {
 		
 	}
 
-	public TpClienteXTabPrecoItem(long idItem, String idCapa, int catalogo, int tipo_cliente, int colTabEntr, int mesTabEntr,
+	public TpClienteXTabPrecoItem(long idItem, String idCapa, int catalogo, int tipoCliente, int colTabEntr, int mesTabEntr,
 			int seqTabEntr, Date periodoIni, Date periodoFim) {
 
 		this.idItem = idItem;
 		this.idCapa = idCapa;
 		this.catalogo = catalogo;
-		this.tipo_cliente = tipo_cliente;
+		this.tipoCliente = tipoCliente;
 		this.colTabEntr = colTabEntr;
 		this.mesTabEntr = mesTabEntr;
 		this.seqTabEntr = seqTabEntr;
