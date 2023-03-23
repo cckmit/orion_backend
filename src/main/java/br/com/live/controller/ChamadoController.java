@@ -47,7 +47,7 @@ public class ChamadoController {
 
     @RequestMapping(value = "/save-chamado", method = RequestMethod.POST)
     public void saveChamado(@RequestBody BodyChamado body) {
-        chamadoService.saveChamado(body.codChamado, body.tituloChamado, body.codTecnico, body.codArea, body.codDepartamento, body.codSetor, body.impacto, body.descricaoChamado, body.dataChamado, body.nomeRequerente, body.dataAnalise, body.dataEntregaDes, body.dataEntregaUsuario);
+        chamadoService.saveChamado(body.codChamado, body.tituloChamado, body.codTecnico, body.codArea, body.codDepartamento, body.codSetor, body.impacto, body.descricaoChamado, body.nomeRequerente, body.dataInicioTriagem, body.dataFimTriagem, body.dataInicioAnalise, body.dataFimAnalise, body.dataInicioAprovEscopo, body.dataFimAprovEscopo, body.dataInicioOrcamento, body.dataFimOrcamento, body.dataInicioFilaDesenvForn, body.dataFimFilaDesenvForn, body.dataInicioDesenvForn, body.dataFimDesenvForn, body.dataInicioFilaDesenvInt, body.dataFimFilaDesenvInt, body.dataInicioDesenvInt, body.dataFimDesenvInt, body.dataInicioQualidadeTestes, body.dataFimQualidadeTestes, body.dataInicioEntrega, body.dataFimEntrega);
     }
 
     @RequestMapping(value = "/delete-by-id/{codChamado}", method = RequestMethod.DELETE)
