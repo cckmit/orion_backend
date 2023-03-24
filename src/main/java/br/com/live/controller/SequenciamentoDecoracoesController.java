@@ -74,9 +74,9 @@ public class SequenciamentoDecoracoesController {
 	}
 	
 	@RequestMapping(value = "/calcular-sequenciamento", method = RequestMethod.POST)
-	public List<DadosSequenciamentoDecoracoes> calcularSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
+	public ResponseEntity<List<DadosSequenciamentoDecoracoes>> calcularSequenciamento(@RequestBody BodySequenciamentoDecoracoes body) {	
 		sequenciamentoDecoracoesService.calcularSequenciamento(body.codEstagio, FormataData.parseStringToDate(body.dataInicioSeq), body.listaOrdens);
-		return sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagio);
+		return new ResponseEntity<> (sequenciamentoDecoracoesCustom.findOrdensSequenciadas(body.codEstagio), HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/confirmar-sequenciamento", method = RequestMethod.POST)

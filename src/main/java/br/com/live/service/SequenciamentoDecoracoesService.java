@@ -218,6 +218,9 @@ public class SequenciamentoDecoracoesService {
 		for (DadosSequenciamentoDecoracoes ordem : ordens) {
 			sequencia ++;
 			System.out.println("OP: " + ordem.getOrdemProducao() + " Próxima seq: " + sequencia);
+			if (ordem.getConfirmado()==1)
+				throw new MensagemErroException("Existem ordens confirmadas para o estágio!");
+			
 			// deve sequenciar apenas as ordens do estágio marcado para sequenciar
 			if (ordem.getCodEstagioProx() != codEstagioSequenciar)
 				continue;
@@ -237,6 +240,8 @@ public class SequenciamentoDecoracoesService {
 	public void confirmarSequenciamento(int codEstagio, List<DadosSequenciamentoDecoracoes> ordens) {
 		System.out.println("confirmarSequenciamento");		
 		for (DadosSequenciamentoDecoracoes ordem : ordens) {			
+			if (ordem.getConfirmado() == SequenciamentoDecoracoesCustom.ORDEM_CONFIRMADA)
+				throw new MensagemErroException("Existem ordens confirmadas para o estágio!");		
 			if (ordem.getDataInicio() == null)
 				throw new MensagemErroException("Existem ordens sem as datas de inicio e fim calculadas! Calcule primeiro antes de confirmar o sequenciamento!");
 			System.out.println("Ordem: " + ordem.getOrdemProducao());

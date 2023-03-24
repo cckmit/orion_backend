@@ -21,7 +21,7 @@ public class TpClienteXTabPrecoItem {
 	public int catalogo;
 	
 	@Column (name = "tipo_cliente")
-	public int tipoCliente; // TODO - ARRUMAR PARA tipoCliente
+	public int tipoCliente; 
 	
 	@Column(name = "col_tab_entr")
 	public int colTabEntr;

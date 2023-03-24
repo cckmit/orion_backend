@@ -2,6 +2,7 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.entity.LoteSugestaoColetaPorAreaItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -87,5 +88,10 @@ public class SugestaoColetaController {
     @RequestMapping(value = "/find-coletores-disponiveis/{idLote}", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findColetoresDisponiveiByLote(@PathVariable("idLote") long idLote) {
     	return sugestaoColetaCustom.findColetoresDisponiveiByLote(idLote);
+    }
+
+    @RequestMapping(value = "/find-pedidos-area-coleta/{idArea}/{listarNaArea}", method = RequestMethod.GET)
+    public List<LoteSugestaoColetaPorAreaItem> findPedidosByIdAreaColeta(@PathVariable("idArea") long idArea, @PathVariable("listarNaArea") boolean listarNaArea) {
+        return sugestaoColetaService.findPedidosByIdAreaColeta(idArea, listarNaArea);
     }
 }

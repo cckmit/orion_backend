@@ -37,7 +37,7 @@ public class SugestaoReservaMateriais {
 		this.listaSugestaoReservaPorTecido = listaSugestaoReservaPorTecido;		
 		// Aba Por Aviamentos
 		this.listaSugestaoReservaPorAviamento = listaSugestaoReservaPorAviamento;
-		// Utilizado para identificar os tecidos liberados (grava na tabela do orion) - TODO deve gravar também os aviamentos 
+		// Utilizado para identificar os tecidos liberados (grava na tabela do orion)  
 		this.listaDetalhaMateriaisReservados = listaDetalhaMateriaisReservados;
 	}
 }
