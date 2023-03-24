@@ -30,7 +30,7 @@ public class FinanceiroService {
 		if(mes == 1) {
 			mesInicio = 11;
 			anoInicio = ano - 1;
-		} if (mes == 2) {
+		} else if (mes == 2) {
 			mesInicio = 12;
 			anoInicio = ano - 1;
 		} else {
@@ -40,12 +40,16 @@ public class FinanceiroService {
 		
 		if(mesInicio == 2) {
 			diaInicio = 28;
-		} if (mesInicio == 1 || mesInicio == 3 || mesInicio == 5 || mesInicio == 7 || mesInicio == 8 || mesInicio == 10 || mesInicio == 12) {
+		} else if (mesInicio == 1 || mesInicio == 3 || mesInicio == 5 || mesInicio == 7 || mesInicio == 8 || mesInicio == 10 || mesInicio == 12) {
 			diaInicio = 31;
 		} else {
 			diaInicio = 30;
 		};
-		dataInicio = diaInicio + "/" + mesInicio + "/" + anoInicio;
+		if(mesInicio < 10) {
+			dataInicio = diaInicio + "/" + "0" + mesInicio + "/" + anoInicio;
+		} else {
+			dataInicio = diaInicio + "/" + mesInicio + "/" + anoInicio;			
+		};		
 		
 		return financeiroCustom.findTitulosAtrasadosAnalitico(dataInicio, representante);	
 	}

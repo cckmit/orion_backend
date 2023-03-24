@@ -8,7 +8,7 @@ public class ConsultaTitulosComissao {
 	public String representante;
 	public int tipoTitulo;
 	public String cliente;
-	public int titulo;
+	public String titulo;
 	public String vencimento;
 	public float percComissao;
 	public float valorEmAberto;
@@ -44,10 +44,10 @@ public class ConsultaTitulosComissao {
 	public void setCliente(String cliente) {
 		this.cliente = cliente;
 	}
-	public int getTitulo() {
+	public String getTitulo() {
 		return titulo;
 	}
-	public void setTitulo(int titulo) {
+	public void setTitulo(String titulo) {
 		this.titulo = titulo;
 	}
 	public String getVencimento() {
@@ -78,7 +78,7 @@ public class ConsultaTitulosComissao {
 	public ConsultaTitulosComissao() {
 		
 	}
-	public ConsultaTitulosComissao(int portador, String dataEmissao, String representante, int tipoTitulo, String cliente, int titulo,
+	public ConsultaTitulosComissao(int portador, String dataEmissao, String representante, int tipoTitulo, String cliente, String titulo,
 			String vencimento, float percComissao, float valorEmAberto, float valorComissao) {
 		
 		this.portador = portador;

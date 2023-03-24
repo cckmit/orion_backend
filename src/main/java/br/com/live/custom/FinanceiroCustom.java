@@ -36,7 +36,7 @@ public class FinanceiroCustom {
 				+ "      a.cod_rep_cliente || ' - ' || c.nome_rep_cliente representante, "
 				+ "      a.tipo_titulo tipoTitulo, "
 				+ "      LPAD(a.cli_dup_cgc_cli9, 8, 0) || '/' || LPAD(a.cli_dup_cgc_cli4, 4, 0) || '-' || LPAD(a.cli_dup_cgc_cli2, 2, 0) || ' - ' || b.nome_cliente cliente, "
-				+ "      a.num_duplicata Titulo, "
+				+ "      a.num_duplicata || '-' || a.seq_duplicatas Titulo, "
 				+ "      a.data_venc_duplic vencimento, "
 				+ "      a.percentual_comis percComissao, "
 				+ "      a.valor_duplicata valorEmAberto, "
@@ -48,10 +48,9 @@ public class FinanceiroCustom {
 				+ "      AND c.cod_rep_cliente = a.cod_rep_cliente "
 				+ "      AND a.situacao_duplic IN (0, 3) "
 				+ "      AND a.portador_duplic IN (86, 103, 106, 109, 200, 237, 341, 500, 748) "
-				+ "      AND TO_CHAR(a.data_venc_duplic, 'DD/MM/YYYY') <= '" + dataInicio + "'"
+				+ "      AND a.data_venc_duplic <= TO_DATE('" + dataInicio + "', 'DD/MM/YYYY)') "
 				+ "      AND a.cod_rep_cliente = " + representante;
 
-		System.out.println(query);
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
 		
 	}
