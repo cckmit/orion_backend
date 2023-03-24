@@ -137,6 +137,14 @@ public class SugestaoColetaService {
 		for (Integer idColetor : listIdColetores) {
 			LoteSugestaoColetaPorColetor coletor = new LoteSugestaoColetaPorColetor(loteSugestaoColetaPorColetorRepository.findNextId(), idLoteArea, idColetor);
 			loteSugestaoColetaPorColetorRepository.save(coletor);
-		}		
+		}
+	}
+
+	public List<LoteSugestaoColetaPorAreaItem> findPedidosByIdAreaColeta(long idArea, boolean listarNaArea) {
+		if (listarNaArea) {
+			return sugestaoColetaCustom.findPedidosSomenteEmUmaNaArea(idArea);
+		} else {
+			return sugestaoColetaCustom.findAllPedidosByArea(idArea);
+		}
 	}
 }

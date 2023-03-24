@@ -11,13 +11,14 @@ public class ConsultaSugestaoColetaPorLoteArea {
 	private int qtdeSkus;
 	private int qtdeEnderecos;
 	private String coletores;
+	private int qtdePedidosArea;
 	
 	public ConsultaSugestaoColetaPorLoteArea() {
 		super();
 	}
 
 	public ConsultaSugestaoColetaPorLoteArea(long idLoteArea, long idLote, long idArea, String descricaoArea, int qtdePedidos,
-			int qtdePecas, int qtdeSkus, int qtdeEnderecos, String coletores) {
+			int qtdePecas, int qtdeSkus, int qtdeEnderecos, String coletores, int qtdePedidosArea) {
 		super();
 		this.idLoteArea = idLoteArea;
 		this.idLote = idLote;
@@ -28,6 +29,7 @@ public class ConsultaSugestaoColetaPorLoteArea {
 		this.qtdeSkus = qtdeSkus;
 		this.qtdeEnderecos = qtdeEnderecos;
 		this.coletores = coletores;
+		this.qtdePedidosArea = qtdePedidosArea;
 	}
 	
 	public long getIdLoteArea() {
@@ -100,5 +102,13 @@ public class ConsultaSugestaoColetaPorLoteArea {
 
 	public void setColetores(String coletores) {
 		this.coletores = coletores;
-	}	
+	}
+
+	public int getQtdePedidosArea() {
+		return qtdePedidosArea;
+	}
+
+	public void setQtdePedidosArea(int qtdePedidosArea) {
+		this.qtdePedidosArea = qtdePedidosArea;
+	}
 }
