@@ -26,7 +26,7 @@ public class LoteSugestaoColetaPorArea {
 		super();
 		this.id = id;
 		this.idLote = idLote;
-		this.idArea = idArea;		
+		this.idArea = idArea;
 	}
 
 	public Long getId() {

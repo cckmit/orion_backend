@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.custom.FinanceiroCustom;
+import br.com.live.model.ConsultaTitulosComissao;
+import br.com.live.service.FinanceiroService;
 import br.com.live.util.ConteudoChaveNumerica;
 
 
@@ -19,15 +21,22 @@ import br.com.live.util.ConteudoChaveNumerica;
 public class FinanceiroController {
 	
 	private FinanceiroCustom financeiroCustom;
+	private FinanceiroService financeiroService;
 	
 	@Autowired
-	public FinanceiroController(FinanceiroCustom financeiroCustom) {
+	public FinanceiroController(FinanceiroCustom financeiroCustom, FinanceiroService financeiroService) {
 		this.financeiroCustom = financeiroCustom;
+		this.financeiroService = financeiroService;
 	}
 	
-	@RequestMapping(value = "/find-all-representante/{cod}", method = RequestMethod.GET)
-    public List<ConteudoChaveNumerica> findAllRepresentantes(@PathVariable("cod") int cod) {
-        return financeiroCustom.findAllRepresentantes(cod);
+	@RequestMapping(value = "/find-all-representante/{codigo}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllRepresentantes(@PathVariable("codigo") int codigo) {
+        return financeiroCustom.findAllRepresentantes(codigo);
+    }
+	
+	@RequestMapping(value = "/find-titulos-atrasado-analitico/{mes}/{ano}/{representante}", method = RequestMethod.GET)
+    public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") int representante) {
+        return financeiroService.encontraDataInicioCobrancaAtrasadas(mes, ano, representante);
     }
 
 }

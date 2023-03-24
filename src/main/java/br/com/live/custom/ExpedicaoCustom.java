@@ -1653,4 +1653,12 @@ public class ExpedicaoCustom {
 		}
 		return transportadora;
 	}
+
+	public List<VolumeMinuta> findVolumesMinutaPorNotaPedido(int codNotaFiscal, int serieNotaFiscal, int codPedido) {
+		String query = " select a.numero_volume numeroVolume, a.data_montagem dataMontagem, a.hora_montagem horaMontagem, a.cod_usuario codUsuario, a.local_caixa localCaixa from pcpc_320 a "
+				+ " where a.nota_fiscal = " + codNotaFiscal
+				+ " and a.serie_nota = " + serieNotaFiscal
+				+ " and a.pedido_venda = " + codPedido;
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(VolumeMinuta.class));
+	}
 }
