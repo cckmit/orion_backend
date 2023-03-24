@@ -22,13 +22,13 @@ public class Servidor {
     public String sistemaOperacional;
 
     public String ip;
-    public int hd;
-    public int memoria;
+    public String hd;
+    public String memoria;
     public String processador;
     public String aplicacoes;
     public byte[] documentacao;
 
-    public Servidor(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional, String ip, int hd, int memoria, String processador, String aplicacoes, byte[] documentacao) {
+    public Servidor(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional, String ip, String hd, String memoria, String processador, String aplicacoes, byte[] documentacao) {
         this.id = id;
         this.nomeServidor = nomeServidor;
         this.maquinaFisica = maquinaFisica;
@@ -83,19 +83,19 @@ public class Servidor {
         this.ip = ip;
     }
 
-    public int getHd() {
+    public String getHd() {
         return hd;
     }
 
-    public void setHd(int hd) {
+    public void setHd(String hd) {
         this.hd = hd;
     }
 
-    public int getMemoria() {
+    public String getMemoria() {
         return memoria;
     }
 
-    public void setMemoria(int memoria) {
+    public void setMemoria(String memoria) {
         this.memoria = memoria;
     }
 

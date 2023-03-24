@@ -30,16 +30,29 @@ public class ChamadoService {
         return chamadoRepository.findByCodChamado(codChamado);
     }
 
-    public Chamado saveChamado(int codChamado, String tituloChamado, int codTecnico, int codArea,
-                               int codDepartamento, int codSetor, int impacto, String descricaoChamado, String dataChamado,
-                               String nomeRequerente, String dataAnalise, String dataEntregaDes, String dataEntregaUsuario) {
+    public Chamado saveChamado(int codChamado, String tituloChamado, int codTecnico, int codArea, int codDepartamento, int codSetor, int impacto,
+                               String descricaoChamado, String nomeRequerente, String dataInicioTriagem, String dataFimTriagem, String dataInicioAnalise,
+                               String dataFimAnalise, String dataInicioAprovEscopo, String dataFimAprovEscopo, String dataInicioOrcamento, String dataFimOrcamento,
+                               String dataInicioFilaDesenvForn, String dataFimFilaDesenvForn, String dataInicioDesenvForn, String dataFimDesenvForn,
+                               String dataInicioFilaDesenvInt, String dataFimFilaDesenvInt, String dataInicioDesenvInt, String dataFimDesenvInt,
+                               String dataInicioQualidadeTestes, String dataFimQualidadeTestes, String dataInicioEntrega, String dataFimEntrega) {
 
         Chamado dadosChamado = null;
 
         dadosChamado = chamadoRepository.findByCodChamado(codChamado);
 
         if (dadosChamado == null) {
-           dadosChamado = new Chamado(codChamado, tituloChamado, codTecnico, codArea, codDepartamento, codSetor, impacto, descricaoChamado, FormataData.parseStringToDate(dataChamado), nomeRequerente, FormataData.parseStringToDate(dataAnalise), FormataData.parseStringToDate(dataEntregaDes), FormataData.parseStringToDate(dataEntregaUsuario));
+           dadosChamado = new Chamado(codChamado, tituloChamado, codTecnico, codArea, codDepartamento, codSetor, impacto, descricaoChamado,
+                   nomeRequerente, FormataData.parseStringToDate(dataInicioTriagem), FormataData.parseStringToDate(dataFimTriagem),
+                   FormataData.parseStringToDate(dataInicioAnalise), FormataData.parseStringToDate(dataFimAnalise),
+                   FormataData.parseStringToDate(dataInicioAprovEscopo), FormataData.parseStringToDate(dataFimAprovEscopo),
+                   FormataData.parseStringToDate(dataInicioOrcamento), FormataData.parseStringToDate(dataFimOrcamento),
+                   FormataData.parseStringToDate(dataInicioFilaDesenvForn), FormataData.parseStringToDate(dataFimFilaDesenvForn),
+                   FormataData.parseStringToDate(dataInicioDesenvForn), FormataData.parseStringToDate(dataFimDesenvForn),
+                   FormataData.parseStringToDate(dataInicioFilaDesenvInt), FormataData.parseStringToDate(dataFimFilaDesenvInt),
+                   FormataData.parseStringToDate(dataInicioDesenvInt), FormataData.parseStringToDate(dataFimDesenvInt),
+                   FormataData.parseStringToDate(dataInicioQualidadeTestes), FormataData.parseStringToDate(dataFimQualidadeTestes),
+                   FormataData.parseStringToDate(dataInicioEntrega), FormataData.parseStringToDate(dataFimEntrega));
         } else {
             dadosChamado.tituloChamado = tituloChamado;
             dadosChamado.codTecnico = codTecnico;
@@ -48,12 +61,30 @@ public class ChamadoService {
             dadosChamado.codSetor = codSetor;
             dadosChamado.impacto = impacto;
             dadosChamado.descricaoChamado = descricaoChamado;
-            dadosChamado.dataChamado = FormataData.parseStringToDate(dataChamado);
             dadosChamado.nomeRequerente = nomeRequerente;
-            dadosChamado.dataAnalise = FormataData.parseStringToDate(dataAnalise);
-            dadosChamado.dataEntregaDes = FormataData.parseStringToDate(dataEntregaDes);
-            dadosChamado.dataEntregaUsuario = FormataData.parseStringToDate(dataEntregaUsuario);
+            dadosChamado.dataInicioTriagem = !dataInicioTriagem.isEmpty() ? FormataData.parseStringToDate(dataInicioTriagem) : null;
+            dadosChamado.dataFimTriagem = !dataFimTriagem.isEmpty() ? FormataData.parseStringToDate(dataFimTriagem) : null;
+            dadosChamado.dataInicioAnalise = !dataInicioAnalise.isEmpty() ? FormataData.parseStringToDate(dataInicioAnalise) : null;
+            dadosChamado.dataFimAnalise = !dataFimAnalise.isEmpty() ? FormataData.parseStringToDate(dataFimAnalise) : null;
+            dadosChamado.dataInicioAprovEscopo = !dataInicioAprovEscopo.isEmpty() ? FormataData.parseStringToDate(dataInicioAprovEscopo) : null;
+            dadosChamado.dataFimAprovEscopo = !dataFimAprovEscopo.isEmpty() ? FormataData.parseStringToDate(dataFimAprovEscopo) : null;
+            dadosChamado.dataInicioOrcamento = !dataInicioOrcamento.isEmpty() ? FormataData.parseStringToDate(dataInicioOrcamento) : null;
+            dadosChamado.dataFimOrcamento = !dataFimOrcamento.isEmpty() ? FormataData.parseStringToDate(dataFimOrcamento) : null;
+            dadosChamado.dataInicioFilaDesenvForn = !dataInicioFilaDesenvForn.isEmpty() ? FormataData.parseStringToDate(dataInicioFilaDesenvForn) : null;
+            dadosChamado.dataFimFilaDesenvForn = !dataFimFilaDesenvForn.isEmpty() ? FormataData.parseStringToDate(dataFimFilaDesenvForn) : null;
+            dadosChamado.dataInicioDesenvForn = !dataInicioDesenvForn.isEmpty() ? FormataData.parseStringToDate(dataInicioDesenvForn) : null;
+            dadosChamado.dataFimDesenvForn = !dataFimDesenvForn.isEmpty() ? FormataData.parseStringToDate(dataFimDesenvForn) : null;
+            dadosChamado.dataInicioFilaDesenvInt = !dataInicioFilaDesenvInt.isEmpty() ? FormataData.parseStringToDate(dataInicioFilaDesenvInt) : null;
+            dadosChamado.dataFimFilaDesenvInt = !dataFimFilaDesenvInt.isEmpty() ? FormataData.parseStringToDate(dataFimFilaDesenvInt) : null;
+            dadosChamado.dataInicioDesenvInt = !dataInicioDesenvInt.isEmpty() ? FormataData.parseStringToDate(dataInicioDesenvInt) : null;
+            dadosChamado.dataFimDesenvInt = !dataFimDesenvInt.isEmpty() ? FormataData.parseStringToDate(dataFimDesenvInt) : null;
+            dadosChamado.dataInicioQualidadeTestes = !dataInicioQualidadeTestes.isEmpty() ? FormataData.parseStringToDate(dataInicioQualidadeTestes) : null;
+            dadosChamado.dataFimQualidadeTestes = !dataFimQualidadeTestes.isEmpty() ? FormataData.parseStringToDate(dataFimQualidadeTestes) : null;
+            dadosChamado.dataInicioEntrega = !dataInicioEntrega.isEmpty() ? FormataData.parseStringToDate(dataInicioEntrega) : null;
+            dadosChamado.dataFimEntrega = !dataFimEntrega.isEmpty() ? FormataData.parseStringToDate(dataFimEntrega) : null;
         }
+
+
         chamadoRepository.save(dadosChamado);
 
         return dadosChamado;

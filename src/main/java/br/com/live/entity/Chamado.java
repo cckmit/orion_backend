@@ -34,26 +34,79 @@ public class Chamado {
     @Column(name = "descricao_chamado")
     public String descricaoChamado;
 
-    @Column(name = "data_chamado")
-    public Date dataChamado;
-
     @Column(name = "nome_requerente")
     public String nomeRequerente;
 
-    @Column(name = "data_analise")
-    public Date dataAnalise;
+    @Column(name = "data_inicio_triagem")
+    public Date dataInicioTriagem;
 
-    @Column(name = "data_entrega_des")
-    public Date dataEntregaDes;
+    @Column(name = "data_fim_triagem")
+    public Date dataFimTriagem;
 
-    @Column(name = "data_entrega_usuario")
-    public Date dataEntregaUsuario;
+    @Column(name = "data_inicio_analise")
+    public Date dataInicioAnalise;
+
+    @Column(name = "data_fim_analise")
+    public Date dataFimAnalise;
+
+    @Column(name = "data_inicio_aprov_escopo")
+    public Date dataInicioAprovEscopo;
+
+    @Column(name = "data_fim_aprov_escopo")
+    public Date dataFimAprovEscopo;
+
+    @Column(name = "data_inicio_orcamento")
+    public Date dataInicioOrcamento;
+
+    @Column(name = "data_fim_orcamento")
+    public Date dataFimOrcamento;
+
+    @Column(name = "data_inicio_fila_desenv_forn")
+    public Date dataInicioFilaDesenvForn;
+
+    @Column(name = "data_fim_fila_desenv_forn")
+    public Date dataFimFilaDesenvForn;
+
+    @Column(name = "data_inicio_desenv_forn")
+    public Date dataInicioDesenvForn;
+
+    @Column(name = "data_fim_desenv_forn")
+    public Date dataFimDesenvForn;
+
+    @Column(name = "data_inicio_fila_desenv_int")
+    public Date dataInicioFilaDesenvInt;
+
+    @Column(name = "data_fim_fila_desenv_int")
+    public Date dataFimFilaDesenvInt;
+
+    @Column(name = "data_inicio_desenv_int")
+    public Date dataInicioDesenvInt;
+
+    @Column(name = "data_fim_desenv_int")
+    public Date dataFimDesenvInt;
+
+    @Column(name = "data_inicio_qualidade_testes")
+    public Date dataInicioQualidadeTestes;
+
+    @Column(name = "data_fim_qualidade_testes")
+    public Date dataFimQualidadeTestes;
+
+    @Column(name = "data_inicio_entrega")
+    public Date dataInicioEntrega;
+
+    @Column(name = "data_fim_entrega")
+    public Date dataFimEntrega;
 
     public Chamado(){
 
     }
 
-    public Chamado(int codChamado, String tituloChamado, int codTecnico, int codArea, int codDepartamento, int codSetor, int impacto, String descricaoChamado, Date dataChamado, String nomeRequerente, Date dataAnalise, Date dataEntregaDes, Date dataEntregaUsuario) {
+    public Chamado(int codChamado, String tituloChamado, int codTecnico, int codArea, int codDepartamento, int codSetor, int impacto,
+                   String descricaoChamado, String nomeRequerente, Date dataInicioTriagem, Date dataFimTriagem, Date dataInicioAnalise,
+                   Date dataFimAnalise, Date dataInicioAprovEscopo, Date dataFimAprovEscopo, Date dataInicioOrcamento, Date dataFimOrcamento,
+                   Date dataInicioFilaDesenvForn, Date dataFimFilaDesenvForn, Date dataInicioDesenvForn, Date dataFimDesenvForn,
+                   Date dataInicioFilaDesenvInt, Date dataFimFilaDesenvInt, Date dataInicioDesenvInt, Date dataFimDesenvInt,
+                   Date dataInicioQualidadeTestes, Date dataFimQualidadeTestes, Date dataInicioEntrega, Date dataFimEntrega) {
         this.codChamado = codChamado;
         this.tituloChamado = tituloChamado;
         this.codTecnico = codTecnico;
@@ -62,10 +115,26 @@ public class Chamado {
         this.codSetor = codSetor;
         this.impacto = impacto;
         this.descricaoChamado = descricaoChamado;
-        this.dataChamado = dataChamado;
         this.nomeRequerente = nomeRequerente;
-        this.dataAnalise = dataAnalise;
-        this.dataEntregaDes = dataEntregaDes;
-        this.dataEntregaUsuario = dataEntregaUsuario;
+        this.dataInicioTriagem = dataInicioTriagem;
+        this.dataFimTriagem = dataFimTriagem;
+        this.dataInicioAnalise = dataInicioAnalise;
+        this.dataFimAnalise = dataFimAnalise;
+        this.dataInicioAprovEscopo = dataInicioAprovEscopo;
+        this.dataFimAprovEscopo = dataFimAprovEscopo;
+        this.dataInicioOrcamento = dataInicioOrcamento;
+        this.dataFimOrcamento = dataFimOrcamento;
+        this.dataInicioFilaDesenvForn = dataInicioFilaDesenvForn;
+        this.dataFimFilaDesenvForn = dataFimFilaDesenvForn;
+        this.dataInicioDesenvForn = dataInicioDesenvForn;
+        this.dataFimDesenvForn = dataFimDesenvForn;
+        this.dataInicioFilaDesenvInt = dataInicioFilaDesenvInt;
+        this.dataFimFilaDesenvInt = dataFimFilaDesenvInt;
+        this.dataInicioDesenvInt = dataInicioDesenvInt;
+        this.dataFimDesenvInt = dataFimDesenvInt;
+        this.dataInicioQualidadeTestes = dataInicioQualidadeTestes;
+        this.dataFimQualidadeTestes = dataFimQualidadeTestes;
+        this.dataInicioEntrega = dataInicioEntrega;
+        this.dataFimEntrega = dataFimEntrega;
     }
 }
