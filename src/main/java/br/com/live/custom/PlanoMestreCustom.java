@@ -311,7 +311,7 @@ public class PlanoMestreCustom {
 				+ " and f.grupo_estrutura = a.referencia "
 				+ " and (f.item_estrutura = b.item or f.item_estrutura = '000000') "
 				+ " and f.numero_alternati = d.alternativa " + " and f.numero_roteiro = d.roteiro "
-				+ " and f.codigo_estagio = 20 " // TODO - De inicio vai considerar apenas o estágio 20 - Costura
+				+ " and f.codigo_estagio = 20 " 
 				+ " group by a.referencia, b.sub, b.item, b.quantidade) minutos ";
 
 		try {

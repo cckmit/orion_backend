@@ -81,8 +81,6 @@ public class CapacidadeProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoCapacidadeProducao.class));
 	}
 		
-	// TODO - OS MÉTODOS ABAIXA DEVERÃO SER REVISADOS 
-	
 	public List<ArtigoCapacidadeProducao> findArtigosByEstagio(int periodo, int estagio) {
 
 		String query = "select b.artigo, b.descr_artigo descricao, nvl(o.qtde_pecas,0) qtdePecas, nvl(o.qtde_minutos,0) qtdeMinutos " 
