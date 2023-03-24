@@ -3,6 +3,7 @@ package br.com.live.controller;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import br.com.live.body.BodyVolumeMinuta;
 import br.com.live.model.*;
 import br.com.live.repository.VolumesMinutaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -430,4 +431,8 @@ public class ExpedicaoController {
         return expedicaoService.reemitirMinutaTransporte(minuta);
     }
 
+    @RequestMapping(value = "/find-volumes-minuta-nota-pedido", method = RequestMethod.POST)
+    public List<VolumeMinuta> findVolumesMinutaPorNotaPedido(@RequestBody BodyVolumeMinuta body) {
+        return expedicaoCustom.findVolumesMinutaPorNotaPedido(body.codNotaFiscal, body.seriaNotaFiscal, body.codPedido);
+    }
 }
