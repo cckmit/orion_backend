@@ -13,6 +13,11 @@ public class ConsultaTitulosComissao {
 	public float percComissao;
 	public float valorEmAberto;
 	public float valorComissao;
+	public float mesAnterior;
+	public float mesAtual;
+	public float saldo;
+	public String dataInicio;
+	public String dataAnterior;
 	
 	public int getPortador() {
 		return portador;
@@ -74,12 +79,41 @@ public class ConsultaTitulosComissao {
 	public void setValorComissao(float valorComissao) {
 		this.valorComissao = valorComissao;
 	}
-	
+	public String getDataInicio() {
+		return dataInicio;
+	}
+	public void setDataInicio(String dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+	public String getDataAnterior() {
+		return dataAnterior;
+	}
+	public void setDataAnterior(String dataAnterior) {
+		this.dataAnterior = dataAnterior;
+	}
+	public float getMesAnterior() {
+		return mesAnterior;
+	}
+	public void setMesAnterior(float mesAnterior) {
+		this.mesAnterior = mesAnterior;
+	}
+	public float getMesAtual() {
+		return mesAtual;
+	}
+	public void setMesAtual(float mesAtual) {
+		this.mesAtual = mesAtual;
+	}
+	public float getSaldo() {
+		return saldo;
+	}
+	public void setSaldo(float saldo) {
+		this.saldo = saldo;
+	}
 	public ConsultaTitulosComissao() {
 		
 	}
 	public ConsultaTitulosComissao(int portador, String dataEmissao, String representante, int tipoTitulo, String cliente, String titulo,
-			String vencimento, float percComissao, float valorEmAberto, float valorComissao) {
+			String vencimento, float percComissao, float valorEmAberto, float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior) {
 		
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
@@ -91,5 +125,10 @@ public class ConsultaTitulosComissao {
 		this.percComissao = percComissao;
 		this.valorEmAberto = valorEmAberto;
 		this.valorComissao = valorComissao;
+		this.mesAnterior = mesAnterior;
+		this.mesAtual = mesAtual;
+		this.saldo = saldo;
+		this.dataInicio = dataInicio;
+		this.dataAnterior = dataAnterior;
 	}
 }
