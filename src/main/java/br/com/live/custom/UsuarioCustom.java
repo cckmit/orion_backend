@@ -77,9 +77,6 @@ public class UsuarioCustom {
 	}
 	
 	public List<ConteudoChaveAlfaNum> findPathPrograma(long idUsuario, String descricao) {
-
-		System.out.println(idUsuario);
-		System.out.println(descricao);
 		
 		String query = " SELECT a.path value, a.descricao label FROM orion_002 a, orion_003 b where UPPER(a.descricao) like UPPER('%" + descricao + "%') "
 				+ " and b.id_usuario = " + idUsuario
