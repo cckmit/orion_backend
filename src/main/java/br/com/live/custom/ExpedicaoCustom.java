@@ -3,7 +3,9 @@ package br.com.live.custom;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.live.entity.Usuario;
 import br.com.live.model.*;
+import br.com.live.repository.UsuarioRepository;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,9 +19,11 @@ import javax.print.DocFlavor;
 public class ExpedicaoCustom {
 
 	private JdbcTemplate jdbcTemplate;
+	private UsuarioRepository usuarioRepository;
 
-	public ExpedicaoCustom(JdbcTemplate jdbcTemplate) {
+	public ExpedicaoCustom(JdbcTemplate jdbcTemplate, UsuarioRepository usuarioRepository) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.usuarioRepository = usuarioRepository;
 	}
 
 	public List<EnderecoCount> findReferenciaEnd(int codDeposito) {
@@ -1660,5 +1664,17 @@ public class ExpedicaoCustom {
 				+ " and a.serie_nota = " + serieNotaFiscal
 				+ " and a.pedido_venda = " + codPedido;
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(VolumeMinuta.class));
+	}
+
+	public int findQuantMovimentacoesEntradaDiaUsuario(int usuario, String tipoMov) {
+
+		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(usuario);
+
+		String query = " select count(*) qtdPecaLidaDiaUsuario from orion_exp_300 o "
+				+ " where o.tipo = '" + tipoMov + "' "
+				+ " and o.usuario = '"+ dadosUsuario.usuarioSystextil + "' "
+				+ " and trunc(o.data_hora) = trunc(sysdate)";
+
+		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 }

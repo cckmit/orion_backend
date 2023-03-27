@@ -435,4 +435,9 @@ public class ExpedicaoController {
     public List<VolumeMinuta> findVolumesMinutaPorNotaPedido(@RequestBody BodyVolumeMinuta body) {
         return expedicaoCustom.findVolumesMinutaPorNotaPedido(body.codNotaFiscal, body.seriaNotaFiscal, body.codPedido);
     }
+
+    @RequestMapping(value = "/find-movimentacao-entrada-dia-usuario", method = RequestMethod.POST)
+    public int findQuantMovimentacoesEntradaDiaUsuario(@RequestBody BodyExpedicao body) {
+        return expedicaoCustom.findQuantMovimentacoesEntradaDiaUsuario(body.usuario, body.tipoMov);
+    }
 }
