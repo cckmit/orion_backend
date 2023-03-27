@@ -373,12 +373,13 @@ public class ComercialService {
 			}
 
 			if (dadosDesconto.valorDesconto > 0) {
+				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido, dadosCashBack.observacao);
+
 				// Verifica se o pedido é FRANCHISING
 				if (naturezaPedido == 421 || naturezaPedido == 422) {
 					dadosPedido.valor = dadosPedido.valor * 2;
 				}
-				
-				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido, dadosCashBack.observacao);
+
 				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario);
 				atualizarControleDesconto(cnpj9, cnpj4, cnpj2, dadosPedido.valor);
 
