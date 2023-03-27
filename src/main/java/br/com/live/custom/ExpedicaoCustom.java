@@ -1391,13 +1391,12 @@ public class ExpedicaoCustom {
 
 		query += " ( ";
 		query += " select a.minuta, a.tipo_minuta tipoMinuta, a.nota, a.serie, a.usuario, a.data_hora_geracao data, a.pedido, (select 1 from pcpc_320 b " +
-				"                                                                        where b. pedido_venda = a.pedido "
-				+
+				"                                                                        where b. pedido_venda = a.pedido " +
+				" 																		 and b.nota_fiscal = a.nota " +
+				"																		 and b.serie_nota = a.serie " +
 				"                                                                        and b.local_caixa = 9 " +
-				"                                                                        group by 1) status  from orion_exp_320 a "
-				+
-				" where trunc(a.data_hora_geracao) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('"
-				+ dataFim + "', 'dd-MM-yyyy') ";
+				"                                                                        group by 1) status  from orion_exp_320 a " +
+				" where trunc(a.data_hora_geracao) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') ";
 		if (minuta > 0) {
 			query += " and a.minuta = " + minuta;
 		}
