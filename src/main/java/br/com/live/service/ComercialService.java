@@ -245,7 +245,7 @@ public class ComercialService {
 			validarImportacao = comercialCustom.validarImportacaoDescontos(cnpj9, cnpj4, cnpj2, cliente.dataInsercao, cliente.valor);
 
 			if (validarImportacao != 0) {
-				errosImportacao += " Cliente " + String.format("%09d", cnpj9) + String.format("%04d", cnpj4) + String.format("%02d", cnpj2) +
+				errosImportacao += " Cliente " + String.format("%08d", cnpj9) + String.format("%04d", cnpj4) + String.format("%02d", cnpj2) +
 						" já possui desconto importado para data de " + cliente.dataInsercao + "! \n";
 			} else  {
 				try {
@@ -284,6 +284,7 @@ public class ComercialService {
 
 		for (ClientesImportados dadosCliente : listClientes) {
 			List<ConsultaPedidosPorCliente> listPedidos = new ArrayList<>();
+
 			ControleDescontoCliente controleDesconto = controleDescontoClienteRepository.findByIdControle(dadosCliente.cnpj9 + "-" + dadosCliente.cnpj4 + "-" + dadosCliente.cnpj2);
 			float totalDesconto = controleDesconto.valorDesconto;
 
@@ -317,7 +318,7 @@ public class ComercialService {
 			}
 
 			// Inserir os Pedidos que irão aparecer no Grid
-			String cnpjEdit = String.format("%09d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
+			String cnpjEdit = String.format("%08d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
 
 			PedidosComDescontoAConfirmar pedidos = new PedidosComDescontoAConfirmar(dadosPedido.cnpj9, dadosPedido.cnpj4, dadosPedido.cnpj2, cnpjEdit, dadosPedido.valorSaldo,
 					valorDescCalculado, obsPedido, dadosPedido.dataEmbarque, dadosPedido.pedido);
@@ -358,9 +359,9 @@ public class ComercialService {
 
 			int naturezaPedido = comercialCustom.findNaturezaPedido(dadosPedido.pedido);
 
-			int cnpj9 = Integer.parseInt(dadosPedido.cnpjCliente.substring(0,9));
-			int cnpj4 = Integer.parseInt(dadosPedido.cnpjCliente.substring(9,13));
-			int cnpj2 = Integer.parseInt(dadosPedido.cnpjCliente.substring(13,15));
+			int cnpj9 = Integer.parseInt(dadosPedido.cnpjCliente.substring(0,8));
+			int cnpj4 = Integer.parseInt(dadosPedido.cnpjCliente.substring(8,12));
+			int cnpj2 = Integer.parseInt(dadosPedido.cnpjCliente.substring(12,14));
 
 			dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
 			dadosCashBack = valorDescontoClientesImpRepository.findObservacao(cnpj9, cnpj4, cnpj2);

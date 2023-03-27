@@ -203,8 +203,8 @@ public class ComercialController {
 	public List<ConsultaPedidosPorCliente> findSaldosClientes(@PathVariable("cnpjCliente") String cnpjCliente) {
 
 		int cnpj9 = Integer.parseInt(cnpjCliente.substring(0,8));
-		int cnpj4 = Integer.parseInt(cnpjCliente.substring(8,9));
-		int cnpj2 = Integer.parseInt(cnpjCliente.substring(9,11));
+		int cnpj4 = Integer.parseInt(cnpjCliente.substring(8,12));
+		int cnpj2 = Integer.parseInt(cnpjCliente.substring(12,14));
 
 		return comercialCustom.findPedidosPorCliente(cnpj9,cnpj4,cnpj2);
 	}
@@ -213,8 +213,8 @@ public class ComercialController {
 	public void findSaldosClientes(@RequestBody BodyComercial body) {
 
 		int cnpj9 = Integer.parseInt(body.cnpjCliente.substring(0,8));
-		int cnpj4 = Integer.parseInt(body.cnpjCliente.substring(8,9));
-		int cnpj2 = Integer.parseInt(body.cnpjCliente.substring(9,11));
+		int cnpj4 = Integer.parseInt(body.cnpjCliente.substring(8,12));
+		int cnpj2 = Integer.parseInt(body.cnpjCliente.substring(12,14));
 
 		comercialService.aplicarSaldosDescontoPedidos(body.listPedidosSel, cnpj9, cnpj4, cnpj2, body.usuario);
 	}
