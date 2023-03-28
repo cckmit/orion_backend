@@ -49,7 +49,18 @@ public class ContabilidadeController {
     
     @RequestMapping(value = "/importar-lancamentos-contabeis", method = RequestMethod.POST)
     public RetornoLancamentoCont importarLancamentosContabeis(@RequestBody BodyContabilidade body) {                  
-    	return contabilidadeService.importarLancamentosContabeis(body.tabImportarLanctoContab, body.usuario, body.datainsercao);
-    	 
+    	return contabilidadeService.importarLancamentosContabeis(body.tabImportarLanctoContab, body.usuario, body.datainsercao);	 
+    }
+    
+    @RequestMapping(value = "/find-total-credito/{idUsuario}", method = RequestMethod.GET)
+    public float findTotalCredito(@PathVariable("idUsuario") int idUsuario) {
+    	String usuario = contabilidadeCustom.findUserSystextil(idUsuario);
+        return contabilidadeCustom.findTotalCredito(usuario);
+    }
+    
+    @RequestMapping(value = "/find-total-debito/{idUsuario}", method = RequestMethod.GET)
+    public float findTotalDebito(@PathVariable("idUsuario") int idUsuario) {
+    	String usuario = contabilidadeCustom.findUserSystextil(idUsuario);
+        return contabilidadeCustom.findTotalDebito(usuario);
     }
 }

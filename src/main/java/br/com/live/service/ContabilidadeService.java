@@ -130,7 +130,15 @@ public class ContabilidadeService {
 				System.out.println(e);
 			}
 			status = 1;
-		}
+		};
+		
+		//int saldoDebCred = contabilidadeCustom.validarSaldoDebitoCredito(usuario);
+		//System.out.println(saldoDebCred);
+		//if(saldoDebCred != 0) {
+		//	System.out.println("?Entrou");
+		//	contabilidadeCustom.updateCriticaSaldoDebCred(usuario);
+		//};
+		
 		listRetorno = new RetornoLancamentoCont(contabilidadeCustom.findStatusByLancto(usuario), contabilidadeCustom.findAllLanctoContabeis(usuario));
 		return listRetorno;
 	}
