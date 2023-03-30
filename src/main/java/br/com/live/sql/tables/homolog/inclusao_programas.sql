@@ -266,9 +266,6 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (88, 'Fechamento de Comissões', 'Financeiro', '/fechamento-de-comissoes');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (88, 'Fechamento de Comissões', 'Financeiro', '/fechamento-de-comissoes');
-
-insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (89, 'Relacionamento de Loja x Centro de Custos x Supervisor - DRE', 'Financeiro', '/relacionamento-loja-centro-custo-supervisor');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
