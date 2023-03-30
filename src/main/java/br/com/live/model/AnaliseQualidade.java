@@ -13,6 +13,7 @@ public class AnaliseQualidade {
 	public String codigoTecido;
 	public String descricaoTecido;
 	public Date data;
+	public String dataOrdem;
 	public String narrativa;
 	public String descricaoLote;
 	public float valorLote;	
@@ -76,6 +77,12 @@ public class AnaliseQualidade {
 	public void setData(Date data) {
 		this.data = data;
 	}
+	public String getDataOrdem() {
+		return dataOrdem;
+	}
+	public void setDataOrdem(String dataOrdem) {
+		this.dataOrdem = dataOrdem;
+	}
 	public String getNarrativa() {
 		return narrativa;
 	}
@@ -128,7 +135,7 @@ public class AnaliseQualidade {
 		
 	}
 	public AnaliseQualidade(int rolo, float peso, float largura, float gramatura, int ordemTecelagem, int ordemBeneficiamento, String codigoTecido, 
-			String descricaoTecido, Date data, String narrativa, String descricaoLote, float valorLote, int cod, float min, float max, String situacao, String nuance) {
+			String descricaoTecido, Date data, String dataOrdem, String narrativa, String descricaoLote, float valorLote, int cod, float min, float max, String situacao, String nuance) {
 		this.rolo = rolo;
 		this.peso = peso;
 		this.largura = largura;
@@ -146,6 +153,7 @@ public class AnaliseQualidade {
 		this.max = max;
 		this.situacao = situacao;
 		this.nuance = nuance;
+		this.dataOrdem = dataOrdem;
 	}
 	
 		

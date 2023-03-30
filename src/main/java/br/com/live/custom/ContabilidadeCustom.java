@@ -23,7 +23,7 @@ public class ContabilidadeCustom {
 	public int findNextId() {
 		int nextId = 0;
 		
-		String query = " select nvl(max(a.id),0) + 1 from orion_cnt_010 a ";
+		String query = " SELECT NVL(max(a.id),0) + 1 FROM orion_cnt_010 a ";
 
 		try {
 			nextId = jdbcTemplate.queryForObject(query, Integer.class);
@@ -219,5 +219,34 @@ public class ContabilidadeCustom {
 		}
 		return status;
 	}
+	
+	public float findTotalCredito(String usuario) {
+		
+		float valorCredito = 0;
+		
+		String query = " SELECT SUM(a.valor_lancto) FROM orion_cnt_010 a WHERE a.usuario = '" + usuario + "' AND a.debito_credito = 'C' ";
+		
+		try {
+			valorCredito = jdbcTemplate.queryForObject(query, float.class);
+		} catch (Exception e) {
+			valorCredito = 0;			
+		};		
+		
+		return valorCredito;
+	}
+	
+	public float findTotalDebito(String usuario) {
+		
+		float valorDebito = 0;
+		
+		String query = " SELECT SUM(a.valor_lancto) FROM orion_cnt_010 a WHERE a.usuario = '" + usuario + "' AND a.debito_credito = 'D' ";
 
+		try {
+			valorDebito = jdbcTemplate.queryForObject(query, float.class);
+		} catch (Exception e) {
+			valorDebito = 0;			
+		};	
+		
+		return valorDebito;
+	}
 }

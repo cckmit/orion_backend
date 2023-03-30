@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.FechamentoComissaoCustom;
 import br.com.live.model.ConsultaTitulosComissao;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Service
 @Transactional
@@ -23,7 +25,22 @@ public class FechamentoComissaoService {
 	public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(int mes, int ano, String representante){
 		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);		
 		return financeiroCustom.findTitulosAtrasadosAnalitico(dataInicio, representante);
-		
+	}
+	
+	public List<ConsultaTitulosComissao> findLancamentosFaturamento(int mes, int ano, String representante){
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
+		return financeiroCustom.findLancamentosFaturamento(mesComZero, ano, representante);
+	}
+	
+	public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(int mes, int ano, String representante){
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
+		return financeiroCustom.findLancamentosBaixaTitulos(mesComZero, ano, representante);
 	}
 	
 	public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(int mes, int ano, String representante){
