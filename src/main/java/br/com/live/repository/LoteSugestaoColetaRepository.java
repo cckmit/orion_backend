@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.LoteSugestaoColeta;
 
+import java.util.List;
+
 @Repository
 public interface LoteSugestaoColetaRepository extends JpaRepository<LoteSugestaoColeta, Long> {
 
@@ -13,5 +15,5 @@ public interface LoteSugestaoColetaRepository extends JpaRepository<LoteSugestao
 	long findNextId();
 
 	@Query(" SELECT a FROM LoteSugestaoColeta a where a.idUsuario = :idUsuario and a.situacao = 0")
-	LoteSugestaoColeta findLoteNaoLiberadoByUsuario(long idUsuario); 
+	List<LoteSugestaoColeta> findLotesNaoLiberadosByUsuario(long idUsuario);
 }

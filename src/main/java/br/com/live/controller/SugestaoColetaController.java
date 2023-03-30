@@ -2,6 +2,7 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.entity.LoteSugestaoColeta;
 import br.com.live.entity.LoteSugestaoColetaPorAreaItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -38,7 +39,7 @@ public class SugestaoColetaController {
 	
     @RequestMapping(value = "/find-pedidos-sugestao-coleta", method = RequestMethod.POST)
     public List<SugestaoColeta> findPedidosSugestaoColeta(@RequestBody BodyExpedicao body) {
-    	sugestaoColetaService.cleanLoteColetaNaoLiberadoByUsuario(body.idUsuarioLote);
+    	//sugestaoColetaService.cleanLoteColetaNaoLiberadoByUsuario(body.idUsuarioLote);
     	return sugestaoColetaCustom.findPedidosSugestaoColeta(body.dataEmissaoInicio, body.dataEmissaoFim, body.dataEmbarqueInicio, body.dataEmbarqueFim, 
     			body.empresas, body.clientes, body.representantes, body.transportadoras);
     }
@@ -61,8 +62,8 @@ public class SugestaoColetaController {
     }
     
     @RequestMapping(value = "/create-lote-coleta", method = RequestMethod.POST)
-    public void createLoteColeta(@RequestBody BodyExpedicao body) {
-    	sugestaoColetaService.createLoteColeta(body.idUsuarioLote, body.pedidosLoteSugColeta);
+    public long createLoteColeta(@RequestBody BodyExpedicao body) {
+    	return sugestaoColetaService.createLoteColeta(body.idUsuarioLote, body.pedidosLoteSugColeta);
     }
 
     @RequestMapping(value = "/save-coletores-area", method = RequestMethod.POST)
@@ -70,9 +71,9 @@ public class SugestaoColetaController {
     	sugestaoColetaService.saveColetoresByArea(body.idLoteArea, ConteudoChaveNumerica.parseValueToListInt(body.listColetoresArea));
     }
     
-    @RequestMapping(value = "/find-sugestao-para-liberar/{idUsuario}", method = RequestMethod.GET)
-    public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(@PathVariable("idUsuario") long idUsuario) {
-    	return sugestaoColetaService.findSugestaoColetaParaLiberarByIdUsuario(idUsuario);
+    @RequestMapping(value = "/find-sugestao-para-liberar/{idUsuario}/{idLote}", method = RequestMethod.GET)
+    public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idLote") long idLote) {
+    	return sugestaoColetaService.findSugestaoColetaParaLiberarByIdUsuario(idUsuario, idLote);
     }
     
     @RequestMapping(value = "/find-coletores", method = RequestMethod.GET)
@@ -90,8 +91,13 @@ public class SugestaoColetaController {
     	return sugestaoColetaCustom.findColetoresDisponiveiByLote(idLote);
     }
 
-    @RequestMapping(value = "/find-pedidos-area-coleta/{idArea}/{listarNaArea}", method = RequestMethod.GET)
-    public List<LoteSugestaoColetaPorAreaItem> findPedidosByIdAreaColeta(@PathVariable("idArea") long idArea, @PathVariable("listarNaArea") boolean listarNaArea) {
-        return sugestaoColetaService.findPedidosByIdAreaColeta(idArea, listarNaArea);
+    @RequestMapping(value = "/find-pedidos-area-coleta/{idArea}/{listarNaArea}/{idLote}", method = RequestMethod.GET)
+    public List<LoteSugestaoColetaPorAreaItem> findPedidosByIdAreaColeta(@PathVariable("idArea") long idArea, @PathVariable("listarNaArea") boolean listarNaArea, @PathVariable("idLote") long idLote) {
+        return sugestaoColetaService.findPedidosByIdAreaColeta(idArea, listarNaArea, idLote);
+    }
+
+    @RequestMapping(value = "/find-all-lotes-by-usuario/{idUsuario}", method = RequestMethod.GET)
+    public List<LoteSugestaoColeta> findAllLotesByUsuario(@PathVariable("idUsuario") long idUsuario) {
+        return sugestaoColetaService.findAllLotesByUsuario(idUsuario);
     }
 }

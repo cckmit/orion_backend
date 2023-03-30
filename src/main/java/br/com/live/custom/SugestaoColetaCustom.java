@@ -45,7 +45,7 @@ public class SugestaoColetaCustom {
                 + " and a.data_emis_venda between to_date('" + dataEmissaoInicio + "' , 'dd-MM-yyyy') and to_date('" + dataEmissaoFim + "' , 'dd-MM-yyyy') "
                 + " and c.pedido_venda = a.pedido_venda "
                 + " and c.cod_cancelamento = 0 "
-                // Desconsidera o que já foi liberado para coleta
+                // Desconsidera o que já foi sugerido para coleta
                 + " and not exists (select 1 from orion_exp_362 y "
                 + " where y.pedido_venda = a.pedido_venda ) ";
 
@@ -96,51 +96,44 @@ public class SugestaoColetaCustom {
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ItemAColetarPorPedido.class), pedidoVenda);
     }
 
-    public List<ConsultaSugestaoColetaPorLoteArea> findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
+    public List<ConsultaSugestaoColetaPorLoteArea> findSugestaoColetaParaLiberarByIdUsuario(long idUsuario, long idLote) {
 
         List<ConsultaSugestaoColetaPorLoteArea> listaSugestao = null;
 
         String query = " select b.id idLoteArea, b.id_lote idLote, b.id_area idArea, nvl(c.descricao, 'SEM AREA') descricaoArea, " +
-                " (select count(*)  " +
-                "      from (select z.pedido_venda  " +
-                "      from orion_exp_362 z  " +
-                "      where z.id_lote_area = b.id " +
-                "      group by z.pedido_venda)) qtdePedidos, " +
-                " " +
-                " (select COUNT(*) from orion_exp_362 q, orion_exp_361 r, orion_exp_350 s " +
-                "      where r.id = q.id_lote_area " +
-                "      and s.id = r.id_area " +
-                "      and s.id = b.id_area " +
-                "      and not exists ( " +
-                "      select count(*) from ( " +
-                "      select d.pedido_venda pedido, d.endereco from orion_exp_362 d, orion_exp_361 e, orion_exp_350 f " +
-                "      where e.id = d.id_lote_area " +
-                "      and f.id = e.id_area " +
-                "      and e.id_area = b.id_area " +
-                "      and d.pedido_venda = q.pedido_venda " +
-                "      and d.endereco not between f.endereco_inicial and f.endereco_final " +
-                "      group by d.pedido_venda, d.endereco " +
-                "      order by d.endereco) ped " +
-                "      group by ped.pedido )) qtdePedidosArea, " +
-                " " +
-                " (select sum(z.qtde_coletar)  " +
-                "      from orion_exp_362 z  " +
-                "      where z.id_lote_area = b.id) qtdePecas,          " +
-                "      (select count(*)  " +
-                "      from (select z.nivel, z.grupo, z.sub, z.item  " +
-                "      from orion_exp_362 z  " +
-                "      where z.id_lote_area = b.id  " +
-                "      group by z.nivel, z.grupo, z.sub, z.item)) qtdeSkus, " +
-                " (select count(*) " +
-                "      from (select z.endereco " +
-                "      from orion_exp_362 z " +
-                "      where z.id_lote_area = b.id " +
-                "      group by z.endereco)) qtdeEnderecos " +
-                "  from orion_exp_360 a, orion_exp_361 b, orion_exp_350 c " +
-                "  where a.situacao = 0 " +
-                "  and a.id_usuario = " + idUsuario +
-                "  and b.id_lote = a.id " +
-                "  and c.id (+) = b.id_area ";
+                "                 (select count(*) " +
+                "                      from (select z.pedido_venda " +
+                "                      from orion_exp_362 z " +
+                "                      where z.id_lote_area = b.id " +
+                "                      group by z.pedido_venda)) qtdePedidos, " +
+                "                 (select count(*) from ( " +
+                "                      select d.pedido_venda pedido, d.endereco from orion_exp_362 d, orion_exp_361 e, orion_exp_350 f " +
+                "                      where e.id_lote = " + idLote +
+                "                      and d.id_lote_area = e.id " +
+                "                      and f.id = b.id_area " +
+                "                      and d.endereco between f.endereco_inicial and f.endereco_final " +
+                "                      group by d.pedido_venda, d.endereco " +
+                "                      order by d.endereco) " +
+                "                      ) qtdePedidosArea, " +
+                "                 (select sum(z.qtde_coletar) " +
+                "                      from orion_exp_362 z " +
+                "                      where z.id_lote_area = b.id) qtdePecas, " +
+                "                      (select count(*) " +
+                "                      from (select z.nivel, z.grupo, z.sub, z.item " +
+                "                      from orion_exp_362 z " +
+                "                      where z.id_lote_area = b.id " +
+                "                      group by z.nivel, z.grupo, z.sub, z.item)) qtdeSkus, " +
+                "                 (select count(*) " +
+                "                      from (select z.endereco " +
+                "                      from orion_exp_362 z " +
+                "                      where z.id_lote_area = b.id " +
+                "                      group by z.endereco)) qtdeEnderecos " +
+                "                  from orion_exp_360 a, orion_exp_361 b, orion_exp_350 c " +
+                "                  where a.situacao = 0 " +
+                "                  and a.id_usuario = " + idUsuario +
+                "                  and a.id = " + idLote +
+                "                  and b.id_lote = a.id " +
+                "                  and c.id (+) = b.id_area ";
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaSugestaoColetaPorLoteArea.class));
     }
 
@@ -204,31 +197,31 @@ public class SugestaoColetaCustom {
         return listIdColetores;
     }
 
-    public List<LoteSugestaoColetaPorAreaItem> findPedidosSomenteEmUmaNaArea(long idArea) {
+    public List<LoteSugestaoColetaPorAreaItem> findPedidosSomenteEmUmaNaArea(long idArea, long idLote) {
 
         String query = "select q.pedido_venda pedidoVenda, q.nivel, q.grupo, q.sub, q.item, q.endereco, q.qtde_coletar qtdeColetar from orion_exp_362 q, orion_exp_361 r, orion_exp_350 s " +
                 " where r.id = q.id_lote_area " +
+                " and r.id_lote = " + idLote +
                 " and s.id = r.id_area " +
                 " and s.id = " + idArea +
-                " and not exists ( " +
+                " and exists ( " +
                 " select count(*) from ( " +
-                " select a.pedido_venda pedido, a.endereco from orion_exp_362 a, orion_exp_361 b, orion_exp_350 c " +
-                " where b.id = a.id_lote_area " +
-                " and c.id = b.id_area " +
-                " and b.id_area = " + idArea +
-                " and a.pedido_venda = q.pedido_venda " +
-                " and a.endereco not between c.endereco_inicial and c.endereco_final " +
-                " group by a.pedido_venda, a.endereco " +
-                " order by a.endereco) ped " +
-                " group by ped.pedido ) ";
+                " select d.pedido_venda pedido, d.endereco from orion_exp_362 d, orion_exp_361 e, orion_exp_350 f " +
+                " where e.id_lote = " + idLote +
+                " and d.id_lote_area = e.id " +
+                " and f.id = " + idArea +
+                " and d.endereco between f.endereco_inicial and f.endereco_final " +
+                " group by d.pedido_venda, d.endereco " +
+                " order by d.endereco)) ";
 
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LoteSugestaoColetaPorAreaItem.class));
     }
 
-    public List<LoteSugestaoColetaPorAreaItem> findAllPedidosByArea(long idArea) {
+    public List<LoteSugestaoColetaPorAreaItem> findAllPedidosByArea(long idArea, long idLote) {
 
         String query = " select q.pedido_venda pedidoVenda, q.nivel, q.grupo, q.sub, q.item, q.endereco, q.qtde_coletar qtdeColetar from orion_exp_362 q, orion_exp_361 r, orion_exp_350 s " +
                 " where r.id = q.id_lote_area " +
+                " and r.id_lote = " + idLote +
                 " and s.id = r.id_area " +
                 " and s.id = " + idArea +
                 " order by q.endereco ";

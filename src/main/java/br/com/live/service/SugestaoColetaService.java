@@ -66,8 +66,9 @@ public class SugestaoColetaService {
 		areaColetaRepository.deleteById(id);
 	}
 
+	@Deprecated
 	public void cleanLoteColetaNaoLiberadoByUsuario(long idUsuario) {
-		LoteSugestaoColeta lote = loteSugestaoColetaRepository.findLoteNaoLiberadoByUsuario(idUsuario);
+		/*LoteSugestaoColeta lote = loteSugestaoColetaRepository.findLoteNaoLiberadoByUsuario(idUsuario);
 		if (lote != null) {
 			List<LoteSugestaoColetaPorArea> areas = loteSugestaoColetaPorAreaRepository.findAreasByLote(lote.getId());
 			for (LoteSugestaoColetaPorArea area : areas) {
@@ -76,12 +77,12 @@ public class SugestaoColetaService {
 			}
 			loteSugestaoColetaPorAreaRepository.deleteByIdLote(lote.getId());
 			loteSugestaoColetaRepository.deleteById(lote.getId());
-		}
+		}*/
 	}
 
-	public void createLoteColeta(long idUsuarioLote, List<SugestaoColeta> pedidosSugeridos) {
+	public long createLoteColeta(long idUsuarioLote, List<SugestaoColeta> pedidosSugeridos) {
 
-		cleanLoteColetaNaoLiberadoByUsuario(idUsuarioLote);
+		//cleanLoteColetaNaoLiberadoByUsuario(idUsuarioLote);
 		
 		Map<Long, List<ItemAColetarPorPedido>> mapItensPorArea = new HashMap<Long, List<ItemAColetarPorPedido>>();
 		List<ItemAColetarPorPedido> itensColetarArea = null;
@@ -123,11 +124,12 @@ public class SugestaoColetaService {
 				loteSugestaoColetaPorAreaItemRepository.save(itemColetar);				
 			}
 		}
+		return lote.getId();
 	}
 	
-	public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(long idUsuario) {
+	public StatusPesquisa findSugestaoColetaParaLiberarByIdUsuario(long idUsuario, long idLote) {
 		boolean encontrou = false;
-		List<ConsultaSugestaoColetaPorLoteArea> dados = sugestaoColetaCustom.findSugestaoColetaParaLiberarByIdUsuario(idUsuario);
+		List<ConsultaSugestaoColetaPorLoteArea> dados = sugestaoColetaCustom.findSugestaoColetaParaLiberarByIdUsuario(idUsuario, idLote);
 		if (dados.size() > 0) encontrou = true;
 		return new StatusPesquisa(encontrou, dados);
 	}
@@ -140,11 +142,15 @@ public class SugestaoColetaService {
 		}
 	}
 
-	public List<LoteSugestaoColetaPorAreaItem> findPedidosByIdAreaColeta(long idArea, boolean listarNaArea) {
+	public List<LoteSugestaoColetaPorAreaItem> findPedidosByIdAreaColeta(long idArea, boolean listarNaArea, long idLote) {
 		if (listarNaArea) {
-			return sugestaoColetaCustom.findPedidosSomenteEmUmaNaArea(idArea);
+			return sugestaoColetaCustom.findPedidosSomenteEmUmaNaArea(idArea, idLote);
 		} else {
-			return sugestaoColetaCustom.findAllPedidosByArea(idArea);
+			return sugestaoColetaCustom.findAllPedidosByArea(idArea, idLote);
 		}
+	}
+
+	public List<LoteSugestaoColeta> findAllLotesByUsuario(long idUsuario) {
+		return loteSugestaoColetaRepository.findLotesNaoLiberadosByUsuario(idUsuario);
 	}
 }
