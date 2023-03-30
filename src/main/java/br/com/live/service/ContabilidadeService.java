@@ -96,6 +96,28 @@ public class ContabilidadeService {
 		return mensagem;
 	}
 	
+	public String validarExigeSubConta(int contaRezuzida, int centroCusto){
+		
+		int exigeSubConta =  contabilidadeCustom.findSubConta(contaRezuzida);
+		String mensagem = "";
+		
+		if(exigeSubConta == 1 && centroCusto == 0) {
+			mensagem = "Conta Reduzida Exige Centro de Custo Informado";						
+		}
+		return mensagem;
+	}
+	
+	public String validarCentroCustoByEmpresa(int centroCusto, int filial){
+		
+		int centroCustoByEmpresa =  contabilidadeCustom.findCentroCustoByEmpresa(centroCusto, filial);
+		String mensagem = "";
+		
+		if(centroCustoByEmpresa == 0) {
+			mensagem = " Centro de Custo Não Pertence a Filial Informada ";						
+		}
+		return mensagem;
+	}
+	
 	public RetornoLancamentoCont importarLancamentosContabeis(List<ConsultaLanctoContabeis> listLancto, String usuario, String datainsercao) {
 		// Deletando tudo na Tabela orion_cnt_010
 		lanctoContabilImportacaoRepository.deleteByUsuario(usuario);
@@ -116,8 +138,10 @@ public class ContabilidadeService {
 			String centroCusto = validarCentroCusto(dadosLancto.centroCusto);
 			String centroCustoInativo = validarCentroCustoInativo(dadosLancto.centroCusto);
 			String histContabil = validarHistoricoContabil(dadosLancto.histContabil);
-			criticasByLancto = incrementarCriticas(empresa, origem, contaReduzida, centroCusto, histContabil, centroCustoInativo);
-			if(criticasByLancto.length() <= 5) {
+			String exigeSubConta = validarExigeSubConta(dadosLancto.contaReduzida, dadosLancto.centroCusto);
+			String centroCustoByEmpresa = validarCentroCustoByEmpresa(dadosLancto.centroCusto, dadosLancto.filialLancto);
+			criticasByLancto = incrementarCriticas(empresa, origem, contaReduzida, centroCusto, histContabil, centroCustoInativo, exigeSubConta, centroCustoByEmpresa);
+			if(criticasByLancto.length() <= 7) {
 				status = 0;
 			}
 			try {
@@ -132,18 +156,12 @@ public class ContabilidadeService {
 			status = 1;
 		};
 		
-		//int saldoDebCred = contabilidadeCustom.validarSaldoDebitoCredito(usuario);
-		//System.out.println(saldoDebCred);
-		//if(saldoDebCred != 0) {
-		//	System.out.println("?Entrou");
-		//	contabilidadeCustom.updateCriticaSaldoDebCred(usuario);
-		//};
-		
 		listRetorno = new RetornoLancamentoCont(contabilidadeCustom.findStatusByLancto(usuario), contabilidadeCustom.findAllLanctoContabeis(usuario));
 		return listRetorno;
 	}
 	
-	public String incrementarCriticas(String empresa, String origem, String contaReduzida, String centroCusto, String histContabil, String centroCustoInativo) {
+	public String incrementarCriticas(String empresa, String origem, String contaReduzida, String centroCusto, String histContabil, String centroCustoInativo, String exigeSubConta,
+			String centroCustoByEmpresa) {
 		
 		String criticas = "";
 		
@@ -159,6 +177,10 @@ public class ContabilidadeService {
 			criticas = criticas.strip() + "\n" + histContabil + "\n";
 		} if(centroCustoInativo != null) {
 			criticas = criticas.strip() + "\n" + centroCustoInativo + "\n";
+		} if(exigeSubConta != null) {
+			criticas = criticas.strip() + "\n" + exigeSubConta + "\n";
+		} if(centroCustoByEmpresa != null) {
+			criticas = criticas.strip() + "\n" + centroCustoByEmpresa + "\n";
 		}
 		return criticas;
 	}
@@ -173,8 +195,9 @@ public class ContabilidadeService {
 		
 		try {
 			for (LancamentoContabeisImport dados : listDados) {
+				int codMatriz = contabilidadeCustom.findMatriz(dados.filialLancto);
 				String contaContabil = contabilidadeCustom.findContaContabByContaRed(dados.contaReduzida);
-				contabilidadeCustom.inserirLanctoContabilSystextil(dados.filialLancto, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
+				contabilidadeCustom.inserirLanctoContabilSystextil(codMatriz, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
 						dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, dados.dataLancto, dados.complHistor1, dados.datainsercao, programa, 
 						dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
 			}

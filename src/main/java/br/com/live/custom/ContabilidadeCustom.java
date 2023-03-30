@@ -95,6 +95,7 @@ public class ContabilidadeCustom {
 	}
 	
 	public int findHistoricoContabil(int historicoContabil) {
+		
 		int existsHistContabil;
 		String query = " SELECT 1 FROM cont_010 c WHERE c.codigo_historico = " + historicoContabil;
 
@@ -154,6 +155,43 @@ public class ContabilidadeCustom {
 		return contaContabil;
 	}
 	
+	public int findMatriz(int codFilial) {
+		
+		int codMatriz = 0;
+		
+		String query = " SELECT a.codigo_matriz FROM fatu_500 a WHERE a.codigo_empresa = ? ";
+		
+		codMatriz = jdbcTemplate.queryForObject(query, Integer.class, codFilial);
+		
+		return codMatriz;
+	}
+	
+	public int findSubConta(int contaRezuzida) {
+		
+		int subConta = 0;
+		
+		String query = " SELECT d.exige_subconta FROM CONT_535 d WHERE d.cod_reduzido = ? GROUP BY d.exige_subconta ";
+		
+		subConta = jdbcTemplate.queryForObject(query, Integer.class, contaRezuzida);
+		
+		return subConta;
+	}
+	
+	public int findCentroCustoByEmpresa(int centroCusto, int filial) {
+		
+		int centroCustoByEmpresa = 0;
+		
+		String query = " select 1 from basi_185 a WHERE a.centro_custo = ? AND a.local_entrega = ? ";
+		
+		try {
+			centroCustoByEmpresa = jdbcTemplate.queryForObject(query, Integer.class, centroCusto, filial);
+		} catch (Exception e) {
+			centroCustoByEmpresa = 0;
+		}
+
+		return centroCustoByEmpresa;
+	}
+	
 	public List<ConsultaLanctoContabeis> findAllLanctoContabeis(String usuario) {
 		String query = " select a.id id, "
 				+ "       a.filial_lancto filialLancto, "
@@ -194,7 +232,7 @@ public class ContabilidadeCustom {
 		return criticas;
 	}
 	
-	public void inserirLanctoContabilSystextil(int codEmpresa, int filialLancto, int exercicio, int origem, String contaContabil, int contaReduzida, String debitoCredito,
+	public void inserirLanctoContabilSystextil(int codMatriz, int filialLancto, int exercicio, int origem, String contaContabil, int contaReduzida, String debitoCredito,
 			float valorLancto, int centroCusto, int histContabil, Date dataLancto, String complHistor1, Date datainsercao, String programa, String usuario, int lote,
 			int numeroLanc, int seqLanc, int periodo, int status) {
 		
@@ -202,7 +240,7 @@ public class ContabilidadeCustom {
 				+ "         hist_contabil, compl_histor1, data_lancto, valor_lancto, filial_lancto, prg_gerador, usuario, datainsercao) "
 				+ "         values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 		
-		jdbcTemplate.update(query, codEmpresa, exercicio, numeroLanc, seqLanc, origem, lote, periodo, contaContabil, contaReduzida ,centroCusto, debitoCredito, histContabil, 
+		jdbcTemplate.update(query, codMatriz, exercicio, numeroLanc, seqLanc, origem, lote, periodo, contaContabil, contaReduzida ,centroCusto, debitoCredito, histContabil, 
 				complHistor1, dataLancto, valorLancto, filialLancto, programa, usuario, datainsercao);
 	}
 	
