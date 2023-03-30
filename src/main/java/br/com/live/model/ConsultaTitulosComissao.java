@@ -18,6 +18,16 @@ public class ConsultaTitulosComissao {
 	public float saldo;
 	public String dataInicio;
 	public String dataAnterior;
+	public int historico;
+	public String pedidoCliente;
+	public int pedido;
+	public int qtdeFaturada;
+	public int docto;
+	public int seq;
+	public float valorDoc;
+	public float percComPed;
+	public int qtdeParcelas;
+	public float totComissao;
 	
 	public int getPortador() {
 		return portador;
@@ -109,12 +119,74 @@ public class ConsultaTitulosComissao {
 	public void setSaldo(float saldo) {
 		this.saldo = saldo;
 	}
+	public int getHistorico() {
+		return historico;
+	}
+	public void setHistorico(int historico) {
+		this.historico = historico;
+	}
+	public String getPedidoCliente() {
+		return pedidoCliente;
+	}
+	public void setPedidoCliente(String pedidoCliente) {
+		this.pedidoCliente = pedidoCliente;
+	}
+	public int getPedido() {
+		return pedido;
+	}
+	public void setPedido(int pedido) {
+		this.pedido = pedido;
+	}
+	public int getQtdeFaturada() {
+		return qtdeFaturada;
+	}
+	public void setQtdeFaturada(int qtdeFaturada) {
+		this.qtdeFaturada = qtdeFaturada;
+	}
+	public int getDocto() {
+		return docto;
+	}
+	public void setDocto(int docto) {
+		this.docto = docto;
+	}
+	public int getSeq() {
+		return seq;
+	}
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+	public float getValorDoc() {
+		return valorDoc;
+	}
+	public void setValorDoc(float valorDoc) {
+		this.valorDoc = valorDoc;
+	}
+	public float getPercComPed() {
+		return percComPed;
+	}
+	public void setPercComPed(float percComPed) {
+		this.percComPed = percComPed;
+	}
+	public int getQtdeParcelas() {
+		return qtdeParcelas;
+	}
+	public void setQtdeParcelas(int qtdeParcelas) {
+		this.qtdeParcelas = qtdeParcelas;
+	}
+	public float getTotComissao() {
+		return totComissao;
+	}
+	public void setTotComissao(float totComissao) {
+		this.totComissao = totComissao;
+	}
 	public ConsultaTitulosComissao() {
 		
 	}
-	public ConsultaTitulosComissao(int portador, String dataEmissao, String representante, int tipoTitulo, String cliente, String titulo,
-			String vencimento, float percComissao, float valorEmAberto, float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior) {
-		
+	public ConsultaTitulosComissao(int portador, String dataEmissao, String representante, int tipoTitulo,
+			String cliente, String titulo, String vencimento, float percComissao, float valorEmAberto,
+			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
+			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,
+			float percComPed, int qtdeParcelas, float totComissao) {
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
 		this.representante = representante;
@@ -130,5 +202,16 @@ public class ConsultaTitulosComissao {
 		this.saldo = saldo;
 		this.dataInicio = dataInicio;
 		this.dataAnterior = dataAnterior;
+		this.historico = historico;
+		this.pedidoCliente = pedidoCliente;
+		this.pedido = pedido;
+		this.qtdeFaturada = qtdeFaturada;
+		this.docto = docto;
+		this.seq = seq;
+		this.valorDoc = valorDoc;
+		this.percComPed = percComPed;
+		this.qtdeParcelas = qtdeParcelas;
+		this.totComissao = totComissao;
 	}
+	
 }

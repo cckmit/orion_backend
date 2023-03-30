@@ -246,23 +246,23 @@ public class OrdemBeneficiamentoCustom {
 	public List<AnaliseQualidade> findAnalise(int ordem) {
 		
 		String query = " SELECT NVL(a.ordem_producao, 0) ordemTecelagem, "
-				+ "       NVL(a.numero_ob, 0) ordemBeneficiamento, "
-				+ "       b.nivel || '.' || b.grupo || '.' || b.subgrupo || '.' || b.item codigoTecido, "
-				+ "       c.narrativa descricaoTecido, "
-				+ "       DECODE(b.data_03, null, DECODE(b.data_02, null, b.data_01 , b.data_02), b.data_03) data "
-				+ "       FROM pcpt_020_025 a, basi_400 b, basi_010 c "
-				+ "       WHERE b.nivel = a.panoacab_nivel99 "
-				+ "       AND b.grupo = a.panoacab_grupo "
-				+ "       AND b.subgrupo = a.panoacab_subgrupo "
-				+ "       AND b.item = a.panoacab_item "
-				+ "       AND c.nivel_estrutura = a.panoacab_nivel99 "
-				+ "       AND c.grupo_estrutura = a.panoacab_grupo "
-				+ "       AND c.subgru_estrutura = a.panoacab_subgrupo "
-				+ "       AND c.item_estrutura = a.panoacab_item "
-				+ "       AND a.ordem_producao = ? "
-				+ "       GROUP BY a.ordem_producao,a.numero_ob, b.nivel, b.grupo, b.subgrupo, b.item, c.narrativa, b.data_03, b.data_02, b.data_01 ";
+				+ "		a.numero_ob ordemBeneficiamento, "
+				+ "		b.nivel || '.' || b.grupo || '.' || b.subgrupo || '.' || b.item  codigoTecido, "
+				+ "		c.narrativa descricaoTecido, "
+				+ "		DECODE(b.data_03, null, DECODE(b.data_02, null, b.data_01 , b.data_02), b.data_03) dataOrdem "
+				+ "		FROM pcpt_020_025 a, basi_400 b, basi_010 c "
+				+ "		WHERE b.grupo = a.panoacab_grupo "
+				+ "		AND b.subgrupo = a.panoacab_subgrupo "
+				+ "		AND b.item = a.panoacab_item "
+				+ "		AND c.nivel_estrutura = a.panoacab_nivel99 "
+				+ "		AND c.grupo_estrutura = a.panoacab_grupo "
+				+ "		AND c.subgru_estrutura = a.panoacab_subgrupo "
+				+ "		AND c.item_estrutura = a.panoacab_item "
+				+ "		AND b.tipo_informacao = 12 "
+				+ "		AND a.numero_ob = " + ordem
+				+ "		GROUP BY a.ordem_producao, a.numero_ob, b.nivel, b.grupo, b.subgrupo, b.item, c.narrativa, b.data_03, b.data_02, b.data_01 ";
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class), ordem);
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class));
 	}
 	
 	public List<AnaliseQualidade> findInfoLote(int ordem) {

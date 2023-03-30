@@ -44,5 +44,15 @@ public class FechamentoComissoesController {
     public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
         return financeiroService.findTitulosAtrasadosSintetico(mes, ano, representante);
     }
+	
+	@RequestMapping(value = "/find-lancamentos-faturamento/{mes}/{ano}/{representante}", method = RequestMethod.GET)
+    public List<ConsultaTitulosComissao> findLancamentosFaturamento(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
+        return financeiroService.findLancamentosFaturamento(mes, ano, representante);
+    }
+	
+	@RequestMapping(value = "/find-lancamentos-baixa-titulos/{mes}/{ano}/{representante}", method = RequestMethod.GET)
+    public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
+        return financeiroService.findLancamentosBaixaTitulos(mes, ano, representante);
+    }
 
 }

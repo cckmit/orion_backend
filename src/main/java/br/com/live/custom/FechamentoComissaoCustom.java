@@ -88,8 +88,81 @@ public class FechamentoComissaoCustom {
 				+ "       GROUP BY  a.cod_rep_cliente, c.nome_rep_cliente) DADOS "
 				+ "       GROUP BY DADOS.REPRESENTANTE ";
 
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));	
+	}
+	
+	public List<ConsultaTitulosComissao> findLancamentosFaturamento(String mesComZero, int ano, String representante){
 		
+		String query = " SELECT a.codigo_repr representante, "
+				+ "       a.codigo_historico historico, "
+				+ "       LPAD(a.cgc_cli9, 8, 0) || '/' || LPAD(a.cgc_cli4, 4, 0) || '-' || LPAD(a.cgc_cli2, 2, 0) || ' - ' || d.nome_cliente cliente, "
+				+ "       c.cod_ped_cliente pedidoCliente, "
+				+ "       b.pedido_venda pedido, "
+				+ "       b.quantidade qtdeFaturada, "
+				+ "       a.numero_documento docto, "
+				+ "       a.seq_documento seq, "
+				+ "       b.data_emissao dataEmissao, "
+				+ "       b.data_venc_duplic vencimento, "
+				+ "       a.base_calc_comis valorDoc, "
+				+ "       a.percentual_comis percComPed, "
+				+ "       (a.base_calc_comis * a.percentual_comis) / 100 totComissao, "
+				+ "       (SELECT MAX(f.seq_duplicatas) FROM fatu_070 f WHERE f.pedido_venda = b.pedido_venda ) qtdeParcelas, "
+				+ "       a.valor_lancamento valorComissao "
+				+ "		FROM crec_110 a, fatu_070 b, pedi_100 c, pedi_010 d "
+				+ "		WHERE b.num_duplicata = a.numero_documento "
+				+ "		AND b.seq_duplicatas = a.seq_documento "
+				+ "		AND c.cli_ped_cgc_cli9 (+) = b.cli_dup_cgc_cli9 "
+				+ "		AND c.cli_ped_cgc_cli4 (+) = b.cli_dup_cgc_cli4 "
+				+ "		AND c.cli_ped_cgc_cli2 (+) = b.cli_dup_cgc_cli2 "
+				+ "		AND c.pedido_venda (+) = b.pedido_venda "
+				+ "		AND d.cgc_9 (+) = a.cgc_cli9 "
+				+ "		AND d.cgc_4 (+) = a.cgc_cli4 "
+				+ "		AND d.cgc_2 (+) = a.cgc_cli2 "
+				+ "		AND a.codigo_repr = " + representante
+				+ "		AND TO_CHAR(TO_DATE(a.data_lancamento), 'MM/YYYY') = '" + mesComZero + "/" + ano + "' "
+				+ "     AND a.codigo_historico = 1 "
+				+ " 	GROUP BY a.numero_documento, a.data_lancamento, a.codigo_repr, a.codigo_historico, a.cgc_cli9, a.cgc_cli4, a.cgc_cli2, a.numero_documento, "
+                + "              a.seq_documento, a.base_calc_comis, a.percentual_comis, a.valor_lancamento, b.pedido_venda, b.quantidade, b.data_emissao, " 
+                + "              b.data_venc_duplic, c.cod_ped_cliente, d.nome_cliente ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+	}
+	
+	public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(String mesComZero, int ano, String representante){
+		
+		String query = " SELECT a.codigo_repr representante, "
+				+ "       a.codigo_historico historico, "
+				+ "       LPAD(a.cgc_cli9, 8, 0) || '/' || LPAD(a.cgc_cli4, 4, 0) || '-' || LPAD(a.cgc_cli2, 2, 0) || ' - ' || d.nome_cliente cliente, "
+				+ "       c.cod_ped_cliente pedidoCliente, "
+				+ "       b.pedido_venda pedido, "
+				+ "       b.quantidade qtdeFaturada, "
+				+ "       a.numero_documento docto, "
+				+ "       a.seq_documento seq, "
+				+ "       b.data_emissao dataEmissao, "
+				+ "       b.data_venc_duplic vencimento, "
+				+ "       a.base_calc_comis valorDoc, "
+				+ "       a.percentual_comis percComPed, "
+				+ "       (a.base_calc_comis * a.percentual_comis) / 100 totComissao, "
+				+ "       (SELECT MAX(f.seq_duplicatas) FROM fatu_070 f WHERE f.pedido_venda = b.pedido_venda ) qtdeParcelas, "
+				+ "       a.valor_lancamento valorComissao "
+				+ "		FROM crec_110 a, fatu_070 b, pedi_100 c, pedi_010 d "
+				+ "		WHERE b.num_duplicata = a.numero_documento "
+				+ "		AND b.seq_duplicatas = a.seq_documento "
+				+ "		AND c.cli_ped_cgc_cli9 (+) = b.cli_dup_cgc_cli9 "
+				+ "		AND c.cli_ped_cgc_cli4 (+) = b.cli_dup_cgc_cli4 "
+				+ "		AND c.cli_ped_cgc_cli2 (+) = b.cli_dup_cgc_cli2 "
+				+ "		AND c.pedido_venda (+) = b.pedido_venda "
+				+ "		AND d.cgc_9 (+) = a.cgc_cli9 "
+				+ "		AND d.cgc_4 (+) = a.cgc_cli4 "
+				+ "		AND d.cgc_2 (+) = a.cgc_cli2 "
+				+ "		AND a.codigo_repr = " + representante
+				+ "		AND TO_CHAR(TO_DATE(a.data_lancamento), 'MM/YYYY') = '" + mesComZero + "/" + ano + "' "
+				+ "     AND a.codigo_historico IN (2, 10, 14) "
+				+ " 	GROUP BY a.numero_documento, a.data_lancamento, a.codigo_repr, a.codigo_historico, a.cgc_cli9, a.cgc_cli4, a.cgc_cli2, a.numero_documento, "
+                + "              a.seq_documento, a.base_calc_comis, a.percentual_comis, a.valor_lancamento, b.pedido_venda, b.quantidade, b.data_emissao, " 
+                + "              b.data_venc_duplic, c.cod_ped_cliente, d.nome_cliente ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
 	}
 
 }
