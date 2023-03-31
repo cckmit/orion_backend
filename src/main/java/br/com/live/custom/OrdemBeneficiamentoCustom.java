@@ -249,7 +249,7 @@ public class OrdemBeneficiamentoCustom {
 				+ "		a.numero_ob ordemBeneficiamento, "
 				+ "		b.nivel || '.' || b.grupo || '.' || b.subgrupo || '.' || b.item  codigoTecido, "
 				+ "		c.narrativa descricaoTecido, "
-				+ "		DECODE(b.data_03, null, DECODE(b.data_02, null, b.data_01 , b.data_02), b.data_03) dataOrdem "
+				+ "		b.data_01 dataOrdem "
 				+ "		FROM pcpt_020_025 a, basi_400 b, basi_010 c "
 				+ "		WHERE b.grupo = a.panoacab_grupo "
 				+ "		AND b.subgrupo = a.panoacab_subgrupo "
@@ -260,7 +260,7 @@ public class OrdemBeneficiamentoCustom {
 				+ "		AND c.item_estrutura = a.panoacab_item "
 				+ "		AND b.tipo_informacao = 12 "
 				+ "		AND a.numero_ob = " + ordem
-				+ "		GROUP BY a.ordem_producao, a.numero_ob, b.nivel, b.grupo, b.subgrupo, b.item, c.narrativa, b.data_03, b.data_02, b.data_01 ";
+				+ "		GROUP BY a.ordem_producao, a.numero_ob, b.nivel, b.grupo, b.subgrupo, b.item, c.narrativa, b.data_01 ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AnaliseQualidade.class));
 	}

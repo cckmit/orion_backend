@@ -117,7 +117,6 @@ public class OrdemBeneficiamentoController {
     
     @RequestMapping(value = "/gerar-pdf-laudo", method = RequestMethod.POST)
     public String gerarPdfLaudo(@RequestBody BodyOrdemBeneficiamento body) throws FileNotFoundException, JRException {
-    	System.out.println("Entrou");
     	return ordemBeneficiamentoService.gerarPdfLaudo(body.ordem);
     }
 
