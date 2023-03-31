@@ -990,10 +990,12 @@ public class ExpedicaoCustom {
 					+ "                  and w.transpor_forne9 || '.' || w.transpor_forne4 || '.' || w.transpor_forne2 = '"
 					+ transportadora + "') ";
 		}
-		if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
-			query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/")
-					+ "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
-		}
+
+		//if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
+		//	query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/")
+		//				+ "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
+		//}
+
 		query += " and not exists (select 1 from orion_exp_320 y " +
 				"					where y.nota = i.num_nota_fiscal) ";
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
