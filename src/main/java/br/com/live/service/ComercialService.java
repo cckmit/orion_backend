@@ -355,7 +355,7 @@ public class ComercialService {
 		for (DescontoClientesImportados dadosPedido : listPedidosConfirmados) {
 			ControleDescontoCliente dadosDesconto;
 			PedidosGravadosComDesconto pedidosConfirmados;
-			ValorDescontoClientesImportados dadosCashBack;
+			String observacao = "";
 
 			int naturezaPedido = comercialCustom.findNaturezaPedido(dadosPedido.pedido);
 
@@ -364,8 +364,8 @@ public class ComercialService {
 			int cnpj2 = Integer.parseInt(dadosPedido.cnpjCliente.substring(12,14));
 
 			dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
-			dadosCashBack = valorDescontoClientesImpRepository.findObservacao(cnpj9, cnpj4, cnpj2);
 			pedidosConfirmados = pedidosGravadosComDescontoRepository.findByIdPedido(dadosPedido.pedido);
+			observacao = comercialCustom.findObservacaoRepresentante(cnpj9,cnpj4,cnpj2);
 
 			if (pedidosConfirmados != null) {
 				status = new StatusGravacao(false, "Pedido " + dadosPedido.pedido + " já foi confirmado! Favor recalcular os descontos!");
@@ -373,7 +373,7 @@ public class ComercialService {
 			}
 
 			if (dadosDesconto.valorDesconto > 0) {
-				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido, dadosCashBack.observacao);
+				comercialCustom.atualizarDescontoEspecialPedido(dadosPedido.valor, dadosPedido.observacao, dadosPedido.pedido, observacao);
 
 				// Verifica se o pedido é FRANCHISING
 				if (naturezaPedido == 421 || naturezaPedido == 422) {

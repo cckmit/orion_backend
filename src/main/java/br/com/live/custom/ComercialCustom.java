@@ -212,4 +212,19 @@ public class ComercialCustom {
 		}
 		return natureza;
 	}
+
+	public String findObservacaoRepresentante(int cnpj9, int cnpj4, int cnpj2) {
+		String observacao = "";
+
+		String query = " select max(a.observacao) from orion_com_290 a " +
+				" where a.cnpj9 = " + cnpj9 +
+				" and  a.cnpj4 = " + cnpj4 +
+				" and  a.cnpj2 = " + cnpj2;
+		try {
+			observacao = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			observacao = "";
+		}
+		return observacao;
+	}
 }
