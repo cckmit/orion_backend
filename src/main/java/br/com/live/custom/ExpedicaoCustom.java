@@ -1678,4 +1678,17 @@ public class ExpedicaoCustom {
 
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
+
+	public int findQuantidadeCaixasNoeEndereco(String endereco) {
+		int quantEndereco = 0;
+
+		String query = " select count(*) from orion_130 b " +
+				" where b.endereco = '" + endereco + "' ";
+		try {
+			quantEndereco = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			quantEndereco = 0;
+		}
+		return quantEndereco;
+	}
 }
