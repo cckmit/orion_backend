@@ -279,3 +279,6 @@ values (92, 'Geração de DRE para Lojas', 'Financeiro', '/gera-dre-loja');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (93, 'Consultar DRE das Lojas', 'Financeiro', '/consulta-dre-loja');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (94, 'Limpar Caixas', 'Expedição', '/limpar-caixas');

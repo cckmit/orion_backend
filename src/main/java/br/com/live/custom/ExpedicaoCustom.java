@@ -267,8 +267,9 @@ public class ExpedicaoCustom {
 	}
 
 	public List<DadosTagProd> findDadosTagCaixas(int codCaixa) {
-		String query = " select p.periodo_producao periodo, p.ordem_producao ordem, p.ordem_confeccao pacote, p.sequencia from orion_131 p "
-				+ "where p.numero_caixa = " + codCaixa;
+		String query = " select p.periodo_producao periodo, p.ordem_producao ordem, p.ordem_confeccao pacote, p.sequencia,"
+				+ " p.periodo_producao || LPAD(p.ordem_producao, 9, 0) || LPAD(p.ordem_confeccao, 5, 0) || LPAD(p.sequencia, 4, 0) numeroTag from orion_131 p "
+				+ " where p.numero_caixa = " + codCaixa;
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosTagProd.class));
 	}
@@ -1690,5 +1691,10 @@ public class ExpedicaoCustom {
 			quantEndereco = 0;
 		}
 		return quantEndereco;
+	}
+
+	public void LimparCaixa(int codCaixa) {
+		String query = " delete from orion_131 a where a.numero_caixa = ? ";
+		jdbcTemplate.update(query, codCaixa);
 	}
 }

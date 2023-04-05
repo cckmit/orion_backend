@@ -5,6 +5,7 @@ public class DadosTagProd {
 	public int ordem;
 	public int pacote;
 	public int sequencia;
+	public String numeroTag;
 	
 	public int getPeriodo() {
 		return periodo;
@@ -38,13 +39,22 @@ public class DadosTagProd {
 		this.sequencia = sequencia;
 	}
 
+	public String getNumeroTag() {
+		return numeroTag;
+	}
+
+	public void setNumeroTag(String numeroTag) {
+		this.numeroTag = numeroTag;
+	}
+
 	public DadosTagProd() {
 	}
-	
-	public DadosTagProd(int periodo, int ordem, int pacote, int sequencia) {
+
+	public DadosTagProd(int periodo, int ordem, int pacote, int sequencia, String numeroTag) {
 		this.periodo = periodo;
 		this.ordem = ordem;
 		this.pacote = pacote;
 		this.sequencia = sequencia;
+		this.numeroTag = numeroTag;
 	}
 }

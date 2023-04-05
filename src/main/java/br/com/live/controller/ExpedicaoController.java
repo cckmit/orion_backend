@@ -440,4 +440,15 @@ public class ExpedicaoController {
     public int findQuantMovimentacoesEntradaDiaUsuario(@RequestBody BodyExpedicao body) {
         return expedicaoCustom.findQuantMovimentacoesEntradaDiaUsuario(body.usuario, body.tipoMov);
     }
+
+    @RequestMapping(value = "/find-dados-tag-caixa/{codCaixa}", method = RequestMethod.GET)
+    public List<DadosTagProd> findDadosTagCaixa(@PathVariable("codCaixa") int codCaixa) {
+        return expedicaoCustom.findDadosTagCaixas(codCaixa);
+    }
+
+    @RequestMapping(value = "/limpar-tags-caixa/{codCaixa}", method = RequestMethod.DELETE)
+    public List<DadosTagProd> limparTagCaixa (@PathVariable("codCaixa") int codCaixa) {
+        expedicaoService.limparCaixa(codCaixa);
+        return expedicaoCustom.findDadosTagCaixas(codCaixa);
+    }
 }

@@ -898,4 +898,7 @@ public class ExpedicaoService {
 		return expedicaoCustom.findAllRegrasTipoClientePedido();
 	}
 
+	public void limparCaixa(int codCaixa) {
+		expedicaoCustom.limparCaixa(codCaixa);
+	}
 }
