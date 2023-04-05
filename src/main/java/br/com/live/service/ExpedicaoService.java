@@ -360,12 +360,21 @@ public class ExpedicaoService {
 
 	public String gravarEnderecoCaixa(int numeroCaixa, String endereco) {
 		String msgErro = "";
+		int quantEndereco = 0;
 
 		CaixasParaEnderecar dadosCaixa = aberturaCaixasRepository.findByNumeroCaixa(numeroCaixa);
 
-		if (dadosCaixa.endereco.equalsIgnoreCase(endereco)) {
-			dadosCaixa.endereco = "";
-			msgErro = "Removido o endereço da caixa " + numeroCaixa;
+		if (dadosCaixa.endereco != null) {
+			if (dadosCaixa.endereco.equalsIgnoreCase(endereco)) {
+				dadosCaixa.endereco = "";
+				msgErro = "Removido o endereço da caixa " + numeroCaixa;
+				return msgErro;
+			}
+		}
+
+		quantEndereco = expedicaoCustom.findQuantidadeCaixasNoeEndereco(endereco);
+		if (quantEndereco > 8) {
+			msgErro = "Não é permitido colocar mais de 8 caixas no endereço! ";
 			return msgErro;
 		}
 

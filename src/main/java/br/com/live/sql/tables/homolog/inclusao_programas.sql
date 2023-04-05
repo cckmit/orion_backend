@@ -266,13 +266,13 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (88, 'Fechamento de Comissões', 'Financeiro', '/fechamento-de-comissoes');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (89, 'Relacionamento de Loja x Centro de Custos x Supervisor - DRE', 'Financeiro', '/relacionamento-loja-centro-custo-supervisor');
+values (89, 'Relacionamento de Loja x Centro de Custos x Supervisor - DRE', 'Financeiro', '/relacionamento-loja-centro-custo-supervisor-dre');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (90, 'Conta Contabil a Considerar - DRE', 'Financeiro', '/conta-contabil-considerar');
+values (90, 'Conta Contabil a Considerar - DRE', 'Financeiro', '/conta-contabil-considerar-dre');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (91, 'Orçamento das Lojas - DRE', 'Financeiro', '/orcamento-loja');
+values (91, 'Orçamento das Lojas - DRE', 'Financeiro', '/orcamento-loja-dre');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (92, 'Geração de DRE para Lojas', 'Financeiro', '/gera-dre-loja');
