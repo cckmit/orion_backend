@@ -35,6 +35,11 @@ public class FechamentoComissoesController {
         return financeiroCustom.findAllRepresentantes(representante);
     }
 	
+	@RequestMapping(value = "/find-all-estacoes", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllEstacoes() {
+        return financeiroService.findAllEstacoes();
+    }
+	
 	@RequestMapping(value = "/find-titulos-atrasado-analitico/{mes}/{ano}/{representante}", method = RequestMethod.GET)
     public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
         return financeiroService.findTitulosAtrasadosAnalitico(mes, ano, representante);
@@ -53,6 +58,12 @@ public class FechamentoComissoesController {
 	@RequestMapping(value = "/find-lancamentos-baixa-titulos/{mes}/{ano}/{representante}", method = RequestMethod.GET)
     public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
         return financeiroService.findLancamentosBaixaTitulos(mes, ano, representante);
+    }
+	
+	@RequestMapping(value = "/find-bonus/{mes}/{ano}/{representante}/{estacao}", method = RequestMethod.GET)
+    public List<ConsultaTitulosComissao> findBonusPorRepresentante(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante, 
+    		@PathVariable("estacao") String estacao) {
+        return financeiroService.findBonusPorRepresentante(mes, ano, representante, estacao);
     }
 
 }

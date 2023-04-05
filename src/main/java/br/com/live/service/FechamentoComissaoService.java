@@ -109,5 +109,29 @@ public class FechamentoComissaoService {
 		
 		return dataInicio;	
 	}
+	
+	public List<ConteudoChaveAlfaNum> findAllEstacoes(){
+		return financeiroCustom.findAllEstacoes();
+	}
+	
+	public List<ConsultaTitulosComissao> findBonusPorRepresentante(int mes, int ano, String representante, String estacao){
+		
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
+		float metaFitness = financeiroCustom.findMetaPorRespresentanteFitness(representante, estacao); // Buscando a Meta do Representante pra coleção na linha Fitness
+		float metaBeach = financeiroCustom.findMetaPorRespresentanteBeach(representante, estacao); // Buscando a Meta do Representante pra coleção na linha Beach
+		// Descobrindo a porcentagem de cada meta representa na meta total
+		float totalMeta = metaFitness + metaBeach;
+		float porcLinhaFitness = (metaFitness * 100) / totalMeta;
+		float porcLinhaBeach = 100 - porcLinhaFitness;
+		//  ------------------------------------------------
+		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, representante, estacao);
+		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, representante, estacao);
+		float totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+		
+		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, representante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, percAtingidoBeach);
+	}
 
 }

@@ -28,6 +28,15 @@ public class ConsultaTitulosComissao {
 	public float percComPed;
 	public int qtdeParcelas;
 	public float totComissao;
+	public String descricao;
+	public String uf;
+	public String regiao;
+	public String linha;
+	public float meta;
+	public float vendas;
+	public float porcAtingido;
+	public float valor;
+	public float porcLinha;
 	
 	public int getPortador() {
 		return portador;
@@ -179,6 +188,60 @@ public class ConsultaTitulosComissao {
 	public void setTotComissao(float totComissao) {
 		this.totComissao = totComissao;
 	}
+	public String getDescricao() {
+		return descricao;
+	}
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+	public String getUf() {
+		return uf;
+	}
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
+	public String getRegiao() {
+		return regiao;
+	}
+	public void setRegiao(String regiao) {
+		this.regiao = regiao;
+	}
+	public String getLinha() {
+		return linha;
+	}
+	public void setLinha(String linha) {
+		this.linha = linha;
+	}
+	public float getMeta() {
+		return meta;
+	}
+	public void setMeta(float meta) {
+		this.meta = meta;
+	}
+	public float getVendas() {
+		return vendas;
+	}
+	public void setVendas(float vendas) {
+		this.vendas = vendas;
+	}
+	public float getPorcAtingido() {
+		return porcAtingido;
+	}
+	public void setPorcAtingido(float porcAtingido) {
+		this.porcAtingido = porcAtingido;
+	}
+	public float getValor() {
+		return valor;
+	}
+	public void setValor(float valor) {
+		this.valor = valor;
+	}
+	public float getPorcLinha() {
+		return porcLinha;
+	}
+	public void setPorcLinha(float porcLinha) {
+		this.porcLinha = porcLinha;
+	}
 	public ConsultaTitulosComissao() {
 		
 	}
@@ -186,7 +249,8 @@ public class ConsultaTitulosComissao {
 			String cliente, String titulo, String vencimento, float percComissao, float valorEmAberto,
 			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
 			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,
-			float percComPed, int qtdeParcelas, float totComissao) {
+			float percComPed, int qtdeParcelas, float totComissao, String descricao, String uf, String regiao, String linha, float meta, 
+			float vendas, float porcAtingido, float valor, float porcLinha) {
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
 		this.representante = representante;
@@ -212,6 +276,15 @@ public class ConsultaTitulosComissao {
 		this.percComPed = percComPed;
 		this.qtdeParcelas = qtdeParcelas;
 		this.totComissao = totComissao;
+		this.descricao = descricao;
+		this.uf = uf;
+		this.regiao = regiao;
+		this.linha = linha;
+		this.porcLinha = porcLinha;
+		this.meta = meta;
+		this.vendas = vendas;
+		this.porcAtingido = porcAtingido; 
+		this.valor = valor;
 	}
 	
 }

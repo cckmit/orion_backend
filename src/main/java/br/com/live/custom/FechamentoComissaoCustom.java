@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -163,6 +164,208 @@ public class FechamentoComissaoCustom {
                 + "              b.data_venc_duplic, c.cod_ped_cliente, d.nome_cliente ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+	}
+	
+	public List<ConteudoChaveAlfaNum> findAllEstacoes(){
+		
+		String query = " SELECT s.descricao value, s.descricao label FROM orion_070 s GROUP BY s.descricao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public float findTotalFaturadoPorRepresentanteNoMes(String mesComZero, int ano, String representante) {
+		
+		float total = 0;
+		
+		String query = " SELECT SUM(a.valor_lancamento) FROM crec_110 a "
+				+ "     WHERE a.codigo_repr =  " + representante
+				+ "     AND TO_CHAR(TO_DATE(a.data_lancamento), 'MM/YYYY') = '" + mesComZero + "/" + ano + "' "
+				+ "     AND a.codigo_historico IN (1, 2, 10, 14) ";
+		
+		try {
+			total = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			total = 0;
+		}
+		return total;
+	}
+	
+	public float findMetaPorRespresentanteFitness(String representante, String estacao) {
+		
+		float metaFitness = 0;
+		
+		String query = " SELECT NVL(w.meta, 0) META FROM orion_072 w, orion_070 z "
+				+ "      WHERE z.cod_estacao = w.cod_estacao "
+				+ "      AND w.cod_representante = " + representante
+				+ "      AND w.tipo_meta = 1 "
+				+ "      AND z.catalogo = 1 "
+				+ "      AND z.descricao LIKE '%" + estacao + "%'";
+		
+		try {
+			metaFitness = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			metaFitness = 0;
+		}
+		return metaFitness;
+	}
+	
+	public float findMetaPorRespresentanteBeach(String representante, String estacao) {
+		
+		float metaBeach = 0;
+		
+		String query = " SELECT NVL(w.meta, 0) META FROM orion_072 w, orion_070 z "
+				+ "      WHERE z.cod_estacao = w.cod_estacao "
+				+ "      AND w.cod_representante = " + representante
+				+ "      AND w.tipo_meta = 1 "
+				+ "      AND z.catalogo = 2 "
+				+ "      AND z.descricao LIKE '%" + estacao + "%'";
+		
+		try {
+			metaBeach = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			metaBeach = 0;
+		}
+		return metaBeach;
+	}
+	
+	public float findPercAtingidoFitness(String mesComZero, int ano, String representante, String estacao) {
+		
+		float percentual = 0;
+		
+		String query = " SELECT (SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) / ( "
+				+ "       select w.meta from orion_072 w, orion_070 z "
+				+ "               where z.cod_estacao = w.cod_estacao "
+				+ "               and w.cod_representante = " + representante
+				+ "               and w.tipo_meta = 1 "
+				+ "               and z.catalogo = 1 "
+				+ "               and z.descricao LIKE '%" + estacao + "%')) * 100 porcAtingido "
+				+ "     from pedi_100 a, pedi_110 b, basi_030 c, pedi_023 d, pedi_043 e, pedi_040 f "
+				+ "		where a.pedido_venda = b.pedido_venda "
+				+ "		and b.cd_it_pe_nivel99 = c.nivel_estrutura "
+				+ "		and b.cd_it_pe_grupo = c.referencia "
+				+ "		and d.cod_rep_cliente = a.cod_rep_cliente "
+				+ "		and e.sub_regiao = d.sub_regiao "
+				+ "		and f.codigo_regiao = e.codigo_regiao "
+				+ "		and a.cod_rep_cliente = " + representante
+				+ "		and c.linha_produto = 52 "
+				+ "		and TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
+				+ "		and a.colecao_tabela = 02 "
+				+ "		and a.mes_tabela = 01 "
+				+ "		and a.sequencia_tabela = 22 "
+				+ "		and b.cod_cancelamento = 0 "
+				+ "		GROUP BY a.cod_rep_cliente, c.linha_produto, e.descricao, f.nome_regiao";
+		
+		try {
+			percentual = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			percentual = 0;
+		}
+		return percentual;
+		
+	}
+	
+	public float findPercAtingidoBeach(String mesComZero, int ano, String representante, String estacao) {
+		
+		float percentual = 0;
+		
+		String query = " SELECT (SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) / ( "
+				+ "       select w.meta from orion_072 w, orion_070 z "
+				+ "               where z.cod_estacao = w.cod_estacao "
+				+ "               and w.cod_representante = " + representante
+				+ "               and w.tipo_meta = 1 "
+				+ "               and z.catalogo = 2 "
+				+ "               and z.descricao LIKE '%" + estacao + "%')) * 100 porcAtingido "
+				+ "     from pedi_100 a, pedi_110 b, basi_030 c, pedi_023 d, pedi_043 e, pedi_040 f "
+				+ "		where a.pedido_venda = b.pedido_venda "
+				+ "		and b.cd_it_pe_nivel99 = c.nivel_estrutura "
+				+ "		and b.cd_it_pe_grupo = c.referencia "
+				+ "		and d.cod_rep_cliente = a.cod_rep_cliente "
+				+ "		and e.sub_regiao = d.sub_regiao "
+				+ "		and f.codigo_regiao = e.codigo_regiao "
+				+ "		and a.cod_rep_cliente = " + representante
+				+ "		and c.linha_produto = 53 "
+				+ "		and TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
+				+ "		and a.colecao_tabela = 02 "
+				+ "		and a.mes_tabela = 01 "
+				+ "		and a.sequencia_tabela = 22 "
+				+ "		and b.cod_cancelamento = 0 "
+				+ "		GROUP BY a.cod_rep_cliente, c.linha_produto, e.descricao, f.nome_regiao";
+		
+		try {
+			percentual = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			percentual = 0;
+		}
+		return percentual;
+		
+	}
+	
+	public List<ConsultaTitulosComissao> findBonusPorRepresentante(String mesComZero, int ano, String representante, String estacao, float totalFaturado, float porcLinhaFitness, 
+			float porcLinhaBeach, float percAtingidoFitness, float percAtingidoBeach){
+		
+		String query = " SELECT a.cod_rep_cliente representante, "
+				+ "       f.nome_regiao uf, "
+				+ "       e.descricao regiao, "
+				+ "       'FITNESS' linha,  "
+				+ "       (SELECT w.meta FROM orion_072 w, orion_070 z "
+				+ "               WHERE z.cod_estacao = w.cod_estacao "
+				+ "               AND w.cod_representante = " + representante
+				+ "               AND w.tipo_meta = 1 "
+				+ "               AND z.catalogo = 1 "
+				+ "               AND z.descricao LIKE '%" + estacao + "%') meta,"
+				+         porcLinhaFitness + " porcLinha, "
+				+ "       SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) vendas, "
+				+         percAtingidoFitness + " porcAtingido,"
+				+         totalFaturado * 0.25 + " valor"
+				+ "		from pedi_100 a, pedi_110 b, basi_030 c, pedi_023 d, pedi_043 e, pedi_040 f "
+				+ "		where a.pedido_venda = b.pedido_venda "
+				+ "		and b.cd_it_pe_nivel99 = c.nivel_estrutura "
+				+ "		and b.cd_it_pe_grupo = c.referencia "
+				+ "		and d.cod_rep_cliente = a.cod_rep_cliente "
+				+ "		and e.sub_regiao = d.sub_regiao "
+				+ "		and f.codigo_regiao = e.codigo_regiao "
+				+ "		and a.cod_rep_cliente =  " + representante
+				+ "		and c.linha_produto = 52 "
+				+ "		and TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
+				+ "		and a.colecao_tabela = 02 "
+				+ "		and a.mes_tabela = 01 "
+				+ "		and a.sequencia_tabela = 22 "
+				+ "		and b.cod_cancelamento = 0 "
+				+ "		GROUP BY a.cod_rep_cliente, c.linha_produto, e.descricao, f.nome_regiao"
+				+ "     UNION "
+				+ "     SELECT a.cod_rep_cliente representante, "
+				+ "			f.nome_regiao uf, "
+				+ "			e.descricao regiao, "
+				+ "			'BEACH' linha,  "
+				+ "			(SELECT w.meta FROM orion_072 w, orion_070 z "
+				+ "				WHERE z.cod_estacao = w.cod_estacao "
+				+ "				AND w.cod_representante = " + representante
+				+ "				AND w.tipo_meta = 1 "
+				+ "				AND z.catalogo = 2 "
+				+ "				AND z.descricao LIKE '%" + estacao + "%') meta, "
+				+         porcLinhaBeach + " porcLinha, "
+				+ "			SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) vendas, "
+				+ 		  percAtingidoBeach + " porcAtingido, "
+				+         totalFaturado * 0.25 + " valor "
+				+ "			from pedi_100 a, pedi_110 b, basi_030 c, pedi_023 d, pedi_043 e, pedi_040 f "
+				+ "			where a.pedido_venda = b.pedido_venda "
+				+ "			and b.cd_it_pe_nivel99 = c.nivel_estrutura  "
+				+ "			and b.cd_it_pe_grupo = c.referencia "
+				+ "			and d.cod_rep_cliente = a.cod_rep_cliente "
+				+ "			and e.sub_regiao = d.sub_regiao "
+				+ "			and f.codigo_regiao = e.codigo_regiao "
+				+ "			and a.cod_rep_cliente =  " + representante
+				+ "			and c.linha_produto = 53 "
+				+ "			and TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
+				+ "			and a.colecao_tabela = 02 "
+				+ "			and a.mes_tabela = 01 "
+				+ "			and a.sequencia_tabela = 22 "
+				+ "			and b.cod_cancelamento = 0 "
+				+ "			GROUP BY a.cod_rep_cliente, c.linha_produto, e.descricao, f.nome_regiao";
+		
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		
 	}
 
 }
