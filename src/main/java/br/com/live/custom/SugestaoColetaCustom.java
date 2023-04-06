@@ -28,7 +28,7 @@ public class SugestaoColetaCustom {
                                                           List<ConteudoChaveAlfaNum> transportadora) {
         List<SugestaoColeta> dadosColeta = null;
 
-        String query = "select min(a.codigo_empresa) empresa, a.pedido_venda pedido, min(a.data_entr_venda) embarque, "
+        String query = "select min(a.codigo_empresa) empresa, a.data_emis_venda emissao, a.pedido_venda pedido, min(a.data_entr_venda) embarque, "
                 + " min(a.valor_total_pedi) valorSaldo, "
                 + " lpad(min(a.cli_ped_cgc_cli9),9,0) || '/' || lpad(min(a.cli_ped_cgc_cli4),4,0) || '-' || lpad(min(a.cli_ped_cgc_cli2),2,0) || ' - ' || min(b.nome_cliente) cliente, "
                 + " sum(c.qtde_faturada) qtdeFatu, "
