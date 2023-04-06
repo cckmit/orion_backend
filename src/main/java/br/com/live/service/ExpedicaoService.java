@@ -901,4 +901,35 @@ public class ExpedicaoService {
 	public void limparCaixa(int codCaixa) {
 		expedicaoCustom.limparCaixa(codCaixa);
 	}
+
+	public List<VolumeMinuta> findVolumesByNotaPedido(int notaFiscal, int pedido) {
+		int notaEmpresa1 = expedicaoCustom.retornaNumeroNotaEmpresa1(notaFiscal);
+
+		if (notaEmpresa1 > 0) {
+			notaFiscal = notaEmpresa1;
+		}
+		return expedicaoCustom.findVolumesMinutaPorNotaPedido(notaFiscal, pedido);
+	}
+
+	public List<ConsultaMinutaTransporte> consultaRelatorioMinutas(int minuta, String dataInicio, String dataFim) {
+		List<ConsultaMinutaTransporte> listMinutas = new ArrayList<>();
+		List<ConsultaMinutaTransporte> listMinutasGrid = new ArrayList<>();
+
+		listMinutas = expedicaoCustom.consultaRelatorioMinutas(minuta,dataInicio,dataFim);
+
+		for (ConsultaMinutaTransporte dadosMinuta : listMinutas) {
+			int notaFiscal = 0;
+			notaFiscal = dadosMinuta.nota;
+
+			int notaEmpresa1 = expedicaoCustom.retornaNumeroNotaEmpresa1(notaFiscal);
+			if (notaEmpresa1 > 0) {
+				notaFiscal = notaEmpresa1;
+			}
+
+			dadosMinuta.status = expedicaoCustom.verificaTodosVolumesAlocadosByNotaAndPedido(notaFiscal, dadosMinuta.pedido);
+			listMinutasGrid.add(dadosMinuta);
+		}
+
+		return listMinutasGrid;
+	}
 }

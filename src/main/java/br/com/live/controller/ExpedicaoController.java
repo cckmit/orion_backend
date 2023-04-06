@@ -351,7 +351,7 @@ public class ExpedicaoController {
 
     @RequestMapping(value = "/consulta-minutas-transporte", method = RequestMethod.POST)
     public List<ConsultaMinutaTransporte> consultaMinutas (@RequestBody BodyMinutaTransporte body) {
-        return expedicaoCustom.consultaRelatorioMinutas(body.minuta, body.dataInicio, body.dataFim);
+        return expedicaoService.consultaRelatorioMinutas(body.minuta, body.dataInicio, body.dataFim);
     }
 
     @RequestMapping(value = "/validar-local-caixa-volumes/{minuta}", method = RequestMethod.GET)
@@ -433,7 +433,7 @@ public class ExpedicaoController {
 
     @RequestMapping(value = "/find-volumes-minuta-nota-pedido", method = RequestMethod.POST)
     public List<VolumeMinuta> findVolumesMinutaPorNotaPedido(@RequestBody BodyVolumeMinuta body) {
-        return expedicaoCustom.findVolumesMinutaPorNotaPedido(body.codNotaFiscal, body.seriaNotaFiscal, body.codPedido);
+        return expedicaoService.findVolumesByNotaPedido(body.codNotaFiscal, body.codPedido);
     }
 
     @RequestMapping(value = "/find-movimentacao-entrada-dia-usuario", method = RequestMethod.POST)

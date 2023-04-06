@@ -1660,10 +1660,9 @@ public class ExpedicaoCustom {
 		return transportadora;
 	}
 
-	public List<VolumeMinuta> findVolumesMinutaPorNotaPedido(int codNotaFiscal, int serieNotaFiscal, int codPedido) {
+	public List<VolumeMinuta> findVolumesMinutaPorNotaPedido(int codNotaFiscal, int codPedido) {
 		String query = " select a.numero_volume numeroVolume, a.data_montagem dataMontagem, a.hora_montagem horaMontagem, a.cod_usuario codUsuario, a.local_caixa localCaixa from pcpc_320 a "
 				+ " where a.nota_fiscal = " + codNotaFiscal
-				+ " and a.serie_nota = " + serieNotaFiscal
 				+ " and a.pedido_venda = " + codPedido;
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(VolumeMinuta.class));
 	}
@@ -1696,5 +1695,21 @@ public class ExpedicaoCustom {
 	public void LimparCaixa(int codCaixa) {
 		String query = " delete from orion_131 a where a.numero_caixa = ? ";
 		jdbcTemplate.update(query, codCaixa);
+	}
+
+	public int verificaTodosVolumesAlocadosByNotaAndPedido(int notaFiscal, int pedido) {
+		int status = 0;
+
+		String query = " select 1 from pcpc_320 c " +
+				" where c.pedido_venda = " + pedido +
+				" and c.nota_fiscal = " + notaFiscal +
+				" and c.local_caixa = 9 " +
+				" group by 1 ";
+		try {
+			status = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			status = 0;
+		}
+		return status;
 	}
 }
