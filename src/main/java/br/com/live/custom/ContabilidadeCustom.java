@@ -170,7 +170,7 @@ public class ContabilidadeCustom {
 		
 		int subConta = 0;
 		
-		String query = " SELECT d.exige_subconta FROM CONT_535 d WHERE d.cod_reduzido = ? GROUP BY d.exige_subconta ";
+		String query = " SELECT 1 FROM CONT_535 d WHERE d.cod_reduzido = ? and d.cod_plano_cta = 2021 ";
 		
 		subConta = jdbcTemplate.queryForObject(query, Integer.class, contaRezuzida);
 		
