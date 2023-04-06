@@ -116,6 +116,8 @@ public class FechamentoComissaoService {
 	
 	public List<ConsultaTitulosComissao> findBonusPorRepresentante(int mes, int ano, String representante, String estacao){
 		
+		float totalFaturado = 0;
+		float valorProporcional = 0;
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
@@ -129,9 +131,20 @@ public class FechamentoComissaoService {
 		//  ------------------------------------------------
 		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, representante, estacao);
 		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, representante, estacao);
-		float totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
 		
-		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, representante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, percAtingidoBeach);
+		if(percAtingidoFitness >= 100) {
+			valorProporcional = totalFaturado * (percAtingidoFitness / 100);
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+		} if(percAtingidoBeach >= 100) {
+			valorProporcional = totalFaturado * (percAtingidoBeach / 100);
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+		} if(percAtingidoFitness >= 100 && percAtingidoBeach >= 100) {
+			valorProporcional = totalFaturado;
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+		}
+		
+		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, representante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, 
+				percAtingidoBeach, valorProporcional);
 	}
 
 }

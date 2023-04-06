@@ -109,12 +109,18 @@ public class ContabilidadeService {
 	
 	public String validarCentroCustoByEmpresa(int centroCusto, int filial){
 		
-		int centroCustoByEmpresa =  contabilidadeCustom.findCentroCustoByEmpresa(centroCusto, filial);
 		String mensagem = "";
 		
-		if(centroCustoByEmpresa == 0) {
-			mensagem = " Centro de Custo Não Pertence a Filial Informada ";						
+		if(centroCusto != 0) {
+			int centroCustoByEmpresa =  contabilidadeCustom.findCentroCustoByEmpresa(centroCusto, filial);
+			mensagem = "";
+			
+			if(centroCustoByEmpresa == 0) {
+				mensagem = " Centro de Custo Não Pertence a Filial Informada ";						
+			}						
 		}
+		
+		
 		return mensagem;
 	}
 	
