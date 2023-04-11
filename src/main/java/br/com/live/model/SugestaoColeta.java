@@ -13,6 +13,7 @@ public class SugestaoColeta {
 	public int qtdeColetada;
 	public int qtdeColetar;
 	public int prioridade;
+	public Date emissao;
 	
 	public int getPedido() {
 		return pedido;
@@ -94,12 +95,20 @@ public class SugestaoColeta {
 		this.prioridade = prioridade;
 	}
 
+	public Date getEmissao() {
+		return emissao;
+	}
+
+	public void setEmissao(Date emissao) {
+		this.emissao = emissao;
+	}
+
 	public SugestaoColeta() {
 		
 	}
 
 	public SugestaoColeta(int pedido, String cliente, Date embarque, int qtdePedido, int qtdeFaturada, int qtdeSaldo,
-			float valorSaldo, int qtdeColetada, int qtdeColetar, int prioridade) {
+			float valorSaldo, int qtdeColetada, int qtdeColetar, int prioridade, Date emissao) {
 		this.pedido = pedido;
 		this.cliente = cliente;
 		this.embarque = embarque;
@@ -110,5 +119,6 @@ public class SugestaoColeta {
 		this.qtdeColetada = qtdeColetada;
 		this.qtdeColetar = qtdeColetar;
 		this.prioridade = prioridade;
+		this.emissao = emissao;
 	}
 }
