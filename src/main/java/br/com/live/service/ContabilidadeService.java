@@ -119,8 +119,6 @@ public class ContabilidadeService {
 				mensagem = " Centro de Custo Não Pertence a Filial Informada ";						
 			}						
 		}
-		
-		
 		return mensagem;
 	}
 	
@@ -132,11 +130,11 @@ public class ContabilidadeService {
 		LancamentoContabeisImport lanctoContabil = null;
 		int sequencia = 1;
 		int status = 1;
-		String[] periodoConcat = datainsercao.split("[-]");
-        String periodo = periodoConcat[1];
         
 		for (ConsultaLanctoContabeis dadosLancto : listLancto) {
 			int id = contabilidadeCustom.findNextId();
+			String[] periodoConcat = dadosLancto.dataLancto.split("[/]");
+	        String periodo = periodoConcat[1];
 			String criticasByLancto = "";
 			String origem = validarOrigem(dadosLancto.origem);
 			String contaReduzida = validarContaContabil(dadosLancto.contaReduzida);

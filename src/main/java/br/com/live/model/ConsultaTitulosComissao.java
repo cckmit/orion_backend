@@ -38,6 +38,7 @@ public class ConsultaTitulosComissao {
 	public float valor;
 	public float porcLinha;
 	public float valorProporcional;
+	public float totalFaturado;
 	
 	public int getPortador() {
 		return portador;
@@ -249,6 +250,12 @@ public class ConsultaTitulosComissao {
 	public void setValorProporcional(float valorProporcional) {
 		this.valorProporcional = valorProporcional;
 	}
+	public float getTotalFaturado() {
+		return totalFaturado;
+	}
+	public void setTotalFaturado(float totalFaturado) {
+		this.totalFaturado = totalFaturado;
+	}
 	public ConsultaTitulosComissao() {
 		
 	}
@@ -257,7 +264,7 @@ public class ConsultaTitulosComissao {
 			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
 			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,
 			float percComPed, int qtdeParcelas, float totComissao, String descricao, String uf, String regiao, String linha, float meta, 
-			float vendas, float porcAtingido, float valor, float porcLinha, float valorProporcional) {
+			float vendas, float porcAtingido, float valor, float porcLinha, float valorProporcional, float totalFaturado) {
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
 		this.representante = representante;
@@ -293,6 +300,7 @@ public class ConsultaTitulosComissao {
 		this.porcAtingido = porcAtingido; 
 		this.valor = valor;
 		this.valorProporcional = valorProporcional;
+		this.totalFaturado = totalFaturado;
 	}
 	
 }

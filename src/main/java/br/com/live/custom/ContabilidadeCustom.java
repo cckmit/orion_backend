@@ -172,8 +172,11 @@ public class ContabilidadeCustom {
 		
 		String query = " SELECT 1 FROM CONT_535 d WHERE d.cod_reduzido = ? and d.cod_plano_cta = 2021 ";
 		
-		subConta = jdbcTemplate.queryForObject(query, Integer.class, contaRezuzida);
-		
+		try {
+			subConta = jdbcTemplate.queryForObject(query, Integer.class, contaRezuzida);
+		} catch (Exception e) {
+			subConta = 0;
+		}
 		return subConta;
 	}
 	

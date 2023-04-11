@@ -122,29 +122,40 @@ public class FechamentoComissaoService {
 		if (mes < 10) {
 			mesComZero = "0" + mes;
 		};
-		float metaFitness = financeiroCustom.findMetaPorRespresentanteFitness(representante, estacao); // Buscando a Meta do Representante pra coleção na linha Fitness
-		float metaBeach = financeiroCustom.findMetaPorRespresentanteBeach(representante, estacao); // Buscando a Meta do Representante pra coleção na linha Beach
+		float metaFitness = financeiroCustom.findMetaPorRespresentanteFitness(representante, mesComZero, ano); // Buscando a Meta do Representante pra coleção na linha Fitness
+		float metaBeach = financeiroCustom.findMetaPorRespresentanteBeach(representante, mesComZero, ano); // Buscando a Meta do Representante pra coleção na linha Beach
 		// Descobrindo a porcentagem de cada meta representa na meta total
 		float totalMeta = metaFitness + metaBeach;
 		float porcLinhaFitness = (metaFitness * 100) / totalMeta;
 		float porcLinhaBeach = 100 - porcLinhaFitness;
 		//  ------------------------------------------------
-		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, representante, estacao);
-		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, representante, estacao);
+		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, representante);
+		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, representante);
 		
 		if(percAtingidoFitness >= 100) {
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
 			valorProporcional = totalFaturado * (percAtingidoFitness / 100);
-			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+			System.out.println("Entrou no 1");
 		} if(percAtingidoBeach >= 100) {
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
 			valorProporcional = totalFaturado * (percAtingidoBeach / 100);
-			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+			System.out.println("Entrou no 2");
 		} if(percAtingidoFitness >= 100 && percAtingidoBeach >= 100) {
-			valorProporcional = totalFaturado;
 			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+			valorProporcional = totalFaturado;
+			System.out.println("Entrou no 3");
 		}
+		List<ConteudoChaveAlfaNum> listEstados = financeiroCustom.findUf(representante);
+		List<ConteudoChaveAlfaNum> listSubRegiao = financeiroCustom.findSubRegiao(representante);
+		
+		String estado = ConteudoChaveAlfaNum.parseValueToString(listEstados).replace(",", " /");
+		estado = estado.replace("'", "");
+		
+		String regiao = ConteudoChaveAlfaNum.parseValueToString(listSubRegiao).replace(",", " /");
+		regiao = regiao.replace("'", "");
 		
 		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, representante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, 
-				percAtingidoBeach, valorProporcional);
+				percAtingidoBeach, valorProporcional, estado, regiao, metaFitness, metaBeach);
 	}
 
 }
