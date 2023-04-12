@@ -282,3 +282,6 @@ values (93, 'Consultar DRE das Lojas', 'Financeiro', '/consulta-dre-loja');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (94, 'Limpar Caixas', 'Expedição', '/limpar-caixas');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (95, 'Resumo Ocupação Carteira', 'Comercial', '/resumo-ocupacao-carteira');
