@@ -204,8 +204,9 @@ public class ContabilidadeService {
 	public int salvarSystextil(String usuario) {
 		
 		int mensagem = 0;
-		List<LancamentoContabeisImport> listDados =  lanctoContabilImportacaoRepository.findByUser(usuario);
+		
 		List<ConsultaLanctoContabeis> listEmpresa =  contabilidadeCustom.findEmpresaExercicioPorUsuario(usuario);
+		
 		String programa = "Orion";
 		
 		try {
@@ -213,17 +214,17 @@ public class ContabilidadeService {
 				
 				int codMatriz = contabilidadeCustom.findMatriz(lancamento.filialLancto);
 				int numLancto = contabilidadeCustom.findNextNumLancto(codMatriz, lancamento.exercicio);
-				System.out.println("Matriz: " + codMatriz);
-				System.out.println("numLancto: " + numLancto);
+				List<ConsultaLanctoContabeis> listDados =  contabilidadeCustom.findByUserFilial(usuario, lancamento.filialLancto, lancamento.exercicio);
 			
-				for (LancamentoContabeisImport dados : listDados) {
+				for (ConsultaLanctoContabeis dados : listDados) {
 					
 					String contaContabil = contabilidadeCustom.findContaContabByContaRed(dados.contaReduzida);
-					int lote = gerarNumLote(codMatriz, dados.exercicio, dados.origem,  FormataData.parseDateToString(dados.dataLancto));
+					int lote = gerarNumLote(codMatriz, dados.exercicio, dados.origem, dados.dataLancto);
 					contabilidadeCustom.inserirLanctoContabilSystextil(codMatriz, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
-							dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, dados.dataLancto, dados.complHistor1, dados.datainsercao, programa, 
-							dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
-					System.out.println("exercicio: " + dados.exercicio);
+							dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, FormataData.parseStringToDate(dados.dataLancto), dados.complHistor1, 
+							FormataData.parseStringToDate(dados.datainsercao), programa, dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
+					System.out.println(numLancto);
+					
 				}
 			}
 			mensagem = 1;

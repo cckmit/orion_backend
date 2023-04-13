@@ -323,12 +323,43 @@ public class ContabilidadeCustom {
 	
 	public List<ConsultaLanctoContabeis> findEmpresaExercicioPorUsuario(String usuario){
 		
-		String query = " SELECT a.filial_lancto, a.exercicio  "
-				+ "       FROM orion_cnt_010 a "
-				+ "       WHERE a.usuario = '" + usuario + "'"
-				+ "       GROUP BY a.filial_lancto, a.exercicio  ";
+		String query = " SELECT DADOS.MATRIZ FROM(SELECT "
+				+ "      (SELECT b.codigo_matriz FROM fatu_500 b WHERE b.codigo_empresa = a.filial_lancto) matriz "
+				+ "      FROM orion_cnt_010 a "
+				+ "      WHERE a.usuario = '" + usuario + "') DADOS "
+				+ "      GROUP BY DADOS.MATRIZ ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));		
+	}
+	
+	public List<ConsultaLanctoContabeis> findByUserFilial(String usuario, int filialLancto, int exercicio){
+		
+		String query = " SELECT filial_lancto filialLancto, "
+				+ "       exercicio exercicio, "
+				+ "       origem origem, "
+				+ "       conta_reduzida contaReduzida, "
+				+ "       debito_credito debitoCredito, "
+				+ "       valor_lancto valorLancto, "
+				+ "       centro_custo centroCusto, "
+				+ "       hist_contabil histContabil, "
+				+ "       TO_CHAR(data_lancto, 'DD/MM/YYYY') dataLancto, "
+				+ "       compl_histor1 complHistor1, "
+				+ "       TO_CHAR(datainsercao, 'DD/MM/YYYY') datainsercao, "
+				+ "       usuario, "
+				+ "       lote, "
+				+ "       numero_lanc numeroLanc, "
+				+ "       seq_lanc seqLanc, "
+				+ "       periodo, "
+				+ "       status, "
+				+ "       criticas "
+				+ "     FROM orion_cnt_010 a "
+				+ "		WHERE a.usuario = '" + usuario + "'"
+				+ "		AND a.filial_lancto = " + filialLancto
+				+ "		AND a.exercicio =  " + exercicio;
+		System.out.println(query);
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));		
+
+		
 	}
 
 }
