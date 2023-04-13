@@ -1,7 +1,5 @@
 package br.com.live.service;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -122,6 +120,20 @@ public class ContabilidadeService {
 		return mensagem;
 	}
 	
+	public int gerarNumLote(int empresa, int exercicio, int origem, String dataLancto) {
+		
+		int numLote = 0;
+		int loteExistente = contabilidadeCustom.findLoteExistenteParaParametros(empresa, exercicio, origem, dataLancto);
+		
+		if(loteExistente == 0) {
+			numLote = contabilidadeCustom.novoLote(empresa, exercicio, origem, dataLancto);	
+		} else {
+			numLote = loteExistente;
+		}		
+		return numLote;
+		
+	}
+	
 	public RetornoLancamentoCont importarLancamentosContabeis(List<ConsultaLanctoContabeis> listLancto, String usuario, String datainsercao) {
 		// Deletando tudo na Tabela orion_cnt_010
 		lanctoContabilImportacaoRepository.deleteByUsuario(usuario);
@@ -193,17 +205,26 @@ public class ContabilidadeService {
 		
 		int mensagem = 0;
 		List<LancamentoContabeisImport> listDados =  lanctoContabilImportacaoRepository.findByUser(usuario);
-		int lote = contabilidadeCustom.findNextLote();
-		int numLancto = contabilidadeCustom.findNextNumLancto();
+		List<ConsultaLanctoContabeis> listEmpresa =  contabilidadeCustom.findEmpresaExercicioPorUsuario(usuario);
 		String programa = "Orion";
 		
 		try {
-			for (LancamentoContabeisImport dados : listDados) {
-				int codMatriz = contabilidadeCustom.findMatriz(dados.filialLancto);
-				String contaContabil = contabilidadeCustom.findContaContabByContaRed(dados.contaReduzida);
-				contabilidadeCustom.inserirLanctoContabilSystextil(codMatriz, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
-						dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, dados.dataLancto, dados.complHistor1, dados.datainsercao, programa, 
-						dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
+			for (ConsultaLanctoContabeis lancamento : listEmpresa) {
+				
+				int codMatriz = contabilidadeCustom.findMatriz(lancamento.filialLancto);
+				int numLancto = contabilidadeCustom.findNextNumLancto(codMatriz, lancamento.exercicio);
+				System.out.println("Matriz: " + codMatriz);
+				System.out.println("numLancto: " + numLancto);
+			
+				for (LancamentoContabeisImport dados : listDados) {
+					
+					String contaContabil = contabilidadeCustom.findContaContabByContaRed(dados.contaReduzida);
+					int lote = gerarNumLote(codMatriz, dados.exercicio, dados.origem,  FormataData.parseDateToString(dados.dataLancto));
+					contabilidadeCustom.inserirLanctoContabilSystextil(codMatriz, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
+							dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, dados.dataLancto, dados.complHistor1, dados.datainsercao, programa, 
+							dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
+					System.out.println("exercicio: " + dados.exercicio);
+				}
 			}
 			mensagem = 1;
 			lanctoContabilImportacaoRepository.deleteByUsuario(usuario);

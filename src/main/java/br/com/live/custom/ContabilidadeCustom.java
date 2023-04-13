@@ -33,22 +33,11 @@ public class ContabilidadeCustom {
 		return nextId;
 	}
 	
-	public int findNextLote() {
-		int nextLote = 0;
-		
-		String query = " SELECT MAX(b.lote) + 1 FROM cont_600 b ";
-
-		try {
-			nextLote = jdbcTemplate.queryForObject(query, Integer.class);
-		} catch (Exception e) {
-			nextLote = 0;
-		}
-		return nextLote;
-	}
-	
-	public int findNextNumLancto() {
+	public int findNextNumLancto(int empresa, int exercicio) {
 		int nextNumLancto;
-		String query = " SELECT MAX(a.numero_lanc) + 1 FROM cont_600 a ";
+		String query = " SELECT MAX(b.numero_lanc) + 1 FROM cont_600 b "
+				+ "      WHERE b.cod_empresa = " + empresa
+				+ "      AND b.exercicio =  " + exercicio;
 
 		try {
 			nextNumLancto = jdbcTemplate.queryForObject(query, Integer.class);
@@ -195,6 +184,46 @@ public class ContabilidadeCustom {
 		return centroCustoByEmpresa;
 	}
 	
+	public int findLoteExistenteParaParametros(int empresa, int exercicio, int origem, String dataLancto) {
+		
+		int existeLote = 0;
+		
+		String query = " SELECT MAX(a.lote) FROM cont_520 a "
+				+ "       WHERE a.cod_empresa = " + empresa
+				+ "       AND a.exercicio = " + exercicio
+				+ "       AND a.origem = " + origem
+				+ "       AND a.situacao IN (0, 1)"
+				+ "       AND TO_CHAR(TO_DATE(a.data_lote), 'DD/MM/YYYY') = '" + dataLancto + "'";
+		
+		try {
+			existeLote = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			existeLote = 0;
+		}
+		return existeLote;
+	}
+	
+	public int novoLote(int empresa, int exercicio, int origem, String dataLancto) {
+		
+		int loteNovo = 0;
+		
+		String query = " SELECT MAX(a.lote) + 1 FROM cont_520 a "
+				+ "       WHERE a.cod_empresa = " + empresa
+				+ "       AND a.exercicio = " + exercicio
+				+ "       AND a.origem = " + origem;
+		
+		String queryInsert = "INSERT INTO cont_520(cod_empresa, exercicio, origem, lote, data_lote, situacao)VALUES(?, ?, ?, ?, ?, 0)";
+		
+		try {
+			loteNovo = jdbcTemplate.queryForObject(query, Integer.class);
+			jdbcTemplate.update(queryInsert, empresa, exercicio, origem, loteNovo, dataLancto);
+						
+		} catch (Exception e) {
+			loteNovo = 0;
+		}
+		return loteNovo;
+	}
+	
 	public List<ConsultaLanctoContabeis> findAllLanctoContabeis(String usuario) {
 		String query = " select a.id id, "
 				+ "       a.filial_lancto filialLancto, "
@@ -245,6 +274,7 @@ public class ContabilidadeCustom {
 		
 		jdbcTemplate.update(query, codMatriz, exercicio, numeroLanc, seqLanc, origem, lote, periodo, contaContabil, contaReduzida ,centroCusto, debitoCredito, histContabil, 
 				complHistor1, dataLancto, valorLancto, filialLancto, programa, usuario, datainsercao);
+		
 	}
 	
 	public int findStatusByLancto(String usuario) {
@@ -290,4 +320,15 @@ public class ContabilidadeCustom {
 		
 		return valorDebito;
 	}
+	
+	public List<ConsultaLanctoContabeis> findEmpresaExercicioPorUsuario(String usuario){
+		
+		String query = " SELECT a.filial_lancto, a.exercicio  "
+				+ "       FROM orion_cnt_010 a "
+				+ "       WHERE a.usuario = '" + usuario + "'"
+				+ "       GROUP BY a.filial_lancto, a.exercicio  ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));		
+	}
+
 }

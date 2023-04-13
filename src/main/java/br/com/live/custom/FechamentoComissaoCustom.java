@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaTitulosComissao;
+import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -351,6 +352,8 @@ public class FechamentoComissaoCustom {
 	public List<ConsultaTitulosComissao> findBonusPorRepresentante(String mesComZero, int ano, String representante, String estacao, float totalFaturado, float porcLinhaFitness, 
 			float porcLinhaBeach, float percAtingidoFitness, float percAtingidoBeach, float valorProporcional, String estado, String regiao, float metaFitness, float metaBeach){
 		
+		List<ConsultaTitulosComissao> listComissao = null;
+		
 		String query = " SELECT a.cod_rep_cliente representante, "
 				+ "    '" +  estado + "' uf,"
 				+ "    '" +  regiao + "' regiao,"
@@ -399,10 +402,12 @@ public class FechamentoComissaoCustom {
 				+ "		AND b.cod_cancelamento = 0 "
 				+ "		GROUP BY a.cod_rep_cliente ";
 		
-		System.out.println(query);
-		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
-		
+		try {
+			listComissao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		} catch (Exception e) {
+			listComissao = new ArrayList<ConsultaTitulosComissao>();
+		}
+		return listComissao;		
 	}
 
 }

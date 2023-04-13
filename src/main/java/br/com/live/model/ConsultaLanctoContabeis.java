@@ -1,6 +1,5 @@
 package br.com.live.model;
 
-import java.util.Date;
 
 public class ConsultaLanctoContabeis {
 	

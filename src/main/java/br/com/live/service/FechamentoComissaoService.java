@@ -135,15 +135,12 @@ public class FechamentoComissaoService {
 		if(percAtingidoFitness >= 100) {
 			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
 			valorProporcional = totalFaturado * (percAtingidoFitness / 100);
-			System.out.println("Entrou no 1");
 		} if(percAtingidoBeach >= 100) {
 			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
 			valorProporcional = totalFaturado * (percAtingidoBeach / 100);
-			System.out.println("Entrou no 2");
 		} if(percAtingidoFitness >= 100 && percAtingidoBeach >= 100) {
 			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
 			valorProporcional = totalFaturado;
-			System.out.println("Entrou no 3");
 		}
 		List<ConteudoChaveAlfaNum> listEstados = financeiroCustom.findUf(representante);
 		List<ConteudoChaveAlfaNum> listSubRegiao = financeiroCustom.findSubRegiao(representante);
