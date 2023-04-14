@@ -1,8 +1,8 @@
 package br.com.live.service;
 
 import br.com.live.custom.RelacionamentoLojaDreCustom;
-import br.com.live.entity.CentroCustoLoja;
-import br.com.live.entity.SupervisorLoja;
+import br.com.live.entity.CentroCustoLojaEntity;
+import br.com.live.entity.SupervisorLojaEntity;
 import br.com.live.model.ConsultaRelacionamentoLojaDre;
 import br.com.live.repository.CentroCustoLojaRepository;
 import br.com.live.repository.SupervisorLojaRepository;
@@ -69,14 +69,14 @@ public class RelacionamentoLojaDreService {
             deleteRleacionamentoLojaDreByCnpj(cnpjLoja);
         }
 
-        SupervisorLoja supervisorLoja = new SupervisorLoja();
+        SupervisorLojaEntity supervisorLoja = new SupervisorLojaEntity();
         supervisorLoja.cnpjLoja = cnpjLoja;
         supervisorLoja.cnpjSupervisor = cnpjSupervisor;
         supervisorLojaRepository.save(supervisorLoja);
 
         for(ConteudoChaveNumerica centroCusto : centroCustos){
             if(!relacionamentoLojaDreCustom.existsCentroCustoLoja(cnpjLoja, centroCusto.value)){
-                CentroCustoLoja centroCustoLoja = new CentroCustoLoja();
+                CentroCustoLojaEntity centroCustoLoja = new CentroCustoLojaEntity();
                 centroCustoLoja.id = centroCustoLojaRepository.findNextId();
                 centroCustoLoja.cnpjLoja = cnpjLoja;
                 centroCustoLoja.centroCusto = centroCusto.value;

@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "orion_fin_010")
-public class ContaContabilConsiderarDre {
+public class ContaContabilConsiderarDreEntity {
 
     @Id
     @Column(name = "conta_contabil")
@@ -27,7 +27,7 @@ public class ContaContabilConsiderarDre {
 
     public boolean depreciacao;
 
-    public ContaContabilConsiderarDre(int contaContabil, boolean gastoVariavel, boolean custoOcupacao, boolean despesaFolha, boolean despesaGeral, boolean depreciacao) {
+    public ContaContabilConsiderarDreEntity(int contaContabil, boolean gastoVariavel, boolean custoOcupacao, boolean despesaFolha, boolean despesaGeral, boolean depreciacao) {
         this.contaContabil = contaContabil;
         this.gastoVariavel = gastoVariavel;
         this.custoOcupacao = custoOcupacao;
@@ -36,6 +36,6 @@ public class ContaContabilConsiderarDre {
         this.depreciacao = depreciacao;
     }
 
-    public ContaContabilConsiderarDre(){
+    public ContaContabilConsiderarDreEntity(){
     }
 }

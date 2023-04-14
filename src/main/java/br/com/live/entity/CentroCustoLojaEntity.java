@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="orion_fin_005")
-public class CentroCustoLoja {
+public class CentroCustoLojaEntity {
 
     @Id
     public Long id;
@@ -15,13 +15,13 @@ public class CentroCustoLoja {
     @Column(name = "centro_custo")
     public int centroCusto;
 
-    public CentroCustoLoja(Long id, String cnpjLoja, int centroCusto) {
+    public CentroCustoLojaEntity(Long id, String cnpjLoja, int centroCusto) {
         this.id = id;
         this.cnpjLoja = cnpjLoja;
         this.centroCusto = centroCusto;
     }
 
-    public CentroCustoLoja(){
+    public CentroCustoLojaEntity(){
     }
 
     public Long getId() {

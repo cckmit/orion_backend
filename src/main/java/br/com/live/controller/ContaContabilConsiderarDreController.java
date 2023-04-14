@@ -1,7 +1,7 @@
 package br.com.live.controller;
 
 import br.com.live.custom.ContaContabilConsiderarDreCustom;
-import br.com.live.entity.ContaContabilConsiderarDre;
+import br.com.live.entity.ContaContabilConsiderarDreEntity;
 import br.com.live.model.ConsultaContaContabilConsiderarDre;
 import br.com.live.repository.ContaContabilConsiderarDreRepository;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +23,12 @@ public class ContaContabilConsiderarDreController {
     }
 
     @GetMapping("/find-all-conta-contabil-considerar-dre")
-    public List<ContaContabilConsiderarDre> findAllContaContabilConsiderarDre() {
+    public List<ContaContabilConsiderarDreEntity> findAllContaContabilConsiderarDre() {
         return contaContabilConsiderarDreRepository.findAll();
     }
 
     @GetMapping("/find-conta-contabil-considerar-dre-by-id/{contaContabil}")
-    public Optional<ContaContabilConsiderarDre> findContaConbailConsiderarDreById(@PathVariable("contaContabil") int contaContabil){
+    public Optional<ContaContabilConsiderarDreEntity> findContaConbailConsiderarDreById(@PathVariable("contaContabil") int contaContabil){
         return contaContabilConsiderarDreRepository.findById(contaContabil);
     }
 
@@ -38,7 +38,7 @@ public class ContaContabilConsiderarDreController {
     }
 
     @PostMapping("/save-conta-contabil-considerar-dre")
-    public void saveContaContabilConsiderarDre(@RequestBody ContaContabilConsiderarDre contaContabilConsiderarDre){
+    public void saveContaContabilConsiderarDre(@RequestBody ContaContabilConsiderarDreEntity contaContabilConsiderarDre){
         if (!contaContabilConsiderarDre.gastoVariavel && !contaContabilConsiderarDre.custoOcupacao && !contaContabilConsiderarDre.depreciacao && !contaContabilConsiderarDre.despesaGeral && !contaContabilConsiderarDre.despesaFolha){
             contaContabilConsiderarDreRepository.deleteById(contaContabilConsiderarDre.contaContabil);
         } else{

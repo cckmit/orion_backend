@@ -1,6 +1,5 @@
 package br.com.live.custom;
 
-import br.com.live.model.CentroCustoLoja;
 import br.com.live.model.ConsultaRelacionamentoLojaDre;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -21,7 +20,7 @@ public class RelacionamentoLojaDreCustom {
 
     public List<ConteudoChaveAlfaNum> findAllLojas() {
 
-        String query = "select (pe.cgc_9 ||'.'|| pe.cgc_4 ||'.'|| pe.cgc_2) value, pe.nome_cliente label  from pedi_010 pe " +
+        String query = "select (pe.cgc_9 ||'.'|| pe.cgc_4 ||'.'|| pe.cgc_2) value, pe.fantasia_cliente label  from pedi_010 pe " +
                 "where pe.tipo_cliente in (17, 33) " +
                 "and pe.situacao_cliente = 1 ";
 
@@ -47,7 +46,7 @@ public class RelacionamentoLojaDreCustom {
         String query = "SELECT " +
                 "    a.id, " +
                 "    a.cnpj_loja AS cnpjLoja, " +
-                "    c.nome_cliente AS nomeLoja, " +
+                "    c.fantasia_cliente AS nomeLoja, " +
                 "    b.cnpj_supervisor AS cnpjSupervisor, " +
                 "    d.nome_fornecedor AS nomeSupervisor," +
                 "    (e.centro_custo || ' - ' || e.descricao) AS centroCustos " +
@@ -65,7 +64,7 @@ public class RelacionamentoLojaDreCustom {
                 "GROUP BY " +
                 "    a.id, " +
                 "    a.cnpj_loja, " +
-                "    c.nome_cliente, " +
+                "    c.fantasia_cliente, " +
                 "    b.cnpj_supervisor, " +
                 "    d.nome_fornecedor, " +
                 "    e.centro_custo, " +

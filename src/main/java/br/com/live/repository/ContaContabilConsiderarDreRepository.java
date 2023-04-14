@@ -1,8 +1,8 @@
 package br.com.live.repository;
 
-import br.com.live.entity.ContaContabilConsiderarDre;
+import br.com.live.entity.ContaContabilConsiderarDreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContaContabilConsiderarDreRepository extends JpaRepository<ContaContabilConsiderarDre, Integer> {
+public interface ContaContabilConsiderarDreRepository extends JpaRepository<ContaContabilConsiderarDreEntity, Integer> {
 
 }

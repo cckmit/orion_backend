@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="orion_fin_001")
-public class SupervisorLoja {
+public class SupervisorLojaEntity {
     @Id
     @Column(name = "cnpj_loja")
     public String cnpjLoja;
@@ -15,12 +15,12 @@ public class SupervisorLoja {
     @Column(name = "cnpj_supervisor")
     public String cnpjSupervisor;
 
-    public SupervisorLoja(String cnpjLoja, String cnpjSupervisor) {
+    public SupervisorLojaEntity(String cnpjLoja, String cnpjSupervisor) {
         this.cnpjLoja = cnpjLoja;
         this.cnpjSupervisor = cnpjSupervisor;
     }
 
-    public SupervisorLoja(){
+    public SupervisorLojaEntity(){
     }
 
     public String getCnpjLoja() {

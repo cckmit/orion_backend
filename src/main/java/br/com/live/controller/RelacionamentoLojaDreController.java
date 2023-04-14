@@ -2,8 +2,8 @@ package br.com.live.controller;
 
 import br.com.live.body.BodyRelacionamentoLojaDre;
 import br.com.live.custom.RelacionamentoLojaDreCustom;
-import br.com.live.entity.CentroCustoLoja;
-import br.com.live.entity.SupervisorLoja;
+import br.com.live.entity.CentroCustoLojaEntity;
+import br.com.live.entity.SupervisorLojaEntity;
 import br.com.live.model.ConsultaRelacionamentoLojaDre;
 import br.com.live.repository.CentroCustoLojaRepository;
 import br.com.live.repository.SupervisorLojaRepository;
@@ -35,7 +35,7 @@ public class RelacionamentoLojaDreController {
     }
 
     @GetMapping("/find-centro-custo-loja-by-id/{id}")
-    public Optional<CentroCustoLoja> findCentroCustoLojaById(@PathVariable("id") Long id) {
+    public Optional<CentroCustoLojaEntity> findCentroCustoLojaById(@PathVariable("id") Long id) {
         return centroCustoLojaRepository.findById(id);
     }
 
@@ -50,7 +50,7 @@ public class RelacionamentoLojaDreController {
     }
 
     @PostMapping("/save-centro-custo-loja")
-    public CentroCustoLoja saveCentroCusto(@RequestBody CentroCustoLoja centroCustoLoja) {
+    public CentroCustoLojaEntity saveCentroCusto(@RequestBody CentroCustoLojaEntity centroCustoLoja) {
         return centroCustoLojaRepository.save(centroCustoLoja);
     }
 
@@ -61,12 +61,12 @@ public class RelacionamentoLojaDreController {
 
 
     @GetMapping("/find-all-supervisores")
-    public List<SupervisorLoja> findAllSupervisoresLoja() {
+    public List<SupervisorLojaEntity> findAllSupervisoresLoja() {
         return supervisorLojaRepository.findAll();
     }
 
     @GetMapping("/find-supervisor-by-id/{cnpjLoja}")
-    public Optional<SupervisorLoja> findByIdSupervisorLoja(@PathVariable String cnpjLoja) {
+    public Optional<SupervisorLojaEntity> findByIdSupervisorLoja(@PathVariable String cnpjLoja) {
         return supervisorLojaRepository.findById(cnpjLoja);
     }
 
@@ -76,7 +76,7 @@ public class RelacionamentoLojaDreController {
     }
 
     @PostMapping("/save-supervisor")
-    public SupervisorLoja saveSupervisorLoja(@RequestBody SupervisorLoja supervisorLoja) {
+    public SupervisorLojaEntity saveSupervisorLoja(@RequestBody SupervisorLojaEntity supervisorLoja) {
         return supervisorLojaRepository.save(supervisorLoja);
     }
 
