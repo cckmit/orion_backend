@@ -39,6 +39,10 @@ public class ConsultaTitulosComissao {
 	public float porcLinha;
 	public float valorProporcional;
 	public float totalFaturado;
+	public int nfOrigem;
+	public int nfDevolucao;
+	public float valorNf;
+	public String motivo;
 	
 	public int getPortador() {
 		return portador;
@@ -256,6 +260,30 @@ public class ConsultaTitulosComissao {
 	public void setTotalFaturado(float totalFaturado) {
 		this.totalFaturado = totalFaturado;
 	}
+	public int getNfOrigem() {
+		return nfOrigem;
+	}
+	public void setNfOrigem(int nfOrigem) {
+		this.nfOrigem = nfOrigem;
+	}
+	public int getNfDevolucao() {
+		return nfDevolucao;
+	}
+	public void setNfDevolucao(int nfDevolucao) {
+		this.nfDevolucao = nfDevolucao;
+	}
+	public float getValorNf() {
+		return valorNf;
+	}
+	public void setValorNf(float valorNf) {
+		this.valorNf = valorNf;
+	}
+	public String getMotivo() {
+		return motivo;
+	}
+	public void setMotivo(String motivo) {
+		this.motivo = motivo;
+	}
 	public ConsultaTitulosComissao() {
 		
 	}
@@ -264,7 +292,8 @@ public class ConsultaTitulosComissao {
 			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
 			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,
 			float percComPed, int qtdeParcelas, float totComissao, String descricao, String uf, String regiao, String linha, float meta, 
-			float vendas, float porcAtingido, float valor, float porcLinha, float valorProporcional, float totalFaturado) {
+			float vendas, float porcAtingido, float valor, float porcLinha, float valorProporcional, float totalFaturado, int nfOrigem, int nfDevolucao,
+			float valorNf, String motivo) {
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
 		this.representante = representante;
@@ -301,6 +330,10 @@ public class ConsultaTitulosComissao {
 		this.valor = valor;
 		this.valorProporcional = valorProporcional;
 		this.totalFaturado = totalFaturado;
+		this.nfOrigem = nfOrigem;
+		this.nfDevolucao = nfDevolucao;
+		this.valorNf = valorNf;
+		this.motivo = motivo;
 	}
 	
 }

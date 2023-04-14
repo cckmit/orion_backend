@@ -401,13 +401,59 @@ public class FechamentoComissaoCustom {
 				+ "     AND a.sequencia_tabela = 23 "
 				+ "		AND b.cod_cancelamento = 0 "
 				+ "		GROUP BY a.cod_rep_cliente ";
-		
+	
 		try {
 			listComissao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
 		} catch (Exception e) {
 			listComissao = new ArrayList<ConsultaTitulosComissao>();
 		}
 		return listComissao;		
+	}
+	
+	public List<ConsultaTitulosComissao> findDevolucoes(String mesComZero, int ano, String representante){
+		
+		List<ConsultaTitulosComissao> listDevolucao = null;
+		
+		String query = " SELECT f.nome_fornecedor cliente, "
+				+ "       c.num_nota_orig nfOrigem, "
+				+ "       b.documento nfDevolucao, "
+				+ "       e.cod_rep_cliente || '-' || e.nome_rep_cliente representante, "
+				+ "       a.perc_repres percComissao, "
+				+ "       ((a.perc_repres * c.valor_total)/100) valorComissao, "
+				+ "       c.valor_total valorNf, "
+				+ "       d.descr_motivo motivo "
+				+ "     FROM fatu_050 a, obrf_010 b, obrf_015 c, efic_010 d, pedi_020 e, supr_010 f "
+				+ "         WHERE b.documento = c.capa_ent_nrdoc "
+				+ "			AND b.serie = c.capa_ent_serie "
+				+ "			AND c.num_nota_orig = a.num_nota_fiscal "
+				+ "			AND c.capa_ent_forcli9 = a.cgc_9 "
+				+ "			AND c.capa_ent_forcli4 = a.cgc_4 "
+				+ "			AND c.capa_ent_forcli2 = a.cgc_2 "
+				+ "			AND b.cgc_cli_for_9 = c.capa_ent_forcli9 "
+				+ "			AND b.cgc_cli_for_4 = c.capa_ent_forcli4 "
+				+ "			AND b.cgc_cli_for_2 = c.capa_ent_forcli2 "
+				+ "			AND c.motivo_devolucao = d.codigo_motivo "
+				+ "			AND a.cod_rep_cliente = e.cod_rep_cliente "
+				+ "			AND a.cgc_9 = f.fornecedor9 "
+				+ "			AND a.cgc_4 = f.fornecedor4 "
+				+ "			AND a.cgc_2 = f.fornecedor2 "
+				+ "			AND b.cgc_cli_for_9 = f.fornecedor9 "
+				+ "			AND b.cgc_cli_for_4 = f.fornecedor4 "
+				+ "			AND b.cgc_cli_for_2 = f.fornecedor2 "
+				+ "			AND c.capa_ent_forcli9 = f.fornecedor9 "
+				+ "			AND c.capa_ent_forcli4 = f.fornecedor4 "
+				+ "			AND c.capa_ent_forcli2 = f.fornecedor2 "
+				+ "			AND a.cod_rep_cliente = " + representante
+				+ "			AND TO_CHAR(TO_DATE(b.data_transacao), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
+				+ "			AND c.num_nota_orig <> 0 "
+				+ "		GROUP BY f.nome_fornecedor, c.num_nota_orig, b.documento, e.cod_rep_cliente, e.nome_rep_cliente, a.perc_repres, c.valor_total, d.descr_motivo ";
+		
+		//try {
+			listDevolucao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		//} catch (Exception e) {
+		//	listDevolucao = new ArrayList<ConsultaTitulosComissao>();
+		//}
+		return listDevolucao;
 	}
 
 }

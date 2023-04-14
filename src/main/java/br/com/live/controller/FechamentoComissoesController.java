@@ -65,5 +65,10 @@ public class FechamentoComissoesController {
     		@PathVariable("estacao") String estacao) {
         return financeiroService.findBonusPorRepresentante(mes, ano, representante, estacao);
     }
+	
+	@RequestMapping(value = "/find-devolucao/{mes}/{ano}/{representante}", method = RequestMethod.GET)
+    public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
+        return financeiroService.findDevolucaoPorRepresentante(mes, ano, representante);
+    }
 
 }

@@ -154,5 +154,13 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, representante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, 
 				percAtingidoBeach, valorProporcional, estado, regiao, metaFitness, metaBeach);
 	}
-
+	
+	public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(int mes, int ano, String representante){
+		
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
+		return financeiroCustom.findDevolucoes(mesComZero, ano, representante);
+	}
 }
