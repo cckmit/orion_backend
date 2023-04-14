@@ -16,7 +16,9 @@ public interface MetasDoOrcamentoRepository extends JpaRepository<MetasDoOrcamen
 	@Query(" SELECT u FROM MetasDoOrcamento u where u.id = :idMetas ")
 	MetasDoOrcamento findByIdMetas(String idMetas);
 	
+	@Query(" SELECT u FROM MetasDoOrcamento u where u.descricao = :descricao and u.ano = :ano and tipoMeta = :tipoMeta ")
+	MetasDoOrcamento findByDescricaoAndAnoAndTipoMeta(String descricao, int ano, int tipoMeta);
+	
 	void deleteById(String idMetas);
-
 	void deleteByAnoAndTipoMeta(int ano, int tipoMeta);
 }
