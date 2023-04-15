@@ -9,12 +9,14 @@ public class DadosOcupacaoCarteiraPorModalidade {
 	private double qtdeReal;
 	private double qtdeConfirmar;	
 	private double minutosOrcado;
-	private double minutosqtdeReal;
-	private double minutosqtdeConfirmar;
+	private double minutosReal;
+	private double minutosConfirmar;
+	
+	public DadosOcupacaoCarteiraPorModalidade() {}
 	
 	public DadosOcupacaoCarteiraPorModalidade(String modalidade, double valorOrcado, double valorReal,
 			double valorConfirmar, double qtdeOrcado, double qtdeReal, double qtdeConfirmar, double minutosOrcado,
-			double minutosqtdeReal, double minutosqtdeConfirmar) {
+			double minutosReal, double minutosConfirmar) {
 		super();
 		this.modalidade = modalidade;
 		this.valorOrcado = valorOrcado;
@@ -24,8 +26,8 @@ public class DadosOcupacaoCarteiraPorModalidade {
 		this.qtdeReal = qtdeReal;
 		this.qtdeConfirmar = qtdeConfirmar;
 		this.minutosOrcado = minutosOrcado;
-		this.minutosqtdeReal = minutosqtdeReal;
-		this.minutosqtdeConfirmar = minutosqtdeConfirmar;
+		this.minutosReal = minutosReal;
+		this.minutosConfirmar = minutosConfirmar;
 	}
 
 	public String getModalidade() {
@@ -92,19 +94,19 @@ public class DadosOcupacaoCarteiraPorModalidade {
 		this.minutosOrcado = minutosOrcado;
 	}
 
-	public double getMinutosqtdeReal() {
-		return minutosqtdeReal;
+	public double getMinutosReal() {
+		return minutosReal;
 	}
 
-	public void setMinutosqtdeReal(double minutosqtdeReal) {
-		this.minutosqtdeReal = minutosqtdeReal;
+	public void setMinutosReal(double minutosReal) {
+		this.minutosReal = minutosReal;
 	}
 
-	public double getMinutosqtdeConfirmar() {
-		return minutosqtdeConfirmar;
+	public double getMinutosConfirmar() {
+		return minutosConfirmar;
 	}
 
-	public void setMinutosqtdeConfirmar(double minutosqtdeConfirmar) {
-		this.minutosqtdeConfirmar = minutosqtdeConfirmar;
+	public void setMinutosConfirmar(double minutosConfirmar) {
+		this.minutosConfirmar = minutosConfirmar;
 	}
 }

@@ -2,6 +2,7 @@ package br.com.live.custom;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,7 +26,7 @@ public class OcupacaoCarteiraCustom {
 		this.metasDoOrcamentoRepository = metasDoOrcamentoRepository;
 	}
 
-	public List<DadosOcupacaoCarteiraPorCanaisVenda> consultarDadosPorCanal(int mes, int ano, String tipoOrcamento, boolean pedidosDisponibilidade, boolean pedidosProgramados, boolean pedidosProntaEntrega, String tipoCarteira) {
+	public List<DadosOcupacaoCarteiraPorCanaisVenda> consultarDadosPorCanal(int mes, int ano, String tipoOrcamento, boolean pedidosDisponibilidade, boolean pedidosProgramados, boolean pedidosProntaEntrega, String tipoModalidade) {
 		
 		String tipoPedido = "";
 		
@@ -35,11 +36,11 @@ public class OcupacaoCarteiraCustom {
 
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
-		
-		String query = "select dados.canal,  sum(dados.valor) valor, sum(dados.quantidade) quantidade, sum(dados.minutos) minutos,"
-	    + " sum(dados.valor_conf) valorConferir, sum(dados.quantidade_conf) quantidadeConferir, sum(dados.minutos_conf) minutosConferir "
+				
+		String query = "select dados.canal,  nvl(sum(dados.valor),0) valor, nvl(sum(dados.quantidade),0) quantidade, nvl(sum(dados.minutos),0) minutos,"
+	    + " nvl(sum(dados.valor_conf),0) valorConferir, nvl(sum(dados.quantidade_conf),0) quantidadeConferir, nvl(sum(dados.minutos_conf),0) minutosConferir "
 	    + " from ( "
-	    + " select canais.canal, sum(canais.valor) valor, sum(canais.quantidade) quantidade, sum(canais.qtde_minutos) minutos, "
+	    + " select canais.canal, nvl(sum(canais.valor),0) valor, nvl(sum(canais.quantidade),0) quantidade, nvl(sum(canais.qtde_minutos),0) minutos, "
 	    + " 0 valor_conf, 0 quantidade_conf, 0 minutos_conf "
 	    + " from ( "
 	    + " select pedidos.pedido_venda, pedidos.canal, pedidos.qtde_itens quantidade, "
@@ -67,9 +68,10 @@ public class OcupacaoCarteiraCustom {
 	    + " ) qtde_minutos "
 	    + " from pedi_100 a, pedi_010 b, pedi_085 c "
 	    + " where a.cod_cancelamento = 0 "
-	    + " and a.data_emis_venda between ? and ? "; 
+	    + " and a.data_entr_venda between ? and ? "; 
 	    	    
-	    if (pedidosDisponibilidade) query += " and a.classificacao_pedido = 4 "; 
+		if ((!pedidosProgramados)&(!pedidosProntaEntrega)&(pedidosDisponibilidade))
+	    	query += " and a.classificacao_pedido = 4 "; 
 			    
 	    query += " and a.tipo_pedido in (" + tipoPedido + ")"	    
 	    + " and b.cgc_9 = a.cli_ped_cgc_cli9 "
@@ -87,7 +89,7 @@ public class OcupacaoCarteiraCustom {
 		+ " UNION "
 
 		+ " select canais.canal, 0 valor, 0 quantidade, 0 minutos, "
-	    + " sum(canais.valor) valor_conf, sum(canais.quantidade) quantidade_conf, sum(canais.qtde_minutos) minutos_conf "
+	    + " nvl(sum(canais.valor),0) valor_conf, nvl(sum(canais.quantidade),0) quantidade_conf, nvl(sum(canais.qtde_minutos),0) minutos_conf "
 	    + " from ( "
 	    + " select pedidos.pedido_venda, pedidos.canal, pedidos.qtde_itens quantidade, "
 	    + " pedidos.valor_itens - (pedidos.valor_itens * (pedidos.percentual_desconto / 100)) valor, "
@@ -110,7 +112,7 @@ public class OcupacaoCarteiraCustom {
 	    + " WHERE z.pedido_venda = a.pedido_venda " 
 	    + " ) qtde_minutos "
 	    + " from inte_100 a, pedi_010 b, pedi_085 c "
-	    + " where a.data_emis_venda between ? and ? " 
+	    + " where a.data_entrega between ? and ? " 
 	    + " and a.tipo_pedido in (" + tipoPedido + ")" 
 	    + " and b.cgc_9 = a.cliente9 "
 	    + " and b.cgc_4 = a.cliente4 "
@@ -127,13 +129,13 @@ public class OcupacaoCarteiraCustom {
 	    + " group by dados.canal "
 	    + " order by dados.canal ";
 	    
-	    List<DadosOcupacaoCarteiraPorCanaisVenda> dadosPorCanais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosOcupacaoCarteiraPorCanaisVenda.class), ESTAGIO_MINUTOS, dataInicio, dataFim, ano, tipoCarteira, ESTAGIO_MINUTOS, dataInicio, dataFim, ano, tipoCarteira); 
-	    atualizarValoresOrcados(tipoOrcamento, mes, ano, dadosPorCanais);
+	    List<DadosOcupacaoCarteiraPorCanaisVenda> dadosPorCanais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosOcupacaoCarteiraPorCanaisVenda.class), ESTAGIO_MINUTOS, dataInicio, dataFim, ano, tipoModalidade, ESTAGIO_MINUTOS, dataInicio, dataFim, ano, tipoModalidade); 
+	    atualizarValoresOrcados(tipoModalidade, tipoOrcamento, mes, ano, dadosPorCanais);
 	    
 	    return dadosPorCanais; 
 	}	
 	
-	private void atualizarValoresOrcados (String tipoOrcamento, int mes, int ano, List<DadosOcupacaoCarteiraPorCanaisVenda> dadosPorCanais) {
+	private void atualizarValoresOrcados (String tipoModalidade, String tipoOrcamento, int mes, int ano, List<DadosOcupacaoCarteiraPorCanaisVenda> dadosPorCanais) {
 	    int tipoMetaParaValor = tipoOrcamento.equalsIgnoreCase("ORCADO") ? 2 : 3; 
 	    int tipoMetaParaQtdes = 4;
 	    int tipoMetaParaMinutos = 5;
@@ -141,11 +143,20 @@ public class OcupacaoCarteiraCustom {
 	    double quantidadeOrcado = 0;
 	    double minutosOrcado = 0;
 
+	    // insere na lista as modalidades que possuem orçamento mas que não foram encontradas nos pedidos.
+	    List<MetasDoOrcamento> metasCadastradas = metasDoOrcamentoRepository.findByAnoAndTipoMetaAndModalidade(ano, 2, tipoModalidade);
+	    for (MetasDoOrcamento meta : metasCadastradas) {	    	
+	    	Stream<DadosOcupacaoCarteiraPorCanaisVenda> filtro = dadosPorCanais.stream().filter(s -> s.getCanal().equalsIgnoreCase(meta.descricao));
+	    	if (filtro.count() == 0) {	    			    		
+	    		dadosPorCanais.add(new DadosOcupacaoCarteiraPorCanaisVenda(meta.descricao, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+	    	}	    	
+	    }
+	    
+	    // percorre a lista de canais e atualiza os valores orçados
 		for (DadosOcupacaoCarteiraPorCanaisVenda dadosCanal : dadosPorCanais) {
 	    	MetasDoOrcamento metaValor = metasDoOrcamentoRepository.findByDescricaoAndAnoAndTipoMeta(dadosCanal.getCanal(), ano, tipoMetaParaValor);
 	    	MetasDoOrcamento metaQuantidade = metasDoOrcamentoRepository.findByDescricaoAndAnoAndTipoMeta(dadosCanal.getCanal(), ano, tipoMetaParaQtdes);
-	    	MetasDoOrcamento metaMinutos = metasDoOrcamentoRepository.findByDescricaoAndAnoAndTipoMeta(dadosCanal.getCanal(), ano, tipoMetaParaMinutos);
-	    	
+	    	MetasDoOrcamento metaMinutos = metasDoOrcamentoRepository.findByDescricaoAndAnoAndTipoMeta(dadosCanal.getCanal(), ano, tipoMetaParaMinutos);	    	
 	    	if (mes == FormataData.JANEIRO) {
 	    	    valorOrcado = metaValor.valorMes1;
 	    	    quantidadeOrcado = metaQuantidade.valorMes1;

@@ -13,6 +13,8 @@ public class DadosOcupacaoCarteiraPorCanaisVenda {
 	private double valorOrcado;
 	private double minutosOrcado;
 	
+	public DadosOcupacaoCarteiraPorCanaisVenda() {}
+	
 	public DadosOcupacaoCarteiraPorCanaisVenda(String canal, int quantidade, double valor, double minutos,
 			int quantidadeConfirmar, double valorConfirmar, double minutosConfirmar, double quantidadeOrcado,
 			double valorOrcado, double minutosOrcado) {
