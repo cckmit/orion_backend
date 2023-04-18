@@ -65,7 +65,7 @@ public class SugestaoColetaCustom {
             query += " and a.trans_pv_forne9 || a.trans_pv_forne4 || a.trans_pv_forne2 in (" + ConteudoChaveAlfaNum.parseValueToString(transportadora) + ") ";
         }
 
-        query += " group by a.pedido_venda ";
+        query += " group by a.pedido_venda, a.data_emis_venda ";
 
         try {
             dadosColeta = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(SugestaoColeta.class));
