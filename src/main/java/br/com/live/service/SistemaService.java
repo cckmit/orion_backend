@@ -15,14 +15,16 @@ public class SistemaService {
         this.sistemaRepository = sistemaRepository;
     }
 
-    public void saveSistema(int id, String nomeSistema, String objetivo, String bancoDeDados, String tipo, String fornecedor, String cnpj, String endereco, String formaPagto, boolean temContrato, byte[] contrato, String ambiente, int usuariosAtivos, int capacidadeUsuarios) {
+    public void saveSistema(int id, String nomeSistema, String objetivo, String bancoDeDados, String tipo, String fornecedor, String cnpj, String endereco, String formaPagto, 
+    		boolean temContrato, byte[] contrato, String ambiente, String status, int usuariosAtivos, int capacidadeUsuarios) {
 
         Sistema sistema = null;
 
         sistema = sistemaRepository.findById(id);
 
         if (sistema == null) {
-            sistema = new Sistema(sistemaRepository.findNextId(), nomeSistema, objetivo, bancoDeDados, tipo, fornecedor, cnpj, endereco, formaPagto, temContrato, contrato, ambiente, usuariosAtivos, capacidadeUsuarios);
+            sistema = new Sistema(sistemaRepository.findNextId(), nomeSistema, objetivo, bancoDeDados, tipo, fornecedor, cnpj, endereco, formaPagto, temContrato, 
+            		contrato, ambiente, status, usuariosAtivos, capacidadeUsuarios);
         } else {
             sistema.nomeSistema = nomeSistema;
             sistema.objetivo = objetivo;
@@ -35,6 +37,7 @@ public class SistemaService {
             sistema.temContrato = temContrato;
             sistema.contrato = contrato;
             sistema.ambiente = ambiente;
+            sistema.status = status;
             sistema.usuariosAtivos = usuariosAtivos;
             sistema.capacidadeUsuarios = capacidadeUsuarios;
         }

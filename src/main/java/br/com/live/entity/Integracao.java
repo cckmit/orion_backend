@@ -30,11 +30,13 @@ public class Integracao {
     public int sistemaDestino;
 
     public int servidor;
+    public String status;
     public String fornecedor;
     public String cnpj;
     public String endereco;
 
-    public Integracao(int id, String nomeIntegracao, String objetivo, String tipoIntegracao, String tipoConexao, int sistemaOrigem, int sistemaDestino, int servidor, String fornecedor, String cnpj, String endereco) {
+    public Integracao(int id, String nomeIntegracao, String objetivo, String tipoIntegracao, String tipoConexao, int sistemaOrigem, int sistemaDestino, int servidor,
+    		String status, String fornecedor, String cnpj, String endereco) {
         this.id = id;
         this.nomeIntegracao = nomeIntegracao;
         this.objetivo = objetivo;
@@ -43,6 +45,7 @@ public class Integracao {
         this.sistemaOrigem = sistemaOrigem;
         this.sistemaDestino = sistemaDestino;
         this.servidor = servidor;
+        this.status = status; 
         this.fornecedor = fornecedor;
         this.cnpj = cnpj;
         this.endereco = endereco;
@@ -116,7 +119,15 @@ public class Integracao {
         this.servidor = servidor;
     }
 
-    public String getFornecedor() {
+    public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getFornecedor() {
         return fornecedor;
     }
 

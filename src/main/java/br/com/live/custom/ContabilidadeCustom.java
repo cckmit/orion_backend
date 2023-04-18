@@ -144,17 +144,6 @@ public class ContabilidadeCustom {
 		return contaContabil;
 	}
 	
-	public int findMatriz(int codFilial) {
-		
-		int codMatriz = 0;
-		
-		String query = " SELECT a.codigo_matriz FROM fatu_500 a WHERE a.codigo_empresa = ? ";
-		
-		codMatriz = jdbcTemplate.queryForObject(query, Integer.class, codFilial);
-		
-		return codMatriz;
-	}
-	
 	public int findSubConta(int contaRezuzida) {
 		
 		int subConta = 0;
@@ -323,12 +312,25 @@ public class ContabilidadeCustom {
 	
 	public List<ConsultaLanctoContabeis> findEmpresaExercicioPorUsuario(String usuario){
 		
-		String query = " SELECT DADOS.MATRIZ FROM(SELECT "
-				+ "      (SELECT b.codigo_matriz FROM fatu_500 b WHERE b.codigo_empresa = a.filial_lancto) matriz "
-				+ "      FROM orion_cnt_010 a "
-				+ "      WHERE a.usuario = '" + usuario + "') DADOS "
-				+ "      GROUP BY DADOS.MATRIZ ";
-
+		String query = " SELECT b.codigo_matriz codEmpresa, "
+				+ "       a.exercicio exercicio "
+				+ "       FROM fatu_500 b, orion_cnt_010 a "
+				+ "       WHERE a.filial_lancto = b.codigo_empresa "
+				+ "       AND a.usuario = '" + usuario + "'"
+				+ "       GROUP BY b.codigo_matriz, a.exercicio ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));		
+	}
+	
+	public List<ConsultaLanctoContabeis> findFiliaisPorEmpresaUsuario(String usuario, int codEmpresa){
+		
+		String query = " SELECT b.codigo_matriz matriz, "
+				+ "       b.codigo_empresa filialLancto "
+				+ "       FROM fatu_500 b, orion_cnt_010 a "
+				+ "       WHERE a.filial_lancto = b.codigo_empresa "
+				+ "       AND a.usuario = '" + usuario + "'"
+				+ "       GROUP BY b.codigo_matriz, b.codigo_empresa ";
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));		
 	}
 	
@@ -356,10 +358,8 @@ public class ContabilidadeCustom {
 				+ "		WHERE a.usuario = '" + usuario + "'"
 				+ "		AND a.filial_lancto = " + filialLancto
 				+ "		AND a.exercicio =  " + exercicio;
-		System.out.println(query);
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));		
-
 		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));			
 	}
 
 }
