@@ -20,6 +20,9 @@ public class InspecaoQualidadeLanctoPeca {
 	
 	@Column(name = "cod_motivo")
 	public int codMotivo;
+	
+	@Column(name = "cod_estagio_defeito")	
+	public int codEstagioDefeito;
 		
 	public int quantidade;	
 	
