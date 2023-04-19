@@ -35,7 +35,8 @@ public class IntegracaoController {
 
     @RequestMapping(value = "/save-integracao", method = RequestMethod.POST)
     public void saveIntegracao(@RequestBody Integracao integracao) {
-        integracaoService.saveIntegracao(integracao.id, integracao.nomeIntegracao, integracao.objetivo, integracao.tipoIntegracao, integracao.tipoConexao, integracao.sistemaOrigem, integracao.sistemaDestino, integracao.servidor, integracao.fornecedor, integracao.cnpj, integracao.endereco);
+        integracaoService.saveIntegracao(integracao.id, integracao.nomeIntegracao, integracao.objetivo, integracao.tipoIntegracao, integracao.tipoConexao, integracao.sistemaOrigem, 
+        		integracao.sistemaDestino, integracao.servidor, integracao.status, integracao.fornecedor, integracao.cnpj, integracao.endereco);
     }
 
     @RequestMapping(value = "/delete-integracao-by-id/{id}", method = RequestMethod.DELETE)

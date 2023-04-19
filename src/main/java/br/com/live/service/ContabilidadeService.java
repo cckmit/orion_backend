@@ -211,20 +211,22 @@ public class ContabilidadeService {
 		
 		try {
 			for (ConsultaLanctoContabeis lancamento : listEmpresa) {
-				
-				int codMatriz = contabilidadeCustom.findMatriz(lancamento.filialLancto);
-				int numLancto = contabilidadeCustom.findNextNumLancto(codMatriz, lancamento.exercicio);
-				List<ConsultaLanctoContabeis> listDados =  contabilidadeCustom.findByUserFilial(usuario, lancamento.filialLancto, lancamento.exercicio);
-			
-				for (ConsultaLanctoContabeis dados : listDados) {
+				int numLancto = contabilidadeCustom.findNextNumLancto(lancamento.codEmpresa, lancamento.exercicio);
+				List<ConsultaLanctoContabeis> listfiliais =  contabilidadeCustom.findFiliaisPorEmpresaUsuario(usuario, lancamento.codEmpresa);
+				for (ConsultaLanctoContabeis filial : listfiliais) {
 					
-					String contaContabil = contabilidadeCustom.findContaContabByContaRed(dados.contaReduzida);
-					int lote = gerarNumLote(codMatriz, dados.exercicio, dados.origem, dados.dataLancto);
-					contabilidadeCustom.inserirLanctoContabilSystextil(codMatriz, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
-							dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, FormataData.parseStringToDate(dados.dataLancto), dados.complHistor1, 
-							FormataData.parseStringToDate(dados.datainsercao), programa, dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
-					System.out.println(numLancto);
+					List<ConsultaLanctoContabeis> listDados =  contabilidadeCustom.findByUserFilial(usuario, filial.filialLancto, lancamento.exercicio);
 					
+					for (ConsultaLanctoContabeis dados : listDados) {
+						
+						String contaContabil = contabilidadeCustom.findContaContabByContaRed(dados.contaReduzida);
+						int lote = gerarNumLote(lancamento.codEmpresa, dados.exercicio, dados.origem, dados.dataLancto);
+						contabilidadeCustom.inserirLanctoContabilSystextil(lancamento.codEmpresa, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
+								dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, FormataData.parseStringToDate(dados.dataLancto), dados.complHistor1, 
+								FormataData.parseStringToDate(dados.datainsercao), programa, dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
+						System.out.println(numLancto);
+						
+					}
 				}
 			}
 			mensagem = 1;

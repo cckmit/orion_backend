@@ -186,6 +186,7 @@ public class InspecaoQualidadeService {
 		lancamento.id = inspecaoQualidadeCustom.findNextIdLancamentoPeca();
 		lancamento.idInspecao = inspecao.id;
 		lancamento.codMotivo = inspecaoQualidadePecaLancto.codMotivo;
+		lancamento.codEstagioDefeito = inspecaoQualidadePecaLancto.codEstagioDefeito;
 		lancamento.quantidade = inspecaoQualidadePecaLancto.quantidade;
 		lancamento.usuario = inspecaoQualidadePecaLancto.usuario;
 		lancamento.revisorOrigem = inspecaoQualidadePecaLancto.revisorOrigem;
