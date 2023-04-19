@@ -156,6 +156,20 @@ public class ExpedicaoCustom {
 		return enderecoCorreto;
 	}
 
+	public int verificarPecasNoEndereco(String endereco) {
+		int quantEndereco = 0;
+
+		String query = " select count(*) from estq_110 a " +
+				" where a.endereco = '" + endereco + "'" +
+				" and a.deposito = 4 ";
+		try {
+			quantEndereco = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			quantEndereco = 0;
+		}
+		return quantEndereco;
+	}
+
 	public String validarGravacaoEndereco(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
 		String endereco = "";
 
@@ -218,7 +232,7 @@ public class ExpedicaoCustom {
 
 		return temProduto;
 	}
-
+	@Deprecated
 	public void cleanEnderecos(int deposito) {
 		String query = " delete from estq_110 "
 				+ " where estq_110.deposito = ?";

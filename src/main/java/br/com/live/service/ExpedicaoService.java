@@ -83,6 +83,7 @@ public class ExpedicaoService {
 		String existeEndereco = "";
 		List<DadosTagProd> listTags = new ArrayList<DadosTagProd>();
 		int enderecoCorreto = 0;
+		int quantPecas = 0;
 		int quantEnderecosParaPeca = 0;
 		
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
@@ -130,26 +131,18 @@ public class ExpedicaoService {
 			}
 			
 			if (retornaListaLetraNumero(endereco.substring(0, 1)) < 6) {
-				quantEnderecosParaPeca = expedicaoCustom.validarSeExistemEnderecosParaTag(periodo, ordem, pacote, sequencia);
 				enderecoCorreto = expedicaoCustom.validarEnderecoCorreto(periodo, ordem, pacote, sequencia, endereco);
-				if (enderecoCorreto != 1 && quantEnderecosParaPeca > 0) {
+				quantPecas = expedicaoCustom.verificarPecasNoEndereco(endereco);
+
+				if (enderecoCorreto != 1 && quantPecas > 0) {
 					msgErro = "Este TAG não pertence ao endereço informado!";
 				}
 			}
 
 			if (msgErro.equals("")) {
-				
-				String block = endereco.substring(0, 1);
-				
-				if (retornaListaLetraNumero(block) >= 6) {
-					expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
-					insertProductInEstq110(periodo, ordem, pacote, sequencia, endereco);
-					expedicaoCustom.limparTagLidoCaixa(numeroTag);
-				} else {
-					expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
-					insertProductInEstq110(periodo, ordem, pacote, sequencia, endereco);
-					expedicaoCustom.limparTagLidoCaixa(numeroTag);
-				}
+				expedicaoCustom.gravarEnderecos(periodo, ordem, pacote, sequencia, endereco, dadosUsuario.usuarioSystextil);
+				insertProductInEstq110(periodo, ordem, pacote, sequencia, endereco);
+				expedicaoCustom.limparTagLidoCaixa(numeroTag);
 			}
 		}
 
