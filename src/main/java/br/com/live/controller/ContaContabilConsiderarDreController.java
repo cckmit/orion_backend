@@ -4,6 +4,7 @@ import br.com.live.custom.ContaContabilConsiderarDreCustom;
 import br.com.live.entity.ContaContabilConsiderarDreEntity;
 import br.com.live.model.ConsultaContaContabilConsiderarDre;
 import br.com.live.repository.ContaContabilConsiderarDreRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class ContaContabilConsiderarDreController {
     ContaContabilConsiderarDreRepository contaContabilConsiderarDreRepository;
     ContaContabilConsiderarDreCustom contaContabilConsiderarDreCustom;
 
+    @Autowired
     public ContaContabilConsiderarDreController(ContaContabilConsiderarDreRepository contaContabilConsiderarDreRepository, ContaContabilConsiderarDreCustom contaContabilConsiderarDreCustom) {
         this.contaContabilConsiderarDreRepository = contaContabilConsiderarDreRepository;
         this.contaContabilConsiderarDreCustom = contaContabilConsiderarDreCustom;

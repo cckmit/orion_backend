@@ -27,8 +27,10 @@ public class Servidor {
     public String processador;
     public String aplicacoes;
     public byte[] documentacao;
+    public String status;
 
-    public Servidor(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional, String ip, String hd, String memoria, String processador, String aplicacoes, byte[] documentacao) {
+    public Servidor(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional, String ip, String hd, String memoria, String processador, 
+    		String aplicacoes, byte[] documentacao, String status) {
         this.id = id;
         this.nomeServidor = nomeServidor;
         this.maquinaFisica = maquinaFisica;
@@ -39,6 +41,7 @@ public class Servidor {
         this.processador = processador;
         this.aplicacoes = aplicacoes;
         this.documentacao = documentacao;
+        this.status = status;
     }
     public Servidor(){
     }
@@ -122,4 +125,13 @@ public class Servidor {
     public void setDocumentacao(byte[] documentacao) {
         this.documentacao = documentacao;
     }
+    
+	public String getStatus() {
+		return status;
+	}
+	
+	public void setStatus(String status) {
+		this.status = status;
+	}
+    
 }

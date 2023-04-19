@@ -33,6 +33,7 @@ public class Sistema {
 
     public byte[] contrato;
     public String ambiente;
+    public String status;
 
     @Column(name = "usuarios_ativos")
     public int usuariosAtivos;
@@ -40,7 +41,8 @@ public class Sistema {
     @Column(name = "capacidade_usuarios")
     public int capacidadeUsuarios;
 
-    public Sistema(int id, String nomeSistema, String objetivo, String bancoDeDados, String tipo, String fornecedor, String cnpj, String endereco, String formaPagto, boolean temContrato, byte[] contrato, String ambiente, int usuariosAtivos, int capacidadeUsuarios) {
+    public Sistema(int id, String nomeSistema, String objetivo, String bancoDeDados, String tipo, String fornecedor, String cnpj, String endereco, String formaPagto, 
+    		boolean temContrato, byte[] contrato, String ambiente, String status, int usuariosAtivos, int capacidadeUsuarios) {
         this.id = id;
         this.nomeSistema = nomeSistema;
         this.objetivo = objetivo;
@@ -53,6 +55,7 @@ public class Sistema {
         this.temContrato = temContrato;
         this.contrato = contrato;
         this.ambiente = ambiente;
+        this.status = status;
         this.usuariosAtivos = usuariosAtivos;
         this.capacidadeUsuarios = capacidadeUsuarios;
     }
@@ -157,7 +160,15 @@ public class Sistema {
         this.ambiente = ambiente;
     }
 
-    public int getUsuariosAtivos() {
+    public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public int getUsuariosAtivos() {
         return usuariosAtivos;
     }
 

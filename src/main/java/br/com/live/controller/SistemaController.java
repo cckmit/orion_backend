@@ -34,7 +34,8 @@ public class SistemaController {
 
     @RequestMapping(value = "/save-sistema", method = RequestMethod.POST)
     public void saveSistema(@RequestBody Sistema sistema) {
-        sistemaService.saveSistema(sistema.id, sistema.nomeSistema, sistema.objetivo, sistema.bancoDeDados, sistema.tipo, sistema.fornecedor, sistema.cnpj, sistema.endereco, sistema.formaPagto, sistema.temContrato, sistema.contrato, sistema.ambiente, sistema.usuariosAtivos, sistema.capacidadeUsuarios);
+        sistemaService.saveSistema(sistema.id, sistema.nomeSistema, sistema.objetivo, sistema.bancoDeDados, sistema.tipo, sistema.fornecedor, sistema.cnpj, sistema.endereco, 
+        		sistema.formaPagto, sistema.temContrato, sistema.contrato, sistema.ambiente, sistema.status, sistema.usuariosAtivos, sistema.capacidadeUsuarios);
     }
 
     @RequestMapping(value = "/delete-sistema-by-id/{id}", method = RequestMethod.DELETE)

@@ -275,7 +275,7 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (91, 'Orçamento das Lojas - DRE', 'Financeiro', '/orcamento-loja-dre');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (92, 'Geração de DRE para Lojas', 'Financeiro', '/gera-dre-loja');
+values (92, 'Geração da DRE para as Lojas', 'Financeiro', '/gera-dre-loja');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (93, 'Consultar DRE das Lojas', 'Financeiro', '/consulta-dre-loja');
