@@ -1,9 +1,14 @@
 package br.com.live.controller;
 
 import br.com.live.entity.Sistema;
+import br.com.live.model.ConsultaGestaoAtivos;
 import br.com.live.repository.SistemaRepository;
 import br.com.live.service.SistemaService;
+import br.com.live.util.ErrorMessageException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +28,8 @@ public class SistemaController {
     }
 
     @RequestMapping(value = "/find-all-sistemas", method = RequestMethod.GET)
-    public List<Sistema> findAllSistemas() {
-        return sistemaRepository.findAll();
+    public List<ConsultaGestaoAtivos> findAllSistemas() {
+        return sistemaService.findAllSistemas();
     }
 
     @RequestMapping(value = "/find-sistema-by-id/{id}", method = RequestMethod.GET)
@@ -35,12 +40,13 @@ public class SistemaController {
     @RequestMapping(value = "/save-sistema", method = RequestMethod.POST)
     public void saveSistema(@RequestBody Sistema sistema) {
         sistemaService.saveSistema(sistema.id, sistema.nomeSistema, sistema.objetivo, sistema.bancoDeDados, sistema.tipo, sistema.fornecedor, sistema.cnpj, sistema.endereco, 
-        		sistema.formaPagto, sistema.temContrato, sistema.contrato, sistema.ambiente, sistema.status, sistema.usuariosAtivos, sistema.capacidadeUsuarios);
+        		sistema.formaPagto, sistema.temContrato, sistema.contrato, sistema.ambiente, sistema.status, sistema.usuariosAtivos, sistema.capacidadeUsuarios,
+        		sistema.gestorResponsavel);
     }
 
     @RequestMapping(value = "/delete-sistema-by-id/{id}", method = RequestMethod.DELETE)
-    public List<Sistema> deleteSistemaById(@PathVariable("id") int id) {
-        sistemaService.deleteById(id);
-        return sistemaRepository.findAll();
+    public ResponseEntity<List<ConsultaGestaoAtivos>> deleteSistemaById(@PathVariable("id") int id) {
+    	sistemaService.deleteSistemaById(id);   	
+        return new ResponseEntity<> (sistemaService.findAllSistemas(), HttpStatus.OK);
     }
 }

@@ -1,12 +1,12 @@
 package br.com.live.controller;
 
 import br.com.live.entity.Integracao;
+import br.com.live.model.ConsultaGestaoAtivos;
 import br.com.live.repository.IntegracaoRepository;
 import br.com.live.service.IntegracaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -24,8 +24,8 @@ public class IntegracaoController {
     }
 
     @RequestMapping(value = "/find-all-integracoes", method = RequestMethod.GET)
-    public List<Integracao> findAllIntegracao() {
-        return integracaoRepository.findAll();
+    public List<ConsultaGestaoAtivos> findAllIntegracao() {
+        return integracaoService.findAllIntegracoes();
     }
 
     @RequestMapping(value = "/find-integracao-by-id/{id}", method = RequestMethod.GET)
@@ -36,12 +36,12 @@ public class IntegracaoController {
     @RequestMapping(value = "/save-integracao", method = RequestMethod.POST)
     public void saveIntegracao(@RequestBody Integracao integracao) {
         integracaoService.saveIntegracao(integracao.id, integracao.nomeIntegracao, integracao.objetivo, integracao.tipoIntegracao, integracao.tipoConexao, integracao.sistemaOrigem, 
-        		integracao.sistemaDestino, integracao.servidor, integracao.status, integracao.fornecedor, integracao.cnpj, integracao.endereco);
+        		integracao.sistemaDestino, integracao.servidor, integracao.status, integracao.fornecedor, integracao.cnpj, integracao.endereco, integracao.gestorResponsavel);
     }
 
     @RequestMapping(value = "/delete-integracao-by-id/{id}", method = RequestMethod.DELETE)
-    public List<Integracao> deleteIntegracaoById(@PathVariable("id") int id) {
+    public List<ConsultaGestaoAtivos> deleteIntegracaoById(@PathVariable("id") int id) {
         integracaoService.deleteById(id);
-        return integracaoRepository.findAll();
+        return integracaoService.findAllIntegracoes();
     }
 }

@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyExpedicao;
+import br.com.live.body.BodyFinanceiro;
 import br.com.live.custom.FechamentoComissaoCustom;
 import br.com.live.model.ConsultaTitulosComissao;
 import br.com.live.service.FechamentoComissaoService;
@@ -40,35 +43,34 @@ public class FechamentoComissoesController {
         return financeiroService.findAllEstacoes();
     }
 	
-	@RequestMapping(value = "/find-titulos-atrasado-analitico/{mes}/{ano}/{representante}", method = RequestMethod.GET)
-    public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
-        return financeiroService.findTitulosAtrasadosAnalitico(mes, ano, representante);
+	@RequestMapping(value = "/find-titulos-atrasado-analitico", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findTitulosAtrasadosAnalitico(body.mes, body.ano, body.listRepresentante);
     }
 	
-	@RequestMapping(value = "/find-titulos-atrasado-sintetico/{mes}/{ano}/{representante}", method = RequestMethod.GET)
-    public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
-        return financeiroService.findTitulosAtrasadosSintetico(mes, ano, representante);
+	@RequestMapping(value = "/find-titulos-atrasado-sintetico", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findTitulosAtrasadosSintetico(body.mes, body.ano, body.listRepresentante);
     }
 	
-	@RequestMapping(value = "/find-lancamentos-faturamento/{mes}/{ano}/{representante}", method = RequestMethod.GET)
-    public List<ConsultaTitulosComissao> findLancamentosFaturamento(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
-        return financeiroService.findLancamentosFaturamento(mes, ano, representante);
+	@RequestMapping(value = "/find-lancamentos-faturamento", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findLancamentosFaturamento(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findLancamentosFaturamento(body.mes, body.ano, body.listRepresentante);
     }
 	
-	@RequestMapping(value = "/find-lancamentos-baixa-titulos/{mes}/{ano}/{representante}", method = RequestMethod.GET)
-    public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
-        return financeiroService.findLancamentosBaixaTitulos(mes, ano, representante);
+	@RequestMapping(value = "/find-lancamentos-baixa-titulos", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findLancamentosBaixaTitulos(body.mes, body.ano, body.listRepresentante);
     }
 	
-	@RequestMapping(value = "/find-bonus/{mes}/{ano}/{representante}/{estacao}", method = RequestMethod.GET)
-    public List<ConsultaTitulosComissao> findBonusPorRepresentante(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante, 
-    		@PathVariable("estacao") String estacao) {
-        return financeiroService.findBonusPorRepresentante(mes, ano, representante, estacao);
+	@RequestMapping(value = "/find-bonus", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findBonusPorRepresentante(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findBonusPorRepresentante(body.mes, body.ano, body.listRepresentante, body.estacao);
     }
 	
-	@RequestMapping(value = "/find-devolucao/{mes}/{ano}/{representante}", method = RequestMethod.GET)
-    public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(@PathVariable("mes") int mes, @PathVariable("ano") int ano, @PathVariable("representante") String representante) {
-        return financeiroService.findDevolucaoPorRepresentante(mes, ano, representante);
+	@RequestMapping(value = "/find-devolucao", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findDevolucaoPorRepresentante(body.mes, body.ano, body.listRepresentante);
     }
 
 }

@@ -40,9 +40,12 @@ public class Sistema {
 
     @Column(name = "capacidade_usuarios")
     public int capacidadeUsuarios;
+    
+    @Column(name = "gestor_responsavel")
+    public int gestorResponsavel;
 
     public Sistema(int id, String nomeSistema, String objetivo, String bancoDeDados, String tipo, String fornecedor, String cnpj, String endereco, String formaPagto, 
-    		boolean temContrato, byte[] contrato, String ambiente, String status, int usuariosAtivos, int capacidadeUsuarios) {
+    		boolean temContrato, byte[] contrato, String ambiente, String status, int usuariosAtivos, int capacidadeUsuarios, int gestorResponsavel) {
         this.id = id;
         this.nomeSistema = nomeSistema;
         this.objetivo = objetivo;
@@ -58,6 +61,7 @@ public class Sistema {
         this.status = status;
         this.usuariosAtivos = usuariosAtivos;
         this.capacidadeUsuarios = capacidadeUsuarios;
+        this.gestorResponsavel = gestorResponsavel;
     }
 
     public Sistema(){
@@ -183,4 +187,13 @@ public class Sistema {
     public void setCapacidadeUsuarios(int capacidadeUsuarios) {
         this.capacidadeUsuarios = capacidadeUsuarios;
     }
+
+	public int getGestorResponsavel() {
+		return gestorResponsavel;
+	}
+
+	public void setGestorResponsavel(int gestorResponsavel) {
+		this.gestorResponsavel = gestorResponsavel;
+	}
+    
 }

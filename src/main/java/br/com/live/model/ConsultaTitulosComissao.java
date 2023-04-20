@@ -1,5 +1,9 @@
 package br.com.live.model;
 
+import java.util.List;
+
+import br.com.live.util.ConteudoChaveNumerica;
+
 public class ConsultaTitulosComissao {
 	
 	
@@ -43,6 +47,7 @@ public class ConsultaTitulosComissao {
 	public int nfDevolucao;
 	public float valorNf;
 	public String motivo;
+	public List<ConteudoChaveNumerica> listRepresentante;
 	
 	public int getPortador() {
 		return portador;

@@ -24,14 +24,17 @@ public class Servico {
 
     @Column(name = "tecnicos_fornecedores")
     public String tecnicosFornecedores;
+    
+    public int gestorResponsavel;
 
-    public Servico(int id, String nomeServico, String objetivo, String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores) {
+    public Servico(int id, String nomeServico, String objetivo, String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, int gestorResponsavel) {
         this.id = id;
         this.nomeServico = nomeServico;
         this.objetivo = objetivo;
         this.timeResponsavel = timeResponsavel;
         this.disponibilidade = disponibilidade;
         this.tecnicosFornecedores = tecnicosFornecedores;
+        this.gestorResponsavel = gestorResponsavel;
     }
 
     public Servico(){
@@ -84,4 +87,13 @@ public class Servico {
     public void setTecnicosFornecedores(String tecnicosFornecedores) {
         this.tecnicosFornecedores = tecnicosFornecedores;
     }
+
+	public int getGestorResponsavel() {
+		return gestorResponsavel;
+	}
+
+	public void setGestorResponsavel(int gestorResponsavel) {
+		this.gestorResponsavel = gestorResponsavel;
+	}
+    
 }
