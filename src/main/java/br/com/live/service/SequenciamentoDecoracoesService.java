@@ -20,7 +20,7 @@ import br.com.live.model.OrdemConfeccao;
 import br.com.live.model.OrdemProducao;
 import br.com.live.model.OrdemProducaoEstagios;
 import br.com.live.model.SugestaoReservaPorOrdemMaterial;
-import br.com.live.util.MessageErrorException;
+import br.com.live.util.ErrorMessageException;
 
 @Service
 @Transactional
@@ -219,7 +219,7 @@ public class SequenciamentoDecoracoesService {
 			sequencia ++;
 			System.out.println("OP: " + ordem.getOrdemProducao() + " Próxima seq: " + sequencia);
 			if (ordem.getConfirmado()==1)
-				throw new MessageErrorException("Existem ordens confirmadas para o estágio!");
+				throw new ErrorMessageException("Existem ordens confirmadas para o estágio!");
 			
 			// deve sequenciar apenas as ordens do estágio marcado para sequenciar
 			if (ordem.getCodEstagioProx() != codEstagioSequenciar)
@@ -241,9 +241,9 @@ public class SequenciamentoDecoracoesService {
 		System.out.println("confirmarSequenciamento");		
 		for (DadosSequenciamentoDecoracoes ordem : ordens) {			
 			if (ordem.getConfirmado() == SequenciamentoDecoracoesCustom.ORDEM_CONFIRMADA)
-				throw new MessageErrorException("Existem ordens confirmadas para o estágio!");		
+				throw new ErrorMessageException("Existem ordens confirmadas para o estágio!");		
 			if (ordem.getDataInicio() == null)
-				throw new MessageErrorException("Existem ordens sem as datas de inicio e fim calculadas! Calcule primeiro antes de confirmar o sequenciamento!");
+				throw new ErrorMessageException("Existem ordens sem as datas de inicio e fim calculadas! Calcule primeiro antes de confirmar o sequenciamento!");
 			System.out.println("Ordem: " + ordem.getOrdemProducao());
 			sequenciamentoDecoracoesCustom.saveSequenciamento(ordem.getId(), SequenciamentoDecoracoesCustom.ORDEM_CONFIRMADA);
 		}
@@ -254,14 +254,14 @@ public class SequenciamentoDecoracoesService {
 				.findSequenciamentoDecoracoesById(id);
 		// não permitir remover ordens confirmadas		
 		if (ordemSequenciada.getConfirmado() == SequenciamentoDecoracoesCustom.ORDEM_CONFIRMADA)
-			throw new MessageErrorException("Ordem de produção confirmada para o estágio!");		
+			throw new ErrorMessageException("Ordem de produção confirmada para o estágio!");		
 		// não permitir remover ordens com o estágio de distribuição baixado
 		
 		System.out.println("ORDEM: " + ordemSequenciada.getOrdemProducao() + " - EST: " + ordemSequenciada.getCodEstagioProx());
 		System.out.println("RETORNO: " + sequenciamentoDecoracoesCustom.estagioDistribuicaoEmAberto(ordemSequenciada.getOrdemProducao(),ordemSequenciada.getCodEstagioProx()));
 		
 		if (!sequenciamentoDecoracoesCustom.estagioDistribuicaoEmAberto(ordemSequenciada.getOrdemProducao(),ordemSequenciada.getCodEstagioProx()))
-			throw new MessageErrorException("Ordem de produção não possui estágio de distribuição em aberto!");		
+			throw new ErrorMessageException("Ordem de produção não possui estágio de distribuição em aberto!");		
 		sequenciamentoDecoracoesCustom.deleteOrdemProducao(id);
 	}	
 }
