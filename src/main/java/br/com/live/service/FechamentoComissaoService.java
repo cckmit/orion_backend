@@ -22,31 +22,31 @@ public class FechamentoComissaoService {
 		this.financeiroCustom = financeiroCustom;
 	}
 	
-	public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(int mes, int ano, String representante){
+	public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);		
-		return financeiroCustom.findTitulosAtrasadosAnalitico(dataInicio, representante);
+		return financeiroCustom.findTitulosAtrasadosAnalitico(dataInicio, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findLancamentosFaturamento(int mes, int ano, String representante){
+	public List<ConsultaTitulosComissao> findLancamentosFaturamento(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
 		};
-		return financeiroCustom.findLancamentosFaturamento(mesComZero, ano, representante);
+		return financeiroCustom.findLancamentosFaturamento(mesComZero, ano, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(int mes, int ano, String representante){
+	public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
 		};
-		return financeiroCustom.findLancamentosBaixaTitulos(mesComZero, ano, representante);
+		return financeiroCustom.findLancamentosBaixaTitulos(mesComZero, ano, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(int mes, int ano, String representante){
+	public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);
 		String dataAnterior = findMesAnteriorDatInicio(dataInicio);
-		return financeiroCustom.findTitulosAtrasadosSintetico(dataInicio,  dataAnterior, representante);	
+		return financeiroCustom.findTitulosAtrasadosSintetico(dataInicio,  dataAnterior, listRepresentante);	
 	}
 	
 	public String findMesAnteriorDatInicio(String dataInicio) {
@@ -114,7 +114,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findAllEstacoes();
 	}
 	
-	public List<ConsultaTitulosComissao> findBonusPorRepresentante(int mes, int ano, String representante, String estacao){
+	public List<ConsultaTitulosComissao> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
 		
 		float totalFaturado = 0;
 		float valorProporcional = 0;
@@ -122,28 +122,28 @@ public class FechamentoComissaoService {
 		if (mes < 10) {
 			mesComZero = "0" + mes;
 		};
-		float metaFitness = financeiroCustom.findMetaPorRespresentanteFitness(representante, mesComZero, ano); // Buscando a Meta do Representante pra coleção na linha Fitness
-		float metaBeach = financeiroCustom.findMetaPorRespresentanteBeach(representante, mesComZero, ano); // Buscando a Meta do Representante pra coleção na linha Beach
+		float metaFitness = financeiroCustom.findMetaPorRespresentanteFitness(listRepresentante, mesComZero, ano); // Buscando a Meta do Representante pra coleção na linha Fitness
+		float metaBeach = financeiroCustom.findMetaPorRespresentanteBeach(listRepresentante, mesComZero, ano); // Buscando a Meta do Representante pra coleção na linha Beach
 		// Descobrindo a porcentagem de cada meta representa na meta total
 		float totalMeta = metaFitness + metaBeach;
 		float porcLinhaFitness = (metaFitness * 100) / totalMeta;
 		float porcLinhaBeach = 100 - porcLinhaFitness;
 		//  ------------------------------------------------
-		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, representante);
-		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, representante);
+		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, listRepresentante);
+		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, listRepresentante);
 		
 		if(percAtingidoFitness >= 100) {
-			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, listRepresentante);
 			valorProporcional = totalFaturado * (percAtingidoFitness / 100);
 		} if(percAtingidoBeach >= 100) {
-			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, listRepresentante);
 			valorProporcional = totalFaturado * (percAtingidoBeach / 100);
 		} if(percAtingidoFitness >= 100 && percAtingidoBeach >= 100) {
-			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, representante);
+			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, listRepresentante);
 			valorProporcional = totalFaturado;
 		}
-		List<ConteudoChaveAlfaNum> listEstados = financeiroCustom.findUf(representante);
-		List<ConteudoChaveAlfaNum> listSubRegiao = financeiroCustom.findSubRegiao(representante);
+		List<ConteudoChaveAlfaNum> listEstados = financeiroCustom.findUf(listRepresentante);
+		List<ConteudoChaveAlfaNum> listSubRegiao = financeiroCustom.findSubRegiao(listRepresentante);
 		
 		String estado = ConteudoChaveAlfaNum.parseValueToString(listEstados).replace(",", " /");
 		estado = estado.replace("'", "");
@@ -151,16 +151,16 @@ public class FechamentoComissaoService {
 		String regiao = ConteudoChaveAlfaNum.parseValueToString(listSubRegiao).replace(",", " /");
 		regiao = regiao.replace("'", "");
 		
-		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, representante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, 
+		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, listRepresentante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, 
 				percAtingidoBeach, valorProporcional, estado, regiao, metaFitness, metaBeach);
 	}
 	
-	public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(int mes, int ano, String representante){
+	public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
 		};
-		return financeiroCustom.findDevolucoes(mesComZero, ano, representante);
+		return financeiroCustom.findDevolucoes(mesComZero, ano, listRepresentante);
 	}
 }

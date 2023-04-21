@@ -1,7 +1,12 @@
 package br.com.live.service;
 
+import br.com.live.custom.GestaoAtivosCustom;
 import br.com.live.entity.Integracao;
+import br.com.live.model.ConsultaGestaoAtivos;
 import br.com.live.repository.IntegracaoRepository;
+
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,11 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class IntegracaoService {
 
     private IntegracaoRepository integracaoRepository;
+    private GestaoAtivosCustom gestaoAtivosCustom;
 
-    public IntegracaoService(IntegracaoRepository integracaoRepository) { this.integracaoRepository = integracaoRepository; }
+    public IntegracaoService(IntegracaoRepository integracaoRepository, GestaoAtivosCustom gestaoAtivosCustom) { 
+    	this.integracaoRepository = integracaoRepository; 
+    	this.gestaoAtivosCustom = gestaoAtivosCustom;
+    }
 
+    public List<ConsultaGestaoAtivos> findAllIntegracoes(){
+    	return gestaoAtivosCustom.findAllIntegracoes();
+    }
+    
     public void saveIntegracao(int id, String nomeIntegracao, String objetivo, String tipoIntegracao, String tipoConexao, int sistemaOrigem, int sistemaDestino, int servidor,
-    		String status, String fornecedor, String cnpj, String endereco){
+    		String status, String fornecedor, String cnpj, String endereco, int gestorResponsavel){
 
         Integracao integracao = null;
 
@@ -22,7 +35,7 @@ public class IntegracaoService {
 
         if (integracao == null){
             integracao = new Integracao(integracaoRepository.findNextId(), nomeIntegracao, objetivo, tipoIntegracao, tipoConexao, sistemaOrigem, sistemaDestino, servidor, 
-            		status, fornecedor, cnpj, endereco);
+            		status, fornecedor, cnpj, endereco, gestorResponsavel);
         } else {
             integracao.nomeIntegracao = nomeIntegracao;
             integracao.objetivo = objetivo;

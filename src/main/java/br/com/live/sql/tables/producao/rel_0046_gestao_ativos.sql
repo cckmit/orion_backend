@@ -94,3 +94,12 @@ CREATE TABLE ORION_TI_020 (
     PERGUNTAS_EM_ABERTO VARCHAR(4000),
     RISCOS VARCHAR2(4000)
 );
+
+-- Alterar a Tabela Adicionando a Coluna Gestor Responsavel
+ALTER TABLE orion_ti_001 ADD gestor_responsavel NUMBER(3);
+
+ALTER TABLE orion_ti_005 ADD gestor_responsavel NUMBER(3);
+
+ALTER TABLE orion_ti_010 ADD gestor_responsavel NUMBER(3);
+
+ALTER TABLE orion_ti_015 ADD gestor_responsavel NUMBER(3);
