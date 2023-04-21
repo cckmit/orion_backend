@@ -474,8 +474,7 @@ public class PlanoMestreService {
 
 		System.out.println("Inicio geração do plano mestre");
 
-		// Carrega demanda apenas para o tipo de distribuição diferente de 4 - Previsão
-		// de Vendas.
+		// Carrega demanda apenas para o tipo de distribuição diferente de 4 - Previsão de Vendas.
 		List<EstoqueProduto> estoques = new ArrayList<EstoqueProduto>();
 		List<DemandaProdutoPlano> demandas = new ArrayList<DemandaProdutoPlano>();
 		List<ProcessoProdutoPlano> processos = new ArrayList<ProcessoProdutoPlano>();
