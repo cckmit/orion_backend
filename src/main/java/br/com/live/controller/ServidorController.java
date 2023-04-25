@@ -49,11 +49,6 @@ public class ServidorController {
     public Servidor findByIdServidor(@PathVariable("id") int id) {
         return servidorRepository.findById(id);
     }
-    
-    @RequestMapping(value = "/find-oportunidade-by-id/{id}", method = RequestMethod.GET)
-    public GestaoAtivosOportunidade findOportunidadeById(@PathVariable("id") String id) {
-        return gestaoAtivosOportunidadeRepository.findByIdOp(id);
-    }
 
     @RequestMapping(value = "/save-servidor", method = RequestMethod.POST)
     public void saveServidor(@RequestBody Servidor servidor) {
@@ -63,7 +58,7 @@ public class ServidorController {
  
     @RequestMapping(value = "/save-oportunidade", method = RequestMethod.POST)
     public void saveOportunidade(@RequestBody BodyGestaoAtivos oportunidade) {
-        servidorService.saveOportunidade(oportunidade.id, oportunidade.tipo, oportunidade.dataCadastro, oportunidade.prioridade, oportunidade.descricao, oportunidade.objetivo,
+        servidorService.saveOportunidade(oportunidade.id, oportunidade.tipo, oportunidade.idAtivo, oportunidade.nomeAtivo, oportunidade.dataCadastro, oportunidade.prioridade, oportunidade.descricao, oportunidade.objetivo,
         		oportunidade.contextualizacao, oportunidade.descricaoProblema, oportunidade.perguntasEmAberto, oportunidade.riscos);
     }
 

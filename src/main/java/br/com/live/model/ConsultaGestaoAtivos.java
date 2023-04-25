@@ -1,9 +1,11 @@
 package br.com.live.model;
 
+import java.util.Date;
 
 public class ConsultaGestaoAtivos {
 	
     public int id;
+    public String idOp;
     public String nomeServidor;
     public boolean maquinaFisica;
     public String sistemaOperacional;
@@ -37,7 +39,13 @@ public class ConsultaGestaoAtivos {
     public String timeResponsavel;
     public boolean disponibilidade;
     public String tecnicosFornecedores;
-    
+    public Date dataCadastro;
+    public int prioridade;
+    public String descricao;
+    public String contextualizacao;
+    public String descricaoProblema;
+    public String perguntasEmAberto;
+    public String riscos;   
     public String gestorResponsavel;
     
 	public int getId() {
@@ -244,18 +252,68 @@ public class ConsultaGestaoAtivos {
 	public void setGestorResponsavel(String gestorResponsavel) {
 		this.gestorResponsavel = gestorResponsavel;
 	}
+	public String getIdOp() {
+		return idOp;
+	}
+	public void setIdOp(String idOp) {
+		this.idOp = idOp;
+	}
+	public Date getDataCadastro() {
+		return dataCadastro;
+	}
+	public void setDataCadastro(Date dataCadastro) {
+		this.dataCadastro = dataCadastro;
+	}
+	public int getPrioridade() {
+		return prioridade;
+	}
+	public void setPrioridade(int prioridade) {
+		this.prioridade = prioridade;
+	}
+	public String getDescricao() {
+		return descricao;
+	}
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+	public String getContextualizacao() {
+		return contextualizacao;
+	}
+	public void setContextualizacao(String contextualizacao) {
+		this.contextualizacao = contextualizacao;
+	}
+	public String getDescricaoProblema() {
+		return descricaoProblema;
+	}
+	public void setDescricaoProblema(String descricaoProblema) {
+		this.descricaoProblema = descricaoProblema;
+	}
+	public String getPerguntasEmAberto() {
+		return perguntasEmAberto;
+	}
+	public void setPerguntasEmAberto(String perguntasEmAberto) {
+		this.perguntasEmAberto = perguntasEmAberto;
+	}
+	public String getRiscos() {
+		return riscos;
+	}
+	public void setRiscos(String riscos) {
+		this.riscos = riscos;
+	}
 	public ConsultaGestaoAtivos() {
     	
     }
-	public ConsultaGestaoAtivos(int id, String nomeServidor, boolean maquinaFisica, String sistemaOperacional,
-			String ip, String hd, String memoria, String processador, String aplicacoes, String status,
-			int numOportunidades, String nomeSistema, String objetivo, String bancoDeDados, String tipo,
+	public ConsultaGestaoAtivos(int id, String idOp, String nomeServidor, boolean maquinaFisica,
+			String sistemaOperacional, String ip, String hd, String memoria, String processador, String aplicacoes,
+			String status, int numOportunidades, String nomeSistema, String objetivo, String bancoDeDados, String tipo,
 			String fornecedor, String cnpj, String endereco, String formaPagto, boolean temContrato, String ambiente,
 			int usuariosAtivos, int capacidadeUsuarios, String nomeIntegracao, String tipoIntegracao,
 			String tipoConexao, int sistemaOrigem, int sistemaDestino, int servidor, String nomeServico,
-			String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, String gestorResponsavel) {
-		
+			String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, Date dataCadastro,
+			int prioridade, String descricao, String contextualizacao, String descricaoProblema,
+			String perguntasEmAberto, String riscos, String gestorResponsavel) {
 		this.id = id;
+		this.idOp = idOp;
 		this.nomeServidor = nomeServidor;
 		this.maquinaFisica = maquinaFisica;
 		this.sistemaOperacional = sistemaOperacional;
@@ -288,8 +346,16 @@ public class ConsultaGestaoAtivos {
 		this.timeResponsavel = timeResponsavel;
 		this.disponibilidade = disponibilidade;
 		this.tecnicosFornecedores = tecnicosFornecedores;
+		this.dataCadastro = dataCadastro;
+		this.prioridade = prioridade;
+		this.descricao = descricao;
+		this.contextualizacao = contextualizacao;
+		this.descricaoProblema = descricaoProblema;
+		this.perguntasEmAberto = perguntasEmAberto;
+		this.riscos = riscos;
 		this.gestorResponsavel = gestorResponsavel;
 	}
+	
 	
 
 }

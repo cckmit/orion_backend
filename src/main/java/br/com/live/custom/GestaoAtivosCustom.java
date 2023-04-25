@@ -33,7 +33,7 @@ public class GestaoAtivosCustom {
 				+ "       a.documentacao documentacao, "
 				+ "       a.gestor_responsavel || ' - ' || c.nome gestorResponsavel, "
 				+ "       a.status status, "
-				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.id = a.id || '-1'), 0) numOportunidades "
+				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 1 AND b.id_ativo = a.id), 0) numOportunidades "
 				+ "		FROM orion_ti_001 a, orion_001 c "
 				+ "		WHERE c.id = a.gestor_responsavel ";
 		
@@ -57,7 +57,7 @@ public class GestaoAtivosCustom {
 				+ "       a.usuarios_ativos usuariosAtivos, "
 				+ "       a.capacidade_usuarios capacidadeUsuarios, "
 				+ "       a.status status, "
-				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.id = a.id || '-2'), 0) numOportunidades "
+				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 2 AND b.id_ativo = a.id), 0) numOportunidades "
 				+ "		FROM orion_ti_005 a, orion_001 c"
 				+ "     WHERE c.id = a.gestor_responsavel ";
 		
@@ -78,7 +78,7 @@ public class GestaoAtivosCustom {
 				+ "       a.cnpj cnpj, "
 				+ "       a.endereco endereco, "
 				+ "       a.status status, "
-				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.id = a.id || '-3'), 0) numOportunidades, "
+				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 3 AND b.id_ativo = a.id), 0) numOportunidades, "
 				+ "       a.gestor_responsavel || ' - ' || c.nome gestorResponsavel "
 				+ "		FROM orion_ti_010 a, orion_001 c "
 				+ "     WHERE c.id = a.gestor_responsavel ";
@@ -94,10 +94,30 @@ public class GestaoAtivosCustom {
 				+ "       a.time_responsavel timeResponsavel, "
 				+ "       a.disponibilidade disponibilidade, "
 				+ "       a.tecnicos_fornecedores tecnicosFornecedores, "
-				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.id = a.id || '-4'), 0) numOportunidades, "
+				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 4 AND b.id_ativo = a.id), 0) numOportunidades, "
 				+ "       a.gestor_responsavel || ' - ' || c.nome gestorResponsavel "
 				+ "		FROM orion_ti_015 a, orion_001 c "
 				+ "     WHERE c.id = a.gestor_responsavel ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGestaoAtivos.class));
+	}
+	
+	public List<ConsultaGestaoAtivos> findAllOportunidades(){
+		
+		String query = " SELECT a.id idOp, "
+				+ "       DECODE(a.tipo, 1, 'Servidores', "
+				+ "       DECODE(a.tipo, 2, 'Sistemas', "
+				+ "       DECODE(a.tipo, 3, 'Integrações', "
+				+ "       DECODE(a.tipo, 4, 'Serviços')))) tipo, "
+				+ "       a.data_cadastro dataCadastro, "
+				+ "       a.prioridade prioridade, "
+				+ "       a.descricao descricao, "
+				+ "       a.objetivo objetivo, "
+				+ "       a.contextualizacao contextualizacao, "
+				+ "       a.descricao_problema descricaoProblema, "
+				+ "       a.perguntas_em_aberto perguntasEmAberto, "
+				+ "       a.riscos riscos "
+				+ "      FROM orion_ti_020 a ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGestaoAtivos.class));
 	}
@@ -110,6 +130,20 @@ public class GestaoAtivosCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 		
+	}
+	
+	public String findColunaConsulta(String tipo, String id) {
+		String resposta = "";
+
+		String query = " SELECT a." + tipo + " FROM orion_ti_020 a WHERE a.id = '" + id + "'";
+		
+		try {
+			resposta = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			resposta = "";
+		}
+		
+		return resposta;
 	}
 	
 	public boolean deleteSistemaById(int id) {
@@ -138,6 +172,24 @@ public class GestaoAtivosCustom {
 			response = false;
 		};
 		return response;	
+	}
+	
+	public int findNextIdByTipo(int id, int tipo) {
+		
+		int proximo = 0;
+		
+		String query = " SELECT NVL((MAX(a.sequencia)),0) +1 "
+				+ "       FROM orion_ti_020 a "
+				+ "       WHERE a.tipo = " + tipo
+				+ "       AND a.id_ativo = " + id;
+
+		try {
+			proximo = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			proximo = 0;
+		}
+		
+		return proximo;
 	}
 
 }

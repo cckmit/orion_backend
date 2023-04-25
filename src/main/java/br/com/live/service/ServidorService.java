@@ -65,26 +65,15 @@ public class ServidorService {
         servidorRepository.save(servidor);
     }
     
-    public void saveOportunidade(String id, int tipo, String dataCadastro, int prioridade, String descricao, String objetivo, String contextualizacao, String descricaoProblema, 
-    		String perguntasEmAberto, String riscos) {
+    public void saveOportunidade(int id, int tipo, int idAtivo, String nomeAtivo, String dataCadastro, int prioridade, String descricao, String objetivo, String contextualizacao, 
+    		String descricaoProblema, String perguntasEmAberto, String riscos) {
 
     	GestaoAtivosOportunidade oportunidade = null;
-
-    	oportunidade = gestaoAtivosOportunidadeRepository.findByIdOp(id);
-
-        if (oportunidade == null) {
-        	oportunidade = new GestaoAtivosOportunidade(id, tipo, FormataData.parseStringToDate(dataCadastro), prioridade, descricao, objetivo, contextualizacao, descricaoProblema, perguntasEmAberto,
-        			riscos);
-        } else {
-        	oportunidade.dataCadastro = FormataData.parseStringToDate(dataCadastro);
-        	oportunidade.prioridade = prioridade;
-        	oportunidade.descricao = descricao;
-        	oportunidade.objetivo = objetivo;
-        	oportunidade.contextualizacao = contextualizacao;
-        	oportunidade.descricaoProblema = descricaoProblema;
-        	oportunidade.perguntasEmAberto = perguntasEmAberto;
-        	oportunidade.riscos = riscos;
-        }
+    	int nextId = gestaoAtivosCustom.findNextIdByTipo(id, tipo);
+  
+        oportunidade = new GestaoAtivosOportunidade(tipo + "-" + id + "-" + nextId, tipo, id, nextId, nomeAtivo, FormataData.parseStringToDate(dataCadastro), prioridade, descricao, objetivo, 
+        		contextualizacao, descricaoProblema, perguntasEmAberto, riscos);
+         
         gestaoAtivosOportunidadeRepository.save(oportunidade);
     }
 

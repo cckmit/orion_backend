@@ -15,6 +15,14 @@ public class GestaoAtivosOportunidade {
 	public String id;
 	public int tipo;
 	
+	@Column(name = "id_ativo")
+	public int idAtivo;
+	
+	public int sequencia;
+	
+	@Column(name = "nome_ativo")
+	public String nomeAtivo;
+	
 	@Column(name = "data_cadastro")
 	public Date dataCadastro;
 	
@@ -45,6 +53,30 @@ public class GestaoAtivosOportunidade {
 
 	public void setTipo(int tipo) {
 		this.tipo = tipo;
+	}
+	
+	public int getIdAtivo() {
+		return idAtivo;
+	}
+
+	public void setIdAtivo(int idAtivo) {
+		this.idAtivo = idAtivo;
+	}
+
+	public int getSequencia() {
+		return sequencia;
+	}
+
+	public void setSequencia(int sequencia) {
+		this.sequencia = sequencia;
+	}
+
+	public String getNomeAtivo() {
+		return nomeAtivo;
+	}
+
+	public void setNomeAtivo(String nomeAtivo) {
+		this.nomeAtivo = nomeAtivo;
 	}
 
 	public Date getDataCadastro() {
@@ -115,11 +147,14 @@ public class GestaoAtivosOportunidade {
 		
 	}
 
-	public GestaoAtivosOportunidade(String id, int tipo, Date dataCadastro, int prioridade, String descricao, String objetivo,
+	public GestaoAtivosOportunidade(String id, int tipo, int idAtivo, int sequencia, String nomeAtivo, Date dataCadastro, int prioridade, String descricao, String objetivo,
 			String contextualizacao, String descricaoProblema, String perguntasEmAberto, String riscos) {
 		
 		this.id = id ;
 		this.tipo = tipo;
+		this.idAtivo = idAtivo;
+		this.sequencia = sequencia;
+		this.nomeAtivo = nomeAtivo;
 		this.dataCadastro = dataCadastro;
 		this.prioridade = prioridade;
 		this.descricao = descricao;
