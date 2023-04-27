@@ -96,6 +96,11 @@ public class ExpedicaoController {
     public List<ConsultaCapacidadeArtigosEnderecos> findAllCapacidadesArtigos() {
         return expedicaoCustom.findArtigosEnderecos();
     }
+
+    @RequestMapping(value = "/find-capacidades-artigos-by-artigos", method = RequestMethod.POST)
+    public List<ConsultaCapacidadeArtigosEnderecos> findAllCapacidadesArtigos(@RequestBody BodyExpedicao body) {
+        return expedicaoCustom.findArtigosByListArtigos(body.artigos);
+    }
     
     @RequestMapping(value = "/gravar-capacidades", method = RequestMethod.POST)
     public List<ConsultaCapacidadeArtigosEnderecos> gravarCapacidades(@RequestBody BodyExpedicao body) {
@@ -261,7 +266,6 @@ public class ExpedicaoController {
     @RequestMapping(value = "/count-parts-allocation/{allocation}", method = RequestMethod.GET)
     public int countPartsAllocation(@PathVariable("allocation") String allocation) {
     	return expedicaoService.salvarlog(allocation);
-    	
     }
     
     @RequestMapping(value = "/find-allocations/{startAllocation}/{endAllocation}", method = RequestMethod.GET)

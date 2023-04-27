@@ -29,12 +29,30 @@ public class ExpedicaoCustom {
 	public List<EnderecoCount> findReferenciaEnd(int codDeposito) {
 		List<EnderecoCount> dadosEnd;
 
-		String query = " select a.grupo || '.' || a.subgrupo || '.' || a.item referencia, a.endereco from estq_110 a "
-				+ " where a.nivel <> '0' "
-				+ " and a.grupo <> '00000' "
-				+ " and a.subgrupo <> '000' "
-				+ " and a.item <> '000000' "
-				+ " and a.deposito = " + codDeposito;
+		String query = " select mapa.referencia, mapa.endereco, mapa.totalPecas, " +
+				" CASE " +
+				"  WHEN (mapa.totalPecas = 0 and mapa.totalPecas = d.quant_perc_0) THEN 1 " +
+				"  WHEN (mapa.totalPecas >= d.quant_perc_1 and mapa.totalPecas <= d.quant_perc_40 and mapa.totalPecas > 0) THEN 2 " +
+				"  WHEN (mapa.totalPecas >= d.quant_perc_41 and mapa.totalPecas <= d.quant_perc_94 and mapa.totalPecas > 0) THEN 3 " +
+				"  WHEN ((mapa.totalPecas >= d.quant_perc_95 and mapa.totalPecas <= d.quant_perc_99) or (mapa.totalPecas > d.quant_perc_99 and d.quant_perc_99 > 0)) THEN 4 " +
+				"    ELSE 1 " +
+				"    END AS flagCestoCheio " +
+				" from ( " +
+				" select a.grupo, a.grupo || '.' || a.subgrupo || '.' || a.item referencia, a.endereco, NVL((select count(*) from pcpc_330 b " +
+				"                                                                                     where b.endereco = a.endereco " +
+				"                                                                                            and b.deposito = " + codDeposito +
+				"                                                                                            and b.grupo = a.grupo " +
+				"                                                                                            and b.subgrupo = a.subgrupo " +
+				"                                                                                             and b.item = a.item),0) totalPecas " +
+				" from estq_110 a " +
+				" where a.nivel <> '0' " +
+				" and a.grupo <> '00000' " +
+				" and a.subgrupo <> '000' " +
+				" and a.item <> '000000' " +
+				" and a.deposito = " + codDeposito + ") mapa, basi_030 c, orion_120 d " +
+				" where c.nivel_estrutura = '1' " +
+				" and c.referencia = mapa.grupo " +
+				" and d.artigo = c.artigo ";
 
 		try {
 			dadosEnd = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EnderecoCount.class));
@@ -73,7 +91,11 @@ public class ExpedicaoCustom {
 	public DadosModalEndereco findDadosModalEndereco(int deposito, String endereco) {
 		DadosModalEndereco dadosModal;
 
-		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, nvl(d.qtde_estoque_atu, 0) saldo, min(nvl(e.grupo_embarque, 0)) embarque from estq_110 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
+		String query = " select a.grupo, a.subgrupo, a.item, a.endereco, b.colecao || ' - ' || c.descr_colecao colecao, nvl(d.qtde_estoque_atu, 0) saldo, min(nvl(e.grupo_embarque, 0)) embarque,"
+				+ " (select count(*) from pcpc_330 w "
+				+ " where w.deposito = " + deposito
+				+ " and w.endereco = '" + endereco + "') quantEndereco "
+				+ " from estq_110 a, basi_030 b, basi_140 c, estq_040 d, basi_590 e "
 				+ " where a.deposito = " + deposito
 				+ " and a.endereco = '" + endereco + "'"
 				+ " and b.nivel_estrutura = '1' "
@@ -259,8 +281,23 @@ public class ExpedicaoCustom {
 	}
 
 	public List<ConsultaCapacidadeArtigosEnderecos> findArtigosEnderecos() {
-		String query = " select a.artigo, a.descr_artigo descricao, nvl(b.quant_pecas_cesto, 0) quantPecCesto, nvl(b.quant_perc_0, 0) perc0, nvl(b.quant_perc_1, 0) perc1, nvl(b.quant_perc_40, 0) perc40, nvl(b.quant_perc_41, 0) perc41, nvl(b.quant_perc_94, 0) perc94, nvl(b.quant_perc_95, 0) perc95, nvl(b.quant_perc_99, 0) perc99 from basi_290 a, orion_120 b "
+		String query = " select a.artigo, a.descr_artigo descricao, nvl(b.quant_pecas_cesto, 0) quantPecCesto, " +
+				" nvl(b.quant_perc_0, 0) perc0, nvl(b.quant_perc_1, 0) perc1, nvl(b.quant_perc_40, 0) perc40, nvl(b.quant_perc_41, 0) perc41, " +
+				" nvl(b.quant_perc_94, 0) perc94, nvl(b.quant_perc_95, 0) perc95, nvl(b.quant_perc_99, 0) perc99 from basi_290 a, orion_120 b "
 				+ " where b.artigo (+) = a.artigo ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaCapacidadeArtigosEnderecos.class));
+	}
+
+	public List<ConsultaCapacidadeArtigosEnderecos> findArtigosByListArtigos (List<ConteudoChaveNumerica> artigos) {
+		String query = " select a.artigo, a.descr_artigo descricao, nvl(b.quant_pecas_cesto, 0) quantPecCesto, " +
+				" nvl(b.quant_perc_0, 0) perc0, nvl(b.quant_perc_1, 0) perc1, nvl(b.quant_perc_40, 0) perc40, nvl(b.quant_perc_41, 0) perc41, " +
+				" nvl(b.quant_perc_94, 0) perc94, nvl(b.quant_perc_95, 0) perc95, nvl(b.quant_perc_99, 0) perc99 from basi_290 a, orion_120 b "
+				+ " where b.artigo (+) = a.artigo ";
+
+				if (artigos.size() > 0) {
+					query += " and b.artigo in (" + ConteudoChaveNumerica.parseValueToString(artigos) + ")";
+				}
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaCapacidadeArtigosEnderecos.class));
 	}
@@ -1714,6 +1751,7 @@ public class ExpedicaoCustom {
 	public int verificaTodosVolumesAlocadosByNotaAndPedido(int notaFiscal, int pedido) {
 		int status = 0;
 
+
 		String query = " select 1 from pcpc_320 c " +
 				" where c.pedido_venda = " + pedido +
 				" and c.nota_fiscal = " + notaFiscal +
@@ -1725,5 +1763,14 @@ public class ExpedicaoCustom {
 			status = 0;
 		}
 		return status;
+	}
+
+	public CapacidadesArtigoEndereco findCapacidadePorArtigoByReferencia(String referencia) {
+		String query = " select w.quant_pecas_cesto pecasCesto, w.quant_perc_0 quant0, w.quant_perc_1 quant1, w.quant_perc_40 quant40, w.quant_perc_41 quant41, w.quant_perc_94 quant94, " +
+				" w.quant_perc_95 quant95, w.quant_perc_99 quant99 from basi_030 v, orion_120 w " +
+				" where w.artigo (+) = v.artigo " +
+				" and v.referencia = '" + referencia + "' " +
+				" and v.nivel_estrutura = '1' ";
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(CapacidadesArtigoEndereco.class));
 	}
 }
