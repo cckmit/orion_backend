@@ -8,6 +8,7 @@ public class DadosModalEndereco {
 	public String colecao;
 	public float saldo;
 	public int embarque;
+	public int quantEndereco;
 	
 	public String getGrupo() {
 		return grupo;
@@ -51,12 +52,19 @@ public class DadosModalEndereco {
 	public void setEmbarque(int embarque) {
 		this.embarque = embarque;
 	}
-	
+
+	public int getQuantEndereco() {
+		return quantEndereco;
+	}
+
+	public void setQuantEndereco(int quantEndereco) {
+		this.quantEndereco = quantEndereco;
+	}
+
 	public DadosModalEndereco() {
 	}
-	
-	public DadosModalEndereco(String grupo, String subGrupo, String item, String endereco, String colecao, float saldo,
-			int embarque) {
+
+	public DadosModalEndereco(String grupo, String subGrupo, String item, String endereco, String colecao, float saldo, int embarque, int quantEndereco) {
 		this.grupo = grupo;
 		this.subGrupo = subGrupo;
 		this.item = item;
@@ -64,5 +72,6 @@ public class DadosModalEndereco {
 		this.colecao = colecao;
 		this.saldo = saldo;
 		this.embarque = embarque;
+		this.quantEndereco = quantEndereco;
 	}
 }

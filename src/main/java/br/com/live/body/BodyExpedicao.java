@@ -59,4 +59,5 @@ public class BodyExpedicao {
 
 	public int tipoCliente;
 	public int prioridade;
+	public List<ConteudoChaveNumerica> artigos;
 }
