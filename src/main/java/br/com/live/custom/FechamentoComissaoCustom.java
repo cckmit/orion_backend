@@ -421,15 +421,18 @@ public class FechamentoComissaoCustom {
 		List<ConsultaTitulosComissao> listDevolucao = null;
 		
 		String query = " SELECT f.nome_fornecedor cliente, "
-				+ "       c.num_nota_orig nfOrigem, "
-				+ "       b.documento nfDevolucao, "
-				+ "       e.cod_rep_cliente || '-' || e.nome_rep_cliente representante, "
-				+ "       a.perc_repres percComissao, "
-				+ "       ((a.perc_repres * c.valor_total)/100) valorComissao, "
-				+ "       c.valor_total valorNf, "
-				+ "       d.descr_motivo motivo "
-				+ "     FROM fatu_050 a, obrf_010 b, obrf_015 c, efic_010 d, pedi_020 e, supr_010 f "
-				+ "         WHERE b.documento = c.capa_ent_nrdoc "
+				+ "      	c.num_nota_orig notaSaida, "
+				+ "      	b.data_emissao dtEmissaoEntrada, "
+				+ "      	a.data_emissao dtEmissaoSaida, "
+				+ "      	b.documento notaEntrada, "
+				+ "      	e.cod_rep_cliente || '-' || e.nome_rep_cliente representante, "
+				+ "      	a.perc_repres percComissao, "
+				+ "      	SUM(a.perc_repres * (c.valor_total + c.rateio_despesas) /100) valorComissao, "
+				+ "      	SUM(c.valor_total + c.rateio_despesas) valorNf, "
+				+ "      	d.descr_motivo motivo, "
+				+ "      	h.tp_forne || '-' || h.descricao tipoFornecedor "
+				+ "			FROM fatu_050 a, obrf_010 b, obrf_015 c, efic_010 d, pedi_020 e, supr_010 f, pedi_080 g, supr_130 h "
+				+ "			WHERE b.documento = c.capa_ent_nrdoc "
 				+ "			AND b.serie = c.capa_ent_serie "
 				+ "			AND c.num_nota_orig = a.num_nota_fiscal "
 				+ "			AND c.capa_ent_forcli9 = a.cgc_9 "
@@ -449,10 +452,16 @@ public class FechamentoComissaoCustom {
 				+ "			AND c.capa_ent_forcli9 = f.fornecedor9 "
 				+ "			AND c.capa_ent_forcli4 = f.fornecedor4 "
 				+ "			AND c.capa_ent_forcli2 = f.fornecedor2 "
+				+ "			AND g.natur_operacao = c.natitem_nat_oper "
+				+ "			AND g.estado_natoper = c.natitem_est_oper "
+				+ "			AND h.tp_forne = f.tipo_fornecedor "
 				+ "			AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
 				+ "			AND TO_CHAR(TO_DATE(b.data_transacao), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
+				+ "			AND g.cod_natureza || g.operacao_fiscal IN ('1.201', '1.202', '2.201', '2.202') "
 				+ "			AND c.num_nota_orig <> 0 "
-				+ "		GROUP BY f.nome_fornecedor, c.num_nota_orig, b.documento, e.cod_rep_cliente, e.nome_rep_cliente, a.perc_repres, c.valor_total, d.descr_motivo ";
+				+ "			GROUP BY f.nome_fornecedor, c.num_nota_orig, b.documento, e.cod_rep_cliente, e.nome_rep_cliente, a.perc_repres, d.descr_motivo, b.data_emissao, "
+				+ "                  a.data_emissao, h.tp_forne, h.descricao "
+				+ "         ORDER BY f.nome_fornecedor ";
 		
 		//try {
 			listDevolucao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));

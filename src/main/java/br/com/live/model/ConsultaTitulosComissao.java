@@ -43,12 +43,17 @@ public class ConsultaTitulosComissao {
 	public float porcLinha;
 	public float valorProporcional;
 	public float totalFaturado;
-	public int nfOrigem;
+	public int notaSaida;
+	public int notaEntrada;
 	public int nfDevolucao;
 	public float valorNf;
 	public String motivo;
+	public String dtEmissaoEntrada;
+	public String dtEmissaoSaida;
+	public String tipoFornecedor;
 	public List<ConteudoChaveNumerica> listRepresentante;
 	
+
 	public int getPortador() {
 		return portador;
 	}
@@ -109,18 +114,6 @@ public class ConsultaTitulosComissao {
 	public void setValorComissao(float valorComissao) {
 		this.valorComissao = valorComissao;
 	}
-	public String getDataInicio() {
-		return dataInicio;
-	}
-	public void setDataInicio(String dataInicio) {
-		this.dataInicio = dataInicio;
-	}
-	public String getDataAnterior() {
-		return dataAnterior;
-	}
-	public void setDataAnterior(String dataAnterior) {
-		this.dataAnterior = dataAnterior;
-	}
 	public float getMesAnterior() {
 		return mesAnterior;
 	}
@@ -138,6 +131,18 @@ public class ConsultaTitulosComissao {
 	}
 	public void setSaldo(float saldo) {
 		this.saldo = saldo;
+	}
+	public String getDataInicio() {
+		return dataInicio;
+	}
+	public void setDataInicio(String dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+	public String getDataAnterior() {
+		return dataAnterior;
+	}
+	public void setDataAnterior(String dataAnterior) {
+		this.dataAnterior = dataAnterior;
 	}
 	public int getHistorico() {
 		return historico;
@@ -265,11 +270,17 @@ public class ConsultaTitulosComissao {
 	public void setTotalFaturado(float totalFaturado) {
 		this.totalFaturado = totalFaturado;
 	}
-	public int getNfOrigem() {
-		return nfOrigem;
+	public int getNotaSaida() {
+		return notaSaida;
 	}
-	public void setNfOrigem(int nfOrigem) {
-		this.nfOrigem = nfOrigem;
+	public void setNotaSaida(int notaSaida) {
+		this.notaSaida = notaSaida;
+	}
+	public int getNotaEntrada() {
+		return notaEntrada;
+	}
+	public void setNotaEntrada(int notaEntrada) {
+		this.notaEntrada = notaEntrada;
 	}
 	public int getNfDevolucao() {
 		return nfDevolucao;
@@ -289,6 +300,30 @@ public class ConsultaTitulosComissao {
 	public void setMotivo(String motivo) {
 		this.motivo = motivo;
 	}
+	public String getDtEmissaoEntrada() {
+		return dtEmissaoEntrada;
+	}
+	public void setDtEmissaoEntrada(String dtEmissaoEntrada) {
+		this.dtEmissaoEntrada = dtEmissaoEntrada;
+	}
+	public String getDtEmissaoSaida() {
+		return dtEmissaoSaida;
+	}
+	public void setDtEmissaoSaida(String dtEmissaoSaida) {
+		this.dtEmissaoSaida = dtEmissaoSaida;
+	}
+	public String getTipoFornecedor() {
+		return tipoFornecedor;
+	}
+	public void setTipoFornecedor(String tipoFornecedor) {
+		this.tipoFornecedor = tipoFornecedor;
+	}
+	public List<ConteudoChaveNumerica> getListRepresentante() {
+		return listRepresentante;
+	}
+	public void setListRepresentante(List<ConteudoChaveNumerica> listRepresentante) {
+		this.listRepresentante = listRepresentante;
+	}
 	public ConsultaTitulosComissao() {
 		
 	}
@@ -296,9 +331,12 @@ public class ConsultaTitulosComissao {
 			String cliente, String titulo, String vencimento, float percComissao, float valorEmAberto,
 			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
 			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,
-			float percComPed, int qtdeParcelas, float totComissao, String descricao, String uf, String regiao, String linha, float meta, 
-			float vendas, float porcAtingido, float valor, float porcLinha, float valorProporcional, float totalFaturado, int nfOrigem, int nfDevolucao,
-			float valorNf, String motivo) {
+			float percComPed, int qtdeParcelas, float totComissao, String descricao, String uf, String regiao,
+			String linha, float meta, float vendas, float porcAtingido, float valor, float porcLinha,
+			float valorProporcional, float totalFaturado, int notaSaida, int notaEntrada, int nfDevolucao,
+			float valorNf, String motivo, String dtEmissaoEntrada, String dtEmissaoSaida, String tipoFornecedor,
+			List<ConteudoChaveNumerica> listRepresentante) {
+	
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
 		this.representante = representante;
@@ -328,17 +366,23 @@ public class ConsultaTitulosComissao {
 		this.uf = uf;
 		this.regiao = regiao;
 		this.linha = linha;
-		this.porcLinha = porcLinha;
 		this.meta = meta;
 		this.vendas = vendas;
-		this.porcAtingido = porcAtingido; 
+		this.porcAtingido = porcAtingido;
 		this.valor = valor;
+		this.porcLinha = porcLinha;
 		this.valorProporcional = valorProporcional;
 		this.totalFaturado = totalFaturado;
-		this.nfOrigem = nfOrigem;
+		this.notaSaida = notaSaida;
+		this.notaEntrada = notaEntrada;
 		this.nfDevolucao = nfDevolucao;
 		this.valorNf = valorNf;
 		this.motivo = motivo;
+		this.dtEmissaoEntrada = dtEmissaoEntrada;
+		this.dtEmissaoSaida = dtEmissaoSaida;
+		this.tipoFornecedor = tipoFornecedor;
+		this.listRepresentante = listRepresentante;
 	}
+	
 	
 }
