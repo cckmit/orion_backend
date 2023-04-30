@@ -2,7 +2,7 @@ package br.com.live.body;
 
 import java.util.List;
 
-import br.com.live.model.ResumoOcupacaoCarteiraPorCanaisVenda;
+import br.com.live.model.ResumoOcupacaoCarteiraPorCanalVenda;
 import br.com.live.model.ResumoOcupacaoCarteiraPorModalidade;
 
 public class BodyOcupacaoCarteira {
@@ -15,14 +15,14 @@ public class BodyOcupacaoCarteira {
 	public boolean pedidosProgramados;
 	public boolean pedidosProntaEntrega;
 	// dados de retorno
-	public List<ResumoOcupacaoCarteiraPorCanaisVenda> listResumoOcupacaoCarteiraPorCanaisVarejo;
-	public List<ResumoOcupacaoCarteiraPorCanaisVenda> listResumoOcupacaoCarteiraPorCanaisAtacado;
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanaisVarejo;
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanaisAtacado;
 	public ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorVarejo;
 	public ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorAtacado;	
 	public ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraTotal;
 	
-	public BodyOcupacaoCarteira(List<ResumoOcupacaoCarteiraPorCanaisVenda> listResumoOcupacaoCarteiraPorCanaisVarejo,
-		List<ResumoOcupacaoCarteiraPorCanaisVenda> listResumoOcupacaoCarteiraPorCanaisAtacado,
+	public BodyOcupacaoCarteira(List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanaisVarejo,
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanaisAtacado,
 		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorVarejo,
 		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorAtacado,	
 		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraTotal) {
