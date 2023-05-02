@@ -107,13 +107,13 @@ public class SugestaoColetaCustom {
                 "                      where z.id_lote_area = b.id " +
                 "                      group by z.pedido_venda)) qtdePedidos, " +
                 "                 (select count(*) from ( " +
-                "                      select d.pedido_venda pedido, d.endereco from orion_exp_362 d, orion_exp_361 e, orion_exp_350 f " +
+                "                      select d.pedido_venda pedido from orion_exp_362 d, orion_exp_361 e, orion_exp_350 f " +
                 "                      where e.id_lote = " + idLote +
                 "                      and d.id_lote_area = e.id " +
                 "                      and f.id = b.id_area " +
                 "                      and d.endereco between f.endereco_inicial and f.endereco_final " +
-                "                      group by d.pedido_venda, d.endereco " +
-                "                      order by d.endereco) " +
+                "                      group by d.pedido_venda " +
+                "                      ) " +
                 "                      ) qtdePedidosArea, " +
                 "                 (select sum(z.qtde_coletar) " +
                 "                      from orion_exp_362 z " +
@@ -193,7 +193,6 @@ public class SugestaoColetaCustom {
         } catch (Exception e) {
             listIdColetores = new ArrayList<ConteudoChaveNumerica>();
         }
-
         return listIdColetores;
     }
 
@@ -212,18 +211,27 @@ public class SugestaoColetaCustom {
                 " and f.id = " + idArea +
                 " and d.endereco between f.endereco_inicial and f.endereco_final " +
                 " group by d.pedido_venda, d.endereco " +
-                " order by d.endereco)) ";
+                " order by d.endereco)) " +
+                " order by q.endereco ";
 
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LoteSugestaoColetaPorAreaItem.class));
     }
 
     public List<LoteSugestaoColetaPorAreaItem> findAllPedidosByArea(long idArea, long idLote) {
-
         String query = " select q.pedido_venda pedidoVenda, q.nivel, q.grupo, q.sub, q.item, q.endereco, q.qtde_coletar qtdeColetar from orion_exp_362 q, orion_exp_361 r, orion_exp_350 s " +
                 " where r.id = q.id_lote_area " +
                 " and r.id_lote = " + idLote +
                 " and s.id = r.id_area " +
                 " and s.id = " + idArea +
+                " order by q.endereco ";
+        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LoteSugestaoColetaPorAreaItem.class));
+    }
+
+    public List<LoteSugestaoColetaPorAreaItem> findAllProdutosLoteSugestao(int idLote) {
+        String query = " select q.pedido_venda pedidoVenda, q.nivel, q.grupo, q.sub, q.item, q.endereco, q.qtde_coletar qtdeColetar from orion_exp_362 q, orion_exp_361 r, orion_exp_350 s " +
+                " where r.id = q.id_lote_area " +
+                " and r.id_lote = " + idLote +
+                " and s.id = r.id_area " +
                 " order by q.endereco ";
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LoteSugestaoColetaPorAreaItem.class));
     }

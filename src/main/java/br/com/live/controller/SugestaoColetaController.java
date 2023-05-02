@@ -100,4 +100,9 @@ public class SugestaoColetaController {
     public List<LoteSugestaoColeta> findAllLotesByUsuario(@PathVariable("idUsuario") long idUsuario) {
         return sugestaoColetaService.findAllLotesByUsuario(idUsuario);
     }
+
+    @RequestMapping(value = "/find-all-produtos-by-lote/{idLote}", method = RequestMethod.GET)
+    public List<LoteSugestaoColetaPorAreaItem> findAllProdutosByLote(@PathVariable("idLote") int idLote) {
+        return sugestaoColetaCustom.findAllProdutosLoteSugestao(idLote);
+    }
 }
