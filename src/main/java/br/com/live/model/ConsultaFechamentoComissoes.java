@@ -4,7 +4,7 @@ import java.util.List;
 
 import br.com.live.util.ConteudoChaveNumerica;
 
-public class ConsultaTitulosComissao {
+public class ConsultaFechamentoComissoes {
 	
 	
 	public int portador;
@@ -360,10 +360,10 @@ public class ConsultaTitulosComissao {
 	public void setTotalCredito(float totalCredito) {
 		this.totalCredito = totalCredito;
 	}
-	public ConsultaTitulosComissao() {
+	public ConsultaFechamentoComissoes() {
 		
 	}
-	public ConsultaTitulosComissao(int portador, String dataEmissao, String representante, int tipoTitulo,
+	public ConsultaFechamentoComissoes(int portador, String dataEmissao, String representante, int tipoTitulo,
 			String cliente, String titulo, String vencimento, float percComissao, float valorEmAberto,
 			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
 			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,

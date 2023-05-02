@@ -6,6 +6,7 @@ CREATE TABLE ORION_FIN_040 (
       CAMPANHA      VARCHAR2(200),
       TIPO          NUMBER(1),
       REPRESENTANTE NUMBER(3),
-      DESCRICAO     VARCHAR2(200),
-      VALOR         NUMBER(6, 2)
+      OBSERVACAO    VARCHAR2(200),
+      VALOR         NUMBER(6, 2),
+      USUARIO       NUMBER(3)
 );

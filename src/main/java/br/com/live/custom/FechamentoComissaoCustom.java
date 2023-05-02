@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.model.ConsultaTitulosComissao;
+import br.com.live.model.ConsultaFechamentoComissoes;
 import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -32,7 +32,7 @@ public class FechamentoComissaoCustom {
 		
 	}
 	
-	public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(String dataInicio, List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosAnalitico(String dataInicio, List<ConteudoChaveAlfaNum> listRepresentante) {
 		
 		String query = " SELECT a.portador_duplic portador, "
 				+ "      a.data_emissao dataEmissao, "
@@ -54,11 +54,11 @@ public class FechamentoComissaoCustom {
 				+ "      AND a.data_venc_duplic <= TO_DATE('" + dataInicio + "', 'DD/MM/YYYY)') "
 				+ "      AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
 
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 		
 	}
 	
-	public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(String dataInicio, String dataAnterior, List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosSintetico(String dataInicio, String dataAnterior, List<ConteudoChaveAlfaNum> listRepresentante) {
 		
 		String query = " SELECT DADOS.REPRESENTANTE representante, "
 				+ "      SUM(DADOS.MESANTERIOR) mesAnterior, "
@@ -90,10 +90,10 @@ public class FechamentoComissaoCustom {
 				+ "       GROUP BY  a.cod_rep_cliente, c.nome_rep_cliente) DADOS "
 				+ "       GROUP BY DADOS.REPRESENTANTE ";
 
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));	
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));	
 	}
 	
-	public List<ConsultaTitulosComissao> findLancamentosFaturamento(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findLancamentosFaturamento(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
 		String query = " SELECT a.codigo_repr representante, "
 				+ "       a.codigo_historico historico, "
@@ -127,10 +127,10 @@ public class FechamentoComissaoCustom {
                 + "              a.seq_documento, a.base_calc_comis, a.percentual_comis, a.valor_lancamento, b.pedido_venda, b.quantidade, b.data_emissao, " 
                 + "              b.data_venc_duplic, c.cod_ped_cliente, d.nome_cliente ";
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
 	
-	public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findLancamentosBaixaTitulos(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
 		String query = " SELECT a.codigo_repr representante, "
 				+ "       a.codigo_historico historico, "
@@ -164,7 +164,7 @@ public class FechamentoComissaoCustom {
                 + "              a.seq_documento, a.base_calc_comis, a.percentual_comis, a.valor_lancamento, b.pedido_venda, b.quantidade, b.data_emissao, " 
                 + "              b.data_venc_duplic, c.cod_ped_cliente, d.nome_cliente ";
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
 	
 	public List<ConteudoChaveAlfaNum> findAllEstacoes(){
@@ -355,10 +355,10 @@ public class FechamentoComissaoCustom {
 		
 	}
 	
-	public List<ConsultaTitulosComissao> findBonusPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao, float totalFaturado, 
+	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao, float totalFaturado, 
 			float porcLinhaFitness, float porcLinhaBeach, float percAtingidoFitness, float percAtingidoBeach, float valorProporcional, String estado, String regiao, float metaFitness, float metaBeach){
 		
-		List<ConsultaTitulosComissao> listComissao = null;
+		List<ConsultaFechamentoComissoes> listComissao = null;
 		
 		String query = " SELECT a.cod_rep_cliente representante, "
 				+ "    '" +  estado + "' uf,"
@@ -409,16 +409,16 @@ public class FechamentoComissaoCustom {
 				+ "		GROUP BY a.cod_rep_cliente ";
 	
 		try {
-			listComissao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+			listComissao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 		} catch (Exception e) {
-			listComissao = new ArrayList<ConsultaTitulosComissao>();
+			listComissao = new ArrayList<ConsultaFechamentoComissoes>();
 		}
 		return listComissao;		
 	}
 	
-	public List<ConsultaTitulosComissao> findDevolucoes(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findDevolucoes(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
-		List<ConsultaTitulosComissao> listDevolucao = null;
+		List<ConsultaFechamentoComissoes> listDevolucao = null;
 		
 		String query = " SELECT f.nome_fornecedor cliente, "
 				+ "      	c.num_nota_orig notaSaida, "
@@ -464,16 +464,16 @@ public class FechamentoComissaoCustom {
 				+ "         ORDER BY f.nome_fornecedor ";
 		
 		try {
-			listDevolucao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+			listDevolucao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 		} catch (Exception e) {
-			listDevolucao = new ArrayList<ConsultaTitulosComissao>();
+			listDevolucao = new ArrayList<ConsultaFechamentoComissoes>();
 		}
 		return listDevolucao;
 	}
 	
-	public List<ConsultaTitulosComissao> findLanctoManuaisPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findLanctoManuaisPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
-		List<ConsultaTitulosComissao> listLactoManuais = null;
+		List<ConsultaFechamentoComissoes> listLactoManuais = null;
 		
 		String query = "  SELECT f.id id, "
 				+ "       f.data_lancto dataLancto, "
@@ -489,16 +489,16 @@ public class FechamentoComissaoCustom {
 				+ "    AND f.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
 
 		try {
-			listLactoManuais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+			listLactoManuais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 		} catch (Exception e) {
-			listLactoManuais = new ArrayList<ConsultaTitulosComissao>();
+			listLactoManuais = new ArrayList<ConsultaFechamentoComissoes>();
 		}
 		return listLactoManuais;
 	}
 	
-	public List<ConsultaTitulosComissao> findTotaisLanctoManuaisPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findTotaisLanctoManuaisPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
-		List<ConsultaTitulosComissao> listLactoManuais = null;
+		List<ConsultaFechamentoComissoes> listLactoManuais = null;
 		
 		String query = " SELECT TOTAL.REPRESENTANTE REPRESENTANTE, "
 				+ "       NVL(SUM(TOTAL.TOTALDEBITO), 0) TOTALDEBITO, "
@@ -527,9 +527,9 @@ public class FechamentoComissaoCustom {
 				+ "		GROUP BY TOTAL.REPRESENTANTE ";
 
 		try {
-			listLactoManuais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+			listLactoManuais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 		} catch (Exception e) {
-			listLactoManuais = new ArrayList<ConsultaTitulosComissao>();
+			listLactoManuais = new ArrayList<ConsultaFechamentoComissoes>();
 		}
 		return listLactoManuais;
 	}

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.FechamentoComissaoCustom;
-import br.com.live.model.ConsultaTitulosComissao;
+import br.com.live.model.ConsultaFechamentoComissoes;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -22,12 +22,12 @@ public class FechamentoComissaoService {
 		this.financeiroCustom = financeiroCustom;
 	}
 	
-	public List<ConsultaTitulosComissao> findTitulosAtrasadosAnalitico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosAnalitico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);		
 		return financeiroCustom.findTitulosAtrasadosAnalitico(dataInicio, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findLancamentosFaturamento(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findLancamentosFaturamento(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
@@ -35,7 +35,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findLancamentosFaturamento(mesComZero, ano, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findLancamentosBaixaTitulos(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findLancamentosBaixaTitulos(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
@@ -43,7 +43,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findLancamentosBaixaTitulos(mesComZero, ano, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findTitulosAtrasadosSintetico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosSintetico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);
 		String dataAnterior = findMesAnteriorDatInicio(dataInicio);
 		return financeiroCustom.findTitulosAtrasadosSintetico(dataInicio,  dataAnterior, listRepresentante);	
@@ -114,7 +114,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findAllEstacoes();
 	}
 	
-	public List<ConsultaTitulosComissao> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
+	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
 		
 		float totalFaturado = 0;
 		float valorProporcional = 0;
@@ -155,7 +155,7 @@ public class FechamentoComissaoService {
 				percAtingidoBeach, valorProporcional, estado, regiao, metaFitness, metaBeach);
 	}
 	
-	public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findDevolucaoPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
 		String mesComZero = "";
 		if (mes < 10) {
@@ -164,7 +164,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findDevolucoes(mesComZero, ano, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
 		String mesComZero = "";
 		if (mes < 10) {
@@ -173,7 +173,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
 	}
 	
-	public List<ConsultaTitulosComissao> findTotaisLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findTotaisLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
 		String mesComZero = "";
 		if (mes < 10) {

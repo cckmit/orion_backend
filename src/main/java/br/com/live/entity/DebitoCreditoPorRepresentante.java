@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="orion_fin_040")
-public class LctoManuaisPorRepresentante {
+public class DebitoCreditoPorRepresentante {
 	
 	@Id
 	public long id;
@@ -22,8 +22,9 @@ public class LctoManuaisPorRepresentante {
 	public int tipo;
 	public String campanha;
 	public int representante;
-	public String descricao;
+	public String observacao;
 	public float valor;
+	public int usuario;
 	
 	public long getId() {
 		return id;
@@ -67,11 +68,11 @@ public class LctoManuaisPorRepresentante {
 	public void setRepresentante(int representante) {
 		this.representante = representante;
 	}
-	public String getDescricao() {
-		return descricao;
+	public String getObservacao() {
+		return observacao;
 	}
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
 	}
 	public float getValor() {
 		return valor;
@@ -80,11 +81,11 @@ public class LctoManuaisPorRepresentante {
 		this.valor = valor;
 	}
 	
-	public LctoManuaisPorRepresentante() {
+	public DebitoCreditoPorRepresentante() {
 		
 	}
-	public LctoManuaisPorRepresentante(long id, Date dataLancto, int mes, int ano, int tipo, String campanha, int representante,
-			String descricao, float valor) {
+	public DebitoCreditoPorRepresentante(long id, Date dataLancto, int mes, int ano, int tipo, String campanha, int representante,
+			String observacao, float valor, int usuario) {
 		
 		this.id = id;
 		this.dataLancto = dataLancto;
@@ -92,9 +93,10 @@ public class LctoManuaisPorRepresentante {
 		this.ano = ano;
 		this.tipo = tipo;
 		this.representante = representante;
-		this.descricao = descricao;
+		this.observacao = observacao;
 		this.valor = valor;
 		this.campanha = campanha;
+		this.usuario = usuario;
 	}
 	
 }
