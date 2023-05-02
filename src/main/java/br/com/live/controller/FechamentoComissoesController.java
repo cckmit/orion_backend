@@ -72,5 +72,15 @@ public class FechamentoComissoesController {
     public List<ConsultaTitulosComissao> findDevolucaoPorRepresentante(@RequestBody BodyFinanceiro body) {
         return financeiroService.findDevolucaoPorRepresentante(body.mes, body.ano, body.listRepresentante);
     }
+	
+	@RequestMapping(value = "/find-lancamentos-manuais", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findLanctoManuaisPorRepresentante(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findLanctoManuaisPorRepresentante(body.mes, body.ano, body.listRepresentante);
+    }
+	
+	@RequestMapping(value = "/find-totais-lancamentos-manuais", method = RequestMethod.POST)
+    public List<ConsultaTitulosComissao> findTotaisLanctoManuaisPorRepresentante(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findTotaisLanctoManuaisPorRepresentante(body.mes, body.ano, body.listRepresentante);
+    }
 
 }

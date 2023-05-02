@@ -1,0 +1,11 @@
+CREATE TABLE ORION_FIN_040 (
+      ID            NUMBER(9) PRIMARY KEY,
+      DATA_LANCTO   DATE,
+      MES           NUMBER(2),
+      ANO           NUMBER(4),
+      CAMPANHA      VARCHAR2(200),
+      TIPO          NUMBER(1),
+      REPRESENTANTE NUMBER(3),
+      DESCRICAO     VARCHAR2(200),
+      VALOR         NUMBER(6, 2)
+);

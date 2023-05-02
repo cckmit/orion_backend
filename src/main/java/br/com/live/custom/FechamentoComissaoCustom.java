@@ -463,12 +463,75 @@ public class FechamentoComissaoCustom {
 				+ "                  a.data_emissao, h.tp_forne, h.descricao "
 				+ "         ORDER BY f.nome_fornecedor ";
 		
-		//try {
+		try {
 			listDevolucao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
-		//} catch (Exception e) {
-		//	listDevolucao = new ArrayList<ConsultaTitulosComissao>();
-		//}
+		} catch (Exception e) {
+			listDevolucao = new ArrayList<ConsultaTitulosComissao>();
+		}
 		return listDevolucao;
+	}
+	
+	public List<ConsultaTitulosComissao> findLanctoManuaisPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+		
+		List<ConsultaTitulosComissao> listLactoManuais = null;
+		
+		String query = "  SELECT f.id id, "
+				+ "       f.data_lancto dataLancto, "
+				+ "       f.campanha campanha, "
+				+ "       DECODE(f.tipo, 1, 'Débito', 'Crédito') tipo, "
+				+ "       f.representante || ' - ' || g.nome_rep_cliente representante, "
+				+ "       f.descricao descricao, "
+				+ "       f.valor valor "
+				+ "    FROM orion_fin_040 f, pedi_020 g "
+				+ "	   WHERE g.cod_rep_cliente = f.representante "
+				+ "    AND f.mes = " + mesComZero
+				+ "    AND f.ano =  " + ano
+				+ "    AND f.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
+
+		try {
+			listLactoManuais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		} catch (Exception e) {
+			listLactoManuais = new ArrayList<ConsultaTitulosComissao>();
+		}
+		return listLactoManuais;
+	}
+	
+	public List<ConsultaTitulosComissao> findTotaisLanctoManuaisPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+		
+		List<ConsultaTitulosComissao> listLactoManuais = null;
+		
+		String query = " SELECT TOTAL.REPRESENTANTE REPRESENTANTE, "
+				+ "       NVL(SUM(TOTAL.TOTALDEBITO), 0) TOTALDEBITO, "
+				+ "       NVL(SUM(TOTAL.TOTALCREDITO), 0) TOTALCREDITO FROM( "
+				+ "		SELECT a.representante || ' - ' || b.nome_rep_cliente representante, "
+				+ "       SUM(a.valor) totalDebito, "
+				+ "       0 totalCredito "
+				+ "		FROM orion_fin_040 a, pedi_020 b "
+				+ "		WHERE b.cod_rep_cliente = a.representante "
+				+ "		AND a.mes = " + mesComZero
+				+ "		AND a.ano = " + ano
+				+ "		AND a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
+				+ "		AND a.tipo = 1 "
+				+ "		GROUP BY a.representante, b.nome_rep_cliente "
+				+ "	UNION "
+				+ "		SELECT a.representante || ' - ' || b.nome_rep_cliente representante, "
+				+ "       0 totalDebito, "
+				+ "       SUM(a.valor) totalCredito "
+				+ "		FROM orion_fin_040 a, pedi_020 b "
+				+ "		WHERE b.cod_rep_cliente = a.representante "
+				+ "		AND a.mes = " + mesComZero
+				+ "		AND a.ano = " + ano
+				+ "		AND a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
+				+ "		AND a.tipo = 2 "
+				+ "		GROUP BY a.representante, b.nome_rep_cliente) TOTAL "
+				+ "		GROUP BY TOTAL.REPRESENTANTE ";
+
+		try {
+			listLactoManuais = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTitulosComissao.class));
+		} catch (Exception e) {
+			listLactoManuais = new ArrayList<ConsultaTitulosComissao>();
+		}
+		return listLactoManuais;
 	}
 
 }

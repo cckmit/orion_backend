@@ -163,4 +163,22 @@ public class FechamentoComissaoService {
 		};
 		return financeiroCustom.findDevolucoes(mesComZero, ano, listRepresentante);
 	}
+	
+	public List<ConsultaTitulosComissao> findLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+		
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
+		return financeiroCustom.findLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
+	}
+	
+	public List<ConsultaTitulosComissao> findTotaisLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+		
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
+		return financeiroCustom.findTotaisLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
+	}
 }
