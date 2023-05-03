@@ -480,7 +480,7 @@ public class FechamentoComissaoCustom {
 				+ "       f.campanha campanha, "
 				+ "       DECODE(f.tipo, 1, 'Débito', 'Crédito') tipo, "
 				+ "       f.representante || ' - ' || g.nome_rep_cliente representante, "
-				+ "       f.descricao descricao, "
+				+ "       f.observacao observacao, "
 				+ "       f.valor valor "
 				+ "    FROM orion_fin_040 f, pedi_020 g "
 				+ "	   WHERE g.cod_rep_cliente = f.representante "
