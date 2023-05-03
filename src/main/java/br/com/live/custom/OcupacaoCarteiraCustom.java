@@ -2,17 +2,13 @@ package br.com.live.custom;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.entity.MetasDoOrcamento;
 import br.com.live.model.ResumoOcupacaoCarteiraPorCanalVenda;
-import br.com.live.repository.MetasDoOrcamentoRepository;
 import br.com.live.util.FormataData;
 
 @Repository
@@ -28,18 +24,13 @@ public class OcupacaoCarteiraCustom {
 	public final static String META_ORCADA = "ORCADO";
 	public final static String META_REALINHADA = "REALINHADO";
 	
-	private final MetasDoOrcamentoRepository metasDoOrcamentoRepository;	
-	
 	private JdbcTemplate jdbcTemplate;
 
-	public OcupacaoCarteiraCustom(JdbcTemplate jdbcTemplate, MetasDoOrcamentoRepository metasDoOrcamentoRepository) {
+	public OcupacaoCarteiraCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.metasDoOrcamentoRepository = metasDoOrcamentoRepository;
 	}
 
-	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
-		
-		System.out.println("consultarCarteiraPorValor");
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
 		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
@@ -72,7 +63,7 @@ public class OcupacaoCarteiraCustom {
 		if (tipoClassificacao > 0)
 			query += " and a.classificacao_pedido = " + tipoClassificacao; 
 
-		query += "and a.tipo_pedido in (" + tipoPedido + ")"
+		query += " and a.tipo_pedido in (" + tipoPedido + ")"
 		+ " and b.cgc_9 = a.cli_ped_cgc_cli9 "
 		+ " and b.cgc_4 = a.cli_ped_cgc_cli4 "
 		+ " and b.cgc_2 = a.cli_ped_cgc_cli2 "
@@ -95,7 +86,7 @@ public class OcupacaoCarteiraCustom {
 		return listResumoOcupacaoCarteiraPorCanalVenda;		
 	}
 	
-	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraConfirmarPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraConfirmarPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
 		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
@@ -145,89 +136,77 @@ public class OcupacaoCarteiraCustom {
 		}
 		
 		return listResumoOcupacaoCarteiraPorCanalVenda;						
-	}
-	
-	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoEmValor(int mes, int ano, String tipoPedido, int tipoClassificao, int tipoMeta, String tipoModalidade) {
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoEmValor = null;
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmarEmValor = null;	
-
-		// Carrega os valores apenas para atacado.
-		if (tipoModalidade.equalsIgnoreCase(OcupacaoCarteiraCustom.MODALIDADE_ATACADO) ) {
-			listOcupacaoEmValor = consultarCarteiraPorValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta);
-			listOcupacaoConfirmarEmValor = consultarCarteiraConfirmarPorValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta);				
-		}				
-		return formatarResumo(mes, ano, tipoMeta, tipoModalidade, listOcupacaoEmValor, listOcupacaoConfirmarEmValor); 
 	}	
 	
-	private List<ResumoOcupacaoCarteiraPorCanalVenda> formatarResumo(int mes, int ano, int tipoMeta, String tipoModalidade,  List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao, List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar) {
-		Map<String, ResumoOcupacaoCarteiraPorCanalVenda> mapOcupacao = new HashMap<String, ResumoOcupacaoCarteiraPorCanalVenda>();
-	    List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoPorCanal = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
-		List<MetasDoOrcamento> metasCadastradas = metasDoOrcamentoRepository.findByAnoAndTipoMetaAndModalidade(ano, tipoMeta, tipoModalidade);
-	   
-	    for (MetasDoOrcamento orcado : metasCadastradas) {
-	    	ResumoOcupacaoCarteiraPorCanalVenda resumo = new ResumoOcupacaoCarteiraPorCanalVenda();
-	    	resumo.setCanal(orcado.descricao);
-	    	resumo.setValorOrcado(getValorOrcadoMes(mes, orcado));
-	    	mapOcupacao.put(resumo.getCanal(), resumo);
-	    }
-		if (listOcupacao != null) {
-			for (ResumoOcupacaoCarteiraPorCanalVenda ocupacao : listOcupacao) {
-				ResumoOcupacaoCarteiraPorCanalVenda resumo = mapOcupacao.get(ocupacao.getCanal()); 	
-				resumo.setValorReal(ocupacao.getValorReal());
-			}		
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraPorQuantidade(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {		
+		Date dataInicio = FormataData.getStartingDay(mes, ano);		
+		Date dataFim = FormataData.getFinalDay(mes, ano);
+		
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+				
+		String query = " select d.live_agrup_tipo_cliente canal, sum(b.qtde_pedida) valorReal "
+		+ " from pedi_100 a, pedi_110 b, pedi_010 c, pedi_085 d "
+		+ " where a.data_entr_venda between ? and ? "
+		+ " and a.cod_cancelamento = 0 "
+		+ " and b.pedido_venda = a.pedido_venda "
+		+ " and b.cod_cancelamento = 0 ";
+		
+		if (tipoClassificacao > 0)
+			query += " and a.classificacao_pedido = " + tipoClassificacao; 
+
+		query += "and a.tipo_pedido in (" + tipoPedido + ")"
+		+ " and c.cgc_9 = a.cli_ped_cgc_cli9 "
+		+ " and c.cgc_4 = a.cli_ped_cgc_cli4 "
+		+ " and c.cgc_2 = a.cli_ped_cgc_cli2 "
+		+ " and d.tipo_cliente = c.tipo_cliente "
+		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
+		+ " where orion_150.tipo_meta = " + tipoMeta   
+		+ " and orion_150.ano = " + ano
+		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+		+ " group by d.live_agrup_tipo_cliente ";                                               
+
+		try {
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);				
+		} catch (Exception e) {			
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
 		}
 		
-		if (listOcupacaoConfirmar != null) {
-			for (ResumoOcupacaoCarteiraPorCanalVenda ocupacaoConfirmar : listOcupacaoConfirmar) {
-				ResumoOcupacaoCarteiraPorCanalVenda resumo = mapOcupacao.get(ocupacaoConfirmar.getCanal()); 	
-				resumo.setValorConfirmar(ocupacaoConfirmar.getValorConfirmar());
-			}		
+		return listResumoOcupacaoCarteiraPorCanalVenda;		
+	}
+
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraConfirmarPorQuantidade(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {
+		
+		Date dataInicio = FormataData.getStartingDay(mes, ano);		
+		Date dataFim = FormataData.getFinalDay(mes, ano);
+				
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+		
+		String query = " select d.live_agrup_tipo_cliente canal, sum(b.qtde_pedida) valorConfirmar "
+		+ " from inte_100 a, inte_110 b, pedi_010 c, pedi_085 d "
+		+ " where a.data_entrega between ? and ? "
+		+ " and b.pedido_venda = a.pedido_venda ";
+		
+		if (tipoClassificacao > 0)
+			query += " and a.classificacao_pedido = " + tipoClassificacao; 
+
+		query += "and a.tipo_pedido in (" + tipoPedido + ")"
+		+ " and c.cgc_9 = a.cliente9 "
+		+ " and c.cgc_4 = a.cliente4 "
+		+ " and c.cgc_2 = a.cliente2 "
+		+ " and d.tipo_cliente = c.tipo_cliente "
+		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
+		+ " where orion_150.tipo_meta = " + tipoMeta   
+		+ " and orion_150.ano = " + ano
+		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+		+ " group by d.live_agrup_tipo_cliente ";                                               
+
+		try {
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);				
+		} catch (Exception e) {			
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
 		}
 		
-		for (String canal : mapOcupacao.keySet()) {
-			listResumoPorCanal.add(mapOcupacao.get(canal));
-		}		
-		return listResumoPorCanal;
+		return listResumoOcupacaoCarteiraPorCanalVenda;		
 	}
-	
-	private double getValorOrcadoMes(int mes, MetasDoOrcamento meta) {
-    	if (mes == FormataData.JANEIRO) return meta.valorMes1;
-    	else if (mes == FormataData.FEVEREIRO) return meta.valorMes2;
-    	else if (mes == FormataData.MARCO) return meta.valorMes3;
-    	else if (mes == FormataData.ABRIL) return meta.valorMes4;
-    	else if (mes == FormataData.MAIO) return meta.valorMes5;
-    	else if (mes == FormataData.JUNHO) return meta.valorMes6;
-    	else if (mes == FormataData.JULHO) return meta.valorMes7;
-    	else if (mes == FormataData.AGOSTO) return meta.valorMes8;
-    	else if (mes == FormataData.SETEMBRO) return meta.valorMes9;
-    	else if (mes == FormataData.OUTUBRO) return meta.valorMes10;
-    	else if (mes == FormataData.NOVEMBRO) return meta.valorMes11;
-    	return meta.valorMes12;
-	}
-	
-	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoCarteiraPorCanal(String tipoOcupacao, int mes, int ano, String tipoOrcamento, boolean pedidosDisponibilidade, boolean pedidosProgramados, boolean pedidosProntaEntrega, String tipoModalidade) {		
-		String tipoPedido = "";
-		int tipoClassificao = 0;
-		int tipoMeta = 0;
-		
-		if (pedidosProgramados) tipoPedido = "0";   
-		if (pedidosProntaEntrega) tipoPedido = tipoPedido.isEmpty() ? "1" : "0,1";
-		if (tipoPedido.isEmpty()) tipoPedido = "9"; // inicializa com um tipo que não existe		
-		if ((pedidosDisponibilidade)&(!pedidosProgramados)&(!pedidosProntaEntrega)) tipoClassificao = OcupacaoCarteiraCustom.CLASSIFICACAO_DISPONIBILIDADE;
-		
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listDados = null;
-		
-		if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_VALORES)) {
-			tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FATURAMENTO : MetasDoOrcamentoCustom.METAS_FATURAMENTO_REALINHADO;
-			listDados = consultarOcupacaoEmValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
-		} else if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_PECAS)) {
-			tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS : MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS_REALINHADO;
-			//listDados = consultarOcupacaoEmValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
-		} else if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_MINUTOS)) {
-			tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_MINUTOS : MetasDoOrcamentoCustom.METAS_FAT_EM_MINUTOS_REALINHADO;
-			//listDados = consultarOcupacaoEmValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
-		}				
-		
-	    return listDados; 
-	}		
+
 }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ConsultaMetasOrcamento;
+import br.com.live.model.MetaOrcamentoPorMesAno;
 
 @Repository
 public class MetasDoOrcamentoCustom {
@@ -23,6 +24,14 @@ public class MetasDoOrcamentoCustom {
 	
 	public MetasDoOrcamentoCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
+	}
+	
+	private String parseColunaValorByMes(int mes) {
+		return "valor_mes_" + mes;
+	}
+
+	private String parseColunaMinutosByMes(int mes) {
+		return "minutos_mes_" + mes;
 	}
 	
 	public List<ConsultaMetasOrcamento> findMetasOrcamentoGrid(int ano, int tipoMeta) {
@@ -56,4 +65,25 @@ public class MetasDoOrcamentoCustom {
 
 		return total;
 	}
+	
+	public List<MetaOrcamentoPorMesAno> findMetasOrcamentoByTipoMetaMesAno(int tipoMeta, int mes, int ano, String tipoModalidade) {
+		
+		String query = " select descricao canal, " + mes + " mes, "
+	    + " ano, " + parseColunaValorByMes(mes) + " valor "
+	    + " from orion_150 " 
+	    + " where tipo_meta = " + tipoMeta
+	    + " and ano = " + ano
+	    + " and modalidade = '" + tipoModalidade + "'";
+				
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MetaOrcamentoPorMesAno.class));
+	}
+	
+	public double findMinutosPorPecaByTipoMetaAnoMes(int tipoMeta, int mes, int ano) {
+		
+		String query = " select " + parseColunaMinutosByMes(mes) + " from orion_com_151 "
+		+ " where ano = " + ano
+		+ " and tipo_meta = " + tipoMeta;  
+
+		return jdbcTemplate.queryForObject(query, Double.class);
+	}	
 }
