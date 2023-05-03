@@ -4,7 +4,7 @@ import java.util.List;
 
 import br.com.live.util.ConteudoChaveNumerica;
 
-public class ConsultaTitulosComissao {
+public class ConsultaFechamentoComissoes {
 	
 	
 	public int portador;
@@ -51,6 +51,12 @@ public class ConsultaTitulosComissao {
 	public String dtEmissaoEntrada;
 	public String dtEmissaoSaida;
 	public String tipoFornecedor;
+	public String dataLancto;
+	public String campanha;
+	public String tipo;	
+	public float totalDebito;
+	public float totalCredito;
+	
 	public List<ConteudoChaveNumerica> listRepresentante;
 	
 
@@ -323,11 +329,41 @@ public class ConsultaTitulosComissao {
 	}
 	public void setListRepresentante(List<ConteudoChaveNumerica> listRepresentante) {
 		this.listRepresentante = listRepresentante;
+	}	
+	public String getDataLancto() {
+		return dataLancto;
 	}
-	public ConsultaTitulosComissao() {
+	public void setDataLancto(String dataLancto) {
+		this.dataLancto = dataLancto;
+	}
+	public String getCampanha() {
+		return campanha;
+	}
+	public void setCampanha(String campanha) {
+		this.campanha = campanha;
+	}
+	public String getTipo() {
+		return tipo;
+	}
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+	public float getTotalDebito() {
+		return totalDebito;
+	}
+	public void setTotalDebito(float totalDebito) {
+		this.totalDebito = totalDebito;
+	}
+	public float getTotalCredito() {
+		return totalCredito;
+	}
+	public void setTotalCredito(float totalCredito) {
+		this.totalCredito = totalCredito;
+	}
+	public ConsultaFechamentoComissoes() {
 		
 	}
-	public ConsultaTitulosComissao(int portador, String dataEmissao, String representante, int tipoTitulo,
+	public ConsultaFechamentoComissoes(int portador, String dataEmissao, String representante, int tipoTitulo,
 			String cliente, String titulo, String vencimento, float percComissao, float valorEmAberto,
 			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
 			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,
@@ -335,7 +371,7 @@ public class ConsultaTitulosComissao {
 			String linha, float meta, float vendas, float porcAtingido, float valor, float porcLinha,
 			float valorProporcional, float totalFaturado, int notaSaida, int notaEntrada, int nfDevolucao,
 			float valorNf, String motivo, String dtEmissaoEntrada, String dtEmissaoSaida, String tipoFornecedor,
-			List<ConteudoChaveNumerica> listRepresentante) {
+			List<ConteudoChaveNumerica> listRepresentante, String dataLancto, String campanha, String tipo, float totalDebito, float totalCredito) {
 	
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
@@ -382,6 +418,11 @@ public class ConsultaTitulosComissao {
 		this.dtEmissaoSaida = dtEmissaoSaida;
 		this.tipoFornecedor = tipoFornecedor;
 		this.listRepresentante = listRepresentante;
+		this.dataLancto = dataLancto;
+		this.campanha = campanha;
+		this.tipo = tipo; 
+		this.totalDebito = totalDebito;
+		this.totalCredito = totalCredito;
 	}
 	
 	
