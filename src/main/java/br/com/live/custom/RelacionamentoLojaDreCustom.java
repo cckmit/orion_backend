@@ -122,4 +122,10 @@ public class RelacionamentoLojaDreCustom {
 
         return (encontrou==1);
     }
+
+    public List<ConteudoChaveNumerica> obterListaCentroCustoLoja (String cnpjLoja){
+        String query = "select a.centro_custo value from orion_fin_005 a " +
+                " where a.cnpj_loja = '" +cnpjLoja+ "'";
+        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+    }
 }

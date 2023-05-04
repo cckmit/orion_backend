@@ -1,23 +1,31 @@
 package br.com.live.model;
 
-import java.math.BigDecimal;
-
 public class ConciliacaoLojaDreConsulta {
 
+    public long id;
     public String cnpjLoja;
     public String nomeLoja;
     public int mesDre;
     public int anoDre;
-    public BigDecimal valTaxaCaptura;
-    public BigDecimal valCustoAntecipacao;
+    public double valTaxaCaptura;
+    public double valCustoAntecipacao;
 
-    public ConciliacaoLojaDreConsulta(String cnpjLoja, String nomeLoja, int mesDre, int anoDre, BigDecimal valTaxaCaptura, BigDecimal valCustoAntecipacao) {
+    public ConciliacaoLojaDreConsulta(long id, String cnpjLoja, String nomeLoja, int mesDre, int anoDre, double valTaxaCaptura, double valCustoAntecipacao) {
+        this.id = id;
         this.cnpjLoja = cnpjLoja;
         this.nomeLoja = nomeLoja;
         this.mesDre = mesDre;
         this.anoDre = anoDre;
         this.valTaxaCaptura = valTaxaCaptura;
         this.valCustoAntecipacao = valCustoAntecipacao;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public ConciliacaoLojaDreConsulta(){}
@@ -54,19 +62,19 @@ public class ConciliacaoLojaDreConsulta {
         this.anoDre = anoDre;
     }
 
-    public BigDecimal getValTaxaCaptura() {
+    public double getValTaxaCaptura() {
         return valTaxaCaptura;
     }
 
-    public void setValTaxaCaptura(BigDecimal valTaxaCaptura) {
+    public void setValTaxaCaptura(double valTaxaCaptura) {
         this.valTaxaCaptura = valTaxaCaptura;
     }
 
-    public BigDecimal getValCustoAntecipacao() {
+    public double getValCustoAntecipacao() {
         return valCustoAntecipacao;
     }
 
-    public void setValCustoAntecipacao(BigDecimal valCustoAntecipacao) {
+    public void setValCustoAntecipacao(double valCustoAntecipacao) {
         this.valCustoAntecipacao = valCustoAntecipacao;
     }
 }

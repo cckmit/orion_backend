@@ -39,7 +39,7 @@ public class ParametroGeralDreController {
     }
 
     @GetMapping("/find-dre-parametro-geral-by-mes-ano/{mes}/{ano}")
-    public int findDreParametroGeralByMesAno(@PathVariable("mes") int mes, @PathVariable("ano") int ano){
+    public ParametroGeralDreEntity findDreParametroGeralByMesAno(@PathVariable("mes") int mes, @PathVariable("ano") int ano){
         return dreLojaCustom.findParametrosDreByMesAno(mes, ano);
     }
 

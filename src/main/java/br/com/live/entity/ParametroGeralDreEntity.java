@@ -9,22 +9,22 @@ import javax.persistence.Table;
 @Table(name="orion_fin_020")
 public class ParametroGeralDreEntity {
     @Id
-    private long id;
+    public long id;
 
     @Column(name = "ano_dre")
-    private int anoDre;
+    public int anoDre;
 
     @Column(name = "mes_dre")
-    private int mesDre;
+    public int mesDre;
 
     @Column(name = "perc_encargos")
-    private double percEncargos;
+    public double percEncargos;
 
     @Column(name = "val_imposto_planejamento")
-    private double valImpostoPlanejamento;
+    public double valImpostoPlanejamento;
 
     @Column(name = "val_custo_venda_produto")
-    private double valCustoVendaProduto;
+    public double valCustoVendaProduto;
 
     public ParametroGeralDreEntity(long id, int anoDre, int mesDre, double percEncargos, double valImpostoPlanejamento, double valCustoVendaProduto) {
         this.id = id;
