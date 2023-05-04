@@ -632,13 +632,9 @@ public class ExpedicaoService {
 		
 		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
 		String block = newAllocation.substring(0, 1);
-		
-		if (retornaListaLetraNumero(block) >= 6) {
-			expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation, dadosUsuario.usuarioSystextil);
-			insertProductInEstq110(periodo, ordem, pacote, sequencia, newAllocation);
-		} else {
-			expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation, dadosUsuario.usuarioSystextil);
-		}
+
+		expedicaoCustom.changeEnderecoTAG(periodo, ordem, pacote, sequencia, newAllocation, dadosUsuario.usuarioSystextil);
+		insertProductInEstq110(periodo, ordem, pacote, sequencia, newAllocation);
 	}
 	
 	public int showQuantPartAllocation(String allocation) {
@@ -650,6 +646,17 @@ public class ExpedicaoService {
 	}
 	
 	public void clearAllocation(String allocation, String usuarioSystextil) {
+		int deposito = 0;
+
+		String bloco = allocation.substring(0, 1);
+
+		if (retornaListaLetraNumero(bloco) >= 6) {
+			deposito = 111;
+		} else {
+			deposito = 4;
+		}
+
+		expedicaoCustom.clearAllocationEstq110(allocation, deposito);
 		expedicaoCustom.clearAllocation(allocation, usuarioSystextil);
 	}
 	

@@ -1,16 +1,18 @@
 package br.com.live.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.body.BodyOcupacaoCarteira;
+import br.com.live.custom.MetasDoOrcamentoCustom;
 import br.com.live.custom.OcupacaoCarteiraCustom;
-import br.com.live.model.DadosOcupacaoCarteiraPorCanaisVenda;
-import br.com.live.model.DadosOcupacaoCarteiraPorModalidade;
-import br.com.live.model.ResumoOcupacaoCarteiraPorCanaisVenda;
+import br.com.live.model.MetaOrcamentoPorMesAno;
+import br.com.live.model.ResumoOcupacaoCarteiraPorCanalVenda;
 import br.com.live.model.ResumoOcupacaoCarteiraPorModalidade;
 
 @Service
@@ -18,119 +20,130 @@ import br.com.live.model.ResumoOcupacaoCarteiraPorModalidade;
 public class OcupacaoCarteiraService {
 
 	private final OcupacaoCarteiraCustom ocupacaoCarteiraCustom;
+	private final MetasDoOrcamentoCustom metasDoOrcamentoCustom;
 	
-	public OcupacaoCarteiraService(OcupacaoCarteiraCustom ocupacaoCarteiraCustom) {
+	public OcupacaoCarteiraService(OcupacaoCarteiraCustom ocupacaoCarteiraCustom, MetasDoOrcamentoCustom metasDoOrcamentoCustom) {
 		this.ocupacaoCarteiraCustom = ocupacaoCarteiraCustom;
+		this.metasDoOrcamentoCustom = metasDoOrcamentoCustom;
 	}
 	
 	public BodyOcupacaoCarteira consultar(String valorResumir, int mes, int ano, String tipoOrcamento, boolean pedidosDisponibilidade, boolean pedidosProgramados, boolean pedidosProntaEntrega) {				                                                																		
-		List<DadosOcupacaoCarteiraPorCanaisVenda> dadosCarteiraPorCanaisVarejo = ocupacaoCarteiraCustom.consultarDadosPorCanal(mes, ano, tipoOrcamento, pedidosDisponibilidade, pedidosProgramados, pedidosProntaEntrega, "VAREJO");
-		List<DadosOcupacaoCarteiraPorCanaisVenda> dadosCarteiraPorCanaisAtacado = ocupacaoCarteiraCustom.consultarDadosPorCanal(mes, ano, tipoOrcamento, pedidosDisponibilidade, pedidosProgramados, pedidosProntaEntrega, "ATACADO");
-		DadosOcupacaoCarteiraPorModalidade dadosOcupacaoCarteiraPorVarejo = agruparDadosPorModalidade("VAREJO", dadosCarteiraPorCanaisVarejo);
-		DadosOcupacaoCarteiraPorModalidade dadosOcupacaoCarteiraPorAtacado = agruparDadosPorModalidade("ATACADO", dadosCarteiraPorCanaisAtacado);	
-		DadosOcupacaoCarteiraPorModalidade dadosOcupacaoCarteiraTotal = somarModalidades(dadosOcupacaoCarteiraPorVarejo, dadosOcupacaoCarteiraPorAtacado);
-		List<ResumoOcupacaoCarteiraPorCanaisVenda> resumoCarteiraPorCanaisVarejo = resumirCarteiraPorCanais(valorResumir, dadosCarteiraPorCanaisVarejo);
-		List<ResumoOcupacaoCarteiraPorCanaisVenda> resumoCarteiraPorCanaisAtacado = resumirCarteiraPorCanais(valorResumir, dadosCarteiraPorCanaisAtacado);;
-		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorVarejo = resumirCarteiraPorModalidade(valorResumir, dadosOcupacaoCarteiraPorVarejo);
-		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorAtacado = resumirCarteiraPorModalidade(valorResumir, dadosOcupacaoCarteiraPorAtacado);;	
-		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraTotal = resumirCarteiraPorModalidade(valorResumir, dadosOcupacaoCarteiraTotal);;
+		List<ResumoOcupacaoCarteiraPorCanalVenda> resumoCarteiraPorCanaisVarejo = consultarOcupacaoCarteiraPorCanal(valorResumir, mes, ano, tipoOrcamento, pedidosDisponibilidade, pedidosProgramados, pedidosProntaEntrega, OcupacaoCarteiraCustom.MODALIDADE_VAREJO);
+		List<ResumoOcupacaoCarteiraPorCanalVenda> resumoCarteiraPorCanaisAtacado = consultarOcupacaoCarteiraPorCanal(valorResumir, mes, ano, tipoOrcamento, pedidosDisponibilidade, pedidosProgramados, pedidosProntaEntrega, OcupacaoCarteiraCustom.MODALIDADE_ATACADO);		
+		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorVarejo = agruparPorModalidade(OcupacaoCarteiraCustom.MODALIDADE_VAREJO, resumoCarteiraPorCanaisVarejo);
+		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorAtacado = agruparPorModalidade(OcupacaoCarteiraCustom.MODALIDADE_ATACADO, resumoCarteiraPorCanaisAtacado);	
+		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraTotal = somar(resumoOcupacaoCarteiraPorVarejo, resumoOcupacaoCarteiraPorAtacado);
 		return new BodyOcupacaoCarteira(resumoCarteiraPorCanaisVarejo, resumoCarteiraPorCanaisAtacado, resumoOcupacaoCarteiraPorVarejo, resumoOcupacaoCarteiraPorAtacado, resumoOcupacaoCarteiraTotal);
 	}
 	
-	private List<ResumoOcupacaoCarteiraPorCanaisVenda> resumirCarteiraPorCanais(String valorResumir, List<DadosOcupacaoCarteiraPorCanaisVenda> canais) {
+	private ResumoOcupacaoCarteiraPorModalidade agruparPorModalidade(String tipoModalidade, List<ResumoOcupacaoCarteiraPorCanalVenda> listCanais) {
 		double valorOrcado = 0; 
 		double valorReal = 0; 
 		double valorConfirmar = 0; 
 		double valorTotal = 0; 
 		double percentual = 0;
-		
-		List<ResumoOcupacaoCarteiraPorCanaisVenda> listCanaisResumidos = new ArrayList<ResumoOcupacaoCarteiraPorCanaisVenda>();
-		for (DadosOcupacaoCarteiraPorCanaisVenda canal : canais) {
-			if (valorResumir.equalsIgnoreCase("VALORES")) {
-				valorOrcado = canal.getValorOrcado(); 
-				valorReal = canal.getValor(); 
-				valorConfirmar = canal.getValorConfirmar(); 
-			} else if (valorResumir.equalsIgnoreCase("PECAS")) {
-				valorOrcado = canal.getQuantidadeOrcado(); 
-				valorReal = canal.getQuantidade(); 
-				valorConfirmar = canal.getQuantidadeConfirmar();
-			} else {
-				valorOrcado = canal.getMinutosOrcado(); 
-				valorReal = canal.getMinutos(); 
-				valorConfirmar = canal.getMinutosConfirmar();				
-			}
-			
-			valorTotal = valorReal + valorConfirmar; 
-			percentual = valorOrcado > 0 ? ((valorTotal / valorOrcado) * 100) : 0;
-				
-			listCanaisResumidos.add(new ResumoOcupacaoCarteiraPorCanaisVenda(canal.getCanal(), valorOrcado, valorReal, valorConfirmar, valorTotal, percentual));
-		}
-		return listCanaisResumidos;
-	}
 
-	private ResumoOcupacaoCarteiraPorModalidade resumirCarteiraPorModalidade(String valorResumir, DadosOcupacaoCarteiraPorModalidade modalidade) {
-		double valorOrcado = 0; 
-		double valorReal = 0; 
-		double valorConfirmar = 0; 
-		double valorTotal = 0; 
-		double percentual = 0;
-		
-		if (valorResumir.equalsIgnoreCase("VALORES")) {
-			valorOrcado = modalidade.getValorOrcado(); 
-			valorReal = modalidade.getValorReal(); 
-			valorConfirmar = modalidade.getValorConfirmar(); 
-		} else if (valorResumir.equalsIgnoreCase("PECAS")) {
-			valorOrcado = modalidade.getQtdeOrcado(); 
-			valorReal = modalidade.getQtdeReal(); 
-			valorConfirmar = modalidade.getQtdeConfirmar();
-		} else {
-			valorOrcado = modalidade.getMinutosOrcado(); 
-			valorReal = modalidade.getMinutosReal(); 
-			valorConfirmar = modalidade.getMinutosConfirmar();				
+		for (ResumoOcupacaoCarteiraPorCanalVenda canal : listCanais) {
+			valorOrcado += canal.getValorOrcado(); 
+			valorReal += canal.getValorReal(); 
+			valorConfirmar += canal.getValorConfirmar(); 
 		}
-		
 		valorTotal = valorReal + valorConfirmar; 
 		percentual = valorOrcado > 0 ? ((valorTotal / valorOrcado) * 100) : 0;
-
-		return new ResumoOcupacaoCarteiraPorModalidade(modalidade.getModalidade(), valorOrcado, valorReal, valorConfirmar, valorTotal, percentual);
+		
+		return new ResumoOcupacaoCarteiraPorModalidade(tipoModalidade, valorOrcado, valorReal, valorConfirmar, valorTotal, percentual);
 	}
 	
-	private DadosOcupacaoCarteiraPorModalidade somarModalidades(DadosOcupacaoCarteiraPorModalidade varejo, DadosOcupacaoCarteiraPorModalidade atacado) {
-		return new DadosOcupacaoCarteiraPorModalidade("AMBOS", varejo.getValorOrcado() + atacado.getValorOrcado(), 
-				varejo.getValorReal() + atacado.getValorReal(), 
-				varejo.getValorConfirmar() + atacado.getValorConfirmar(), 
-				varejo.getQtdeOrcado() + atacado.getQtdeOrcado(), 
-				varejo.getQtdeReal() + atacado.getQtdeReal(), 
-				varejo.getQtdeConfirmar() + atacado.getQtdeConfirmar(), 
-				varejo.getMinutosOrcado() + atacado.getMinutosOrcado(), 
-				varejo.getMinutosReal() + atacado.getMinutosReal(), 
-				varejo.getMinutosConfirmar() + atacado.getMinutosConfirmar()); 
+	private ResumoOcupacaoCarteiraPorModalidade somar(ResumoOcupacaoCarteiraPorModalidade varejo, ResumoOcupacaoCarteiraPorModalidade atacado) {
+		double valorOrcado = varejo.getValorOrcado() + atacado.getValorOrcado(); 
+		double valorReal = varejo.getValorReal() + atacado.getValorReal(); 
+		double valorConfirmar = varejo.getValorConfirmar() + atacado.getValorConfirmar(); 
+		double valorTotal = valorReal + valorConfirmar; 
+		double percentual = valorOrcado > 0 ? ((valorTotal / valorOrcado) * 100) : 0;		
+		return new ResumoOcupacaoCarteiraPorModalidade("AMBOS", valorOrcado, valorReal, valorConfirmar, valorTotal, percentual);
 	}
 	
-	private DadosOcupacaoCarteiraPorModalidade agruparDadosPorModalidade(String modalidade, List<DadosOcupacaoCarteiraPorCanaisVenda> dados) {
-		double valores = 0;
-		double quantidades = 0;
-		double minutos = 0;
-		double valoresConfirmar = 0;
-		double quantidadesConfirmar = 0;
-		double minutosConfirmar = 0;
-		double valoresOrcado = 0;
-		double quantidadesOrcado = 0;
-		double minutosOrcado = 0;
+	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoEmValor(int mes, int ano, String tipoPedido, int tipoClassificao, int tipoMeta, String tipoModalidade) {
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoEmValor = null;
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmarEmValor = null;	
+		// Carrega os valores apenas para atacado.
+		if (tipoModalidade.equalsIgnoreCase(OcupacaoCarteiraCustom.MODALIDADE_ATACADO) ) {
+			listOcupacaoEmValor = ocupacaoCarteiraCustom.consultarCarteiraPorValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta);
+			listOcupacaoConfirmarEmValor = ocupacaoCarteiraCustom.consultarCarteiraConfirmarPorValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta);				
+		}				
+		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacaoEmValor, listOcupacaoConfirmarEmValor); 
+	}	
+	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoEmQuantidade(int mes, int ano, String tipoPedido, int tipoClassificao, int tipoMeta, String tipoModalidade) {
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoEmQtde = ocupacaoCarteiraCustom.consultarCarteiraPorQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmarEmQtde = ocupacaoCarteiraCustom.consultarCarteiraConfirmarPorQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);				
+		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacaoEmQtde, listOcupacaoConfirmarEmQtde); 
+	}	
 
-		for (DadosOcupacaoCarteiraPorCanaisVenda dado : dados) {
-			valores += dado.getValor();
-			quantidades += dado.getQuantidade(); 
-			minutos += dado.getMinutos();
-			valoresConfirmar += dado.getValorConfirmar();
-			quantidadesConfirmar += dado.getQuantidadeConfirmar();
-			minutosConfirmar += dado.getMinutosConfirmar();
-			valoresOrcado += dado.getValorOrcado();
-			quantidadesOrcado += dado.getQuantidadeOrcado();
-			minutosOrcado += dado.getMinutosOrcado();
+	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoEmMinutos(int mes, int ano, String tipoPedido, int tipoClassificao, int tipoMetaPecas, int tipoMetaMinutos, String tipoModalidade) {
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao = ocupacaoCarteiraCustom.consultarCarteiraPorQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMetaPecas, tipoModalidade);
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar = ocupacaoCarteiraCustom.consultarCarteiraConfirmarPorQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMetaPecas, tipoModalidade);						
+		// Transforma as quantidades de peças em minutos.
+		double minutosFabricacao = metasDoOrcamentoCustom.findMinutosPorPecaByTipoMetaAnoMes(tipoMetaMinutos, mes, ano);
+		listOcupacao.forEach(o -> o.setValorReal(o.getValorReal() * minutosFabricacao));
+		listOcupacaoConfirmar.forEach(o -> o.setValorConfirmar(o.getValorConfirmar() * minutosFabricacao));		
+		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMetaMinutos, tipoModalidade, listOcupacao, listOcupacaoConfirmar); 
+	}	
+	
+	private List<ResumoOcupacaoCarteiraPorCanalVenda> atualizarDadosOrcadoVersusRealizado(int mes, int ano, int tipoMeta, String tipoModalidade,  List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao, List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar) {
+		Map<String, ResumoOcupacaoCarteiraPorCanalVenda> mapOcupacao = new HashMap<String, ResumoOcupacaoCarteiraPorCanalVenda>();
+	    List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoPorCanal = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+		List<MetaOrcamentoPorMesAno> metasCadastradas = metasDoOrcamentoCustom.findMetasOrcamentoByTipoMetaMesAno(tipoMeta, mes, ano, tipoModalidade);		
+		
+	    for (MetaOrcamentoPorMesAno orcado : metasCadastradas) {
+	    	ResumoOcupacaoCarteiraPorCanalVenda resumo = new ResumoOcupacaoCarteiraPorCanalVenda();
+	    	resumo.setCanal(orcado.getCanal());
+	    	resumo.setValorOrcado(orcado.getValor());
+	    	mapOcupacao.put(resumo.getCanal(), resumo);	    	
+	    }
+		if (listOcupacao != null) {
+			for (ResumoOcupacaoCarteiraPorCanalVenda ocupacao : listOcupacao) {
+				ResumoOcupacaoCarteiraPorCanalVenda resumo = mapOcupacao.get(ocupacao.getCanal()); 	
+				resumo.setValorReal(ocupacao.getValorReal());
+			}		
+ 		}
+		
+		if (listOcupacaoConfirmar != null) {
+			for (ResumoOcupacaoCarteiraPorCanalVenda ocupacaoConfirmar : listOcupacaoConfirmar) {
+				ResumoOcupacaoCarteiraPorCanalVenda resumo = mapOcupacao.get(ocupacaoConfirmar.getCanal()); 	
+				resumo.setValorConfirmar(ocupacaoConfirmar.getValorConfirmar());
+			}		
 		}
 		
-		return new DadosOcupacaoCarteiraPorModalidade(modalidade, valoresOrcado, valores, valoresConfirmar, quantidadesOrcado, quantidades, quantidadesConfirmar, minutosOrcado, minutos, minutosConfirmar); 
+		for (String canal : mapOcupacao.keySet()) {
+			listResumoPorCanal.add(mapOcupacao.get(canal));
+		}		
+		return listResumoPorCanal;
 	}
 	
+	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoCarteiraPorCanal(String tipoOcupacao, int mes, int ano, String tipoOrcamento, boolean pedidosDisponibilidade, boolean pedidosProgramados, boolean pedidosProntaEntrega, String tipoModalidade) {		
+		String tipoPedido = "";
+		int tipoClassificao = 0;
+		
+		if (pedidosProgramados) tipoPedido = "0";   
+		if (pedidosProntaEntrega) tipoPedido = tipoPedido.isEmpty() ? "1" : "0,1";
+		// se estiver marcado apenas pedidos de disponibilidade deve considerar pedidos programados e pronta entrega.
+		if (tipoPedido.isEmpty()) tipoPedido = pedidosDisponibilidade ? "0,1" : "9"; 		
+		if ((pedidosDisponibilidade)&(!pedidosProgramados)&(!pedidosProntaEntrega)) tipoClassificao = OcupacaoCarteiraCustom.CLASSIFICACAO_DISPONIBILIDADE;
+		
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listDados = null;
+				
+		if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_VALORES)) {
+			int tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FATURAMENTO : MetasDoOrcamentoCustom.METAS_FATURAMENTO_REALINHADO;
+			listDados = consultarOcupacaoEmValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
+		} else if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_PECAS)) {			
+			int tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS : MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS_REALINHADO;
+			listDados = consultarOcupacaoEmQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
+		} else if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_MINUTOS)) {
+			int tipoMetaPecas = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS : MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS_REALINHADO;
+			int tipoMetaMinutos = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_MINUTOS : MetasDoOrcamentoCustom.METAS_FAT_EM_MINUTOS_REALINHADO;
+			listDados = consultarOcupacaoEmMinutos(mes, ano, tipoPedido, tipoClassificao, tipoMetaPecas, tipoMetaMinutos, tipoModalidade);
+		}				
+		
+	    return listDados; 
+	}		
 }
