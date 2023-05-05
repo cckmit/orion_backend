@@ -56,6 +56,7 @@ public class ConsultaFechamentoComissoes {
 	public String tipo;	
 	public float totalDebito;
 	public float totalCredito;
+	public String observacao;
 	
 	public List<ConteudoChaveNumerica> listRepresentante;
 	
@@ -360,6 +361,12 @@ public class ConsultaFechamentoComissoes {
 	public void setTotalCredito(float totalCredito) {
 		this.totalCredito = totalCredito;
 	}
+	public String getObservacao() {
+		return observacao;
+	}
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
+	}
 	public ConsultaFechamentoComissoes() {
 		
 	}
@@ -371,7 +378,7 @@ public class ConsultaFechamentoComissoes {
 			String linha, float meta, float vendas, float porcAtingido, float valor, float porcLinha,
 			float valorProporcional, float totalFaturado, int notaSaida, int notaEntrada, int nfDevolucao,
 			float valorNf, String motivo, String dtEmissaoEntrada, String dtEmissaoSaida, String tipoFornecedor,
-			List<ConteudoChaveNumerica> listRepresentante, String dataLancto, String campanha, String tipo, float totalDebito, float totalCredito) {
+			List<ConteudoChaveNumerica> listRepresentante, String dataLancto, String campanha, String tipo, float totalDebito, float totalCredito, String observacao) {
 	
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
@@ -423,6 +430,7 @@ public class ConsultaFechamentoComissoes {
 		this.tipo = tipo; 
 		this.totalDebito = totalDebito;
 		this.totalCredito = totalCredito;
+		this.observacao = observacao;
 	}
 	
 	

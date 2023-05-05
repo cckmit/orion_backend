@@ -35,15 +35,20 @@ public class ContabilidadeCustom {
 	
 	public int findNextNumLancto(int empresa, int exercicio) {
 		int nextNumLancto;
-		String query = " SELECT MAX(b.numero_lanc) + 1 FROM cont_600 b "
+		
+		String query = " SELECT b.ultimo_lanc + 1 FROM cont_500 b "
 				+ "      WHERE b.cod_empresa = " + empresa
-				+ "      AND b.exercicio =  " + exercicio;
-
+				+ "      AND b.exercicio =  " + exercicio
+				+ "      FOR UPDATE ";
+		
+		String queryUpdate = "UPDATE cont_500 SET ultimo_lanc = ? WHERE cod_empresa = ? AND exercicio = ?";
+		
 		try {
 			nextNumLancto = jdbcTemplate.queryForObject(query, Integer.class);
+			jdbcTemplate.update(queryUpdate, nextNumLancto, empresa, exercicio);
 		} catch (Exception e) {
 			nextNumLancto = 0;
-		}
+		}	
 		return nextNumLancto;
 	}
 	
@@ -148,7 +153,7 @@ public class ContabilidadeCustom {
 		
 		int subConta = 0;
 		
-		String query = " SELECT 1 FROM CONT_535 d WHERE d.cod_reduzido = ? and d.cod_plano_cta = 2021 ";
+		String query = " SELECT d.exige_subconta FROM CONT_535 d WHERE d.cod_reduzido = ? and d.cod_plano_cta = 2021 ";
 		
 		try {
 			subConta = jdbcTemplate.queryForObject(query, Integer.class, contaRezuzida);
@@ -177,11 +182,11 @@ public class ContabilidadeCustom {
 		
 		int existeLote = 0;
 		
-		String query = " SELECT MAX(a.lote) FROM cont_520 a "
+		String query = " SELECT NVL(MIN(a.lote), 0) FROM cont_520 a "
 				+ "       WHERE a.cod_empresa = " + empresa
 				+ "       AND a.exercicio = " + exercicio
 				+ "       AND a.origem = " + origem
-				+ "       AND a.situacao IN (0, 1)"
+				+ "       AND a.situacao = 0 "
 				+ "       AND TO_CHAR(TO_DATE(a.data_lote), 'DD/MM/YYYY') = '" + dataLancto + "'";
 		
 		try {

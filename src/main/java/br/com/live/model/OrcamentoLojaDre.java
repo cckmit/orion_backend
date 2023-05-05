@@ -1,18 +1,17 @@
 package br.com.live.model;
 
-import java.math.BigDecimal;
-
 public class OrcamentoLojaDre {
-    private Long id;
-    private String cnpjLoja;
-    private int anoOrcamento;
-    private int mesOrcamento;
-    private int tipoOrcamento;
-    private String propriedade;
-    private BigDecimal valPropriedade;
-    private String seqConsulta;
+    public Long id;
+    public String cnpjLoja;
+    public int anoOrcamento;
+    public int mesOrcamento;
+    public int tipoOrcamento;
+    public String propriedade;
+    public double valPropriedade;
+    public String seqConsulta;
+    public int contaContabil;
 
-    public OrcamentoLojaDre(Long id, String cnpjLoja, int anoOrcamento, int mesOrcamento, int tipoOrcamento, String propriedade, BigDecimal valPropriedade, String seqConsulta) {
+    public OrcamentoLojaDre(Long id, String cnpjLoja, int anoOrcamento, int mesOrcamento, int tipoOrcamento, String propriedade, double valPropriedade, String seqConsulta, int contaContabil) {
         this.id = id;
         this.cnpjLoja = cnpjLoja;
         this.anoOrcamento = anoOrcamento;
@@ -21,9 +20,18 @@ public class OrcamentoLojaDre {
         this.propriedade = propriedade;
         this.valPropriedade = valPropriedade;
         this.seqConsulta = seqConsulta;
+        this.contaContabil = contaContabil;
     }
 
     public OrcamentoLojaDre(){
+    }
+
+    public int getContaContabil() {
+        return contaContabil;
+    }
+
+    public void setContaContabil(int contaContabil) {
+        this.contaContabil = contaContabil;
     }
 
     public String getSeqConsulta() {
@@ -82,11 +90,11 @@ public class OrcamentoLojaDre {
         this.propriedade = propriedade;
     }
 
-    public BigDecimal getValPropriedade() {
+    public double getValPropriedade() {
         return valPropriedade;
     }
 
-    public void setValPropriedade(BigDecimal valPropriedade) {
+    public void setValPropriedade(double valPropriedade) {
         this.valPropriedade = valPropriedade;
     }
 }

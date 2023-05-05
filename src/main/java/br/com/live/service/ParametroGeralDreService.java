@@ -8,8 +8,6 @@ import br.com.live.repository.ParametroGeralDreRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,25 +50,8 @@ public class ParametroGeralDreService {
         for (ConciliacaoLojaDreEntity fieldConciliacaoLojaDre : conciliacaoLojaDreEntityList){
             fieldConciliacaoLojaDre.id = (nextId++);
 
-            BigDecimal valTaxaCaptura = fieldConciliacaoLojaDre.valTaxaCaptura != null ? fieldConciliacaoLojaDre.valTaxaCaptura : BigDecimal.ZERO;
-            BigDecimal valCustoAntecipacao = fieldConciliacaoLojaDre.valCustoAntecipacao != null ? fieldConciliacaoLojaDre.valCustoAntecipacao : BigDecimal.ZERO;
-
-            fieldConciliacaoLojaDre.valTaxaCaptura = formatValorPropriedade(2, valTaxaCaptura);
-            fieldConciliacaoLojaDre.valCustoAntecipacao = formatValorPropriedade(2, valCustoAntecipacao);
-
             conciliacaoLojaDreRepository.save(fieldConciliacaoLojaDre);
         }
-    }
-
-    BigDecimal formatValorPropriedade(int qtdDecimal, BigDecimal valPropriedade){
-
-        if (valPropriedade.remainder(BigDecimal.ONE).compareTo(new BigDecimal("0.5")) == 0) {
-            valPropriedade = valPropriedade.setScale(qtdDecimal, RoundingMode.CEILING);
-        } else {
-            valPropriedade = valPropriedade.setScale(qtdDecimal, RoundingMode.HALF_UP);
-        }
-
-        return valPropriedade;
     }
 
     public void deleteDreParametroGeral(long id, int mesDre, int anoDre){

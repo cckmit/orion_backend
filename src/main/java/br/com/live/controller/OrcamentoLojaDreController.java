@@ -43,6 +43,11 @@ public class OrcamentoLojaDreController {
         return orcamentoLojaDreCustom.findAllFieldsOrcamentoLojaByCnpjAno(cnpjLoja, anoOrcamento);
     }
 
+    @GetMapping("/find-orcamento-loja-by-cnpj-ano/{cnpjLoja}/{anoOrcamento}")
+    public ConsultaOrcamentoLojaDre findOrcamentoLojaDre(@PathVariable("cnpjLoja") String cnpjLoja, @PathVariable("anoOrcamento") int anoOrcamento){
+        return orcamentoLojaDreCustom.findOrcamentoLojaDre(cnpjLoja, anoOrcamento);
+    }
+
     @PostMapping("/save-field-orcamento-loja")
     public OrcamentoLojaDreEntity saveFieldOrcamentoLoja(@RequestBody OrcamentoLojaDreEntity orcamentoLojaDreEntity){
         return orcamentoLojaDreRepository.save(orcamentoLojaDreEntity);

@@ -1,7 +1,6 @@
 package br.com.live.entity;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name="orion_fin_015")
@@ -26,12 +25,15 @@ public class OrcamentoLojaDreEntity {
     public String propriedade;
 
     @Column(name = "val_propriedade")
-    public BigDecimal valPropriedade;
+    public double valPropriedade;
 
     @Column(name = "seq_consulta")
     public String seqConsulta;
 
-    public OrcamentoLojaDreEntity(Long id, String cnpjLoja, int anoOrcamento, int mesOrcamento, int tipoOrcamento, String propriedade, BigDecimal valPropriedade, String seqConsulta) {
+    @Column(name = "conta_contabil")
+    public int contaContabil;
+
+    public OrcamentoLojaDreEntity(Long id, String cnpjLoja, int anoOrcamento, int mesOrcamento, int tipoOrcamento, String propriedade, double valPropriedade, String seqConsulta, int contaContabil) {
         this.id = id;
         this.cnpjLoja = cnpjLoja;
         this.anoOrcamento = anoOrcamento;
@@ -40,6 +42,7 @@ public class OrcamentoLojaDreEntity {
         this.propriedade = propriedade;
         this.valPropriedade = valPropriedade;
         this.seqConsulta = seqConsulta;
+        this.contaContabil = contaContabil;
     }
 
     public OrcamentoLojaDreEntity(){

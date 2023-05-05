@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name="orion_fin_025")
@@ -22,12 +21,12 @@ public class ConciliacaoLojaDreEntity {
     public int mesDre;
 
     @Column(name = "val_taxa_captura")
-    public BigDecimal valTaxaCaptura;
+    public double valTaxaCaptura;
 
     @Column(name = "val_custo_antecipacao")
-    public BigDecimal valCustoAntecipacao;
+    public double valCustoAntecipacao;
 
-    public ConciliacaoLojaDreEntity(long id, String cnpjLoja, int anoDre, int mesDre, BigDecimal valTaxaCaptura, BigDecimal valCustoAntecipacao) {
+    public ConciliacaoLojaDreEntity(long id, String cnpjLoja, int anoDre, int mesDre, double valTaxaCaptura, double valCustoAntecipacao) {
         this.id = id;
         this.cnpjLoja = cnpjLoja;
         this.anoDre = anoDre;
@@ -72,19 +71,19 @@ public class ConciliacaoLojaDreEntity {
         this.mesDre = mesDre;
     }
 
-    public BigDecimal getValTaxaCaptura() {
+    public double getValTaxaCaptura() {
         return valTaxaCaptura;
     }
 
-    public void setValTaxaCaptura(BigDecimal valTaxaCaptura) {
+    public void setValTaxaCaptura(double valTaxaCaptura) {
         this.valTaxaCaptura = valTaxaCaptura;
     }
 
-    public BigDecimal getValCustoAntecipacao() {
+    public double getValCustoAntecipacao() {
         return valCustoAntecipacao;
     }
 
-    public void setValCustoAntecipacao(BigDecimal valCustoAntecipacao) {
+    public void setValCustoAntecipacao(double valCustoAntecipacao) {
         this.valCustoAntecipacao = valCustoAntecipacao;
     }
 }
