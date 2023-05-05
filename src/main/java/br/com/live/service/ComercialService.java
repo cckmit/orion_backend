@@ -431,7 +431,7 @@ public class ComercialService {
 				obsPedido = "Desconto Parcial de " + valorDescCalculado;
 			}
 
-			String cnpjEdit = String.format("%09d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
+			String cnpjEdit = String.format("%08d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
 
 			DescontoClientesImportados pedidos = new DescontoClientesImportados(0,cnpjEdit,valorDescCalculado, FormataData.parseDateToString(dadosPedido.dataEmbarque), obsPedido, dadosPedido.pedido, usuario);
 			listPedidosComDesconto.add(pedidos);

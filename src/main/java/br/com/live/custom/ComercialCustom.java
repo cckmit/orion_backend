@@ -217,9 +217,11 @@ public class ComercialCustom {
 		String observacao = "";
 
 		String query = " select max(a.observacao) from orion_com_290 a " +
-				" where a.cnpj9 = " + cnpj9 +
-				" and  a.cnpj4 = " + cnpj4 +
-				" and  a.cnpj2 = " + cnpj2;
+				" where a.cnpj_9 = " + cnpj9 +
+				" and  a.cnpj_4 = " + cnpj4 +
+				" and  a.cnpj_2 = " + cnpj2;
+
+		System.out.println("query: " + query);
 		try {
 			observacao = jdbcTemplate.queryForObject(query, String.class);
 		} catch (Exception e) {
