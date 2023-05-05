@@ -29,8 +29,15 @@ public class ConsultaTag {
     public int pedido;
     public String programa;
     public String tipo;
+    public String usuarioRede;
 
-    public int getDeposito() {
+    public String getUsuarioRede() {
+		return usuarioRede;
+	}
+	public void setUsuarioRede(String usuarioRede) {
+		this.usuarioRede = usuarioRede;
+	}
+	public int getDeposito() {
         return deposito;
     }
     public void setDeposito(int deposito) {

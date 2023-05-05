@@ -589,7 +589,7 @@ public class ExpedicaoCustom {
 
 	public List<ConsultaTag> findHistoricoTag(int periodo, int ordemProducao, int ordemConfeccao, int sequencia) {
 		String query = " select rownum id, trunc(b.data_operacao) data, to_char(b.data_operacao, 'HH:MI') hora, b.data_operacao, b.transacao_ent_new transacao, c.descricao descTransacao, b.deposito_new deposito, d.descricao descDeposito, "
-				+ " b.usuario_estq usuario, b.usuario_exped coletor, b.pedido_venda_new pedido, b.estoque_tag_new situacao, b.nome_programa programa from pcpc_330_log b, estq_005 c, basi_205 d "
+				+ " b.usuario_estq usuario, b.usuario_exped coletor, b.pedido_venda_new pedido, b.estoque_tag_new situacao, b.nome_programa programa, b.usuario_rede usuarioRede from pcpc_330_log b, estq_005 c, basi_205 d "
 				+ " where b.periodo_producao = " + periodo
 				+ " and b.ordem_producao = " + ordemProducao
 				+ " and b.ordem_confeccao = " + ordemConfeccao
