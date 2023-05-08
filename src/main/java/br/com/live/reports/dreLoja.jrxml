@@ -110,15 +110,15 @@
 				<reportElement x="-9" y="5" width="79" height="50" uuid="0eb884c5-e0e6-40af-8541-564d002bc4c6"/>
 			</rectangle>
 			<image>
-				<reportElement x="7" y="16" width="55" height="31" uuid="36d4d2d0-fa49-4ad4-baf2-d0df1baababd"/>
+				<reportElement x="4" y="16" width="55" height="31" uuid="36d4d2d0-fa49-4ad4-baf2-d0df1baababd"/>
 				<imageExpression><![CDATA[$P{logoLive}]]></imageExpression>
 			</image>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="106" splitType="Stretch">
+		<band height="92" splitType="Stretch">
 			<componentElement>
-				<reportElement x="-9" y="0" width="820" height="100" uuid="ba8ca652-0cc1-4313-9067-fd1e501cc45b">
+				<reportElement x="-9" y="0" width="820" height="90" uuid="ba8ca652-0cc1-4313-9067-fd1e501cc45b">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -677,7 +677,7 @@
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [9]"/>
 						<jr:columnHeader height="20" rowSpan="1">
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="370" height="20" backcolor="#DBDBDB" uuid="722b9f1e-3358-4fcc-857b-706785bb4ca3"/>
+								<reportElement mode="Opaque" x="0" y="0" width="370" height="20" backcolor="#EAEAEE" uuid="722b9f1e-3358-4fcc-857b-706785bb4ca3"/>
 								<box>
 									<pen lineWidth="0.5"/>
 									<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#404040"/>
