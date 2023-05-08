@@ -59,15 +59,14 @@ public class RelacionamentoLojaDreController {
         centroCustoLojaRepository.deleteById(id);
     }
 
-
     @GetMapping("/find-all-supervisores")
     public List<SupervisorLojaEntity> findAllSupervisoresLoja() {
         return supervisorLojaRepository.findAll();
     }
 
     @GetMapping("/find-supervisor-by-id/{cnpjLoja}")
-    public Optional<SupervisorLojaEntity> findByIdSupervisorLoja(@PathVariable String cnpjLoja) {
-        return supervisorLojaRepository.findById(cnpjLoja);
+    public ConteudoChaveAlfaNum findSupervisorLoja(@PathVariable String cnpjLoja) {
+        return relacionamentoLojaDreCustom.findSupervisorLoja(cnpjLoja);
     }
 
     @GetMapping("/supervisores")

@@ -9,11 +9,13 @@ import br.com.live.model.*;
 import br.com.live.repository.DreLojaRepository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -23,6 +25,7 @@ public class DreLojaService {
     DreLojaCustom dreLojaCustom;
     RelacionamentoLojaDreCustom relacionamentoLojaDreCustom;
     OrcamentoLojaDreCustom orcamentoLojaDreCustom;
+    ReportService reportService;
 
     private final static int PECAS_FATURADAS = 99900;
     private final static int PECAS_CONSUMO = 99901;
@@ -54,11 +57,12 @@ public class DreLojaService {
     private final static int MESACUMULADO = 2;
 
 
-    public DreLojaService(DreLojaRepository dreLojaRepository, DreLojaCustom dreLojaCustom, RelacionamentoLojaDreCustom relacionamentoLojaDreCustom, OrcamentoLojaDreCustom orcamentoLojaDreCustom) {
+    public DreLojaService(DreLojaRepository dreLojaRepository, DreLojaCustom dreLojaCustom, RelacionamentoLojaDreCustom relacionamentoLojaDreCustom, OrcamentoLojaDreCustom orcamentoLojaDreCustom,ReportService reportService) {
         this.dreLojaRepository = dreLojaRepository;
         this.dreLojaCustom = dreLojaCustom;
         this.relacionamentoLojaDreCustom = relacionamentoLojaDreCustom;
         this.orcamentoLojaDreCustom = orcamentoLojaDreCustom;
+        this.reportService = reportService;
     }
 
     public void gravarDreLojas(int mesDre, int anoDre, List<ConteudoChaveAlfaNum> cnpjLojaList){
@@ -197,14 +201,14 @@ public class DreLojaService {
     }
 
     public void gravarContaContabilFixo(String seqOrcamento, String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat,
-                                          double valorFaturamentoMesAnoAnterior, double valorFaturamentoMesAnoAtualOrcado, double valorFaturamentoMesAnoAtual,
-                                          double valorImpostoFaturamentoMesAnoAnterior, double valorImpostoFaturamentoMesAnoAtualOrcado, double valorImpostoFaturamentoMesAnoAtual,
-                                          int qtdPecaFaturadaMesAnoAnterior, int qtdPecaFaturadaMesAnoAtualOrcado, int qtdPecaFaturadaMesAnoAtual,
-                                          int qtdPecaConsumoMesAnoAnterior, int qtdPecaConsumoMesAnoAtualOrcado, int qtdPecaConsumoMesAnoAtual,
-                                          double valorPrecoMedioMesAnoAnterior, double valorPrecoMedioMesAnoAtualOrcado, double valorPrecoMedioMesAnoAtual,
-                                          double valorFaturamentoLiquidoMesAnoAnterior, double valorFaturamentoLiquidoMesAnoAtualOrcado, double valorFaturamentoLiquidoMesAnoAtual,
-                                          double valorCustoMaterialMesAnoAnterior, double valorCustoMaterialMesAnoAtualOrcado, double valorCustoMaterialMesAnoAtual,
-                                          double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtualOrcado, double valorLucroBrutoMesAnoAtual){
+                                        double valorFaturamentoMesAnoAnterior, double valorFaturamentoMesAnoAtualOrcado, double valorFaturamentoMesAnoAtual,
+                                        double valorImpostoFaturamentoMesAnoAnterior, double valorImpostoFaturamentoMesAnoAtualOrcado, double valorImpostoFaturamentoMesAnoAtual,
+                                        int qtdPecaFaturadaMesAnoAnterior, int qtdPecaFaturadaMesAnoAtualOrcado, int qtdPecaFaturadaMesAnoAtual,
+                                        int qtdPecaConsumoMesAnoAnterior, int qtdPecaConsumoMesAnoAtualOrcado, int qtdPecaConsumoMesAnoAtual,
+                                        double valorPrecoMedioMesAnoAnterior, double valorPrecoMedioMesAnoAtualOrcado, double valorPrecoMedioMesAnoAtual,
+                                        double valorFaturamentoLiquidoMesAnoAnterior, double valorFaturamentoLiquidoMesAnoAtualOrcado, double valorFaturamentoLiquidoMesAnoAtual,
+                                        double valorCustoMaterialMesAnoAnterior, double valorCustoMaterialMesAnoAtualOrcado, double valorCustoMaterialMesAnoAtual,
+                                        double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtualOrcado, double valorLucroBrutoMesAnoAtual){
 
         OrcamentoLojaDre dadosOrcamento = orcamentoLojaDreCustom.findOrcamentoBySeqCnpjMesAno(seqOrcamento, cnpjLoja, mesDre, anoDre);
 
@@ -825,5 +829,141 @@ public class DreLojaService {
     public double arredondarPercentual(double valor) {
         double valorArredondado = Math.round(valor * 10);
         return valorArredondado / 10.0;
+    }
+
+
+    public String gerarPdfDre(String cnpjLoja, String nomeLoja, int mesDre, int anoDre) throws JRException, FileNotFoundException {
+
+        String nomeRelatorioGerado = "";
+
+        String[] meses = {"Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"};
+        String descrMesDre = meses[mesDre - 1];
+
+        List<DreLojaPdf> dreLojaPdfList = estruturarObjetoDrePdf(cnpjLoja, mesDre, anoDre);
+
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dreLojaPdfList);
+
+        Map<String, Object> parameters = setParameters(cnpjLoja, nomeLoja, mesDre, descrMesDre, anoDre);
+
+        String descricaoPdf = "Dre-" + mesDre + "-" + anoDre + "-" + nomeLoja;
+
+        nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "dreLoja", parameters, descricaoPdf, false);
+
+        return nomeRelatorioGerado;
+    }
+
+    public Map<String, Object> setParameters(String cnpjLoja, String nomeLoja, int mesDre, String descrMesDre, int anoDre) {
+
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("cnpjLoja", cnpjLoja);
+        parameters.put("nomeLoja", nomeLoja);
+        parameters.put("mesDre", mesDre);
+        parameters.put("mesDreFormatado", descrMesDre);
+        parameters.put("anoDre", anoDre);
+        parameters.put("anoAntDre", anoDre - 1);
+
+        return parameters;
+    }
+
+    List<DreLojaPdf> estruturarObjetoDrePdf(String cnpjLoja, int mesDre, int anoDre){
+
+        List<DreLoja> dreLojaListMes = dreLojaCustom.obterCamposDreLojaCnpjMesAnVigente(cnpjLoja, mesDre, anoDre);
+        List<DreLojaPdf> dreLojaPdfList = new ArrayList<>();
+
+        for (DreLoja dreLoja : dreLojaListMes){
+
+            String seqConsulta = dreLoja.seqConsulta;
+
+            DreLoja dreLojaAcumulado = dreLojaCustom.obterDadosDreAcumuladoLojaCnpjMesSeq(seqConsulta, cnpjLoja, mesDre, anoDre);
+
+            int contaContabil = 0;
+
+            OrcamentoLojaDre dadosOrcamentoSequencia = orcamentoLojaDreCustom.findOrcamentoBySeqCnpjMesAno(seqConsulta, cnpjLoja, mesDre, anoDre);
+
+            contaContabil = dadosOrcamentoSequencia.contaContabil;
+
+            DreLojaPdf dreLojaPdf = new DreLojaPdf();
+            dreLojaPdf.seqConsulta = dreLoja.seqConsulta;
+            dreLojaPdf.cnpjLoja = dreLoja.cnpjLoja;
+            dreLojaPdf.anoDre = dreLoja.anoDre;
+            dreLojaPdf.mesDre = dreLoja.mesDre;
+            dreLojaPdf.propriedade = dreLoja.propriedade;
+            dreLojaPdf.valRealAnoAnt =  converterValorPdf(dreLoja.valRealAnoAnt, contaContabil);
+            dreLojaPdf.percRealAnoAnt = dreLoja.percRealAnoAnt + "%";
+            dreLojaPdf.valOrcado = converterValorPdf(dreLoja.valOrcado, contaContabil);
+            dreLojaPdf.percOrcado = dreLoja.percOrcado + "%";
+            dreLojaPdf.valReal = converterValorPdf(dreLoja.valReal, contaContabil);
+            dreLojaPdf.percReal = dreLoja.percReal + "%";
+            dreLojaPdf.valDiferencaOrcadoReal = converterValorPdf(dreLoja.valDiferencaOrcadoReal, contaContabil);
+            dreLojaPdf.percDiferencaOrcadoReal = dreLoja.percDiferencaOrcadoReal + "%";
+            dreLojaPdf.percDiferencaRealVigAnt = dreLoja.percDiferencaRealVigAnt + "%";
+            dreLojaPdf.valRealAnoAntAcu = converterValorPdf(dreLojaAcumulado.valRealAnoAnt, contaContabil);
+            dreLojaPdf.percRealAnoAntAcu = dreLojaAcumulado.percRealAnoAnt + "%";
+            dreLojaPdf.valOrcadoAcu = converterValorPdf(dreLojaAcumulado.valOrcado, contaContabil);
+            dreLojaPdf.percOrcadoAcu = dreLojaAcumulado.percOrcado + "%";
+            dreLojaPdf.valRealAcu = converterValorPdf(dreLojaAcumulado.valReal, contaContabil);
+            dreLojaPdf.percRealAcu = dreLojaAcumulado.percReal + "%";
+            dreLojaPdf.valDiferencaOrcadoRealAcu = converterValorPdf(dreLojaAcumulado.valDiferencaOrcadoReal, contaContabil);
+            dreLojaPdf.percDiferencaOrcadoRealAcu = dreLojaAcumulado.percDiferencaOrcadoReal + "%";
+            dreLojaPdf.percDiferencaRealVigAntAcu = dreLojaAcumulado.percDiferencaRealVigAnt + "%";
+            dreLojaPdfList.add(dreLojaPdf);
+        }
+
+        OrdenaRegistrosPdf(dreLojaPdfList);
+
+        return dreLojaPdfList;
+    }
+
+    List<DreLojaPdf> OrdenaRegistrosPdf(List<DreLojaPdf> dreLojaPdfList){
+
+        Comparator<DreLojaPdf> comparator = new Comparator<DreLojaPdf>() {
+            @Override
+            public int compare(DreLojaPdf o1, DreLojaPdf o2) {
+                String[] s1Array = o1.getSeqConsulta().split("\\.");
+                String[] s2Array = o2.getSeqConsulta().split("\\.");
+                int length = Math.min(s1Array.length, s2Array.length);
+                for (int i = 0; i < length; i++) {
+                    int s1Part = Integer.parseInt(s1Array[i]);
+                    int s2Part = Integer.parseInt(s2Array[i]);
+                    if (s1Part != s2Part) {
+                        return s1Part - s2Part;
+                    }
+                }
+                return s1Array.length - s2Array.length;
+            }
+        };
+
+        Collections.sort(dreLojaPdfList, comparator);
+
+        return dreLojaPdfList;
+    }
+
+    Comparator<DreLojaPdf> comparator = new Comparator<DreLojaPdf>() {
+        @Override
+        public int compare(DreLojaPdf o1, DreLojaPdf o2) {
+            String[] s1Array = o1.getSeqConsulta().split("\\.");
+            String[] s2Array = o2.getSeqConsulta().split("\\.");
+            int length = Math.min(s1Array.length, s2Array.length);
+            for (int i = 0; i < length; i++) {
+                int s1Part = Integer.parseInt(s1Array[i]);
+                int s2Part = Integer.parseInt(s2Array[i]);
+                if (s1Part != s2Part) {
+                    return s1Part - s2Part;
+                }
+            }
+            return s1Array.length - s2Array.length;
+        }
+    };
+
+    String converterValorPdf(Double valor, int contaContabil){
+
+        String valorFormatado = (valor >= 1000 ? String.format("%.3f", valor / 1000.0).replace(",", ".") : String.valueOf((int) Math.round(valor)));
+
+        if (contaContabil == PRECO_MEDIO){
+            valorFormatado = Double.toString(valor);
+        }
+
+        return valorFormatado;
     }
 }

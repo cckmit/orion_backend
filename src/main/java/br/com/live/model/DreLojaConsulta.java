@@ -5,15 +5,25 @@ public class DreLojaConsulta {
     long id;
     String cnpjLoja;
     String nomeLoja;
+    String nomeSupervisor;
     int anoDre;
     int mesDre;
 
-    public DreLojaConsulta(long id, String cnpjLoja, String nomeLoja, int anoDre, int mesDre) {
+    public DreLojaConsulta(long id, String cnpjLoja, String nomeLoja, String nomeSupervisor, int anoDre, int mesDre) {
         this.id = id;
         this.cnpjLoja = cnpjLoja;
         this.nomeLoja = nomeLoja;
+        this.nomeSupervisor = nomeSupervisor;
         this.anoDre = anoDre;
         this.mesDre = mesDre;
+    }
+
+    public String getNomeSupervisor() {
+        return nomeSupervisor;
+    }
+
+    public void setNomeSupervisor(String nomeSupervisor) {
+        this.nomeSupervisor = nomeSupervisor;
     }
 
     public long getId() {

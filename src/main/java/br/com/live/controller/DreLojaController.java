@@ -1,15 +1,22 @@
 package br.com.live.controller;
 
 import br.com.live.body.BodyDreLoja;
+import br.com.live.body.BodyDrePdf;
 import br.com.live.custom.DreLojaCustom;
 import br.com.live.model.ConciliacaoLojaDre;
 import br.com.live.model.DreLoja;
 import br.com.live.model.DreLojaConsulta;
 import br.com.live.service.DreLojaService;
+import br.com.live.service.ReportService;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -51,5 +58,10 @@ public class DreLojaController {
     @GetMapping("/find-conciliacao-loja-dre-cnpj-mes-ano/{cnpjLoja}/{mesDre}/{anoDre}")
     public ConciliacaoLojaDre findConciliacaoLojaDreCnpjMesAno(@PathVariable("cnpjLoja") String cnpjLoja, @PathVariable("mesDre") int mesDre, @PathVariable("anoDre") int anoDre){
         return dreLojaCustom.findConciliacaoLojaDreCnpjMesAno(cnpjLoja, mesDre, anoDre);
+    }
+
+    @RequestMapping(value = "/gerar-pdf-dre", method = RequestMethod.POST)
+    public String gerarPdfDre(@RequestBody BodyDrePdf body) throws JRException, FileNotFoundException {
+        return dreLojaService.gerarPdfDre(body.cnpjLoja, body.nomeLoja, body.mesDre, body.anoDre);
     }
 }

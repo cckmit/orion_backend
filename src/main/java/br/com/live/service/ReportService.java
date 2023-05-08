@@ -24,11 +24,14 @@ public class ReportService {
 	// METODO PARA GERAR O REPORT A PARTIR DE UM .jrxml E GRAVAR NA PASTA DEFINIDA NO application-dev.properties
 	// EXEMPLO DE DATASOURCE - JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(micromov);
 	//
+
     public String generateReport(String reportFormat, JRBeanCollectionDataSource dataSource, String layout, Map<String, Object> parameters, String reportTittle, boolean insertDataSource) throws FileNotFoundException, JRException {
 
         JasperPrint jasperPrint = null;
     	File file = ResourceUtils.getFile(configuracoesService.getDiretorioJasper() + layout + ".jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+
+        parameters.put("logoLive", configuracoesService.getDiretorioJasper() + "logoLive.png");
 
         if (insertDataSource) {
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);

@@ -34,7 +34,23 @@ public class RelacionamentoLojaDreCustom {
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
     }
 
+    public ConteudoChaveAlfaNum findSupervisorLoja(String cnpjLoja){
+
+        String query = "select a.cnpj_supervisor value, sp.nome_fornecedor label from orion_fin_001 a, supr_010 sp " +
+                "where a.cnpj_supervisor = (sp.fornecedor9 ||'.'|| sp.fornecedor4 ||'.'|| sp.fornecedor2) ";
+
+        return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+    }
+
     public List<ConteudoChaveAlfaNum> findAllSupervisores() {
+
+        String query = "select (sp.fornecedor9 ||'.'|| sp.fornecedor4 ||'.'|| sp.fornecedor2) value, sp.nome_fornecedor label from supr_010 sp " +
+                "where sp.tipo_fornecedor = 97 ";
+
+        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+    }
+
+    public List<ConteudoChaveAlfaNum> findAllSupervisorConfiggurado() {
 
         String query = "select (sp.fornecedor9 ||'.'|| sp.fornecedor4 ||'.'|| sp.fornecedor2) value, sp.nome_fornecedor label from supr_010 sp " +
                 "where sp.tipo_fornecedor = 97 ";

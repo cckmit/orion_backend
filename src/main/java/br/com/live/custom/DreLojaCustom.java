@@ -29,7 +29,7 @@ public class DreLojaCustom {
 
     }
 
-    public List<ConciliacaoLojaDreConsulta> findAllDreConciliacaoDreMesAno(int mesDre, int anoDre){
+    public List<ConciliacaoLojaDreConsulta> findAllDreConciliacaoDreMesAno(int mesDre, int anoDre) {
         String query = "select a.id, a.cnpj_loja cnpjLoja, b.fantasia_cliente nomeLoja, a.mes_dre mesDre, a.ano_dre anoDre, a.val_taxa_captura valTaxaCaptura, a.val_custo_antecipacao valCustoAntecipacao from orion_fin_025 a, pedi_010 b " +
                 " where a.cnpj_loja = (b.cgc_9 ||'.'|| b.cgc_4 ||'.'|| b.cgc_2) " +
                 " and a.mes_dre = ? " +
@@ -39,9 +39,11 @@ public class DreLojaCustom {
     }
 
     public List<DreLojaConsulta> findAllDreLoja(){
-        String query = "select a.cnpj_loja cnpjLoja, b.fantasia_cliente nomeLoja, a.mes_dre mesDre, a.ano_dre anoDre from orion_fin_030 a, pedi_010 b" +
-                " where a.cnpj_loja = (b.cgc_9 ||'.'|| b.cgc_4 ||'.'|| b.cgc_2)" +
-                " group by a.cnpj_loja, b.fantasia_cliente, a.mes_dre, a.ano_dre";
+        String query = "select a.cnpj_loja cnpjLoja, b.fantasia_cliente nomeLoja, a.mes_dre mesDre, a.ano_dre anoDre, d.nome_fornecedor nomeSupervisor from orion_fin_030 a, pedi_010 b, orion_fin_001 c, supr_010 d " +
+                " where a.cnpj_loja = (b.cgc_9 ||'.'|| b.cgc_4 ||'.'|| b.cgc_2) " +
+                " and a.cnpj_loja = c.cnpj_loja " +
+                " and c.cnpj_supervisor = (d.fornecedor9 ||'.'|| d.fornecedor4 ||'.'|| d.fornecedor2) " +
+                " group by a.cnpj_loja, b.fantasia_cliente, a.mes_dre, a.ano_dre, d.nome_fornecedor ";
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DreLojaConsulta.class));
     }
 
@@ -207,5 +209,18 @@ public class DreLojaCustom {
                 "AND ANO_LANCAMENTO = " + anoLancamento;
 
         return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(LancamentoLojaMesAno.class));
+    }
+
+    public DreLoja obterDadosDreAcumuladoLojaCnpjMesSeq(String seqConsulta, String cnpjLoja, int mesDre, int anoDre){
+
+        String query = "SELECT ID, SEQ_CONSULTA seqConsulta, CNPJ_LOJA cnpjLoja, ANO_DRE anoDre, MES_DRE mesDre, TIPO_DRE tipoDre, PROPRIEDADE, VAL_REAL_ANO_ANT valRealAnoAnt, PERC_REAL_ANO_ANT percRealAnoAnt, VAL_ORCADO valOrcado, PERC_ORCADO percOrcado, VAL_REAL valReal, PERC_REAL percReal, VAL_DIFERENCA_ORCADO_REAL valDiferencaOrcadoReal, PERC_DIFERENCA_ORCADO_REAL percDiferencaOrcadoReal, PERC_DIFERENCA_REAL_VIG_ANT percDiferencaRealVigAnt " +
+                " FROM ORION_FIN_030 " +
+                " WHERE CNPJ_LOJA = '" + cnpjLoja + "' " +
+                " AND ANO_DRE = " + anoDre +
+                " AND MES_DRE = " + mesDre +
+                " AND SEQ_CONSULTA = '" + seqConsulta + "' " +
+                " AND TIPO_DRE = 2";
+
+        return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(DreLoja.class));
     }
 }
