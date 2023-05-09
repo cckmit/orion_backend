@@ -533,5 +533,22 @@ public class FechamentoComissaoCustom {
 		}
 		return listLactoManuais;
 	}
+	
+	public int findCargoRepresentante(List<ConteudoChaveAlfaNum> listRepresentante){
+		
+		int codCargo = 0;
+		
+		String query = " SELECT a.cd_cargo_rep "
+				+ "       FROM pedi_020 a "
+				+ "       WHERE a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")" 
+				+ "       GROUP BY a.cd_cargo_rep ";
+
+		try {
+			codCargo = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			codCargo = 0;
+		}
+		return codCargo;
+	}
 
 }

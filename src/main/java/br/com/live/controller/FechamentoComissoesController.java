@@ -1,5 +1,6 @@
 package br.com.live.controller;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyChamado;
 import br.com.live.body.BodyExpedicao;
 import br.com.live.body.BodyFinanceiro;
 import br.com.live.custom.FechamentoComissaoCustom;
@@ -17,6 +19,7 @@ import br.com.live.model.ConsultaFechamentoComissoes;
 import br.com.live.service.FechamentoComissaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import net.sf.jasperreports.engine.JRException;
 
 
 @RestController
@@ -82,5 +85,15 @@ public class FechamentoComissoesController {
     public List<ConsultaFechamentoComissoes> findTotaisLanctoManuaisPorRepresentante(@RequestBody BodyFinanceiro body) {
         return financeiroService.findTotaisLanctoManuaisPorRepresentante(body.mes, body.ano, body.listRepresentante);
     }
+	
+	@RequestMapping(value = "/find-cargo-representante", method = RequestMethod.POST)
+    public int findCargoRepresentante(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findCargoRepresentante(body.listRepresentante);
+    }
+	
+	@RequestMapping(value = "/gerar-pdf", method = RequestMethod.POST)
+    public String gerarPdfChamados(@RequestBody BodyFinanceiro body) throws JRException, FileNotFoundException {
+        return financeiroService.gerarPdf(body.listRepresentante, body.listFechamento, body.listFechamento2, body.mes, body.ano, body.valorAReceber);
+        }
 
 }
