@@ -17,7 +17,6 @@ public class ResumoOcupacaoCarteiraPorModalidade {
 		this.valorConfirmar = valorConfirmar;
 		this.valorTotal = valorTotal;
 		this.percentual = percentual;
-		this.percentual = percentual;
 	}
 
 	public String getModalidade() {
