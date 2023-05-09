@@ -910,8 +910,6 @@ public class DreLojaService {
             dreLojaPdfList.add(dreLojaPdf);
         }
 
-        // Teste Commit
-
         OrdenaRegistrosPdf(dreLojaPdfList);
 
         return dreLojaPdfList;
