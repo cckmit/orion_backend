@@ -1,25 +1,33 @@
 package br.com.live.service;
 
+import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.FechamentoComissaoCustom;
+import br.com.live.model.ConsultaChamado;
 import br.com.live.model.ConsultaFechamentoComissoes;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @Service
 @Transactional
 public class FechamentoComissaoService {
 	
 	private final FechamentoComissaoCustom financeiroCustom;
+	private final ReportService reportService;
 	
 	@Autowired
-	FechamentoComissaoService(FechamentoComissaoCustom financeiroCustom) {
+	FechamentoComissaoService(FechamentoComissaoCustom financeiroCustom, ReportService reportService) {
 		this.financeiroCustom = financeiroCustom;
+		this.reportService = reportService;
 	}
 	
 	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosAnalitico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
@@ -181,4 +189,58 @@ public class FechamentoComissaoService {
 		};
 		return financeiroCustom.findTotaisLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
 	}
+	
+	public int findCargoRepresentante(List<ConteudoChaveAlfaNum> listRepresentante){
+		return financeiroCustom.findCargoRepresentante(listRepresentante);
+	}
+	
+	public String gerarPdf(List<ConteudoChaveAlfaNum> representante, List<ConsultaFechamentoComissoes> fechamento, List<ConsultaFechamentoComissoes> fechamento2, 
+			int mes, int ano, float valorAReceber) throws JRException, FileNotFoundException {
+
+        String nomeRelatorioGerado = "";
+        String nomeRepresentante = "";
+
+        for (ConteudoChaveAlfaNum dadosRepresentante : representante) {
+            if (representante.size() == 1) {
+                nomeRepresentante = dadosRepresentante.label;
+                nomeRepresentante = nomeRepresentante.substring(nomeRepresentante.indexOf(" ") + 2);
+            } else {
+                if (!nomeRepresentante.isEmpty()) {
+                    nomeRepresentante += " / ";                    
+                }
+                String nomeCompleto = dadosRepresentante.label;
+                String nomeSemCodigo = nomeCompleto.substring(nomeCompleto.indexOf(" ") + 2);
+                nomeRepresentante += nomeSemCodigo;
+            }
+        }
+               
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(fechamento);
+        JRBeanCollectionDataSource dataSource2 = new JRBeanCollectionDataSource(fechamento2);
+        
+        Map<String, Object> parameters = setParameters(nomeRepresentante, mes, ano, dataSource2, valorAReceber);
+
+        nomeRelatorioGerado = reportService.generateReport("pdf", dataSource, "fechamento_comissoes", parameters, "FechamentoRepresentante", false);
+
+        return nomeRelatorioGerado;
+    }
+	
+	public Map<String, Object> setParameters(String nomeRepresentante, int mesNum, int ano, JRBeanCollectionDataSource dataSource2, float valorAReceber) {
+		String mes = "";
+		
+		String[] meses = {"JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"};
+		
+	    mes = meses[mesNum - 1];
+	    
+	    
+		Map<String, Object> parameters = new HashMap<>();
+        parameters.put("mes", mes);
+        parameters.put("ano", ano);
+        parameters.put("nomeRepresentante", nomeRepresentante);
+        parameters.put("listPdf", dataSource2);
+        parameters.put("valorAReceber", valorAReceber);
+
+        return parameters;
+    }
+	
+
 }
