@@ -209,4 +209,85 @@ public class OcupacaoCarteiraCustom {
 		return listResumoOcupacaoCarteiraPorCanalVenda;		
 	}
 
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraPorMinutos(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade, double tempoPadrao) {		
+		Date dataInicio = FormataData.getStartingDay(mes, ano);		
+		Date dataFim = FormataData.getFinalDay(mes, ano);
+		
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+				
+		String query = " select d.live_agrup_tipo_cliente canal, sum(b.qtde_tempo_producao) valorReal " 
+		+ " from pedi_100 a, pedi_010 c, pedi_085 d, " 
+		+ " (select z.pedido_venda, z.seq_item_pedido, z.cd_it_pe_grupo, z.cd_it_pe_subgrupo, z.cd_it_pe_item, z.qtde_pedida, nvl(max(w.tempo),?) tempo, (z.qtde_pedida * nvl(max(w.tempo),?)) qtde_tempo_producao "  
+		+ " from pedi_110 z, orion_vi_itens_x_tempo_estagio w "
+		+ " where z.cod_cancelamento = 0 "
+		+ " and w.estagio (+) = " + OrdemProducaoCustom.ESTAGIO_COSTURA
+		+ " and w.nivel   (+) = z.cd_it_pe_nivel99 "
+		+ " and w.grupo   (+) = z.cd_it_pe_grupo "
+		+ " group by z.pedido_venda, z.seq_item_pedido, z.cd_it_pe_grupo, z.cd_it_pe_subgrupo, z.cd_it_pe_item, z.qtde_pedida) b "
+		+ " where a.data_entr_venda between ? and ? " 
+		+ " and a.cod_cancelamento = 0 " 
+		+ " and b.pedido_venda = a.pedido_venda "; 
+
+		if (tipoClassificacao > 0)
+			query += " and a.classificacao_pedido = " + tipoClassificacao; 
+
+		query += " and a.tipo_pedido in (" + tipoPedido + ")"
+		+ " and c.cgc_9 = a.cli_ped_cgc_cli9 "
+		+ " and c.cgc_4 = a.cli_ped_cgc_cli4 "
+		+ " and c.cgc_2 = a.cli_ped_cgc_cli2 "
+		+ " and d.tipo_cliente = c.tipo_cliente "
+		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
+		+ " where orion_150.tipo_meta = " + tipoMeta   
+		+ " and orion_150.ano = " + ano
+		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+		+ " group by d.live_agrup_tipo_cliente ";                                               
+
+		try {
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), tempoPadrao, tempoPadrao, dataInicio, dataFim);				
+		} catch (Exception e) {			
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+		}
+		
+		return listResumoOcupacaoCarteiraPorCanalVenda;				
+	}
+	
+	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraConfirmarPorMinutos(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade, double tempoPadrao) {		
+		Date dataInicio = FormataData.getStartingDay(mes, ano);		
+		Date dataFim = FormataData.getFinalDay(mes, ano);
+				
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+				
+		String query = "select d.live_agrup_tipo_cliente canal, sum(b.qtde_tempo_producao) valorConfirmar "
+		+ " from inte_100 a, pedi_010 c, pedi_085 d, "		  
+		+ " (select z.pedido_venda, z.seq_item_pedido, z.item_grupo, z.item_sub, z.item_item, z.qtde_pedida, nvl(max(w.tempo),0) tempo, (z.qtde_pedida * nvl(max(w.tempo),0)) qtde_tempo_producao "  
+		+ " from inte_110 z, orion_vi_itens_x_tempo_estagio w "
+		+ " where w.estagio (+) = " + OrdemProducaoCustom.ESTAGIO_COSTURA
+		+ " and w.nivel   (+) = z.item_nivel99 "
+		+ " and w.grupo   (+) = z.item_grupo "
+		+ " group by z.pedido_venda, z.seq_item_pedido, z.item_grupo, z.item_sub, z.item_item, z.qtde_pedida) b "
+		+ " where a.data_entrega between ? and ? " 
+		+ " and b.pedido_venda = a.pedido_venda "; 
+		    
+		if (tipoClassificacao > 0)
+			query += " and a.classificacao_pedido = " + tipoClassificacao; 
+
+		query += " and a.tipo_pedido in (" + tipoPedido + ")"
+		+ " and c.cgc_9 = a.cliente9 "
+		+ " and c.cgc_4 = a.cliente4 "
+		+ " and c.cgc_2 = a.cliente2 "
+		+ " and d.tipo_cliente = c.tipo_cliente "
+		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
+		+ " where orion_150.tipo_meta = " + tipoMeta   
+		+ " and orion_150.ano = " + ano
+		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+		+ " group by d.live_agrup_tipo_cliente ";                                               
+
+		try {
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), tempoPadrao, tempoPadrao, dataInicio, dataFim);				
+		} catch (Exception e) {			
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+		}
+		
+		return listResumoOcupacaoCarteiraPorCanalVenda;		
+	}
 }
