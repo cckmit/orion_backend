@@ -1692,7 +1692,7 @@ public class ExpedicaoCustom {
 				" where a.minuta = " + minuta +
 				" and b.num_nota_fiscal = a.nota " +
 				" and b.serie_nota_fisc = a.serie " +
-				" group by a.minuta, a.nota, a.serie, b.data_emissao, a.cliente, a.cidade, a.estado, a.caixas, a.peso_bruto, a.valor_nota, a.pedido " +
+				" group by a.minuta, a.nota, a.serie, b.data_emissao, a.cliente, a.cidade, a.estado, a.peso_bruto, a.valor_nota, a.pedido " +
 				" order by a.nota ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
