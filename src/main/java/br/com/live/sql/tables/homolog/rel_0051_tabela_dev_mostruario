@@ -1,0 +1,15 @@
+CREATE TABLE ORION_FIN_050 (
+      ID            NUMBER(9) PRIMARY KEY,
+      REPRESENTANTE NUMBER(3),
+      ESTACAO       VARCHAR2(100),
+      NIVEL         VARCHAR2(1),
+      GRUPO         VARCHAR2(5),
+      SUBGRUPO      VARCHAR2(5),
+      ITEM          VARCHAR(6),
+      QUANTIDADE    NUMBER(2),
+      TAB_COL       NUMBER(2),
+      TAB_MES       NUMBER(2),
+      TAB_SEQ       NUMBER(2),
+      PRECO_UNT     NUMBER(6, 2),
+      TOTAL         NUMBER(6, 2)
+);

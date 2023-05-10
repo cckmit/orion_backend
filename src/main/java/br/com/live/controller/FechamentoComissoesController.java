@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyChamado;
+import br.com.live.body.BodyContabilidade;
 import br.com.live.body.BodyExpedicao;
 import br.com.live.body.BodyFinanceiro;
 import br.com.live.custom.FechamentoComissaoCustom;
 import br.com.live.model.ConsultaFechamentoComissoes;
+import br.com.live.model.RetornoLancamentoCont;
 import br.com.live.service.FechamentoComissaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -68,7 +70,7 @@ public class FechamentoComissoesController {
 	
 	@RequestMapping(value = "/find-bonus", method = RequestMethod.POST)
     public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(@RequestBody BodyFinanceiro body) {
-        return financeiroService.findBonusPorRepresentante(body.mes, body.ano, body.listRepresentante, body.estacao);
+        return financeiroService.findBonusPorRepresentante(body.mes, body.ano, body.listRepresentante);
     }
 	
 	@RequestMapping(value = "/find-devolucao", method = RequestMethod.POST)
@@ -86,6 +88,16 @@ public class FechamentoComissoesController {
         return financeiroService.findTotaisLanctoManuaisPorRepresentante(body.mes, body.ano, body.listRepresentante);
     }
 	
+	@RequestMapping(value = "/find-mostruario-adquirido", method = RequestMethod.POST)
+    public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findMostruarioAdquirido(body.mes, body.ano, body.listRepresentante);
+    }
+	
+	@RequestMapping(value = "/find-mostruario-devolvido", method = RequestMethod.POST)
+    public List<ConsultaFechamentoComissoes> findMostruarioDevolvido(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findMostruarioDevolvido(body.listRepresentante, body.estacao);
+    }
+	
 	@RequestMapping(value = "/find-cargo-representante", method = RequestMethod.POST)
     public int findCargoRepresentante(@RequestBody BodyFinanceiro body) {
         return financeiroService.findCargoRepresentante(body.listRepresentante);
@@ -94,6 +106,11 @@ public class FechamentoComissoesController {
 	@RequestMapping(value = "/gerar-pdf", method = RequestMethod.POST)
     public String gerarPdfChamados(@RequestBody BodyFinanceiro body) throws JRException, FileNotFoundException {
         return financeiroService.gerarPdf(body.listRepresentante, body.listFechamento, body.listFechamento2, body.mes, body.ano, body.valorAReceber);
-        }
+    }
+	
+	@RequestMapping(value = "/importar-devolucoes-mostruario", method = RequestMethod.POST)
+    public void importarDevolucoesMostruario(@RequestBody BodyFinanceiro body) {                  
+    	financeiroService.importarDevolucoesMostruario(body.listRepresentante, body.estacao, body.tabImportDevMostruario);	 
+    }
 
 }
