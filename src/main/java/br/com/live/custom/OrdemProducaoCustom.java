@@ -20,8 +20,9 @@ import br.com.live.util.ConteudoChaveAlfaNum;
 public class OrdemProducaoCustom {
 
 	private JdbcTemplate jdbcTemplate;
-	private final ProdutoService produtoService;
-
+	private final ProdutoService produtoService;  
+	public final static int ESTAGIO_COSTURA = 20;  
+	
 	public OrdemProducaoCustom(JdbcTemplate jdbcTemplate, ProdutoService produtoService) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.produtoService = produtoService;
@@ -761,7 +762,7 @@ public class OrdemProducaoCustom {
 	    + " and (m.item_estrutura = a.item or m.item_estrutura = '000000') "  
 	    + " and m.numero_alternati = a.alternativa " 
 	    + " and m.numero_roteiro = a.roteiro "
-	    + " and m.codigo_estagio = 20 " 
+	    + " and m.codigo_estagio = " + ESTAGIO_COSTURA 
 	    + " ) tempo_costura "
 	    + " from (select aa.ordem_producao, " 
 	    + " aa.periodo_producao, "
@@ -956,7 +957,7 @@ public class OrdemProducaoCustom {
         + " and (m.item_estrutura = z.proconf_item or m.item_estrutura = '000000') " 
         + " and m.numero_alternati = y.alternativa_peca "
         + " and m.numero_roteiro = y.roteiro_peca "
-        + " and m.codigo_estagio = 20 ),0) * nvl(sum(p.qtde_produzida),0) total "    
+        + " and m.codigo_estagio = " + ESTAGIO_COSTURA + "),0) * nvl(sum(p.qtde_produzida),0) total "    
         + " from pcpc_045 p, pcpc_040 z, pcpc_020 y, basi_030 v " 
    	    + " where p.pcpc040_estconf = " + codEstagio
 		+ " and p.data_producao = trunc(sysdate) "
@@ -1013,7 +1014,7 @@ public class OrdemProducaoCustom {
 		+ " and (m.item_estrutura = z.proconf_item or m.item_estrutura = '000000') " 
 		+ " and m.numero_alternati = y.alternativa_peca "
 		+ " and m.numero_roteiro = y.roteiro_peca "
-		+ " and m.codigo_estagio = 20 ),0) * nvl(sum(p.qtde_produzida),0) total "    
+		+ " and m.codigo_estagio = " + ESTAGIO_COSTURA + "),0) * nvl(sum(p.qtde_produzida),0) total "    
 		+ " from pcpc_045 p, pcpc_040 z, pcpc_020 y, basi_030 v " 
 		+ " where p.pcpc040_estconf = " + codEstagio
 		+ " and p.data_producao = trunc(sysdate) " 
