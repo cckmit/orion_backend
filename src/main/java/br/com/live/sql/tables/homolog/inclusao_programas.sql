@@ -290,4 +290,4 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (97, 'Status do Rolo', 'Confecção', '/status-rolo');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (98, 'Plano de Negócios', 'TI', '/plano_de_negocios');
+values (98, 'Plano de Negócios', 'TI', '/plano-negocio');
