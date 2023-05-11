@@ -126,8 +126,8 @@ public class DreLojaService {
         List<ConteudoChaveNumerica> listCentroCustosLoja =  relacionamentoLojaDreCustom.findAllCentroCustoLoja(cnpjLoja);
         String centroCustoLojaConcat = converterListaNumericaEmString(listCentroCustosLoja);
         ParametroGeralDreEntity dadoParametroGeral = dreLojaCustom.findParametrosDreByMesAno(mesDre, anoDre);
-        LancamentoLojaMesAno dadosLancamentoLojaMesAnoAnt = dreLojaCustom.obterDadosLancamentoLojaMesAno(cnpjLoja, mesDre, anoDre -1);
-        LancamentoLojaMesAno dadosLancamentoLojaMesAnoAtual = dreLojaCustom.obterDadosLancamentoLojaMesAno(cnpjLoja, mesDre, anoDre);
+        LancamentoLojaMesAno dadosLancamentoLojaMesAnoAnt = obterDadosLancamentoLojaMesAno(cnpjLoja, mesDre, anoDre -1);
+        LancamentoLojaMesAno dadosLancamentoLojaMesAnoAtual = obterDadosLancamentoLojaMesAno(cnpjLoja, mesDre, anoDre);
         OrcamentoLojaDre orcamentoFaturamento = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(FATURAMENTO, cnpjLoja, mesDre, anoDre);
         OrcamentoLojaDre orcamentoImpostoFaturamento = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(IMPOSTOS, cnpjLoja, mesDre, anoDre);
         OrcamentoLojaDre orcamentoPecasFaturadas = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(PECAS_FATURADAS, cnpjLoja, mesDre, anoDre);
@@ -915,7 +915,36 @@ public class DreLojaService {
         return dreLojaPdfList;
     }
 
-    List<DreLojaPdf> OrdenaRegistrosPdf(List<DreLojaPdf> dreLojaPdfList){
+    public LancamentoLojaMesAno obterDadosLancamentoLojaMesAno(String cnpjLoja, int mesLancamento, int anoLancamento){
+
+        LancamentoLojaMesAno lancamentoLojaMesAnoMicrovix = dreLojaCustom.obterDadosLancamentoLojaMesAnoMicrovix(cnpjLoja, mesLancamento, anoLancamento);
+        LancamentoLojaMesAno lancamentoLojaMesAnoCigam = obterDadosLancamentoLojaMesAnoCigam(cnpjLoja, mesLancamento, anoLancamento);
+
+        LancamentoLojaMesAno lancamentoLojaMesAnoCalculado = new LancamentoLojaMesAno();
+        lancamentoLojaMesAnoCalculado.qtdPecaFaturada = lancamentoLojaMesAnoMicrovix.qtdPecaFaturada + lancamentoLojaMesAnoCigam.qtdPecaFaturada;
+        lancamentoLojaMesAnoCalculado.valFaturamento = lancamentoLojaMesAnoMicrovix.valFaturamento + lancamentoLojaMesAnoCigam.valFaturamento;
+        lancamentoLojaMesAnoCalculado.valImpostoFaturamento = lancamentoLojaMesAnoMicrovix.valImpostoFaturamento + lancamentoLojaMesAnoCigam.valImpostoFaturamento;
+        lancamentoLojaMesAnoCalculado.qtdPecaConsumo = lancamentoLojaMesAnoMicrovix.qtdPecaConsumo + lancamentoLojaMesAnoCigam.qtdPecaConsumo;
+
+        return lancamentoLojaMesAnoCalculado;
+    }
+
+    public LancamentoLojaMesAno obterDadosLancamentoLojaMesAnoCigam(String cnpjLoja, int mesLancamento, int anoLancamento){
+
+        LancamentoLojaMesAno lancamentoLojaMesAnoVenda = dreLojaCustom.obterDadosLancamentoLojaMesAnoVendaCigam(cnpjLoja, mesLancamento, anoLancamento);
+        LancamentoLojaMesAno lancamentoLojaMesAnoCompra = dreLojaCustom.obterDadosLancamentoLojaMesAnoCompraCigam(cnpjLoja, mesLancamento, anoLancamento);
+        int pecaConsumo = dreLojaCustom.obterDadosLancamentoLojaMesAnoPecaConsumoCigam(cnpjLoja, mesLancamento, anoLancamento);
+
+        LancamentoLojaMesAno lancamentoLojaMesAnoCalculado = new LancamentoLojaMesAno();
+        lancamentoLojaMesAnoCalculado.qtdPecaFaturada = lancamentoLojaMesAnoVenda.qtdPecaFaturada - lancamentoLojaMesAnoCompra.qtdPecaFaturada;
+        lancamentoLojaMesAnoCalculado.valFaturamento = lancamentoLojaMesAnoVenda.valFaturamento - lancamentoLojaMesAnoCompra.valFaturamento;
+        lancamentoLojaMesAnoCalculado.valImpostoFaturamento = lancamentoLojaMesAnoVenda.valImpostoFaturamento - lancamentoLojaMesAnoCompra.valImpostoFaturamento;
+        lancamentoLojaMesAnoCalculado.qtdPecaConsumo = pecaConsumo;
+
+        return lancamentoLojaMesAnoCalculado;
+    }
+
+    public List<DreLojaPdf> OrdenaRegistrosPdf(List<DreLojaPdf> dreLojaPdfList){
 
         Comparator<DreLojaPdf> comparator = new Comparator<DreLojaPdf>() {
             @Override
@@ -939,7 +968,7 @@ public class DreLojaService {
         return dreLojaPdfList;
     }
 
-    Comparator<DreLojaPdf> comparator = new Comparator<DreLojaPdf>() {
+    public Comparator<DreLojaPdf> comparator = new Comparator<DreLojaPdf>() {
         @Override
         public int compare(DreLojaPdf o1, DreLojaPdf o2) {
             String[] s1Array = o1.getSeqConsulta().split("\\.");
@@ -956,7 +985,7 @@ public class DreLojaService {
         }
     };
 
-    String converterValorPdf(Double valor, int contaContabil){
+    public String converterValorPdf(Double valor, int contaContabil){
 
         String valorFormatado = (valor >= 1000 ? String.format("%.3f", valor / 1000.0).replace(",", ".") : String.valueOf((int) Math.round(valor)));
 
