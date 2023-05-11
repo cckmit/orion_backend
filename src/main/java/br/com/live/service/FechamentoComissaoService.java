@@ -10,10 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.FechamentoComissaoCustom;
+import br.com.live.entity.DevolucaoMostruario;
+import br.com.live.entity.LancamentoContabeisImport;
 import br.com.live.model.ConsultaChamado;
 import br.com.live.model.ConsultaFechamentoComissoes;
+import br.com.live.model.ConsultaLanctoContabeis;
+import br.com.live.model.RetornoLancamentoCont;
+import br.com.live.repository.DevolucaoMostruarioRepository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
@@ -23,11 +29,13 @@ public class FechamentoComissaoService {
 	
 	private final FechamentoComissaoCustom financeiroCustom;
 	private final ReportService reportService;
+	private final DevolucaoMostruarioRepository devolucaoMostruarioRepository;
 	
 	@Autowired
-	FechamentoComissaoService(FechamentoComissaoCustom financeiroCustom, ReportService reportService) {
+	FechamentoComissaoService(FechamentoComissaoCustom financeiroCustom, ReportService reportService, DevolucaoMostruarioRepository devolucaoMostruarioRepository) {
 		this.financeiroCustom = financeiroCustom;
 		this.reportService = reportService;
+		this.devolucaoMostruarioRepository = devolucaoMostruarioRepository;
 	}
 	
 	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosAnalitico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
@@ -122,7 +130,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findAllEstacoes();
 	}
 	
-	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
+	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
 		
 		float totalFaturado = 0;
 		float valorProporcional = 0;
@@ -159,7 +167,7 @@ public class FechamentoComissaoService {
 		String regiao = ConteudoChaveAlfaNum.parseValueToString(listSubRegiao).replace(",", " /");
 		regiao = regiao.replace("'", "");
 		
-		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, listRepresentante, estacao, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, 
+		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, listRepresentante, totalFaturado, porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, 
 				percAtingidoBeach, valorProporcional, estado, regiao, metaFitness, metaBeach);
 	}
 	
@@ -188,6 +196,14 @@ public class FechamentoComissaoService {
 			mesComZero = "0" + mes;
 		};
 		return financeiroCustom.findTotaisLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
+	}
+	
+	public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante){
+		return financeiroCustom.findPedidoVendaMostruario(listRepresentante);
+	}
+	
+	public List<ConsultaFechamentoComissoes> findMostruarioDevolvido(List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
+		return financeiroCustom.findItensDevolvidos(listRepresentante, estacao);
 	}
 	
 	public int findCargoRepresentante(List<ConteudoChaveAlfaNum> listRepresentante){
@@ -242,5 +258,31 @@ public class FechamentoComissaoService {
         return parameters;
     }
 	
-
+	public void importarDevolucoesMostruario(List<ConteudoChaveAlfaNum> listRepresentante, String estacao, List<ConsultaFechamentoComissoes> listDevMostruario) {
+		
+		DevolucaoMostruario devolucaoMostruario = null;
+		String tabPreco = "";
+		float preco = 0;		
+		// ----------------- Pegando Somente 1 Cod de Representante
+		String codRepresentante = ConteudoChaveAlfaNum.parseValueToString(listRepresentante);		
+		codRepresentante = codRepresentante.substring(codRepresentante.indexOf(",") + 1);
+		codRepresentante = codRepresentante.replace("'", "").strip();
+		int codRepres = Integer.parseInt(codRepresentante);
+		// -----------------
+		
+		for(ConsultaFechamentoComissoes dados : listDevMostruario) {
+			
+			int id = devolucaoMostruarioRepository.findNextId();
+			tabPreco = financeiroCustom.findTabPrecoEstacao(estacao);
+			String[] tabPrecoConcat = tabPreco.split("[-]");
+			int col = Integer.parseInt(tabPrecoConcat[0]);
+			int mes = Integer.parseInt(tabPrecoConcat[1]);
+			int seq = Integer.parseInt(tabPrecoConcat[2]);
+			preco = financeiroCustom.findPrecoProduto(col, mes, seq, dados.nivel, dados.grupo, dados.subGrupo, dados.item);
+			devolucaoMostruario = new DevolucaoMostruario(id, codRepres, estacao, dados.nivel, dados.grupo, dados.subGrupo, dados.item,	dados.quantidade, 
+					col, mes, seq, preco, preco * dados.quantidade);
+			devolucaoMostruarioRepository.saveAndFlush(devolucaoMostruario);
+		}
+	}
+	
 }

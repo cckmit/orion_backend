@@ -169,7 +169,7 @@ public class FechamentoComissaoCustom {
 	
 	public List<ConteudoChaveAlfaNum> findAllEstacoes(){
 		
-		String query = " SELECT s.descricao value, s.descricao label FROM orion_070 s GROUP BY s.descricao ";
+		String query = " SELECT s.descricao value, s.descricao label FROM orion_070 s GROUP BY s.descricao ORDER BY s.descricao ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
@@ -199,6 +199,42 @@ public class FechamentoComissaoCustom {
 			total = 0;
 		}
 		return total;
+	}
+	
+	public String findTabPrecoEstacao(String estacao) {
+		
+		String tabPreco = "";
+		
+		String query = " SELECT a.col_tab || '-' || a.mes_tab || '-' || a.seq_tab tabela "
+				+ "		FROM orion_073 a, pedi_090 b "
+				+ "		WHERE b.col_tabela_preco = a.col_tab "
+				+ "		AND b.mes_tabela_preco = a.mes_tab "
+				+ "		AND b.seq_tabela_preco = a.seq_tab "
+				+ "		AND b.descricao LIKE '%" + estacao + "%'"
+				+ "		AND a.mes_tab = 1 "
+				+ "	GROUP BY a.col_tab || '-' || a.mes_tab || '-' || a.seq_tab ";
+		try {
+			tabPreco = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			tabPreco = "";
+		}
+		return tabPreco;
+	}
+	
+	public float findPrecoProduto(int col, int mes, int seq, String nivel, String grupo, String subgrupo, String item) {
+		
+		float preco = 0;
+		
+		String query = " SELECT inter_fn_get_val_unit_tab(" + col + ", " + mes + ", " + seq +", '" + nivel + "', '" + grupo + "', '" + subgrupo + "', '" + item + "') preco "
+				+ "		FROM dual";
+		
+		try {
+			preco = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			preco = 0;
+		}
+			
+		return preco;
 	}
 	
 	public float findMetaPorRespresentanteFitness(List<ConteudoChaveAlfaNum> listRepresentante, String mes, int ano) {
@@ -355,7 +391,7 @@ public class FechamentoComissaoCustom {
 		
 	}
 	
-	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao, float totalFaturado, 
+	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, float totalFaturado, 
 			float porcLinhaFitness, float porcLinhaBeach, float percAtingidoFitness, float percAtingidoBeach, float valorProporcional, String estado, String regiao, float metaFitness, float metaBeach){
 		
 		List<ConsultaFechamentoComissoes> listComissao = null;
@@ -549,6 +585,47 @@ public class FechamentoComissaoCustom {
 			codCargo = 0;
 		}
 		return codCargo;
+	}
+	
+	public List<ConsultaFechamentoComissoes> findItensDevolvidos(List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
+		
+		String query = " SELECT a.representante || ' - ' || b.nome_rep_cliente representante, "
+				+ "       a.estacao estacao, "
+				+ "       a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item || ' - ' || c.descr_referencia produto, "
+				+ "       LPAD(a.tab_col, 2, 0) || '.' || LPAD(a.tab_mes, 2, 0) || '.' || LPAD(a.tab_seq, 2, 0) tabPreco, "
+				+ "       a.quantidade quantidade, "
+				+ "       a.preco_unt precoUnt, "
+				+ "       a.total total "
+				+ "		FROM orion_fin_050 a, pedi_020 b, basi_030 c "
+				+ "		WHERE b.cod_rep_cliente = a.representante "
+				+ "		AND c.nivel_estrutura = a.nivel "
+				+ "		AND c.referencia = a.grupo "
+				+ "		AND a.estacao LIKE '%" + estacao + "%'"
+				+ "		AND a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
+		System.out.println(query);
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
+	}
+	
+	public List<ConsultaFechamentoComissoes> findPedidoVendaMostruario(List<ConteudoChaveAlfaNum> listRepresentante){
+		
+		String query = " SELECT a.pedido_venda pedido, "
+				+ "       c.cd_it_pe_nivel99 || '.' || c.cd_it_pe_grupo || '.' || c.cd_it_pe_subgrupo || '.' || c.cd_it_pe_item || ' - ' || d.descr_referencia produto, "
+				+ "       c.qtde_pedida quantidade, "
+				+ "       c.valor_unitario precoUnt, "
+				+ "       c.qtde_pedida * c.valor_unitario total "
+				+ "		FROM pedi_100 a, pedi_020 b, pedi_110 c, basi_030 d "
+				+ "		WHERE a.cli_ped_cgc_cli9 = b.cgc_9 "
+				+ "		AND a.cli_ped_cgc_cli4 = b.cgc_4 "
+				+ "		AND a.cli_ped_cgc_cli2 = b.cgc_2 "
+				+ "		AND a.pedido_venda = c.pedido_venda "
+				+ "		AND d.nivel_estrutura = c.cd_it_pe_nivel99 "
+				+ "		AND d.referencia = c.cd_it_pe_grupo "
+				+ "		AND a.situacao_venda = 10 "
+				+ "		AND b.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
+				+ "		AND a.data_entr_venda >= sysdate - 180 ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
 
 }
