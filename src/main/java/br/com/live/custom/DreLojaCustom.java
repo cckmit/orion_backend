@@ -272,7 +272,7 @@ public class DreLojaCustom {
                 "  b.CNPJ_EMP = '" + cnpj + "' " +
                 "  AND b.ID_CFOP in (1202, 2202) " +
                 "  AND TO_DATE(b.DATA_LANCAMENTO, 'DD/MM/YYYY') BETWEEN TO_DATE('" + primeiroDiaMes + "', 'DD/MM/YYYY') AND TO_DATE('" + ultimoDiaMes + "', 'DD/MM/YYYY') " +
-                "  AND b.COD_SEFAZ_SITUACAO IS NULL OR b.COD_SEFAZ_SITUACAO = 0 OR b.COD_SEFAZ_SITUACAO = 1 " +
+                "  AND b.COD_SEFAZ_SITUACAO IS NULL OR b.COD_SEFAZ_SITUACAO = 1 " +
                 "  AND b.OPERACAO = 'DS' " +
                 "  AND b.CANCELADO = 'N' " +
                 "  AND b.EXCLUIDO = 'N' ";

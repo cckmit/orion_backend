@@ -60,10 +60,5 @@ public class DreLojaController {
     public String gerarPdfDre(@RequestBody BodyDrePdf body) throws JRException, FileNotFoundException {
         return dreLojaService.gerarPdfDre(body.cnpjLoja, body.nomeLoja, body.mesDre, body.anoDre);
     }
-
-    @GetMapping("/teste/{cnpjLoja}/{mesDre}/{anoDre}")
-    public LancamentoLojaMesAno teste(@PathVariable("cnpjLoja") String cnpjLoja, @PathVariable("mesDre") int mesDre, @PathVariable("anoDre") int anoDre){
-        return dreLojaService.obterDadosLancamentoLojaMesAno(cnpjLoja, mesDre, anoDre);
-    }
 }
 
