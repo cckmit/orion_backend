@@ -2,6 +2,8 @@ package br.com.live.custom;
 
 import br.com.live.entity.ParametroGeralDreEntity;
 import br.com.live.model.*;
+import br.com.live.util.DataUtils;
+import br.com.live.util.FormataCNPJ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -201,16 +203,6 @@ public class DreLojaCustom {
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DreLoja.class));
     }
 
-    public LancamentoLojaMesAno obterDadosLancamentoLojaMesAno(String cnpjLoja, int mesLancamento, int anoLancamento){
-
-        String query = "SELECT ID, CNPJ_LOJA cnpjLoja, ANO_LANCAMENTO anoLancamento, MES_LANCAMENTO mesLancamento, QTD_PECA_FATURADA qtdPecaFaturada, QTD_PECA_CONSUMO qtdPecaConsumo, VAL_FATURAMENTO valFaturamento, VAL_IMPOSTO_FATURAMENTO valImpostoFaturamento FROM ORION_FIN_010 " +
-                "WHERE CNPJ_LOJA = '" + cnpjLoja + "' " +
-                "AND MES_LANCAMENTO = " + mesLancamento +
-                "AND ANO_LANCAMENTO = " + anoLancamento;
-
-        return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(LancamentoLojaMesAno.class));
-    }
-
     public DreLoja obterDadosDreAcumuladoLojaCnpjMesSeq(String seqConsulta, String cnpjLoja, int mesDre, int anoDre){
 
         String query = "SELECT ID, SEQ_CONSULTA seqConsulta, CNPJ_LOJA cnpjLoja, ANO_DRE anoDre, MES_DRE mesDre, TIPO_DRE tipoDre, PROPRIEDADE, VAL_REAL_ANO_ANT valRealAnoAnt, PERC_REAL_ANO_ANT percRealAnoAnt, VAL_ORCADO valOrcado, PERC_ORCADO percOrcado, VAL_REAL valReal, PERC_REAL percReal, VAL_DIFERENCA_ORCADO_REAL valDiferencaOrcadoReal, PERC_DIFERENCA_ORCADO_REAL percDiferencaOrcadoReal, PERC_DIFERENCA_REAL_VIG_ANT percDiferencaRealVigAnt " +
@@ -222,5 +214,96 @@ public class DreLojaCustom {
                 " AND TIPO_DRE = 2";
 
         return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(DreLoja.class));
+    }
+
+    // TODO: Obtém dados do Microvix (Projeto Integração Microvix)
+    public LancamentoLojaMesAno obterDadosLancamentoLojaMesAnoMicrovix(String cnpjLoja, int mesLancamento, int anoLancamento){
+
+        String query = "SELECT NVL(QTD_PECA_FATURADA, 0) qtdPecaFaturada, NVL(QTD_PECA_CONSUMO, 0) qtdPecaConsumo, NVL(VAL_FATURAMENTO, 0) valFaturamento, NVL(VAL_IMPOSTO_FATURAMENTO, 0) valImpostoFaturamento FROM ORION_FIN_010 " +
+                "WHERE CNPJ_LOJA = '" + cnpjLoja + "' " +
+                "AND MES_LANCAMENTO = " + mesLancamento +
+                "AND ANO_LANCAMENTO = " + anoLancamento;
+
+        List<LancamentoLojaMesAno> results = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LancamentoLojaMesAno.class));
+        return results.stream().findFirst().orElseGet(() -> new LancamentoLojaMesAno());
+    }
+
+    // TODO: Venda, Devolução, Retorno, Industrialização, Comercialização. (CIGAM)
+    public LancamentoLojaMesAno obterDadosLancamentoLojaMesAnoVendaCigam(String cnpjLoja, int mesLancamento, int anoLancamento){
+
+        String cnpj = FormataCNPJ.formatar2(cnpjLoja);
+        String primeiroDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 1);
+        String ultimoDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 2);
+
+        String query = " SELECT " +
+                "  NVL(SUM(b.QTDE), 0) AS qtdPecaFaturada, " +
+                "  NVL(SUM(b.VALOR_LIQUIDO), 0) AS valFaturamento, " +
+                "  NVL(SUM(b.VALOR_COFINS), 0) + NVL(SUM(b.VALOR_ICMS), 0) + NVL(SUM(b.VALOR_PIS), 0) AS valImpostoFaturamento " +
+                "FROM " +
+                "  CIGAM.INTEG_MOVIMENTOS b " +
+                "WHERE " +
+                "  b.CNPJ_EMP = '" + cnpj + "' " +
+                "  AND b.ID_CFOP in (5102, 6102, 6108) " +
+                "  AND TO_DATE(b.DATA_LANCAMENTO, 'DD/MM/YYYY') BETWEEN TO_DATE('" + primeiroDiaMes + "', 'DD/MM/YYYY') AND TO_DATE('" + ultimoDiaMes + "', 'DD/MM/YYYY') " +
+                "  AND (b.COD_SEFAZ_SITUACAO IS NULL OR b.COD_SEFAZ_SITUACAO = 1) " +
+                "  AND b.OPERACAO IN ('E', 'S') " +
+                "  AND b.DOC_CLIENTE IS NOT NULL " +
+                "  AND b.CANCELADO = 'N' " +
+                "  AND b.EXCLUIDO = 'N' ";
+
+        List<LancamentoLojaMesAno> results = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LancamentoLojaMesAno.class));
+        return results.stream().findFirst().orElseGet(() -> new LancamentoLojaMesAno());
+    }
+
+    // TODO: Compra, Industrialização, Comercialização, Substituição Tributária (CIGAM)
+    public LancamentoLojaMesAno obterDadosLancamentoLojaMesAnoCompraCigam(String cnpjLoja, int mesLancamento, int anoLancamento){
+
+        String cnpj = FormataCNPJ.formatar2(cnpjLoja);
+        String primeiroDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 1);
+        String ultimoDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 2);
+
+        String query = " SELECT " +
+                "  NVL(SUM(b.QTDE), 0) AS qtdPecaFaturada, " +
+                "  NVL(SUM(b.VALOR_LIQUIDO), 0) AS valFaturamento, " +
+                "  NVL(SUM(b.VALOR_COFINS), 0) + NVL(SUM(b.VALOR_ICMS), 0) + NVL(SUM(b.VALOR_PIS), 0) AS valImpostoFaturamento " +
+                "FROM " +
+                "  cigam.INTEG_MOVIMENTOS b " +
+                "WHERE " +
+                "  b.CNPJ_EMP = '" + cnpj + "' " +
+                "  AND b.ID_CFOP in (1202, 2202) " +
+                "  AND TO_DATE(b.DATA_LANCAMENTO, 'DD/MM/YYYY') BETWEEN TO_DATE('" + primeiroDiaMes + "', 'DD/MM/YYYY') AND TO_DATE('" + ultimoDiaMes + "', 'DD/MM/YYYY') " +
+                "  AND b.COD_SEFAZ_SITUACAO IS NULL OR b.COD_SEFAZ_SITUACAO = 0 OR b.COD_SEFAZ_SITUACAO = 1 " +
+                "  AND b.OPERACAO = 'DS' " +
+                "  AND b.CANCELADO = 'N' " +
+                "  AND b.EXCLUIDO = 'N' ";
+
+        List<LancamentoLojaMesAno> results = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(LancamentoLojaMesAno.class));
+        return results.stream().findFirst().orElseGet(() -> new LancamentoLojaMesAno());
+    }
+
+    // TODO: Bonificação, Doação, Brinde (CIGAM)
+    public int obterDadosLancamentoLojaMesAnoPecaConsumoCigam(String cnpjLoja, int mesLancamento, int anoLancamento){
+
+        int qtdPecaConsumo = 0;
+        String cnpj = FormataCNPJ.formatar2(cnpjLoja);
+        String primeiroDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 1);
+        String ultimoDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 2);
+
+        String query = " SELECT " +
+                " NVL(SUM(b.QTDE), 0) AS qtdPecaConsumo " +
+                "FROM " +
+                "  cigam.INTEG_MOVIMENTOS b " +
+                "WHERE b.CNPJ_EMP = '" + cnpj + "' " +
+                "  AND b.ID_CFOP in (5910, 6910) " +
+                "  AND TO_DATE(b.DATA_LANCAMENTO, 'DD/MM/YYYY') BETWEEN TO_DATE('" + primeiroDiaMes + "', 'DD/MM/YYYY') AND TO_DATE('" + ultimoDiaMes + "', 'DD/MM/YYYY') " +
+                "  AND b.COD_SEFAZ_SITUACAO IS NULL OR b.COD_SEFAZ_SITUACAO = 1 ";
+
+        try {
+            qtdPecaConsumo = jdbcTemplate.queryForObject(query, Integer.class);
+        } catch (Exception e) {
+            qtdPecaConsumo = 0;
+        }
+
+        return qtdPecaConsumo;
     }
 }

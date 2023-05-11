@@ -3,6 +3,7 @@ package br.com.live.model;
 public class LancamentoLojaMesAno {
 
     public String id;
+    public String cnpjLoja;
     public int mesLancamento;
     public int anoLancamento;
     public int qtdPecaFaturada;
@@ -10,8 +11,9 @@ public class LancamentoLojaMesAno {
     public double valFaturamento;
     public double valImpostoFaturamento;
 
-    public LancamentoLojaMesAno(String id, int mesLancamento, int anoLancamento, int qtdPecaFaturada, int qtdPecaConsumo, double valFaturamento, double valImpostoFaturamento) {
+    public LancamentoLojaMesAno(String id, String cnpjLoja, int mesLancamento, int anoLancamento, int qtdPecaFaturada, int qtdPecaConsumo, double valFaturamento, double valImpostoFaturamento) {
         this.id = id;
+        this.cnpjLoja = cnpjLoja;
         this.mesLancamento = mesLancamento;
         this.anoLancamento = anoLancamento;
         this.qtdPecaFaturada = qtdPecaFaturada;
@@ -30,6 +32,14 @@ public class LancamentoLojaMesAno {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCnpjLoja() {
+        return cnpjLoja;
+    }
+
+    public void setCnpjLoja(String cnpjLoja) {
+        this.cnpjLoja = cnpjLoja;
     }
 
     public int getMesLancamento() {
