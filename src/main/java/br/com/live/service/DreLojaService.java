@@ -671,11 +671,16 @@ public class DreLojaService {
         double valorEbitdaMesAnoAnterior =  dadosEbitda.valPropriedadeMesAnoAnterior;
         double valorEbitdaMesAnoAtual =  dadosEbitda.valPropriedadeMesAnoAtual;
 
+        DreLojaCalculo dadosCustoAntecipacao = obterValorCalculadoCustoAntecipacao(cnpjLoja, mesDre, anoDre);
+        double valorCustoAntecipacaoMesAnoAnterior =  dadosCustoAntecipacao.valPropriedadeMesAnoAnterior;
+        double valorCustoAntecipacaoMesAnoAtual =  dadosCustoAntecipacao.valPropriedadeMesAnoAtual;
+
         double valorLancamentosDepreciacaoMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre -1));
         double valorLancamentosDepreciacaoMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre));
 
-        double valorResultadoOperacionalMesAnoAnterior = valorEbitdaMesAnoAnterior - valorLancamentosDepreciacaoMesAnoAnterior;
-        double valorResultadoOperacionalMesAnoAtual = valorEbitdaMesAnoAtual - valorLancamentosDepreciacaoMesAnoAtual;
+        double valorResultadoOperacionalMesAnoAnterior = valorEbitdaMesAnoAnterior - valorCustoAntecipacaoMesAnoAnterior - valorLancamentosDepreciacaoMesAnoAnterior;
+        double valorResultadoOperacionalMesAnoAtual = valorEbitdaMesAnoAtual - valorCustoAntecipacaoMesAnoAtual - valorLancamentosDepreciacaoMesAnoAtual;
+
 
         DreLojaCalculo dadosResultadoOperacional = new DreLojaCalculo();
         dadosResultadoOperacional.valPropriedadeMesAnoAnterior = valorResultadoOperacionalMesAnoAnterior;
