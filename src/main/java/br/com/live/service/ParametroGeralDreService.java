@@ -45,6 +45,11 @@ public class ParametroGeralDreService {
 
     public void saveDreConciliacaoLoja(List<ConciliacaoLojaDreEntity> conciliacaoLojaDreEntityList){
 
+        ConciliacaoLojaDreEntity firstItem = conciliacaoLojaDreEntityList.get(0);
+        int mesDre = firstItem.mesDre;
+        int anoDre = firstItem.anoDre;
+        dreLojaCustom.deleteParametrosLojaByMesAno(mesDre, anoDre);
+
         long nextId = conciliacaoLojaDreRepository.findNextId();
 
         for (ConciliacaoLojaDreEntity fieldConciliacaoLojaDre : conciliacaoLojaDreEntityList){

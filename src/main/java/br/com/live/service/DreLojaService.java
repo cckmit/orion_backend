@@ -48,6 +48,7 @@ public class DreLojaService {
     private final static int IMPOSTOS_PLANEJAMENTO = 99918;
     private final static int RESULTADO_LIQUIDO = 99919;
     private final static int PONTO_DE_EQUILIBRIO = 99920;
+    private final static int CUSTO_COM_PESSOAL = 99921;
 
     private final static int COMISSOES = 25895;
     private final static int CUSTO_OCUPACAO = 20630;
@@ -298,6 +299,10 @@ public class DreLojaService {
             } else if (codContaContabil == PONTO_DE_EQUILIBRIO) {
                 System.out.println("Gravando PONTO_DE_EQUILIBRIO -> Cnpj:" + cnpjLoja + " | Sequência:" + codContaContabil + " | Mês:" + mesDre + " | Ano:" + anoDre);
                 gravarPontoEquilibrio(seqOrcamento, cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorLucroBrutoMesAnoAnterior, valorLucroBrutoMesAnoAtual, valorFaturamentoMesAnoAnterior, valorFaturamentoMesAnoAtualOrcado, valorFaturamentoMesAnoAtual);
+
+            } else if (codContaContabil == CUSTO_COM_PESSOAL) {
+                System.out.println("Gravando CUSTO_COM_PESSOAL -> Cnpj:" + cnpjLoja + " | Sequência:" + codContaContabil + " | Mês:" + mesDre + " | Ano:" + anoDre);
+                gravarCustoComPessoal(seqOrcamento, cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorLucroBrutoMesAnoAnterior, valorLucroBrutoMesAnoAtual, valorFaturamentoMesAnoAnterior, valorFaturamentoMesAnoAtualOrcado, valorFaturamentoMesAnoAtual);
             }
         }
     }
@@ -431,6 +436,17 @@ public class DreLojaService {
         gravarContaContabilDre(MESVIGENTE, seqOrcamento, cnpjLoja, mesDre, anoDre, valorImpostoPlanejamentoMesAnoAnterior, valorOrcadoImpostoPlanejamentoMesAnoAtual, valorImpostoPlanejamentoMesAnoAtual, valorFaturamentoMesAnoAnterior, valorFaturamentoMesAnoAtualOrcado, valorFaturamentoMesAnoAtual);
     }
 
+    public void gravarCustoComPessoal(String seqOrcamento, String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat, double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtual, double valorFaturamentoMesAnoAnterior, double valorFaturamentoMesAnoAtualOrcado, double valorFaturamentoMesAnoAtual){
+
+        DreLojaCalculo dadosCustoComPessoal = obterValorCalculadoCustoComPessoal(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
+
+        double valorCustoComPessoalMesAnoAnterior =  dadosCustoComPessoal.valPropriedadeMesAnoAnterior;
+        double valorOrcadoCustoComPessoalMesAnoAtual =  dadosCustoComPessoal.valPropriedadeOrcadoMesAnoAtual;
+        double valorCustoComPessoalMesAnoAtual =  dadosCustoComPessoal.valPropriedadeMesAnoAtual;
+
+        gravarContaContabilDre(MESVIGENTE, seqOrcamento, cnpjLoja, mesDre, anoDre, valorCustoComPessoalMesAnoAnterior, valorOrcadoCustoComPessoalMesAnoAtual, valorCustoComPessoalMesAnoAtual, valorFaturamentoMesAnoAnterior, valorFaturamentoMesAnoAtualOrcado, valorFaturamentoMesAnoAtual);
+    }
+
     public DreLojaCalculo obterValorCalculadoEncargoComissoes(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat){
 
         ParametroGeralDreEntity dadoParametroGeral = dreLojaCustom.findParametrosDreByMesAno(mesDre, anoDre);
@@ -456,8 +472,8 @@ public class DreLojaService {
 
     public DreLojaCalculo obterValorCalculadoResultadoLiquido(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat, double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtual){
 
-        OrcamentoLojaDre dadosOrcamentoComissoes = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(RESULTADO_LIQUIDO, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoResultadoLiquidoMesAnoAtual = Math.abs(dadosOrcamentoComissoes.valPropriedade);
+        OrcamentoLojaDre dadosOrcamentoResultadoLiquido = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(RESULTADO_LIQUIDO, cnpjLoja, mesDre, anoDre);
+        double valorOrcadoResultadoLiquidoMesAnoAtual = Math.abs(dadosOrcamentoResultadoLiquido.valPropriedade);
 
         DreLojaCalculo dadosResultadoOperacional = obterValorCalculadoResultadoOperacional(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorLucroBrutoMesAnoAnterior, valorLucroBrutoMesAnoAtual);
         double valorResultadoOperacionalMesAnoAnterior =  dadosResultadoOperacional.valPropriedadeMesAnoAnterior;
@@ -720,6 +736,33 @@ public class DreLojaService {
         dadosPontoEquilibrio.valPropriedadeMesAnoAnterior = valorPontoEquilibrioMesAnoAnterior;
         dadosPontoEquilibrio.valPropriedadeOrcadoMesAnoAtual = valorOrcadoPontoEquilibrioMesAnoAtual;
         dadosPontoEquilibrio.valPropriedadeMesAnoAtual = valorPontoEquilibrioMesAnoAtual;
+
+        return dadosPontoEquilibrio;
+    }
+
+    public DreLojaCalculo obterValorCalculadoCustoComPessoal(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat){
+
+        OrcamentoLojaDre dadosOrcamentoCustoComPessoal = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(CUSTO_COM_PESSOAL, cnpjLoja, mesDre, anoDre);
+        double valorOrcadoCustoComPessoalMesAnoAtual = Math.abs(dadosOrcamentoCustoComPessoal.valPropriedade);
+
+        double valorLancamentosComissoesMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre -1));
+        double valorLancamentosComissoesMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre));
+
+        DreLojaCalculo dadosEncargosComissoes = obterValorCalculadoEncargoComissoes(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
+        double valorEncargoComissoesMesAnoAnterior =  dadosEncargosComissoes.valPropriedadeMesAnoAnterior;
+        double valorEncargoComissoesMesAnoAtual =  dadosEncargosComissoes.valPropriedadeMesAnoAtual;
+
+        DreLojaCalculo dadosDespesasFolha = obterValorCalculadoDespesasFolha(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
+        double valorDespesasFolhaMesAnoAnterior =  dadosDespesasFolha.valPropriedadeMesAnoAnterior;
+        double valorDespesasFolhaMesAnoAtual =  dadosDespesasFolha.valPropriedadeMesAnoAtual;
+
+        double valorCustoComPessoalMesAnoAnterior = valorLancamentosComissoesMesAnoAnterior + valorEncargoComissoesMesAnoAnterior + valorDespesasFolhaMesAnoAnterior;
+        double valorCustoComPessoalMesAnoAtual = valorLancamentosComissoesMesAnoAtual + valorEncargoComissoesMesAnoAtual + valorDespesasFolhaMesAnoAtual;
+
+        DreLojaCalculo dadosPontoEquilibrio = new DreLojaCalculo();
+        dadosPontoEquilibrio.valPropriedadeMesAnoAnterior = valorCustoComPessoalMesAnoAnterior;
+        dadosPontoEquilibrio.valPropriedadeOrcadoMesAnoAtual = valorOrcadoCustoComPessoalMesAnoAtual;
+        dadosPontoEquilibrio.valPropriedadeMesAnoAtual = valorCustoComPessoalMesAnoAtual;
 
         return dadosPontoEquilibrio;
     }
