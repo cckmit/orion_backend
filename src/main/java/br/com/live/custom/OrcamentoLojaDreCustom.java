@@ -4,6 +4,7 @@ import br.com.live.model.DreLojaCalculo;
 import br.com.live.model.OrcamentoLojaDre;
 import br.com.live.model.ConsultaOrcamentoLojaDre;
 import br.com.live.util.ConteudoChaveNumerica;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -86,7 +87,11 @@ public class OrcamentoLojaDreCustom {
                 "and a.seq_consulta = ? " +
                 "and a.tipo_orcamento = ?";
 
-        return jdbcTemplate.queryForObject(query, new Object[] {cnpjLoja, anoOrcamento, mesOrcamento, seqConsulta, 1}, BeanPropertyRowMapper.newInstance(OrcamentoLojaDre.class));
+        try {
+            return jdbcTemplate.queryForObject(query, new Object[]{cnpjLoja, anoOrcamento, mesOrcamento, seqConsulta, 1}, BeanPropertyRowMapper.newInstance(OrcamentoLojaDre.class));
+        } catch (EmptyResultDataAccessException e){
+            return new OrcamentoLojaDre();
+        }
     }
 
     public OrcamentoLojaDre findOrcamentoByContaContabilCnpjMesAno(int contaContabil, String cnpjLoja, int mesOrcamento, int anoOrcamento){
@@ -98,6 +103,10 @@ public class OrcamentoLojaDreCustom {
                 "and a.conta_contabil = ? " +
                 "and a.tipo_orcamento = ?";
 
-        return jdbcTemplate.queryForObject(query, new Object[] {cnpjLoja, anoOrcamento, mesOrcamento, contaContabil, 1}, BeanPropertyRowMapper.newInstance(OrcamentoLojaDre.class));
+        try {
+            return jdbcTemplate.queryForObject(query, new Object[] {cnpjLoja, anoOrcamento, mesOrcamento, contaContabil, 1}, BeanPropertyRowMapper.newInstance(OrcamentoLojaDre.class));
+        } catch (EmptyResultDataAccessException e) {
+            return new OrcamentoLojaDre();
+        }
     }
 }
