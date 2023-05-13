@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import br.com.live.util.ConteudoChaveNumerica;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -52,6 +53,16 @@ public class InspecaoQualidadeCustom {
 		+ " order by motivos.codigo_motivo, motivos.desc_motivo, motivos.codigo_estagio, motivos.desc_estagio " ;     
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MotivoRejeicao.class));
+	}
+
+	public List<ConteudoChaveNumerica> findAllMotivosRelaxe() {
+
+		String query = " select r.codigo_motivo value, r.codigo_motivo || ' - ' || r.descricao label from efic_040 r " +
+				"where r.area_producao in (2,4) " +
+				"group by r.codigo_motivo, r.descricao " +
+				"order by r.codigo_motivo " ;
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
 	public List<InspecaoQualidadeLanctoMedida> findMedidasByReferenciaTamanhoTipo(String referencia, String tamanho, int tipoMedida) {

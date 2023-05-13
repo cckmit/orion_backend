@@ -287,7 +287,7 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (96, 'Débito/Crédito Por Representante', 'Comercial', '/debito-credito-por-representante');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (97, 'Status do Rolo', 'Confecção', '/status-rolo');
+values (97, 'Controle Relaxadeira', 'Confecção', '/controle-relaxadeira');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (98, 'Plano de Negócios', 'TI', '/plano-negocio');

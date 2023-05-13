@@ -3,6 +3,7 @@ package br.com.live.service;
 import java.util.Date;
 import java.util.List;
 
+import br.com.live.util.ConteudoChaveNumerica;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,6 +125,10 @@ public class InspecaoQualidadeService {
 	
 	public List<MotivoRejeicao> findAllMotivos() {
 		return inspecaoQualidadeCustom.findAllMotivos();		
+	}
+
+	public List<ConteudoChaveNumerica> findAllMotivosRelaxe() {
+		return inspecaoQualidadeCustom.findAllMotivosRelaxe();
 	}
 	
 	public String findTerceiroByOrdemPacoteEstagio(int ordemProducao, int ordemConfeccao, int estagio) {

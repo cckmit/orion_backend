@@ -2,6 +2,7 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.util.ConteudoChaveNumerica;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +40,12 @@ public class InspecaoQualidadeController {
 	public List<MotivoRejeicao> findAllMotivos() {
 		return inspecaoQualidadeService.findAllMotivos();
 	}
-	
+
+	@RequestMapping(value = "/motivos-relaxe", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findAllMotivosRelaxe() {
+		return inspecaoQualidadeService.findAllMotivosRelaxe();
+	}
+
 	@RequestMapping(value = "/revisores", method = RequestMethod.GET)
 	public List<Empregado> findAllRevisoresOrigem() {
 		return inspecaoQualidadeService.findRevisoresOrigem();
