@@ -17,6 +17,10 @@ public class DevolucaoMostruario {
 	public String grupo;
 	public String subgrupo;
 	public String item;
+	
+	@Column(name = "linha_produto")
+    public int linhaProduto;
+	
 	public int quantidade;
 	
     @Column(name = "tab_col")
@@ -72,6 +76,12 @@ public class DevolucaoMostruario {
 	public String getItem() {
 		return item;
 	}
+	public int getLinhaProduto() {
+		return linhaProduto;
+	}
+	public void setLinhaProduto(int linhaProduto) {
+		this.linhaProduto = linhaProduto;
+	}
 	public void setItem(String item) {
 		this.item = item;
 	}
@@ -116,7 +126,7 @@ public class DevolucaoMostruario {
 	}
 	
 	public DevolucaoMostruario(int id, int representante, String estacao, String nivel, String grupo, String subgrupo,
-			String item, int quantidade, int tabCol, int tabMes, int tabSeq, float precoUnt, float total) {
+			String item, int linhaProduto, int quantidade, int tabCol, int tabMes, int tabSeq, float precoUnt, float total) {
 		
 		this.id = id;
 		this.representante = representante;
@@ -125,6 +135,7 @@ public class DevolucaoMostruario {
 		this.grupo = grupo;
 		this.subgrupo = subgrupo;
 		this.item = item;
+		this.linhaProduto = linhaProduto; 
 		this.quantidade = quantidade;
 		this.tabCol = tabCol;
 		this.tabMes = tabMes;

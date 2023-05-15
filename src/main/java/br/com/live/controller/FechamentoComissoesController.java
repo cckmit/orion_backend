@@ -98,9 +98,24 @@ public class FechamentoComissoesController {
         return financeiroService.findMostruarioDevolvido(body.listRepresentante, body.estacao);
     }
 	
+	@RequestMapping(value = "/find-mostruario-analitico", method = RequestMethod.POST)
+    public List<ConsultaFechamentoComissoes> findMostruarioAnalitico(@RequestBody BodyFinanceiro body) {
+        return financeiroService.ExistsMostruarioDevolvido(body.listRepresentante, body.mes, body.ano, body.estacao);
+    }
+	
+	@RequestMapping(value = "/find-mostruario-sintetico", method = RequestMethod.POST)
+    public List<ConsultaFechamentoComissoes> findMostruarioSintetico(@RequestBody BodyFinanceiro body) {
+        return financeiroService.findMostruarioSintetico(body.listRepresentante, body.estacao);
+    }
+	
 	@RequestMapping(value = "/find-cargo-representante", method = RequestMethod.POST)
     public int findCargoRepresentante(@RequestBody BodyFinanceiro body) {
         return financeiroService.findCargoRepresentante(body.listRepresentante);
+    }
+	
+	@RequestMapping(value = "/pagar-parcela-by-id", method = RequestMethod.POST)
+    public int pagarParcelaMostruario(@RequestBody BodyFinanceiro body) {
+        return financeiroService.pagarParcelaMostruario(body.id);
     }
 	
 	@RequestMapping(value = "/gerar-pdf", method = RequestMethod.POST)

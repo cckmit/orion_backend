@@ -1,0 +1,20 @@
+CREATE TABLE ORION_FIN_060 (
+      ID                  NUMBER(9) PRIMARY KEY,
+      REPRESENTANTE       NUMBER(3),
+      ESTACAO             VARCHAR2(100),
+      NIVEL               VARCHAR2(1),
+      GRUPO               VARCHAR2(5),
+      SUBGRUPO            VARCHAR2(3),
+      ITEM                VARCHAR(6),
+      QTDE_ENVIADA        NUMBER(2),
+      QTDE_DEVOLVIDA      NUMBER(2),
+      DIFERENCA           NUMBER(2),
+      VALOR               NUMBER(6, 2),
+      DESC_60_PORCENTO    NUMBER(6, 2),
+      BONUS_30_PORCENTO   NUMBER(6, 2),
+      BONUS_100_PORCENTO  NUMBER(6, 2),
+      VALOR_COBRADO       NUMBER(6, 2),
+      TAB_COL             NUMBER(2),
+      TAB_MES             NUMBER(2),
+      TAB_SEQ             NUMBER(2)
+);

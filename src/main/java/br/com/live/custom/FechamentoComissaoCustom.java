@@ -227,7 +227,7 @@ public class FechamentoComissaoCustom {
 		
 		String query = " SELECT inter_fn_get_val_unit_tab(" + col + ", " + mes + ", " + seq +", '" + nivel + "', '" + grupo + "', '" + subgrupo + "', '" + item + "') preco "
 				+ "		FROM dual";
-		
+	
 		try {
 			preco = jdbcTemplate.queryForObject(query, Float.class);
 		} catch (Exception e) {
@@ -235,6 +235,28 @@ public class FechamentoComissaoCustom {
 		}
 			
 		return preco;
+	}
+	
+	public int findQtdeDevolvida(String estacao, int codRepres, String nivel, String grupo, String subgrupo, String item) {
+		
+		int qtdeDevolvida = 0;
+		
+		String query = " SELECT NVL(a.quantidade, 0) qtde "
+				+ "		FROM orion_fin_050 a "
+				+ "		WHERE a.estacao LIKE '%" + estacao + "%'"
+				+ "		AND a.representante = " + codRepres
+				+ "		AND a.nivel = " + nivel
+				+ "		AND a.grupo = " + grupo
+				+ "		AND a.subgrupo = " + subgrupo
+				+ "		AND a.item = " + item;
+		
+		try {
+			qtdeDevolvida = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			qtdeDevolvida = 0;
+		}
+			
+		return qtdeDevolvida;
 	}
 	
 	public float findMetaPorRespresentanteFitness(List<ConteudoChaveAlfaNum> listRepresentante, String mes, int ano) {
@@ -260,6 +282,26 @@ public class FechamentoComissaoCustom {
 		return metaFitness;
 	}
 	
+	public float findMetaPorRepresentanteEstacaoFitness(List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
+		
+		float metaEstacaoFitness = 0;
+		
+		String query = " SELECT NVL(SUM(a.meta), 0) from orion_072 a, orion_070 b "
+				+ "   WHERE b.cod_estacao = a.cod_estacao "
+				+ "   AND b.descricao LIKE '%" + estacao + "%'"
+				+ "   AND a.tipo_meta = 1 "
+				+ "   AND b.catalogo = 1 "
+				+ "   AND a.cod_representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
+		
+		try {
+			metaEstacaoFitness = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			metaEstacaoFitness = 0;
+		}
+		
+		return metaEstacaoFitness;
+	}
+	
 	public float findMetaPorRespresentanteBeach(List<ConteudoChaveAlfaNum> listRepresentante, String mes, int ano) {
 		
 		float metaBeach = 0;
@@ -280,6 +322,192 @@ public class FechamentoComissaoCustom {
 			metaBeach = 0;
 		}
 		return metaBeach;
+	}
+	
+	public float findMetaPorRepresentanteEstacaoBeach(List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
+		
+		float metaEstacaoBeach = 0;
+		
+		String query = " SELECT NVL(SUM(a.meta), 0) from orion_072 a, orion_070 b "
+				+ "   WHERE b.cod_estacao = a.cod_estacao "
+				+ "   AND b.descricao LIKE '%" + estacao + "%'"
+				+ "   AND a.tipo_meta = 2 "
+				+ "   AND b.catalogo = 2 "
+				+ "   AND a.cod_representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
+		
+		try {
+			metaEstacaoBeach = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			metaEstacaoBeach = 0;
+		}
+		
+		return metaEstacaoBeach;
+	}
+	
+	public int findAnoInicioEstacaoFitness(String estacao) {
+		
+		int anoInicioFitness = 0;
+		
+		String query = " SELECT MIN(a.ano) periodo FROM orion_071 a, orion_070 b "
+				+ "WHERE b.cod_estacao = a.cod_estacao "
+				+ "AND b.descricao LIKE '%" + estacao + "%'"
+				+ "AND a.tipo_meta = 1 "
+				+ "AND b.catalogo = 1 ";
+		
+		try {
+			anoInicioFitness = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			anoInicioFitness = 0;
+		}
+		return anoInicioFitness;
+	}
+	
+	public int findAnoFimEstacaoFitness(String estacao) {
+		
+		int anoFimFitness = 0;
+		
+		String query = " SELECT MAX(a.ano) periodo FROM orion_071 a, orion_070 b "
+				+ "WHERE b.cod_estacao = a.cod_estacao "
+				+ "AND b.descricao LIKE '%" + estacao + "%'"
+				+ "AND a.tipo_meta = 1 "
+				+ "AND b.catalogo = 1 ";
+		
+		try {
+			anoFimFitness = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			anoFimFitness = 0;
+		}
+		return anoFimFitness;
+	}
+	
+	public String findDtInicioEstacaoFitness(String estacao, int ano) {
+		
+		String dtInicioFitness = "";
+		
+		String query = " SELECT LPAD(MIN(a.mes), 2, 0) periodo FROM orion_071 a, orion_070 b "
+				+ "     WHERE b.cod_estacao = a.cod_estacao "
+				+ "     AND b.descricao LIKE '%" + estacao + "%'"
+				+ "     AND a.tipo_meta = 1 "
+				+ "     AND b.catalogo = 1 "
+				+ "     AND a.ano = " + ano;
+		
+		try {
+			dtInicioFitness = jdbcTemplate.queryForObject(query, String.class)+ "/" + ano;
+		} catch (Exception e) {
+			dtInicioFitness = "";
+		}
+		return dtInicioFitness;
+	}
+	
+	public String findDtFimEstacaoFitness(String estacao) {
+		
+		String dtFimFitness = "";
+		
+		String query = " SELECT MAX(LPAD(a.mes, 2, 0) || '/' || MX(a.ano)) periodo FROM orion_071 a, orion_070 b "
+				+ "WHERE b.cod_estacao = a.cod_estacao "
+				+ "AND b.descricao LIKE '%" + estacao + "%'"
+				+ "AND a.tipo_meta = 1 "
+				+ "AND b.catalogo = 1 ";
+		
+		try {
+			dtFimFitness = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			dtFimFitness = "";
+		}
+		return dtFimFitness;
+	}
+	
+	public String findDtFimEstacaoFitness(String estacao, int ano) {
+		
+		String dtInicioFitness = "";
+		
+		String query = " SELECT LPAD(MAX(a.mes), 2, 0) periodo FROM orion_071 a, orion_070 b "
+				+ "     WHERE b.cod_estacao = a.cod_estacao "
+				+ "     AND b.descricao LIKE '%" + estacao + "%'"
+				+ "     AND a.tipo_meta = 1 "
+				+ "     AND b.catalogo = 1 "
+				+ "     AND a.ano = " + ano;
+		
+		try {
+			dtInicioFitness = jdbcTemplate.queryForObject(query, String.class)+ "/" + ano;
+		} catch (Exception e) {
+			dtInicioFitness = "";
+		}
+		return dtInicioFitness;
+	}
+	
+	public int findAnoInicioEstacaoBeach(String estacao) {
+		
+		int anoInicioBeach = 0;
+		
+		String query = " SELECT MIN(a.ano) periodo FROM orion_071 a, orion_070 b "
+				+ "WHERE b.cod_estacao = a.cod_estacao "
+				+ "AND b.descricao LIKE '%" + estacao + "%'"
+				+ "AND a.tipo_meta = 2 "
+				+ "AND b.catalogo = 2 ";
+		
+		try {
+			anoInicioBeach = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			anoInicioBeach = 0;
+		}
+		return anoInicioBeach;
+	}
+	
+	public String findDtInicioEstacaoBeach(String estacao, int ano) {
+		
+		String dtInicioBeach = "";
+		
+		String query = " SELECT LPAD(MIN(a.mes), 2, 0) periodo FROM orion_071 a, orion_070 b "
+				+ "     WHERE b.cod_estacao = a.cod_estacao "
+				+ "     AND b.descricao LIKE '%" + estacao + "%'"
+				+ "     AND a.tipo_meta = 2 "
+				+ "     AND b.catalogo = 2 "
+				+ "     AND a.ano = " + ano;
+		
+		try {
+			dtInicioBeach = jdbcTemplate.queryForObject(query, String.class)+ "/" + ano;
+		} catch (Exception e) {
+			dtInicioBeach = "";
+		}
+		return dtInicioBeach;
+	}
+	
+	public int findAnoFimEstacaoBeach(String estacao) {
+		
+		int anoFimBeach = 0;
+		
+		String query = " SELECT MAX(a.ano) periodo FROM orion_071 a, orion_070 b "
+				+ "WHERE b.cod_estacao = a.cod_estacao "
+				+ "AND b.descricao LIKE '%" + estacao + "%'"
+				+ "AND a.tipo_meta = 2 "
+				+ "AND b.catalogo = 2 ";
+		
+		try {
+			anoFimBeach = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			anoFimBeach = 0;
+		}
+		return anoFimBeach;
+	}
+	
+	public String findDtFimEstacaoBeach(String estacao, int ano) {
+		
+		String dtInicioBeach = "";
+		
+		String query = " SELECT LPAD(MAX(a.mes), 2, 0) periodo FROM orion_071 a, orion_070 b "
+				+ "     WHERE b.cod_estacao = a.cod_estacao "
+				+ "     AND b.descricao LIKE '%" + estacao + "%'"
+				+ "     AND a.tipo_meta = 2 "
+				+ "     AND b.catalogo = 2 "
+				+ "     AND a.ano = " + ano;
+		
+		try {
+			dtInicioBeach = jdbcTemplate.queryForObject(query, String.class)+ "/" + ano;
+		} catch (Exception e) {
+			dtInicioBeach = "";
+		}
+		return dtInicioBeach;
 	}
 	
 	public List<ConteudoChaveAlfaNum> findUf(List<ConteudoChaveAlfaNum> listRepresentante) {
@@ -356,7 +584,7 @@ public class FechamentoComissaoCustom {
 	
 	public float findPercAtingidoBeach(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 		
-		float percentualBach = 0;
+		float percentualBeach = 0;
 		
 		String query = " SELECT NVL(SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) / ( "
 				+ "       SELECT (w.meta * x.perc_distribuicao) / 100 META FROM orion_072 w, orion_071 x, orion_070 z "
@@ -383,11 +611,69 @@ public class FechamentoComissaoCustom {
 				+ "       GROUP BY a.cod_rep_cliente ";
 		
 		try {
-			percentualBach = jdbcTemplate.queryForObject(query, Float.class);
+			percentualBeach = jdbcTemplate.queryForObject(query, Float.class);
 		} catch (Exception e) {
-			percentualBach = 0;
+			percentualBeach = 0;
 		}
-		return percentualBach;
+		return percentualBeach;
+		
+	}
+	
+	public float findPercAtingidoEstacaoFitness(String dtInicioEstFitness, String dtFimEstFitness, int tabCol, int tabMes, int tabSeq, float metaFitness, List<ConteudoChaveAlfaNum> listRepresentante) {
+		
+		float percFitness = 0;
+		
+		String query = "SELECT (SUM(DADOS.PERCENTUAL) / " + metaFitness + ") * 100 FROM "
+				+ "     ("
+				+ "      SELECT SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) percentual"
+				+ "		FROM pedi_100 a, pedi_110 b, basi_030 c "
+				+ "		WHERE a.pedido_venda = b.pedido_venda "
+				+ "		AND b.cd_it_pe_nivel99 = c.nivel_estrutura "
+				+ "		AND b.cd_it_pe_grupo = c.referencia "
+				+ "		AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")" 
+				+ "		AND c.linha_produto = 52 "
+				+ "		AND a.data_entr_venda BETWEEN TO_DATE('01/" + dtInicioEstFitness + "', 'DD/MM/YYYY') AND LAST_DAY(TO_DATE('" + dtFimEstFitness +"', 'MM/YYYY')) "
+				+ "		AND a.colecao_tabela = " + tabCol
+				+ "		AND a.mes_tabela = " + tabMes
+				+ "		AND a.sequencia_tabela = " + tabSeq
+				+ "		AND b.cod_cancelamento = 0 "
+				+ "		GROUP BY a.cod_rep_cliente) DADOS ";
+		
+		try {
+			percFitness = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			percFitness = 0;
+		}
+		return percFitness;
+		
+	}
+	
+	public float findPercAtingidoEstacaoBeach(String dtInicioEstBeach, String dtFimEstBeach, int tabCol, int tabMes, int tabSeq, float metaBeach, List<ConteudoChaveAlfaNum> listRepresentante) {
+		
+		float percBeach = 0;
+		
+		String query = "SELECT NVL((SUM(DADOS.PERCENTUAL) / " + metaBeach + ") * 100, 0) FROM "
+				+ "     ("
+				+ "      SELECT SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) percentual"
+				+ "		FROM pedi_100 a, pedi_110 b, basi_030 c "
+				+ "		WHERE a.pedido_venda = b.pedido_venda "
+				+ "		AND b.cd_it_pe_nivel99 = c.nivel_estrutura "
+				+ "		AND b.cd_it_pe_grupo = c.referencia "
+				+ "		AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")" 
+				+ "		AND c.linha_produto = 53 "
+				+ "		AND a.data_entr_venda BETWEEN TO_DATE('01/" + dtInicioEstBeach + "', 'DD/MM/YYYY') AND LAST_DAY(TO_DATE('" + dtFimEstBeach +"', 'MM/YYYY')) "
+				+ "		AND a.colecao_tabela = " + tabCol
+				+ "		AND a.mes_tabela = " + tabMes
+				+ "		AND a.sequencia_tabela = " + tabSeq
+				+ "		AND b.cod_cancelamento = 0 "
+				+ "		GROUP BY a.cod_rep_cliente) DADOS ";
+		
+		try {
+			percBeach = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			percBeach = 0;
+		}
+		return percBeach;
 		
 	}
 	
@@ -587,6 +873,23 @@ public class FechamentoComissaoCustom {
 		return codCargo;
 	}
 	
+	public int findLinhaProduto(String nivel, String grupo){
+		
+		int linhaProduto = 0;
+		
+		String query = " SELECT NVL(a.linha_produto, 0) "
+				+ "FROM basi_030 a "
+				+ "WHERE a.nivel_estrutura = '" + nivel +"'"
+				+ "AND a.referencia = '" + grupo +"'";
+
+		try {
+			linhaProduto = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			linhaProduto = 0;
+		}
+		return linhaProduto;
+	}
+	
 	public List<ConsultaFechamentoComissoes> findItensDevolvidos(List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
 		
 		String query = " SELECT a.representante || ' - ' || b.nome_rep_cliente representante, "
@@ -602,7 +905,6 @@ public class FechamentoComissaoCustom {
 				+ "		AND c.referencia = a.grupo "
 				+ "		AND a.estacao LIKE '%" + estacao + "%'"
 				+ "		AND a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
-		System.out.println(query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
@@ -612,6 +914,15 @@ public class FechamentoComissaoCustom {
 		String query = " SELECT a.pedido_venda pedido, "
 				+ "       c.cd_it_pe_nivel99 || '.' || c.cd_it_pe_grupo || '.' || c.cd_it_pe_subgrupo || '.' || c.cd_it_pe_item || ' - ' || d.descr_referencia produto, "
 				+ "       c.qtde_pedida quantidade, "
+				+ "       c.cd_it_pe_nivel99 nivel, "
+				+ "       c.cd_it_pe_grupo grupo, "
+				+ "       c.cd_it_pe_subgrupo subgrupo, "
+				+ "       c.cd_it_pe_item item, "
+				+ "       c.qtde_pedida quantidade, "
+				+ "       d.linha_produto linhaProduto, "
+				+ "       a.colecao_tabela tabCol, "
+				+ "       a.mes_tabela tabMes, "
+				+ "       a.sequencia_tabela tabSeq, "
 				+ "       c.valor_unitario precoUnt, "
 				+ "       c.qtde_pedida * c.valor_unitario total "
 				+ "		FROM pedi_100 a, pedi_020 b, pedi_110 c, basi_030 d "
@@ -624,8 +935,98 @@ public class FechamentoComissaoCustom {
 				+ "		AND a.situacao_venda = 10 "
 				+ "		AND b.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
 				+ "		AND a.data_entr_venda >= sysdate - 180 ";
+	
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
+	}
+	
+	public int findMostruarioEstacaoPorRepres(List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
+		
+		int registros = 0;
+		
+		String query = " SELECT COUNT(*) FROM orion_fin_060 a "
+				+ "		WHERE a.estacao LIKE '%" + estacao + "%' "
+				+ "		AND a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
+		
+		try {
+			registros = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			registros = 0;
+		}
+		return registros;
+	}
+	
+	public List<ConsultaFechamentoComissoes> findItensMostruarioAnalitico(List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
+		
+		String query = " SELECT a.id, "
+				+ "       a.representante || ' - ' || b.nome_rep_cliente representante, "
+				+ "       a.estacao estacao, "
+				+ "       a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item || ' - ' || c.descr_referencia produto, "
+				+ "       a.qtde_enviada qtdeEnviada, "
+				+ "       a.qtde_devolvida qtdeDevolvida, "
+				+ "       a.diferenca diferenca, "
+				+ "       a.valor valor, "
+				+ "       a.desc_60_porcento desc60Porcento, "
+				+ "       a.bonus_30_porcento bonus30Porcento, "
+				+ "       a.bonus_100_porcento bonus100Porcento, "
+				+ "       a.valor_cobrado valorCobrado, "
+				+ "       LPAD(tab_col, 2, 0) || '.' || LPAD(tab_mes, 2, 0) || '.' || LPAD(tab_seq, 2, 0) tabPreco "
+				+ "		FROM orion_fin_060 a, pedi_020 b, basi_030 c "
+				+ "		WHERE b.cod_rep_cliente = a.representante "
+				+ "		AND c.nivel_estrutura = a.nivel "
+				+ "		AND c.referencia = a.grupo "
+				+ "		AND a.estacao LIKE '%" + estacao + "%' "
+				+ "		AND a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
+	}
+	
+	public List<ConsultaFechamentoComissoes> findMostruarioSintetico(List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
+		
+		String query = " SELECT a.id id, "
+				+ "       a.representante || ' - ' || b.nome_rep_cliente representante, "
+				+ "       a.estacao estacao, "
+				+ "       a.num_parcela numParcela, "
+				+ "       a.valor valor, "
+				+ "       a.status status "
+				+ "		FROM orion_fin_070 a, pedi_020 b "
+				+ "     WHERE b.cod_rep_cliente = a.representante"
+				+ "		AND a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
+				+ "		AND a.estacao LIKE  '%" + estacao + "%' "
+				+ "     ORDER BY a.num_parcela ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
+	}
+	
+	public int pagarParcelaMostruario(int id){
+		
+		int status = 0;
+		
+		String query = " update orion_fin_070 "
+				+ " set status = 1 "
+				+ " where id = ? ";
+		try {
+			status = jdbcTemplate.update(query, id);
+		} catch (Exception e) {
+			status = 0;
+		}
+		return status;	
+	}
+	
+	public float findTotalCobradoPorRepres(List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
+		
+		float soma = 0;
+		
+		String query = " SELECT SUM(a.valor_cobrado) FROM orion_fin_060 a "
+				+ "		WHERE a.representante IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
+				+ "		AND a.estacao LIKE '%" + estacao + "%' ";
+		
+		try {
+			soma = jdbcTemplate.queryForObject(query, Float.class);
+		} catch (Exception e) {
+			soma = 0;
+		}
+		return soma;
+		
 	}
 
 }
