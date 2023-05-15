@@ -1684,15 +1684,16 @@ public class ExpedicaoCustom {
 	}
 
 	public List<ConsultaMinutaTransporte> findMinutaReimpressao(int minuta) {
-		String query = " select a.minuta, a.nota, a.serie, b.data_emissao emissao, a.cliente, a.cidade, a.estado, (select count(*) from pcpc_320 w " +
-				"                                                                                           where w.pedido_venda = a.pedido " +
-				"                                                                                           and w.nota_fiscal = a.nota " +
-				"                                                                                           and w.serie_nota = a.serie) caixas, " +
+		String query = " select a.minuta, a.nota, a.serie, max(b.data_emissao) emissao, a.cliente, a.cidade, a.estado, (select count(*) from orion_exp_320 w " +
+				"                                  where w.pedido = a.pedido " +
+				"                                   and w.nota = a.nota  " +
+				"                                   and w.serie = a.serie " +
+				"                                   and w.minuta = a.minuta) caixas, " +
 				" a.peso_bruto pesoBruto, a.valor_nota valorNota from orion_exp_320 a, fatu_050 b " +
 				" where a.minuta = " + minuta +
 				" and b.num_nota_fiscal = a.nota " +
 				" and b.serie_nota_fisc = a.serie " +
-				" group by a.minuta, a.nota, a.serie, b.data_emissao, a.cliente, a.cidade, a.estado, a.peso_bruto, a.valor_nota, a.pedido " +
+				" group by a.minuta, a.nota, a.serie, a.cliente, a.cidade, a.estado, a.peso_bruto, a.valor_nota, a.pedido " +
 				" order by a.nota ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMinutaTransporte.class));
 	}
