@@ -31,7 +31,7 @@ public class ReportService {
     	File file = ResourceUtils.getFile(configuracoesService.getDiretorioJasper() + layout + ".jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
 
-        parameters.put("logoLive", configuracoesService.getDiretorioJasper() + "logoLive.png");
+        if (parameters != null) parameters.put("logoLive", configuracoesService.getDiretorioJasper() + "logoLive.png");
 
         if (insertDataSource) {
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
