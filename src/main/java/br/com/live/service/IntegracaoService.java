@@ -48,6 +48,7 @@ public class IntegracaoService {
             integracao.fornecedor = fornecedor;
             integracao.cnpj = cnpj;
             integracao.endereco = endereco;
+            integracao.gestorResponsavel = gestorResponsavel;
         }
         integracaoRepository.save(integracao);
     }

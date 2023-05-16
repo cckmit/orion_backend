@@ -60,6 +60,7 @@ public class ServidorService {
             servidor.aplicacoes = aplicacoes;
             servidor.documentacao = documentacao;
             servidor.status = status;
+            servidor.gestorResponsavel = gestorResponsavel;
         }
 
         servidorRepository.save(servidor);

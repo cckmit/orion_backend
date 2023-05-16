@@ -40,6 +40,7 @@ public class ServicoService {
             servico.timeResponsavel = timeResponsavel;
             servico.disponibilidade = disponibilidade;
             servico.tecnicosFornecedores = tecnicosFornecedores;
+            servico.gestorResponsavel = gestorResponsavel;
         }
         servicoRepository.save(servico);
     }

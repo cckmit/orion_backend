@@ -53,6 +53,7 @@ public class SistemaService {
             sistema.status = status;
             sistema.usuariosAtivos = usuariosAtivos;
             sistema.capacidadeUsuarios = capacidadeUsuarios;
+            sistema.gestorResponsavel = gestorResponsavel;
         }
         sistemaRepository.save(sistema);
     }
