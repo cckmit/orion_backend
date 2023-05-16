@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
+import javax.management.Query;
 import javax.print.DocFlavor;
 
 @Repository
@@ -1163,16 +1164,26 @@ public class ExpedicaoCustom {
 	}
 
 	public List<ConsultaTag> findMovsEnderecos(String endereco, String dataInicio, String dataFim, String usuario,
-			String tipoMov) {
+			String tipoMov, String numeroTag, int deposito) {
 		List<ConsultaTag> historicoEnderecos = new ArrayList<ConsultaTag>();
 
-		String query = " select a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) numeroTag, "
+		String query = " select hist.numeroTag, hist.produto, hist.data, hist.tipo, hist.usuario, hist.endereco, hist.deposito from ( ";
+		query += " select a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) numeroTag, "
 				+ " a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item produto, a.data_hora data, a.tipo, a.usuario, "
 				+ " CASE "
 				+ "      WHEN a.endereco LIKE '%-0%' "
 				+ "   THEN SUBSTR(a.endereco, 0, 7) || ' - Zerado' "
-				+ "ELSE a.endereco "
-				+ "END endereco "
+				+ " ELSE a.endereco "
+				+ " END endereco, "
+				+ "  CASE "
+				+ "    WHEN a.endereco BETWEEN 'A010101' AND 'C999999' "
+				+ "      THEN 4 "
+				+ "    WHEN a.endereco BETWEEN 'E010101' AND 'R999999' "
+				+ "      THEN 111 "
+				+ "    WHEN a.endereco = 'ENDERECAR' "
+				+ " 	 THEN 4 "
+				+ "      ELSE 0 "
+				+ "        END deposito "
 				+ " from orion_exp_300 a "
 				+ " where trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('"
 				+ dataFim + "', 'dd-MM-yyyy') ";
@@ -1186,24 +1197,41 @@ public class ExpedicaoCustom {
 		if (tipoMov != null) {
 			query += " and a.tipo = '" + tipoMov + "' ";
 		}
+		if (!numeroTag.equalsIgnoreCase("")) {
+			query += " and a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) = " + numeroTag;
+		}
 		query += " order by a.data_hora ";
-		System.out.println(query);
+		query += ") hist ";
+
+		if (deposito == 4) {
+			query += " where hist.deposito = 4 ";
+		} else if (deposito == 111) {
+			query += "where hist.deposito = 111 ";
+		}
+
 		try {
 			historicoEnderecos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 		} catch (Exception e) {
 			historicoEnderecos = new ArrayList<ConsultaTag>();
 		}
-		
 		return historicoEnderecos;
 	}
 
 	public int somaQuantidadeMovimentacoes(String endereco, String dataInicio, String dataFim, String usuario,
-			String tipoMov) {
+			String tipoMov, String numeroTag, int deposito) {
 		int totalMov = 0;
 
-		String query = " select count(*) quantMov from orion_exp_300 a "
-				+ " where trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('"
-				+ dataFim + "', 'dd-MM-yyyy') ";
+		String query = " select sum(quantMov.quantidade) from ( " +
+				"select count(*) quantidade, CASE " +
+				"    WHEN a.endereco BETWEEN 'A010101' AND 'C999999' " +
+				"      THEN 4 " +
+				"    WHEN a.endereco BETWEEN 'E010101' AND 'R999999' " +
+				"      THEN 111 " +
+				"        WHEN a.endereco = 'ENDERECAR' " +
+				"          THEN 4 " +
+				"      ELSE  0 " +
+				"        END deposito from orion_exp_300 a " +
+				" where trunc(a.data_hora) between to_date('" + dataInicio + "' , 'dd-MM-yyyy') and to_date('" + dataFim + "', 'dd-MM-yyyy') ";
 
 		if (endereco != null && !endereco.equalsIgnoreCase("")) {
 			query += " and SUBSTR(a.endereco, 0, 7) = '" + endereco + "' ";
@@ -1213,6 +1241,16 @@ public class ExpedicaoCustom {
 		}
 		if (tipoMov != null) {
 			query += " and a.tipo = '" + tipoMov + "' ";
+		}
+		if (!numeroTag.equalsIgnoreCase("")) {
+			query += " and a.periodo || lpad(a.ordem_producao, 9,0) || lpad(a.ordem_confeccao, 5,0) || lpad(a.sequencia, 4,0) = " + numeroTag;
+		}
+		query += " group by a.endereco) quantMov ";
+
+		if (deposito == 4) {
+			query += " where quantMov.deposito = 4 ";
+		} else if (deposito == 111) {
+			query += " where quantMov.deposito = 111 ";
 		}
 
 		try {
