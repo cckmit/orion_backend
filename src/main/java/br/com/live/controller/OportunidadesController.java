@@ -38,9 +38,9 @@ public class OportunidadesController {
     }
     
     @RequestMapping(value = "/save-oportunidade", method = RequestMethod.POST)
-    public void saveOportunidade(@RequestBody BodyGestaoAtivos oportunidade) {
+    public List<ConsultaGestaoAtivos> saveOportunidade(@RequestBody BodyGestaoAtivos oportunidade) {
     	oportunidadesService.saveOportunidade(oportunidade.id, oportunidade.tipo, oportunidade.idAtivo, oportunidade.nomeAtivo, oportunidade.dataCadastro, oportunidade.prioridade, oportunidade.descricao, oportunidade.objetivo,
         		oportunidade.contextualizacao, oportunidade.descricaoProblema, oportunidade.perguntasEmAberto, oportunidade.riscos);
+        return oportunidadesService.findAllOportunidades();
     }
-
 }

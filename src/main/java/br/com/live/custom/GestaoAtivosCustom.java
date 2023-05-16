@@ -35,7 +35,8 @@ public class GestaoAtivosCustom {
 				+ "       a.status status, "
 				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 1 AND b.id_ativo = a.id), 0) numOportunidades "
 				+ "		FROM orion_ti_001 a, orion_001 c "
-				+ "		WHERE c.id = a.gestor_responsavel ";
+				+ "		WHERE c.id = a.gestor_responsavel "
+				+ "		AND a.id > 0"; // id 0 = todos
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGestaoAtivos.class));
 	}
@@ -59,7 +60,9 @@ public class GestaoAtivosCustom {
 				+ "       a.status status, "
 				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 2 AND b.id_ativo = a.id), 0) numOportunidades "
 				+ "		FROM orion_ti_005 a, orion_001 c"
-				+ "     WHERE c.id = a.gestor_responsavel ";
+				+ "     WHERE c.id = a.gestor_responsavel "
+				+ "		AND a.id > 0 " // id 0 = todos
+				+ "		ORDER BY a.nome_sistema ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGestaoAtivos.class));
 	}
@@ -81,7 +84,8 @@ public class GestaoAtivosCustom {
 				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 3 AND b.id_ativo = a.id), 0) numOportunidades, "
 				+ "       a.gestor_responsavel || ' - ' || c.nome gestorResponsavel "
 				+ "		FROM orion_ti_010 a, orion_001 c "
-				+ "     WHERE c.id = a.gestor_responsavel ";
+				+ "     WHERE c.id = a.gestor_responsavel "
+				+ "		ORDER BY a.nome_integracao";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGestaoAtivos.class));
 	}
@@ -97,7 +101,8 @@ public class GestaoAtivosCustom {
 				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 4 AND b.id_ativo = a.id), 0) numOportunidades, "
 				+ "       a.gestor_responsavel || ' - ' || c.nome gestorResponsavel "
 				+ "		FROM orion_ti_015 a, orion_001 c "
-				+ "     WHERE c.id = a.gestor_responsavel ";
+				+ "     WHERE c.id = a.gestor_responsavel "
+				+ "		ORDER BY a.nome_servico ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGestaoAtivos.class));
 	}
