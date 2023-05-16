@@ -58,7 +58,7 @@ public class ServidorController {
  
     @RequestMapping(value = "/save-oportunidade", method = RequestMethod.POST)
     public void saveOportunidade(@RequestBody BodyGestaoAtivos oportunidade) {
-        servidorService.saveOportunidade(oportunidade.id, oportunidade.tipo, oportunidade.idAtivo, oportunidade.nomeAtivo, oportunidade.dataCadastro, oportunidade.prioridade, oportunidade.descricao, oportunidade.objetivo,
+        servidorService.saveOportunidade(oportunidade.id, oportunidade.tipo, oportunidade.idAtivo, oportunidade.dataCadastro, oportunidade.prioridade, oportunidade.descricao, oportunidade.objetivo,
         		oportunidade.contextualizacao, oportunidade.descricaoProblema, oportunidade.perguntasEmAberto, oportunidade.riscos);
     }
 

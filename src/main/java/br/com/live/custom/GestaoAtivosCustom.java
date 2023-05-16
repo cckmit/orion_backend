@@ -113,20 +113,29 @@ public class GestaoAtivosCustom {
 	
 	public List<ConsultaGestaoAtivos> findAllOportunidades(){
 		
-		String query = " SELECT a.id idOp, "
-				+ "       DECODE(a.tipo, 1, 'Servidores', "
-				+ "       DECODE(a.tipo, 2, 'Sistemas', "
-				+ "       DECODE(a.tipo, 3, 'Integrações', "
-				+ "       DECODE(a.tipo, 4, 'Serviços')))) tipo, "
-				+ "       a.data_cadastro dataCadastro, "
-				+ "       a.prioridade prioridade, "
-				+ "       a.descricao descricao, "
-				+ "       a.objetivo objetivo, "
-				+ "       a.contextualizacao contextualizacao, "
-				+ "       a.descricao_problema descricaoProblema, "
-				+ "       a.perguntas_em_aberto perguntasEmAberto, "
-				+ "       a.riscos riscos "
-				+ "      FROM orion_ti_020 a ";
+		String query = " SELECT a.id AS idOp, " +
+				"       DECODE(a.tipo, 1, 'Servidores', DECODE(a.tipo, 2, 'Sistemas', DECODE(a.tipo, 3, 'Integrações', DECODE(a.tipo, 4, 'Serviços')))) tipo, " +
+				"       CASE a.tipo " +
+				"           WHEN 1 THEN s.nome_servidor " +
+				"           WHEN 2 THEN sis.nome_sistema " +
+				"           WHEN 3 THEN i.nome_integracao " +
+				"           WHEN 4 THEN se.nome_servico " +
+				"           ELSE 'Tipo inválido' " +
+				"       END AS nomeAtivo, " +
+				"       a.data_cadastro AS dataCadastro, " +
+				"       a.prioridade AS prioridade, " +
+				"       a.descricao AS descricao, " +
+				"       a.objetivo AS objetivo, " +
+				"       a.contextualizacao AS contextualizacao, " +
+				"       a.descricao_problema AS descricaoProblema, " +
+				"       a.perguntas_em_aberto AS perguntasEmAberto, " +
+				"       a.riscos AS riscos " +
+				" FROM orion_ti_020 a " +
+				" LEFT JOIN orion_ti_001 s ON a.tipo = 1 AND a.id_ativo= s.id " +
+				" LEFT JOIN orion_ti_005 sis ON a.tipo = 2 AND a.id_ativo= sis.id " +
+				" LEFT JOIN orion_ti_010 i ON a.tipo = 3 AND a.id_ativo= i.id " +
+				" LEFT JOIN orion_ti_015 se ON a.tipo = 4 AND a.id_ativo= se.id " +
+				" ORDER BY tipo, nomeAtivo, a.DESCRICAO";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGestaoAtivos.class));
 	}

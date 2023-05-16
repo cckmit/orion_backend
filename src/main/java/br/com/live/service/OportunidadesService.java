@@ -31,16 +31,15 @@ public class OportunidadesService {
     	return gestaoAtivosCustom.findColunaConsulta(tipo, idOp);
     }
 	
-	public void saveOportunidade(int id, int tipo, int idAtivo, String nomeAtivo, String dataCadastro, int prioridade, String descricao, String objetivo, String contextualizacao, 
+	public void saveOportunidade(int id, int tipo, int idAtivo, String dataCadastro, int prioridade, String descricao, String objetivo, String contextualizacao,
     		String descricaoProblema, String perguntasEmAberto, String riscos) {
 
     	GestaoAtivosOportunidade oportunidade = null;
     	int nextId = gestaoAtivosCustom.findNextIdByTipo(id, tipo);
   
-        oportunidade = new GestaoAtivosOportunidade(tipo + "-" + id + "-" + nextId, tipo, id, nextId, nomeAtivo, FormataData.parseStringToDate(dataCadastro), prioridade, descricao, objetivo, 
+        oportunidade = new GestaoAtivosOportunidade(tipo + "-" + id + "-" + nextId, tipo, id, nextId, FormataData.parseStringToDate(dataCadastro), prioridade, descricao, objetivo,
         		contextualizacao, descricaoProblema, perguntasEmAberto, riscos);
          
         gestaoAtivosOportunidadeRepository.save(oportunidade);
     }
-
 }

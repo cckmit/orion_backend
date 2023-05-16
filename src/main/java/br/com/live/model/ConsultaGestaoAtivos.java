@@ -48,6 +48,7 @@ public class ConsultaGestaoAtivos {
     public String riscos;   
     public String gestorResponsavel;
 	public int idGestorResponsavel;
+	public String nomeAtivo;
 
 	public int getIdGestorResponsavel() {
 		return idGestorResponsavel;
@@ -55,6 +56,14 @@ public class ConsultaGestaoAtivos {
 
 	public void setIdGestorResponsavel(int idGestorResponsavel) {
 		this.idGestorResponsavel = idGestorResponsavel;
+	}
+
+	public String getNomeAtivo() {
+		return nomeAtivo;
+	}
+
+	public void setNomeAtivo(String nomeAtivo) {
+		this.nomeAtivo = nomeAtivo;
 	}
 
 	public int getId() {
@@ -320,7 +329,7 @@ public class ConsultaGestaoAtivos {
 			String tipoConexao, int sistemaOrigem, int sistemaDestino, int servidor, String nomeServico,
 			String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, Date dataCadastro,
 			int prioridade, String descricao, String contextualizacao, String descricaoProblema,
-			String perguntasEmAberto, String riscos, String gestorResponsavel, int idGestorResponsavel) {
+			String perguntasEmAberto, String riscos, String gestorResponsavel, int idGestorResponsavel, String nomeAtivo) {
 		this.id = id;
 		this.idOp = idOp;
 		this.nomeServidor = nomeServidor;
@@ -364,5 +373,6 @@ public class ConsultaGestaoAtivos {
 		this.riscos = riscos;
 		this.gestorResponsavel = gestorResponsavel;
 		this.idGestorResponsavel = idGestorResponsavel;
+		this.nomeAtivo = nomeAtivo;
 	}
 }

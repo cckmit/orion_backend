@@ -135,3 +135,8 @@ VALUES (0, 'Todos', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 0, EMPTY_BL
    UPDATE ORION_TI_015
    SET TIME_RESPONSAVEL = 'Sistemas Projetos'
    WHERE TIME_RESPONSAVEL = 'Inovação'
+
+-- Remove campo nome ativo da tabela (passa a buscar dos formulários através do ID)
+
+    ALTER TABLE orion_ti_020 DROP COLUMN nome_ativo
+

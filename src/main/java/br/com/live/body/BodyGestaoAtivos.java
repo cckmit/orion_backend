@@ -6,7 +6,6 @@ public class BodyGestaoAtivos {
 	
 	public int tipo;
 	public int idAtivo;
-	public String nomeAtivo;
 	public String dataCadastro;
 	public int prioridade;
 	public String descricao;
