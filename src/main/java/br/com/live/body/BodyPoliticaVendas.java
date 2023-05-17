@@ -14,7 +14,9 @@ public class BodyPoliticaVendas {
 	public float descMaxCliente;
 	public float comissao;
 	public int condPgto;
+	public int tipoCliente;
 	public int naturezaOperacao;
 	public float desconto;
+	public String tabelaPreco;
 
 }

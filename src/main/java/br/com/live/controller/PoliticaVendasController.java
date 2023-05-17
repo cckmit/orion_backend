@@ -14,7 +14,9 @@ import br.com.live.body.BodyPoliticaVendas;
 import br.com.live.custom.PoliticaVendasCustom;
 import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.model.RegrasPoliticaVendas;
+import br.com.live.model.TabelaPreco;
 import br.com.live.service.PoliticaVendasService;
+import br.com.live.service.TabelaPrecoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -53,6 +55,11 @@ public class PoliticaVendasController {
     public List<ConteudoChaveNumerica> findAllNaturezaOperacao() {
         return politicaVendasCustom.findNaturezaOperacao();
     }
+	// Carrregar todas Tabela de Preços
+	@RequestMapping(value = "/find-all-tabela-preco-async/{leitor}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllAsyncTabelas(@PathVariable("leitor") String leitor) {
+          return politicaVendasService.findAllTabelasAsync(leitor);
+    }
 	// Carrregar todos os CNPJ dos Cliente de tipo Cliente 4
 	@RequestMapping(value = "/find-all-cnpj/{cnpj}", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllCnpj(@PathVariable("cnpj") String cnpj) {
@@ -63,6 +70,11 @@ public class PoliticaVendasController {
     public List<ConteudoChaveAlfaNum> findAllDepositos() {
         return politicaVendasCustom.findDeposito();
     }
+	// Carrregar todos os Depósitos
+	@RequestMapping(value = "/find-all-tipo-cliente", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllTipoDeCliente() {
+        return politicaVendasCustom.findAllTipoDeCliente();
+	}
 	// Carrregar todos os Depósitos
 	@RequestMapping(value = "/find-all-cond-pagamento", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllCondPgto() {
@@ -84,7 +96,7 @@ public class PoliticaVendasController {
     @RequestMapping(value = "/save-regra", method = RequestMethod.POST)
     public void saveRegra(@RequestBody BodyPoliticaVendas body) {                  
     	politicaVendasService.saveRegra(body.id, body.tipo, body.formaPagamento, body.portador, body.cnpj, body.codFuncionario, body.descCapa, body.tipoPedido, 
-    			body.depositoItens, body.descMaxCliente, body.comissao, body.condPgto, body.naturezaOperacao,  body.desconto);
+    			body.depositoItens, body.descMaxCliente, body.comissao, body.condPgto, body.tipoCliente, body.naturezaOperacao,  body.desconto, body.tabelaPreco);
     }
     
     @RequestMapping(value = "/delete-regra/{id}", method = RequestMethod.DELETE)

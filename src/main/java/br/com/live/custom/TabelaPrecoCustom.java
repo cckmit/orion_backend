@@ -40,10 +40,12 @@ public class TabelaPrecoCustom {
 	}
 	
 	public List<ConteudoChaveAlfaNum> findAllTabelasAsync(String leitor) {
+		
 		String query = " select a.col_tabela_preco || '.' || a.mes_tabela_preco || '.' || a.seq_tabela_preco value, "
 				+ " a.col_tabela_preco || '.' || a.mes_tabela_preco || '.' || a.seq_tabela_preco || "
 				+ " ' - ' || a.descricao label from pedi_090 a "
 				+ " where a.col_tabela_preco || '.' || a.mes_tabela_preco || '.' || a.seq_tabela_preco || a.descricao like '%" + leitor + "%'";
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 
