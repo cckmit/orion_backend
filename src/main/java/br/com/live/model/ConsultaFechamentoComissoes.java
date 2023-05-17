@@ -6,7 +6,7 @@ import br.com.live.util.ConteudoChaveNumerica;
 
 public class ConsultaFechamentoComissoes {
 	
-	
+	public int id;
 	public int portador;
 	public String dataEmissao;
 	public String representante;
@@ -73,9 +73,27 @@ public class ConsultaFechamentoComissoes {
 	public int codRepresentante;
 	public float precoUnt;
 	public float total;
+	public int linhaProduto;
+	public int qtdeEnviada;
+	public int qtdeDevolvida;
+	public int diferenca;
+	public float desc60Porcento;
+	public float bonus30Porcento;
+	public float bonus100Porcento;
+	public float valorCobrado;
+	public int numParcela;
+	public int status; 
 	
 	public List<ConteudoChaveNumerica> listRepresentante;
-		
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getPortador() {
 		return portador;
 	}
@@ -603,20 +621,100 @@ public class ConsultaFechamentoComissoes {
 	public void setTotal(float total) {
 		this.total = total;
 	}
+	
+	public int getLinhaProduto() {
+		return linhaProduto;
+	}
+
+	public void setLinhaProduto(int linhaProduto) {
+		this.linhaProduto = linhaProduto;
+	}
 
 	public List<ConteudoChaveNumerica> getListRepresentante() {
 		return listRepresentante;
+	}
+
+	public int getQtdeEnviada() {
+		return qtdeEnviada;
+	}
+
+	public void setQtdeEnviada(int qtdeEnviada) {
+		this.qtdeEnviada = qtdeEnviada;
+	}
+
+	public int getQtdeDevolvida() {
+		return qtdeDevolvida;
+	}
+
+	public void setQtdeDevolvida(int qtdeDevolvida) {
+		this.qtdeDevolvida = qtdeDevolvida;
+	}
+
+	public int getDiferenca() {
+		return diferenca;
+	}
+
+	public void setDiferenca(int diferenca) {
+		this.diferenca = diferenca;
+	}
+
+	public float getDesc60Porcento() {
+		return desc60Porcento;
+	}
+
+	public void setDesc60Porcento(float desc60Porcento) {
+		this.desc60Porcento = desc60Porcento;
+	}
+
+	public float getBonus30Porcento() {
+		return bonus30Porcento;
+	}
+
+	public void setBonus30Porcento(float bonus30Porcento) {
+		this.bonus30Porcento = bonus30Porcento;
+	}
+
+	public float getBonus100Porcento() {
+		return bonus100Porcento;
+	}
+
+	public void setBonus100Porcento(float bonus100Porcento) {
+		this.bonus100Porcento = bonus100Porcento;
+	}
+
+	public float getValorCobrado() {
+		return valorCobrado;
+	}
+
+	public void setValorCobrado(float valorCobrado) {
+		this.valorCobrado = valorCobrado;
 	}
 
 	public void setListRepresentante(List<ConteudoChaveNumerica> listRepresentante) {
 		this.listRepresentante = listRepresentante;
 	}
 
+	public int getNumParcela() {
+		return numParcela;
+	}
+
+	public void setNumParcela(int numParcela) {
+		this.numParcela = numParcela;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 	public ConsultaFechamentoComissoes() {
 		
 	}
 
-	public ConsultaFechamentoComissoes(int portador, String dataEmissao, String representante, int tipoTitulo,
+	public ConsultaFechamentoComissoes(int id, int portador, String dataEmissao, String representante, int tipoTitulo,
 			String cliente, String titulo, String vencimento, float percComissao, float valorEmAberto,
 			float valorComissao, float mesAnterior, float mesAtual, float saldo, String dataInicio, String dataAnterior,
 			int historico, String pedidoCliente, int pedido, int qtdeFaturada, int docto, int seq, float valorDoc,
@@ -627,8 +725,10 @@ public class ConsultaFechamentoComissoes {
 			String dataLancto, String campanha, String tipo, float totalDebito, float totalCredito, String observacao,
 			float debito, float credito, String estacao, String nivel, String grupo, String subGrupo, String item,
 			String produto, int tabCol, int tabMes, int tabSeq, String tabPreco, int quantidade, int codRepresentante,
-			float precoUnt, float total, List<ConteudoChaveNumerica> listRepresentante) {
+			float precoUnt, float total, int linhaProduto, int qtdeEnviada, int qtdeDevolvida, int diferenca, float desc60Porcento, float bonus30Porcento,
+			float bonus100Porcento, float valorCobrado, List<ConteudoChaveNumerica> listRepresentante, int numParcela, int status) {
 		super();
+		this.id = id;
 		this.portador = portador;
 		this.dataEmissao = dataEmissao;
 		this.representante = representante;
@@ -695,7 +795,18 @@ public class ConsultaFechamentoComissoes {
 		this.codRepresentante = codRepresentante;
 		this.precoUnt = precoUnt;
 		this.total = total;
+		this.linhaProduto = linhaProduto;
 		this.listRepresentante = listRepresentante;
+		this.qtdeEnviada = qtdeEnviada;
+		this.qtdeDevolvida = qtdeDevolvida;
+		this.diferenca = diferenca;
+		this.desc60Porcento = desc60Porcento;
+		this.bonus30Porcento = bonus30Porcento;
+		this.bonus100Porcento = bonus100Porcento;		
+		this.valorCobrado = valorCobrado;
+		this.numParcela = numParcela;
+		this.status = status;
+		
 	}
 	
 }

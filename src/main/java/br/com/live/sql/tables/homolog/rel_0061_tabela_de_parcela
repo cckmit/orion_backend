@@ -1,0 +1,8 @@
+CREATE TABLE ORION_FIN_070 (
+      ID                  NUMBER(9) PRIMARY KEY,
+      REPRESENTANTE       NUMBER(3),
+      ESTACAO             VARCHAR2(100),
+      NUM_PARCELA         NUMBER(2),
+      VALOR               NUMBER(6, 2),
+      STATUS              NUMBER(1)
+);

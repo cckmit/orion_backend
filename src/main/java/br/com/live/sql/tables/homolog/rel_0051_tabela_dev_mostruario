@@ -6,6 +6,7 @@ CREATE TABLE ORION_FIN_050 (
       GRUPO         VARCHAR2(5),
       SUBGRUPO      VARCHAR2(5),
       ITEM          VARCHAR(6),
+      LINHA_PRODUTO NUMBER(2),
       QUANTIDADE    NUMBER(2),
       TAB_COL       NUMBER(2),
       TAB_MES       NUMBER(2),

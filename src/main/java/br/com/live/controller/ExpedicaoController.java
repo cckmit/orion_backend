@@ -285,7 +285,7 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/find-history-mov-allocation", method = RequestMethod.POST)
     public List<ConsultaTag> findHistoryMovAllocation(@RequestBody BodyExpedicao body) {
-    	return expedicaoCustom.findMovsEnderecos(body.endereco.toUpperCase(), body.dataInicio, body.dataFim, ConteudoChaveAlfaNum.parseValueToString(body.usuarioMov), body.tipoMov);
+    	return expedicaoCustom.findMovsEnderecos(body.endereco.toUpperCase(), body.dataInicio, body.dataFim, ConteudoChaveAlfaNum.parseValueToString(body.usuarioMov), body.tipoMov, body.numeroTag, body.deposito);
     }
     
     @RequestMapping(value = "/volume-allocation", method = RequestMethod.POST)
@@ -329,7 +329,7 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/find-quant-movimentacoes", method = RequestMethod.POST)
     public int findQuantMovimentacoes(@RequestBody BodyExpedicao body) {
-        return expedicaoCustom.somaQuantidadeMovimentacoes(body.endereco.toUpperCase(), body.dataInicio, body.dataFim, ConteudoChaveAlfaNum.parseValueToString(body.usuarioMov), body.tipoMov);
+        return expedicaoCustom.somaQuantidadeMovimentacoes(body.endereco.toUpperCase(), body.dataInicio, body.dataFim, ConteudoChaveAlfaNum.parseValueToString(body.usuarioMov), body.tipoMov, body.numeroTag, body.deposito);
     }
 
     @RequestMapping(value = "/gravar-auditoria-transporte", method = RequestMethod.POST)

@@ -8,6 +8,7 @@ import br.com.live.util.ConteudoChaveAlfaNum;
 
 public class BodyFinanceiro {
 	
+	public int id;
 	public int mes;
 	public int ano;
 	public List<ConteudoChaveAlfaNum> listRepresentante;
