@@ -83,7 +83,6 @@ UPDATE ORION_TI_001 SET MEMORIA = MEMORIA_NEW;
 ALTER TABLE ORION_TI_001 DROP COLUMN HD_NEW;
 ALTER TABLE ORION_TI_001 DROP COLUMN MEMORIA_NEW;
 
-
 -- Alterar Tabela adicionando a Coluna Status
 ALTER TABLE orion_ti_001 ADD COLUMN status VARCHAR2(100)
 -- Alterar Tabela adicionando a Coluna Status

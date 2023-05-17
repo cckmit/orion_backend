@@ -55,12 +55,6 @@ public class ServidorController {
         servidorService.saveServidor(servidor.id, servidor.nomeServidor, servidor.maquinaFisica, servidor.sistemaOperacional, servidor.ip, servidor.hd, servidor.memoria, 
         		servidor.processador, servidor.aplicacoes, servidor.documentacao, servidor.status, servidor.gestorResponsavel);
     }
- 
-    @RequestMapping(value = "/save-oportunidade", method = RequestMethod.POST)
-    public void saveOportunidade(@RequestBody BodyGestaoAtivos oportunidade) {
-        servidorService.saveOportunidade(oportunidade.id, oportunidade.tipo, oportunidade.idAtivo, oportunidade.dataCadastro, oportunidade.prioridade, oportunidade.descricao, oportunidade.objetivo,
-        		oportunidade.contextualizacao, oportunidade.descricaoProblema, oportunidade.perguntasEmAberto, oportunidade.riscos);
-    }
 
     @RequestMapping(value = "/delete-servidor-by-id/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<List<ConsultaGestaoAtivos>> deleteServidorById(@PathVariable("id") int id) {

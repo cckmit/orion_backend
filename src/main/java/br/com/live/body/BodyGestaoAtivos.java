@@ -2,10 +2,8 @@ package br.com.live.body;
 
 public class BodyGestaoAtivos {
 	
-	public int id;
-	
+	public String id;
 	public int tipo;
-	public int idAtivo;
 	public String dataCadastro;
 	public int prioridade;
 	public String descricao;

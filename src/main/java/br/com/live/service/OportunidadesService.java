@@ -31,15 +31,31 @@ public class OportunidadesService {
     	return gestaoAtivosCustom.findColunaConsulta(tipo, idOp);
     }
 	
-	public void saveOportunidade(int id, int tipo, int idAtivo, String dataCadastro, int prioridade, String descricao, String objetivo, String contextualizacao,
+	public void saveOportunidade(String id, int tipo, String dataCadastro, int prioridade, String descricao, String objetivo, String contextualizacao,
     		String descricaoProblema, String perguntasEmAberto, String riscos) {
 
-    	GestaoAtivosOportunidade oportunidade = null;
-    	int nextId = gestaoAtivosCustom.findNextIdByTipo(id, tipo);
-  
-        oportunidade = new GestaoAtivosOportunidade(tipo + "-" + id + "-" + nextId, tipo, id, nextId, FormataData.parseStringToDate(dataCadastro), prioridade, descricao, objetivo,
-        		contextualizacao, descricaoProblema, perguntasEmAberto, riscos);
-         
-        gestaoAtivosOportunidadeRepository.save(oportunidade);
+		GestaoAtivosOportunidade oportunidade = null;
+
+		oportunidade = gestaoAtivosOportunidadeRepository.findByIdOp(id);
+
+		if (oportunidade == null){
+
+			int idInt = Integer.parseInt(id);
+			int nextId = gestaoAtivosCustom.findNextIdByTipo(idInt, tipo);
+
+			oportunidade = new GestaoAtivosOportunidade(tipo + "-" + idInt + "-" + nextId, tipo, idInt, nextId, FormataData.parseStringToDate(dataCadastro), prioridade, descricao, objetivo, contextualizacao, descricaoProblema, perguntasEmAberto, riscos);
+
+			gestaoAtivosOportunidadeRepository.save(oportunidade);
+
+		} else {
+			oportunidade.dataCadastro = FormataData.parseStringToDate(dataCadastro);
+			oportunidade.prioridade = prioridade;
+			oportunidade.descricao = descricao;
+			oportunidade.objetivo = objetivo;
+			oportunidade.contextualizacao = contextualizacao;
+			oportunidade.descricaoProblema = descricaoProblema;
+			oportunidade.perguntasEmAberto = perguntasEmAberto;
+			oportunidade.riscos = riscos;
+		}
     }
 }
