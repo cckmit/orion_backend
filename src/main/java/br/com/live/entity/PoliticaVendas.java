@@ -41,10 +41,22 @@ public class PoliticaVendas {
 	@Column(name = "cond_pgto")
 	public int condPgto;
 	
+	@Column(name = "tipo_cliente")
+	public int tipoCliente;
+	
 	@Column(name = "natureza_operacao")
 	public int naturezaOperacao;
 	
 	public float desconto;
+	
+	@Column(name = "tab_col")
+	public int tabCol;
+	
+	@Column(name = "tab_mes")
+	public int tabMes;
+	
+	@Column(name = "tab_seq")
+	public int tabSeq;
 	
 	public int getId() {
 		return id;
@@ -158,6 +170,14 @@ public class PoliticaVendas {
 		this.condPgto = condPgto;
 	}
 
+	public int getTipoCliente() {
+		return tipoCliente;
+	}
+
+	public void setTipoCliente(int tipoCliente) {
+		this.tipoCliente = tipoCliente;
+	}
+
 	public int getNaturezaOperacao() {
 		return naturezaOperacao;
 	}
@@ -174,12 +194,36 @@ public class PoliticaVendas {
 		this.desconto = desconto;
 	}
 	
+	public int getTabCol() {
+		return tabCol;
+	}
+
+	public void setTabCol(int tabCol) {
+		this.tabCol = tabCol;
+	}
+
+	public int getTabMes() {
+		return tabMes;
+	}
+
+	public void setTabMes(int tabMes) {
+		this.tabMes = tabMes;
+	}
+
+	public int getTabSeq() {
+		return tabSeq;
+	}
+
+	public void setTabSeq(int tabSeq) {
+		this.tabSeq = tabSeq;
+	}
+
 	public PoliticaVendas() {
 		
 	}
 
 	public PoliticaVendas(int id, int tipo, int formaPagamento, int portador, int cnpj9, int cnpj4, int cnpj2, int codFuncionario, float descCapa, int tipoPedido, int depositoItens,
-			float descMaxCliente, float comissao, int condPgto, int naturezaOperacao, float desconto) {
+			float descMaxCliente, float comissao, int condPgto, int tipoCliente, int naturezaOperacao, float desconto, int tabCol, int tabMes, int tabSeq) {
 		this.id = id;
 		this.tipo = tipo;
 		this.formaPagamento = formaPagamento;
@@ -194,8 +238,12 @@ public class PoliticaVendas {
 		this.descMaxCliente = descMaxCliente;
 		this.comissao = comissao;
 		this.condPgto = condPgto;
+		this.tipoCliente = tipoCliente;
 		this.naturezaOperacao = naturezaOperacao;
 		this.desconto = desconto;
+		this.tabCol = tabCol;
+		this.tabMes = tabMes;
+		this.tabSeq = tabSeq;
 		
 	}
 

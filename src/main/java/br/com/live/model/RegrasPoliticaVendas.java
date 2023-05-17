@@ -13,8 +13,10 @@ public class RegrasPoliticaVendas {
 	private float descmaxcliente;
 	private float comissao;
 	private String condPagamento;
+	private String tipoCliente;
 	private String naturezaOperacao;
 	private float desconto;
+	private String tabPreco;
 	
 	public int getId() {
 		return id;
@@ -82,6 +84,12 @@ public class RegrasPoliticaVendas {
 	public void setCondPagamento(String condPagamento) {
 		this.condPagamento = condPagamento;
 	}
+	public String getTipoCliente() {
+		return tipoCliente;
+	}
+	public void setTipoCliente(String tipoCliente) {
+		this.tipoCliente = tipoCliente;
+	}
 	public String getNaturezaOperacao() {
 		return naturezaOperacao;
 	}
@@ -94,12 +102,18 @@ public class RegrasPoliticaVendas {
 	public void setDesconto(float desconto) {
 		this.desconto = desconto;
 	}
+	public String getTabPreco() {
+		return tabPreco;
+	}
+	public void setTabPreco(String tabPreco) {
+		this.tabPreco = tabPreco;
+	}
 	public RegrasPoliticaVendas() {
 		
 	}
 	
 	public RegrasPoliticaVendas(int id, String formaPagamento, String portador, String cnpj, String codfuncionario, float desccapa, String tipopedido, String depositoitens,
-			float descmaxcliente, float comissao, String condPagamento, String naturezaOperacao, float desconto) {
+			float descmaxcliente, float comissao, String condPagamento, String tipoCliente, String naturezaOperacao, float desconto, String tabPreco) {
 		
 		this.id = id;
 		this.formaPagamento = formaPagamento;
@@ -112,8 +126,10 @@ public class RegrasPoliticaVendas {
 		this.descmaxcliente = descmaxcliente;
 		this.comissao = comissao;
 		this.condPagamento = condPagamento;
+		this.tipoCliente = tipoCliente;
 		this.naturezaOperacao = naturezaOperacao;
 		this.desconto = desconto;
+		this.tabPreco = tabPreco;
 	}
 	
 

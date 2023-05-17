@@ -49,6 +49,7 @@ public class PoliticaVendasCustom {
 				+ " order by a.natur_operacao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
+	
 	public List<ConteudoChaveAlfaNum> findCnpj(String cnpj) {
 		String query = " SELECT LPAD(a.cgc_9, 9, 0) || LPAD(a.cgc_4, 4, 0) || LPAD(a.cgc_2, 2, 0) value, "
 				+ "       DECODE(a.cgc_4, 0, "
@@ -66,10 +67,17 @@ public class PoliticaVendasCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
+	public List<ConteudoChaveAlfaNum> findAllTipoDeCliente() {
+		
+		String query = " SELECT a.tipo_cliente value, a.tipo_cliente || ' - ' || a.descr_tipo_clien label FROM pedi_085 a ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
 	public List<RegrasPoliticaVendas> findAllRegrasByTipo(int tipo) {
 		String query = " SELECT a.id, "
-				+ "     (SELECT b.forma_pgto || ' - ' || b.descricao FROM loja_010 b WHERE b.forma_pgto = a.forma_pagamento) formapagamento, "
-				+ "     (SELECT c.cod_portador || ' - ' || c.nome_banco FROM pedi_050 c WHERE c.cod_portador = a.portador) portador, "
+				+ "     (SELECT LPAD(b.forma_pgto, 2, 0) || ' - ' || b.descricao FROM loja_010 b WHERE b.forma_pgto = a.forma_pagamento) formapagamento, "
+				+ "     (SELECT LPAD(c.cod_portador, 3, 0) || ' - ' || c.nome_banco FROM pedi_050 c WHERE c.cod_portador = a.portador) portador, "
 				+ "     (SELECT DECODE(e.cgc_4, 0, "
 				+ "     'CPF: ' || SUBSTR(LPAD(e.cgc_9, 9, 0), 0, 3) || '.' || SUBSTR(LPAD(e.cgc_9, 9, 0), 4, 3) || '.' || SUBSTR(LPAD(e.cgc_9, 9, 0), 7, 3) || '-' || LPAD(e.cgc_2, 2, 0) || ' - ' || e.nome_cliente, "
 				+ "		'CNPJ: ' || LPAD(e.cgc_9, 8, 0) || '/' || LPAD(e.cgc_4, 4, 0) || '-' || LPAD(e.cgc_2, 2, 0) || ' - ' || e.nome_cliente) "
@@ -77,10 +85,13 @@ public class PoliticaVendasCustom {
 				+ "     (SELECT d.cod_funcionario || ' - ' || MIN(d.nome) FROM efic_050 d WHERE d.cod_funcionario = a.cod_funcionario GROUP BY d.cod_funcionario) codfuncionario, "
 				+ "     a.desc_capa desccapa, "
 				+ "     DECODE(a.tipo,4, DECODE(a.tipo_pedido, 0, '0 - PROGRAMADO', '1 - PRONTA ENTREGA') , '') tipopedido, "
-				+ "     (SELECT f.codigo_deposito || ' - ' || f.descricao FROM basi_205 f WHERE f.codigo_deposito = a.deposito_itens AND f.descricao NOT LIKE ('%(IN)%')) depositoitens, "
+				+ "     (SELECT LPAD(f.codigo_deposito, 3, 0) || ' - ' || f.descricao FROM basi_205 f WHERE f.codigo_deposito = a.deposito_itens AND f.descricao NOT LIKE ('%(IN)%')) depositoitens, "
 				+ "     a.desc_max_cliente descmaxcliente, "
 				+ "     a.comissao comissao, "
-				+ "     (SELECT g.cond_pgt_cliente || ' - ' || g.descr_pg_cliente FROM pedi_070 g WHERE g.cond_pgt_cliente = a.cond_pgto) condpagamento, "
+				+ "     (SELECT j.col_tabela_preco || '.' || j.mes_tabela_preco || '.' || j.seq_tabela_preco || ' - ' || j.descricao "
+				+ "         FROM pedi_090 j WHERE j.col_tabela_preco = a.tab_col AND j.mes_tabela_preco = a.tab_mes AND j.seq_tabela_preco = a.tab_seq) tabPreco, "
+				+ "     (SELECT LPAD(g.cond_pgt_cliente, 3, 0) || ' - ' || g.descr_pg_cliente FROM pedi_070 g WHERE g.cond_pgt_cliente = a.cond_pgto) condpagamento, "
+				+ "     (SELECT i.tipo_cliente || ' - ' || i.descr_tipo_clien FROM pedi_085 i WHERE a.tipo_cliente = i.tipo_cliente) tipoCliente, "
 				+ "     (SELECT h.natur_operacao || ' - ' || MIN(h.descr_nat_oper) FROM pedi_080 h WHERE h.natur_operacao = a.natureza_operacao GROUP BY h.natur_operacao) naturezaOperacao, "
 				+ "     a.desconto desconto "
 				+ "     FROM orion_com_260 a WHERE a.tipo = ? ";
@@ -159,19 +170,16 @@ public class PoliticaVendasCustom {
 				+ "                         WHERE d.tipo = 4 "
 				+ "                         AND d.deposito_itens = b.codigo_deposito) "
 				+ "        UNION "
-				+ "        SELECT a.pedido_venda PEDIDO, e.descr_tipo_clien CANAL, a.data_entr_venda DATA_EMBARQUE, a.data_emis_venda DATA_EMISSAO, 'PEDIDO: ' || a.pedido_venda || ' COM DIVERGÊNCIA: Desconto Máx. X Comissão' DIVERGENCIA "
-				+ "        FROM pedi_100 a, pedi_085 e, pedi_010 f, orion_com_260 b "
-				+ "        WHERE a.cod_cancelamento = 0 "
-				+ "         AND a.situacao_venda  <> 10 "
-				+ "         AND b.desc_max_cliente = a.desconto_item1 + a.desconto_item2 + a.desconto_item3 "
-				+ "         AND b.tipo = 5 "
-				+ "         AND f.cgc_9 = a.cli_ped_cgc_cli9 "
-				+ "         AND f.cgc_4 = a.cli_ped_cgc_cli4 "
-				+ "         AND f.cgc_2 = a.cli_ped_cgc_cli2 "
-				+ "         AND f.tipo_cliente = e.tipo_cliente "
-				+ "         AND NOT EXISTS (SELECT 1 FROM orion_com_260 c "
-				+ "                         WHERE c.tipo = 5 "
-				+ "                         AND c.comissao = a.Perc_Comis_Venda) "
+				+ "        SELECT a.pedido_venda PEDIDO, c.descr_tipo_clien CANAL, a.data_entr_venda DATA_EMBARQUE, a.data_emis_venda DATA_EMISSAO, 'PEDIDO: ' || a.pedido_venda || ' COM DIVERGÊNCIA: Desconto Máx. X Comissão X Tipo Cliente' DIVERGENCIA "
+				+ "        FROM pedi_100 a, pedi_010 b, pedi_085 c "
+				+ "        WHERE b.cgc_9 = a.cli_ped_cgc_cli9 "
+				+ "        AND b.cgc_4 = a.cli_ped_cgc_cli4 "
+				+ "        AND b.cgc_2 = a.cli_ped_cgc_cli2 "
+				+ "        AND c.tipo_cliente = b.tipo_cliente "
+				+ "        AND EXISTS (SELECT 1 FROM orion_com_260 e WHERE e.tipo = 5 "
+				+ "                                                AND e.comissao = a.perc_comis_venda "
+				+ "                                                AND e.tipo_cliente = b.tipo_cliente "
+				+ "                                                AND e.desc_max_cliente < live_fn_calc_perc_desconto(a.desconto_item1, a.desconto_item2, a.desconto_item3))"
 				+ "        UNION "
 				+ "        SELECT a.pedido_venda PEDIDO, e.descr_tipo_clien CANAL, a.data_entr_venda DATA_EMBARQUE, a.data_emis_venda DATA_EMISSAO, 'PEDIDO: ' || a.pedido_venda || ' COM DIVERGÊNCIA: Portador x Forma de Pagamento x Condição de Pagamento' DIVERGENCIA "
 				+ "        FROM pedi_100 a, pedi_085 e, pedi_010 f, orion_com_260 b "
@@ -282,6 +290,27 @@ public class PoliticaVendasCustom {
 				+ "                        AND EXISTS (SELECT 1 FROM pedi_110 c "
 				+ "                                     WHERE c.pedido_venda = b.pedido_venda "
 				+ "                                     AND c.lote_empenhado <> 0)) "
+				+ "        UNION "
+				+ "        SELECT a.pedido_venda PEDIDO, "
+				+ "          c.descr_tipo_clien CANAL, "
+				+ "          a.data_entr_venda DATA_EMBARQUE, "
+				+ "          a.data_emis_venda DATA_EMISSAO, "
+				+ "          'PEDIDO: ' || a.pedido_venda || ' COM DIVERGÊNCIA: Tabela de Preço Isento X Natureza de Operação' DIVERGENCIA "
+				+ "         FROM pedi_100 a, pedi_010 b, pedi_085 c, pedi_110 d "
+				+ "      	WHERE b.cgc_9 = a.cli_ped_cgc_cli9 "
+				+ "      	AND b.cgc_4 = a.cli_ped_cgc_cli4 "
+				+ "      	AND b.cgc_2 = a.cli_ped_cgc_cli2 "
+				+ "      	AND c.tipo_cliente = b.tipo_cliente "
+				+ "      	AND d.pedido_venda = a.pedido_venda "
+				+ "      	AND EXISTS (SELECT 1 FROM orion_com_260 e WHERE e.tipo = 10 "
+				+ "                                                AND e.tab_col = a.colecao_tabela "
+				+ "                                                AND e.tab_mes = a.mes_tabela "
+				+ "                                                AND e.tab_seq = a.sequencia_tabela) "
+				+ "      	AND NOT EXISTS (SELECT 1 FROM orion_com_260 e WHERE e.tipo = 10 "
+				+ "                                                AND e.tab_col = a.colecao_tabela "
+				+ "                                                AND e.tab_mes = a.mes_tabela "
+				+ "                                                AND e.tab_seq = a.sequencia_tabela "
+				+ "                                                AND e.natureza_operacao = d.cod_nat_op) "
 				+ "        UNION "
 				+ "        SELECT pedidos.pedido_venda PEDIDO, "
 				+ "               pedidos.canal, "

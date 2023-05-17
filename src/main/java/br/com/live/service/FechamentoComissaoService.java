@@ -52,8 +52,7 @@ public class FechamentoComissaoService {
 	}
 
 	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosAnalitico(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
-		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);
+			List<ConteudoChaveAlfaNum> listRepresentante) {String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);
 		return financeiroCustom.findTitulosAtrasadosAnalitico(dataInicio, listRepresentante);
 	}
 
