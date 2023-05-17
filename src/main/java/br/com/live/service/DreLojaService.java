@@ -54,7 +54,7 @@ public class DreLojaService {
     private final static int COMISSOES = 25895;
     private final static int CUSTO_OCUPACAO = 20630;
     private final static int DEPRECIACAO = 4987;
-
+    private final static int AMORTIZACAO = 76130;
     private final static int MESVIGENTE = 1;
     private final static int MESACUMULADO = 2;
 
@@ -698,9 +698,11 @@ public class DreLojaService {
         double valorLancamentosDepreciacaoMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre -1));
         double valorLancamentosDepreciacaoMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre));
 
-        double valorResultadoOperacionalMesAnoAnterior = valorEbitdaMesAnoAnterior - valorCustoAntecipacaoMesAnoAnterior - valorLancamentosDepreciacaoMesAnoAnterior;
-        double valorResultadoOperacionalMesAnoAtual = valorEbitdaMesAnoAtual - valorCustoAntecipacaoMesAnoAtual - valorLancamentosDepreciacaoMesAnoAtual;
+        double valorLancamentosAmortizacaoMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(AMORTIZACAO, centroCustoLojaConcat, mesDre, anoDre -1));
+        double valorLancamentosAmortizacaoMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(AMORTIZACAO, centroCustoLojaConcat, mesDre, anoDre));
 
+        double valorResultadoOperacionalMesAnoAnterior = valorEbitdaMesAnoAnterior - valorLancamentosAmortizacaoMesAnoAnterior - valorLancamentosDepreciacaoMesAnoAnterior - valorCustoAntecipacaoMesAnoAnterior;
+        double valorResultadoOperacionalMesAnoAtual = valorEbitdaMesAnoAtual - valorLancamentosAmortizacaoMesAnoAtual - valorLancamentosDepreciacaoMesAnoAtual - valorCustoAntecipacaoMesAnoAtual;
 
         DreLojaCalculo dadosResultadoOperacional = new DreLojaCalculo();
         dadosResultadoOperacional.valPropriedadeMesAnoAnterior = valorResultadoOperacionalMesAnoAnterior;
