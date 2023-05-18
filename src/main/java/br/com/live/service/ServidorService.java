@@ -44,7 +44,7 @@ public class ServidorService {
 
         Servidor servidor = null;
 
-        servidor = servidorRepository.findById(id);
+        if (id > 0) servidor = servidorRepository.findById(id);
 
         if (servidor == null) {
             servidor = new Servidor(servidorRepository.findNextId(), nomeServidor, maquinaFisica, sistemaOperacional, ip, hd, memoria, processador, aplicacoes, documentacao, status,

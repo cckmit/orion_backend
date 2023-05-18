@@ -28,6 +28,11 @@ public class OportunidadesController {
     public List<ConsultaGestaoAtivos> findAllOportunidades() { 
     	return oportunidadesService.findAllOportunidades(); 
     }
+
+    @RequestMapping(value = "/find-oportunidades-tipo/{tipo}", method = RequestMethod.GET)
+    public List<ConsultaGestaoAtivos> findportunidadesTipo(@PathVariable("tipo") String tipo) {
+        return oportunidadesService.findOportunidadesTipo(tipo);
+    }
     
     @RequestMapping(value = "/find-consulta-coluna/{tipo}/{idOp}", method = RequestMethod.GET)
     public String findColunaConsulta(@PathVariable("tipo") String tipo, @PathVariable("idOp") String idOp) { 

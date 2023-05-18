@@ -33,7 +33,7 @@ public class SistemaService {
 
         Sistema sistema = null;
 
-        sistema = sistemaRepository.findById(id);
+        if (id > 0) sistema = sistemaRepository.findById(id); // ID = 0, contempla TODOS.
 
         if (sistema == null) {
             sistema = new Sistema(sistemaRepository.findNextId(), nomeSistema, objetivo, bancoDeDados, tipo, fornecedor, cnpj, endereco, formaPagto, temContrato, 

@@ -139,3 +139,8 @@ VALUES (0, 'Todos', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 0, EMPTY_BL
 
     ALTER TABLE orion_ti_020 DROP COLUMN nome_ativo
 
+-- Insert novo formulário servidores
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (99, 'Servidores', 'TI', '/servidor');
+
+

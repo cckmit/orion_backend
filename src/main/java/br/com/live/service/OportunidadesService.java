@@ -26,6 +26,11 @@ public class OportunidadesService {
 	public List<ConsultaGestaoAtivos> findAllOportunidades(){
     	return gestaoAtivosCustom.findAllOportunidades();
     }
+
+	public List<ConsultaGestaoAtivos> findOportunidadesTipo(String tipo){
+		return gestaoAtivosCustom.findOportunidadesTipo(tipo);
+	}
+
 	
 	public String findColunaConsulta(String tipo, String idOp){
     	return gestaoAtivosCustom.findColunaConsulta(tipo, idOp);
