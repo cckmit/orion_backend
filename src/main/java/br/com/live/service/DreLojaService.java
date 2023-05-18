@@ -155,9 +155,12 @@ public class DreLojaService {
         int qtdPecaConsumoMesAnoAnterior = dadosLancamentoLojaMesAnoAnt.qtdPecaConsumo; // TODO: Dados Microvix
         int qtdPecaConsumoMesAnoAtual = dadosLancamentoLojaMesAnoAtual.qtdPecaConsumo; // TODO: Dados Microvix
 
+        double valorPrecoMedioMesAnoAnterior = 0;
+        double valorPrecoMedioMesAnoAtual = 0;
+
         double valorPrecoMedioMesAnoAtualOrcado = Math.abs(orcamentoPrecoMedio.valPropriedade);
-        double valorPrecoMedioMesAnoAnterior = valorFaturamentoMesAnoAnterior / qtdPecaFaturadaMesAnoAnterior;
-        double valorPrecoMedioMesAnoAtual = valorFaturamentoMesAnoAtual / qtdPecaFaturadaMesAnoAtual;
+        if (valorFaturamentoMesAnoAnterior > 0) valorPrecoMedioMesAnoAnterior = valorFaturamentoMesAnoAnterior / qtdPecaFaturadaMesAnoAnterior;
+        if (valorFaturamentoMesAnoAtual > 0) valorPrecoMedioMesAnoAtual = valorFaturamentoMesAnoAtual / qtdPecaFaturadaMesAnoAtual;
 
         double valorFaturamentoLiquidoMesAnoAtualOrcado = orcamentoFaturamentoLiquido.valPropriedade;
         double valorFaturamentoLiquidoMesAnoAnterior = valorFaturamentoMesAnoAnterior - valorImpostoFaturamentoMesAnoAnterior;
@@ -473,9 +476,13 @@ public class DreLojaService {
         double valorLancamentosComissoesMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre -1));
         double valorLancamentosComissoesMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre));
 
-        double valorEncargoComissoesMesAnoAnterior = (valorLancamentosComissoesMesAnoAnterior / 100) * percentEncargoComissoes;
-        double valorOrcadoEncargoComissoesMesAnoAtual = (valorOrcadoComissoesMesAnoAtual / 100) * percentEncargoComissoes;
-        double valorEncargoComissoesMesAnoAtual = (valorLancamentosComissoesMesAnoAtual / 100) * percentEncargoComissoes;
+        double valorEncargoComissoesMesAnoAnterior = 0;
+        double valorOrcadoEncargoComissoesMesAnoAtual = 0;
+        double valorEncargoComissoesMesAnoAtual = 0;
+
+        if (valorLancamentosComissoesMesAnoAnterior > 0) valorEncargoComissoesMesAnoAnterior = (valorLancamentosComissoesMesAnoAnterior / 100) * percentEncargoComissoes;
+        if (valorOrcadoComissoesMesAnoAtual > 0) valorOrcadoEncargoComissoesMesAnoAtual = (valorOrcadoComissoesMesAnoAtual / 100) * percentEncargoComissoes;
+        if (valorLancamentosComissoesMesAnoAtual > 0) valorEncargoComissoesMesAnoAtual = (valorLancamentosComissoesMesAnoAtual / 100) * percentEncargoComissoes;
 
         DreLojaCalculo dadosValorCalculadoEncargoComissoes = new DreLojaCalculo();
         dadosValorCalculadoEncargoComissoes.valPropriedadeMesAnoAnterior = valorEncargoComissoesMesAnoAnterior;
@@ -726,11 +733,15 @@ public class DreLojaService {
         double valorFaturamentoLojaMesAnoAnterior = dreLojaCustom.obterValorTotalFaturamentoMesAno(mesDre, anoDre -1, cnpjLoja);
         double valorFaturamentoLojaMesAnoAtual = dreLojaCustom.obterValorTotalFaturamentoMesAno(mesDre, anoDre, cnpjLoja);
 
-        double percFaturamentoLojaMesAnoAnterior = (valorFaturamentoLojaMesAnoAnterior / valorFaturamentoGeralMesAnoAnterior) * 100;
-        double percFaturamentoLojaMesAnoAtual = (valorFaturamentoLojaMesAnoAtual / valorFaturamentoGeralMesAnoAtual) * 100;
+        double percFaturamentoLojaMesAnoAnterior = 0;
+        double percFaturamentoLojaMesAnoAtual = 0;
+        double valorImpostoPlanejamentoMesAnoAnterior = 0;
+        double valorImpostoPlanejamentoMesAnoAtual = 0;
 
-        double valorImpostoPlanejamentoMesAnoAnterior = (valorImpostoPlanejamento * percFaturamentoLojaMesAnoAnterior) / 100;
-        double valorImpostoPlanejamentoMesAnoAtual = (valorImpostoPlanejamento * percFaturamentoLojaMesAnoAtual) / 100;
+        if (valorFaturamentoLojaMesAnoAnterior > 0 && valorFaturamentoGeralMesAnoAnterior > 0) percFaturamentoLojaMesAnoAnterior = (valorFaturamentoLojaMesAnoAnterior / valorFaturamentoGeralMesAnoAnterior) * 100;
+        if (valorFaturamentoLojaMesAnoAtual > 0 && valorFaturamentoGeralMesAnoAtual > 0) percFaturamentoLojaMesAnoAtual = (valorFaturamentoLojaMesAnoAtual / valorFaturamentoGeralMesAnoAtual) * 100;
+        if (valorImpostoPlanejamento > 0 && percFaturamentoLojaMesAnoAnterior > 0) valorImpostoPlanejamentoMesAnoAnterior = (valorImpostoPlanejamento * percFaturamentoLojaMesAnoAnterior) / 100;
+        if (valorImpostoPlanejamento > 0 && percFaturamentoLojaMesAnoAtual > 0) valorImpostoPlanejamentoMesAnoAtual = (valorImpostoPlanejamento * percFaturamentoLojaMesAnoAtual) / 100;
 
         DreLojaCalculo dadosImpostoPlanejamento = new DreLojaCalculo();
         dadosImpostoPlanejamento.valPropriedadeMesAnoAnterior = valorImpostoPlanejamentoMesAnoAnterior;
@@ -756,8 +767,11 @@ public class DreLojaService {
         double percMargemContribuicaoMesAnoAnterior = calcularPercentual(valorMargemContribuicaoMesAnoAnterior, valorFaturamentoMesAnoAnterior);
         double percMargemContribuicaoMesAnoAtual = calcularPercentual(valorMargemContribuicaoMesAnoAtual, valorFaturamentoMesAnoAtual);
 
-        double valorPontoEquilibrioMesAnoAnterior = (valorGastosFixosMesAnoAnterior / percMargemContribuicaoMesAnoAnterior) * 100;
-        double valorPontoEquilibrioMesAnoAtual = (valorGastosFixosMesAnoAtual / percMargemContribuicaoMesAnoAtual) * 100;
+        double valorPontoEquilibrioMesAnoAnterior = 0;
+        double valorPontoEquilibrioMesAnoAtual = 0;
+
+        if (valorGastosFixosMesAnoAnterior > 0 && percMargemContribuicaoMesAnoAnterior > 0) valorPontoEquilibrioMesAnoAnterior = (valorGastosFixosMesAnoAnterior / percMargemContribuicaoMesAnoAnterior) * 100;
+        if (valorGastosFixosMesAnoAtual > 0 && percMargemContribuicaoMesAnoAtual > 0) valorPontoEquilibrioMesAnoAtual = (valorGastosFixosMesAnoAtual / percMargemContribuicaoMesAnoAtual) * 100;
 
         DreLojaCalculo dadosPontoEquilibrio = new DreLojaCalculo();
         dadosPontoEquilibrio.valPropriedadeMesAnoAnterior = valorPontoEquilibrioMesAnoAnterior;
