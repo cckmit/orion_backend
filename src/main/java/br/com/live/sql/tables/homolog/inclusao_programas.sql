@@ -291,3 +291,6 @@ values (97, 'Controle Relaxadeira', 'Confecção', '/controle-relaxadeira');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (98, 'Plano de Negócios', 'TI', '/plano-negocio');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (99, 'Servidores', 'TI', '/servidor');
