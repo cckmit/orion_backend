@@ -73,45 +73,18 @@ public class SugestaoReservaMaterialCustom {
 	}
 
 	public Double findQtdeReservadaByProduto(String nivel, String grupo, String sub, String item) {
-		
-		String query = " select nvl(sum(reservado.quantidade),0) quantidade "
-		+ " from ( "
-		+ " select nvl(sum(t.qtde_reservada),0) quantidade "
-   	    + " from tmrp_041 t "
+				
+		String query = " select nvl(sum(t.qtde_reservada),0) quantidade " 
+		+ " from tmrp_041 t " 
 		+ " where t.area_producao = 1 " 
 		+ " and t.nivel_estrutura = '" + nivel + "' "
 		+ " and t.grupo_estrutura = '" + grupo + "' " 
 		+ " and t.subgru_estrutura = '" + sub + "' "
 		+ " and t.item_estrutura = '" + item + "' "    
-		+ " and not exists (select 1 from pcpc_040 p "  
-		+ " where p.ordem_producao = t.nr_pedido_ordem "  
-		+ " and p.codigo_estagio in (1, 2) " // PROGRAMACAO E ANALISE DE TECIDO 
-		+ " and p.qtde_disponivel_baixa > 0) "
-		+ " and not exists (select 1 from orion_cfc_200 o "
-		+ " where o.ordem_producao = t.nr_pedido_ordem "		
-		+ " and o.nivel_material = t.nivel_estrutura "
-		+ " and o.grupo_material = t.grupo_estrutura "
-		+ " and o.sub_material = t.subgru_estrutura "
-	    + " and o.item_material = t.item_estrutura) "
-		+ " union all "
-		+ " select nvl(sum(t.quantidade),0) quantidade "
-		+ " from orion_cfc_200 t "
-		+ " where t.nivel_material = '" + nivel + "' "
-		+ " and t.grupo_material = '" + grupo + "' "
-		+ " and t.sub_material = '" + sub + "' "
-		+ " and t.item_material = '" + item + "' "
-		+ " and not exists (select 1 from pcpc_040 p "  
-		+ " where p.ordem_producao = t.ordem_producao "  
-		+ " and p.codigo_estagio in (1, 2) " // PROGRAMACAO E ANALISE DE TECIDO 
-		+ " and p.qtde_disponivel_baixa > 0) "
-		+ " and exists (select 1 from tmrp_041 o "
-		+ " where o.area_producao = 1 "
-		+ " and o.nr_pedido_ordem = t.ordem_producao "
-		+ " and o.nivel_estrutura = t.nivel_material "
-		+ " and o.grupo_estrutura = t.grupo_material "
-		+ " and o.subgru_estrutura = t.sub_material "
-        + " and o.item_estrutura = t.item_material) "
-		+ " ) reservado ";		
+		+ " and not exists (select 1 from pcpc_040 p " 
+		+ " where p.ordem_producao = t.nr_pedido_ordem "
+		+ " and p.codigo_estagio in (1, 2) "
+		+ " and p.qtde_disponivel_baixa > 0) ";
 		
 		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
