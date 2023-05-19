@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyContabilidade;
 import br.com.live.body.BodyPoliticaVendas;
 import br.com.live.custom.PoliticaVendasCustom;
+import br.com.live.model.ConsultaPoliticaVendas;
 import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.model.RegrasPoliticaVendas;
+import br.com.live.model.RetornoLancamentoCont;
 import br.com.live.model.TabelaPreco;
 import br.com.live.service.PoliticaVendasService;
 import br.com.live.service.TabelaPrecoService;
@@ -104,4 +107,10 @@ public class PoliticaVendasController {
     	politicaVendasService.deleteRegraById(id);
         return politicaVendasCustom.findAllRegrasByTipo(id);
     }
+    
+    @RequestMapping(value = "/importar-regras", method = RequestMethod.POST)
+    public ConsultaPoliticaVendas importarRegras(@RequestBody BodyPoliticaVendas body) {                  
+    	return politicaVendasService.importarRegras(body.tabImportarRegras, body.tipo);	 
+    }
+    
 }

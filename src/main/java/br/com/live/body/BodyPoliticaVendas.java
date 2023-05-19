@@ -1,5 +1,9 @@
 package br.com.live.body;
 
+import java.util.List;
+
+import br.com.live.model.ConsultaPoliticaVendas;
+
 public class BodyPoliticaVendas {
 	
 	public int id;
@@ -18,5 +22,7 @@ public class BodyPoliticaVendas {
 	public int naturezaOperacao;
 	public float desconto;
 	public String tabelaPreco;
+	
+	public List<ConsultaPoliticaVendas> tabImportarRegras;
 
 }

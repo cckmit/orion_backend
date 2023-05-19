@@ -1,0 +1,7 @@
+ALTER TABLE orion_com_260 DROP COLUMN franchising;
+
+
+ALTER TABLE orion_com_260 ADD (tipo_cliente NUMBER(3) DEFAULT 0);
+ALTER TABLE orion_com_260 ADD (tab_col NUMBER(2) DEFAULT 0);
+ALTER TABLE orion_com_260 ADD (tab_mes NUMBER(2) DEFAULT 0);
+ALTER TABLE orion_com_260 ADD (tab_seq NUMBER(2) DEFAULT 0);

@@ -5,13 +5,13 @@ import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import br.com.live.custom.PoliticaVendasCustom;
 import br.com.live.custom.TabelaPrecoCustom;
+import br.com.live.entity.LancamentoContabeisImport;
 import br.com.live.entity.PoliticaVendas;
-import br.com.live.model.TabelaPreco;
+import br.com.live.model.ConsultaPoliticaVendas;
 import br.com.live.repository.PoliticaVendasRepository;
 import br.com.live.util.ConteudoChaveAlfaNum;
-import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 
 @Transactional
 @Service
@@ -68,4 +68,39 @@ public class PoliticaVendasService {
 	public List<ConteudoChaveAlfaNum> findAllTabelasAsync(String leitor){
 		return tabelaPrecoCustom.findAllTabelasAsync(leitor);
 	}
+	
+	public ConsultaPoliticaVendas importarRegras(List<ConsultaPoliticaVendas> listRegras, int tipo) {
+		
+		// Deletando registros no BD do Tipo selecionado
+		politicaVendasRepository.deleteByTipo(tipo);
+		
+		PoliticaVendas regras = null;
+		
+		for (ConsultaPoliticaVendas dados : listRegras) {
+			
+			try {
+				regras = new PoliticaVendas(politicaVendasRepository.findNextID(), tipo, dados.formaPagamento, dados.portador, dados.cnpj9, dados.cnpj4, dados.cnpj2,
+						dados.codFuncionario, dados.descCapa, dados.tipoPedido, dados.depositoItens, dados.descMaxCliente, dados.comissao, dados.condPagamento,
+						dados.tipoCliente, dados.naturezaOp, dados.desconto, dados.tabCol, dados.tabMes, dados.tabSeq);	
+				politicaVendasRepository.saveAndFlush(regras);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		}		
+		return null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
