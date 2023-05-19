@@ -119,9 +119,6 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (40, 'Metas do Orçamento', 'Comercial', '/metas-orcamento');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (40, 'Metas do Orçamento', 'Comercial', '/metas-orcamento');
-
-insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (41, 'Relatório Horas', 'TI', '/relatorio-horas');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
@@ -267,6 +264,9 @@ values (88, 'Fechamento de Comissões', 'Financeiro', '/fechamento-de-comissoes'
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (89, 'Relacionamento de Loja x Centro de Custos x Supervisor - DRE', 'Financeiro', '/relacionamento-loja-centro-custo-supervisor-dre');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (90, 'Controle de Lançamento de Horas', 'TI', '/controle-lancamento-horas');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (91, 'Orçamento das Lojas - DRE', 'Financeiro', '/orcamento-loja-dre');
