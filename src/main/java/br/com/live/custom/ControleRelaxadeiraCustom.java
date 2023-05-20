@@ -81,13 +81,12 @@ public class ControleRelaxadeiraCustom {
 
     public void inserirInformacaoRejeicao(int codRolo, int codAnalista, Date dataHoraBipagem, String observacao) {
         try {
-            String query = " INSERT INTO pcpt_022 (CODIGO_ROLO, USUARIO, DATA, HORA,OBSERVACAO) VALUES (? ,? , trunc(sysdate), ?, ?) ";
-            jdbcTemplate.update(query, codRolo, codAnalista, dataHoraBipagem, observacao);
+            String query = " INSERT INTO pcpt_022 (CODIGO_ROLO, USUARIO, DATA, HORA,OBSERVACAO) VALUES (? ,? , trunc(sysdate), sysdate, ?) ";
+            jdbcTemplate.update(query, codRolo, codAnalista, observacao);
         } catch (Exception e) {
             String query = " UPDATE pcpt_022 SET USUARIO = ?, DATA = trunc(sysdate), HORA = ?, OBSERVACAO = ? where pcpt_022.codigo_rolo = ? ";
             jdbcTemplate.update(query, codAnalista, dataHoraBipagem, observacao, codRolo);
         }
-
     }
 
     public void inserirRejeicaoRolo(String nivel, String grupo, String sub, String item, int codMotivo, int periodo, int codRolo, float qtdeKilos, float qtdeDefeitos, Date dataHoraBipagem, int codAnalista, float perdaMetros) {
