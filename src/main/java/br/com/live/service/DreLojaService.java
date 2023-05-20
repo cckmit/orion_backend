@@ -166,7 +166,7 @@ public class DreLojaService {
         double valorFaturamentoLiquidoMesAnoAnterior = valorFaturamentoMesAnoAnterior - valorImpostoFaturamentoMesAnoAnterior;
         double valorFaturamentoLiquidoMesAnoAtual = valorFaturamentoMesAnoAtual - valorImpostoFaturamentoMesAnoAtual;
 
-        double valorCustoMaterialMesAnoAtualOrcado = Math.abs(orcamentoCustoMaterial.valPropriedade);
+        double valorCustoMaterialMesAnoAtualOrcado = (Math.abs(orcamentoCustoMaterial.valPropriedade) * dadoParametroGeral.valCustoVendaProduto);
         double valorCustoMaterialMesAnoAnterior = ((qtdPecaFaturadaMesAnoAnterior + qtdPecaConsumoMesAnoAnterior) * dadoParametroGeral.valCustoVendaProduto);
         double valorCustoMaterialMesAnoAtual = ((qtdPecaFaturadaMesAnoAtual + qtdPecaConsumoMesAnoAtual) * dadoParametroGeral.valCustoVendaProduto);
 
@@ -562,6 +562,7 @@ public class DreLojaService {
 
         DreLojaCalculo dadosEncargosComissoes = obterValorCalculadoEncargoComissoes(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
         double valorEncargoComissoesMesAnoAnterior =  dadosEncargosComissoes.valPropriedadeMesAnoAnterior;
+        double valorOrcadoEncargoComissoesMesAnoAtual = dadosEncargosComissoes.valPropriedadeOrcadoMesAnoAtual;
         double valorEncargoComissoesMesAnoAtual =  dadosEncargosComissoes.valPropriedadeMesAnoAtual;
 
         String contaContabilConcat = obterContasContabeisSeqOrcamento(GASTOS_VARIAVEIS, cnpjLoja, mesDre, anoDre);
@@ -570,12 +571,13 @@ public class DreLojaService {
         double valorOrcadoGastosVariaveisMesAnoAtual = Math.abs(dadosOrcamentoGastosVariaveis.valPropriedade);
         double valorLancamentosContaContabilMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre));
 
+        double valorTotalOrcadoLancamentosContaContabilMesAnoAtual = valorOrcadoGastosVariaveisMesAnoAtual + valorOrcadoEncargoComissoesMesAnoAtual; // TODO: NÃO INCLUIR A CAPTURA POIS JÁ CONSIDERA NO ORCAMENTO.
         double valorTotalLancamentosContaContabilMesAnoAnterior = valorLancamentosContaContabilMesAnoAnterior + valorTaxaCapturaMesAnoAnterior + valorEncargoComissoesMesAnoAnterior;
         double valorTotalLancamentosContaContabilMesAnoAtual = valorLancamentosContaContabilMesAnoAtual + valorTaxaCapturaMesAnoAtual + valorEncargoComissoesMesAnoAtual;
 
         DreLojaCalculo dadosGastosVariaveis = new DreLojaCalculo();
         dadosGastosVariaveis.valPropriedadeMesAnoAnterior = valorTotalLancamentosContaContabilMesAnoAnterior;
-        dadosGastosVariaveis.valPropriedadeOrcadoMesAnoAtual = valorOrcadoGastosVariaveisMesAnoAtual;
+        dadosGastosVariaveis.valPropriedadeOrcadoMesAnoAtual = valorTotalOrcadoLancamentosContaContabilMesAnoAtual;
         dadosGastosVariaveis.valPropriedadeMesAnoAtual = valorTotalLancamentosContaContabilMesAnoAtual;
 
         return dadosGastosVariaveis;
@@ -637,9 +639,12 @@ public class DreLojaService {
         double valorGastosFixosMesAnoAnterior = valorLancamentosCustoOcupacaoMesAnoAnterior + valorDespesasFolhaMesAnoAnterior + valorDespesasGeraisMesAnoAnterior;
         double valorGastosFixosMesAnoAtual = valorLancamentosCustoOcupacaoMesAnoAtual + valorDespesasFolhaMesAnoAtual + valorDespesasGeraisMesAnoAtual;
 
+        DreLojaCalculo dadosEncargosComissoes = obterValorCalculadoEncargoComissoes(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
+        double valorOrcadoEstornoComComissoesMesAnoAtual =  dadosEncargosComissoes.valPropriedadeOrcadoMesAnoAtual;
+
         DreLojaCalculo dadosGastosFixos = new DreLojaCalculo();
         dadosGastosFixos.valPropriedadeMesAnoAnterior = valorGastosFixosMesAnoAnterior;
-        dadosGastosFixos.valPropriedadeOrcadoMesAnoAtual = valorOrcadoGastosFixosMesAnoAtual;
+        dadosGastosFixos.valPropriedadeOrcadoMesAnoAtual = valorOrcadoGastosFixosMesAnoAtual - valorOrcadoEstornoComComissoesMesAnoAtual;
         dadosGastosFixos.valPropriedadeMesAnoAtual = valorGastosFixosMesAnoAtual;
 
         return dadosGastosFixos;

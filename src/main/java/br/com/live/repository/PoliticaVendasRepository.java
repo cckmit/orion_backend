@@ -17,6 +17,8 @@ public interface PoliticaVendasRepository extends JpaRepository<PoliticaVendas, 
 	@Query("SELECT a FROM PoliticaVendas a where a.id = :id")
 	PoliticaVendas findByIdPoliticaVendas(int id);
 	
+	void deleteByTipo(int tipo);
+	
 	void deleteById(int id);
 
 }
