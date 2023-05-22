@@ -126,7 +126,7 @@ public class EstoqueProdutoCustom {
 				
 		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	
-
+	
 	public List<Deposito> findAllDepositos() {
 		
 		String query = " select b.codigo_deposito id, b.descricao from basi_205 b " 

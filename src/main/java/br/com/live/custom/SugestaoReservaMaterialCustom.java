@@ -72,8 +72,11 @@ public class SugestaoReservaMaterialCustom {
 		return produtos;
 	}
 
-	public Double findQtdeReservadaByProduto(String nivel, String grupo, String sub, String item) {
+	public Double findQtdeReservadaByProduto(String nivel, String grupo, String sub, String item, boolean isMostruario) {
 				
+		String operacaoPeriodo = "<>";
+		if (isMostruario) operacaoPeriodo = "=";
+		
 		String query = " select nvl(sum(t.qtde_reservada),0) quantidade " 
 		+ " from tmrp_041 t " 
 		+ " where t.area_producao = 1 " 
@@ -81,10 +84,12 @@ public class SugestaoReservaMaterialCustom {
 		+ " and t.grupo_estrutura = '" + grupo + "' " 
 		+ " and t.subgru_estrutura = '" + sub + "' "
 		+ " and t.item_estrutura = '" + item + "' "    
-		+ " and not exists (select 1 from pcpc_040 p " 
-		+ " where p.ordem_producao = t.nr_pedido_ordem "
-		+ " and p.codigo_estagio in (1, 2) "
-		+ " and p.qtde_disponivel_baixa > 0) ";
+		+ " and not exists (select 1 from pcpc_040 p, pcpc_020 m "
+		+ " where p.ordem_producao = t.nr_pedido_ordem " 
+		+ " and p.codigo_estagio in (1, 2) " 
+		+ " and p.qtde_disponivel_baixa > 0 "
+		+ " and m.ordem_producao = p.ordem_producao "		  
+		+ " and substr(to_char(m.periodo_producao),3,4) " + operacaoPeriodo + " '00')";
 		
 		return jdbcTemplate.queryForObject(query, Double.class);		
 	}	

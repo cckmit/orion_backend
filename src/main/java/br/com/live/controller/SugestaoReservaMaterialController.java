@@ -57,7 +57,7 @@ public class SugestaoReservaMaterialController {
 				ConteudoChaveAlfaNum.parseValueToString(body.tecidos),
 				ConteudoChaveNumerica.parseValueToString(body.depositosTecidos),
 				ConteudoChaveNumerica.parseValueToString(body.depositosAviamentos), body.isSomenteFlat,
-				body.isDiretoCostura, body.isOrdensSemTecido, body.percentualMinimoAtender, body.regraReserva);
+				body.isDiretoCostura, body.isOrdensSemTecido, body.percentualMinimoAtender, body.regraReserva, body.isMostruario);
 	}
 
 	@RequestMapping(value = "/liberar", method = RequestMethod.POST)

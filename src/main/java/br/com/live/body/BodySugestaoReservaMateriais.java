@@ -10,6 +10,7 @@ import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodySugestaoReservaMateriais {
 
+	// Parametros gerais
 	public List<ConteudoChaveNumerica> planosMestres ;
 	public List<ConteudoChaveNumerica> embarques ;
 	public List<ConteudoChaveAlfaNum> referencias ;
@@ -28,11 +29,12 @@ public class BodySugestaoReservaMateriais {
 	public boolean isSomenteFlat;
 	public boolean isDiretoCostura;
 	public boolean isOrdensSemTecido;
+	public boolean isMostruario;
 	public List<OrdemProducao> listaOrdensLiberar;
 	public List<OrdemProducao> listaOrdensComLembrete;
 	public List<OrdemProducao> listaOrdensComObservacao;
 	public List<SugestaoReservaMateriaisReservados> listaMateriaisReservar;
-	public int regraReserva;
+	public int regraReserva;	
 	// Configuracao das colunas de artigos	
 	public List<ConteudoChaveNumerica> artigos1;
 	public List<ConteudoChaveNumerica> artigos2;

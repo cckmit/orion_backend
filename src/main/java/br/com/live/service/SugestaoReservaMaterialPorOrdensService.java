@@ -50,6 +50,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 	private String depositosTecidos;
 	private String depositosAviamentos;
 	private int percentualMinimoAtender;
+	private boolean isMostruario;
 	private List<OrdemProducao> listaPriorizadaOrdens;
 	private List<SugestaoMaterialDetalhaSortimentos> listaGradeDetPrevistoAtendidoPorSortimento;
 	private List<SugestaoMaterialDetalhaGradeTamanhos> listaGradeDetPrevistoAtendidoPorTamanho;	
@@ -74,7 +75,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		this.suprimentoCustom = suprimentoCustom;
 	}
 
-	public SugestaoReservaMateriais calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositosTecidos, String depositosAviamentos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva) {		
+	public SugestaoReservaMateriais calcularSugestaoReserva(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String embarques, String referencias, String estagios, String artigos, String tecidos, String depositosTecidos, String depositosAviamentos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, int percentualMinimoAtender, int regraReserva, boolean isMostruario) {		
 		// System.out.println("calcularSugestaoReserva");		
 
 		System.out.println("Inicio do calculo de sugestao de reserva de tecidos " + new Date());
@@ -85,6 +86,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		this.depositosTecidos = depositosTecidos;
 		this.depositosAviamentos = depositosAviamentos;
 		this.percentualMinimoAtender = percentualMinimoAtender;
+		this.isMostruario = isMostruario;
 		
 		listaGradeDetPrevistoAtendidoPorSortimento = new ArrayList<SugestaoMaterialDetalhaSortimentos>();
 		listaGradeDetPrevistoAtendidoPorTamanho = new ArrayList<SugestaoMaterialDetalhaGradeTamanhos>();
@@ -666,7 +668,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		Map<String, Object> mapQtdeEstoqueQtdeEmpenhada = new HashMap<String, Object>();
 
 		double qtdeEstoque = estoqueProdutoCustom.findQtdeEstoqueByProdutoAndDepositos(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositos);					
-		double qtdeEmpenhada = sugestaoReservaMaterialCustom.findQtdeReservadaByProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);
+		double qtdeEmpenhada = sugestaoReservaMaterialCustom.findQtdeReservadaByProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, this.isMostruario);
 		
 		mapQtdeEstoqueQtdeEmpenhada.put("qtdeEstoque", qtdeEstoque);
 		mapQtdeEstoqueQtdeEmpenhada.put("qtdeEmpenhada", qtdeEmpenhada);
