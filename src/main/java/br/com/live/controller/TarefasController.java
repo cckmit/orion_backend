@@ -2,25 +2,16 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.model.*;
+import br.com.live.util.ConteudoChaveNumerica;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.live.body.BodyLancamentoHoras;
 import br.com.live.body.BodyTarefas;
 import br.com.live.custom.TarefasCustom;
 import br.com.live.entity.MetasPorUsuario;
 import br.com.live.entity.Tarefas;
-import br.com.live.model.ConsultaDadosLancHoras;
-import br.com.live.model.ConsultaGridTarefas;
-import br.com.live.model.ConsultaHorasLancadas;
-import br.com.live.model.ConsultaHorasTarefa;
-import br.com.live.model.IndicesMetasUsuario;
-import br.com.live.model.ReturnTarefasPrincipais;
 import br.com.live.repository.TarefasRepository;
 import br.com.live.service.TarefasService;
 
@@ -46,9 +37,9 @@ public class TarefasController {
 		return tarefasRepository.findAll();
 	}
 
-	@RequestMapping(value = "/grid-tarefas/{listarAbertos}", method = RequestMethod.GET)
-	public List<ConsultaGridTarefas> findAllTarefasGridConsulta(@PathVariable("listarAbertos") boolean listarAbertos) {
-		return tarefasCustom.findAllTarefasGridConsulta(listarAbertos);
+	@RequestMapping(value = "/grid-tarefas/{listarAbertos}/{idUsuario}", method = RequestMethod.GET)
+	public List<ConsultaGridTarefas> findAllTarefasGridConsulta(@PathVariable("listarAbertos") boolean listarAbertos, @PathVariable("idUsuario") int idUsuario) {
+		return tarefasCustom.findAllTarefasGridConsulta(listarAbertos, idUsuario);
 	}
 
 	@RequestMapping(value = "/{idTarefa}", method = RequestMethod.GET)
@@ -61,11 +52,11 @@ public class TarefasController {
 		return tarefasCustom.findAllTarefas(idUsuario);
 	}
 
-	@RequestMapping(value = "/{idTarefa}/{listarAbertos}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{idTarefa}/{listarAbertos}/{idUsuario}", method = RequestMethod.DELETE)
 	public List<ConsultaGridTarefas> deleteById(@PathVariable("idTarefa") int idTarefa,
-			@PathVariable("listarAbertos") boolean listarAbertos) {
+			@PathVariable("listarAbertos") boolean listarAbertos, @PathVariable("idUsuario") int idUsuario) {
 		tarefasRepository.deleteById(idTarefa);
-		return tarefasCustom.findAllTarefasGridConsulta(listarAbertos);
+		return tarefasCustom.findAllTarefasGridConsulta(listarAbertos, idUsuario);
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
@@ -139,5 +130,20 @@ public class TarefasController {
 	@RequestMapping(value = "/obter-lista-grid-meta-disponivel", method = RequestMethod.POST)
 	public List<IndicesMetasUsuario> obterListaGridMetaDisponivel(@RequestBody BodyTarefas body) {
 		return tarefasService.obterListaGridDisponivel(body.usuarios, body.dataInicio, body.dataFim, body.tipoMeta);
-	}	
+	}
+
+	@GetMapping("/obter-lista-dia-lancamento-horas/{idUsuario}/{dataInicio}/{dataFim}")
+	public List<ConsultaControleLancamentoHoras> consultaHorasLancadasDia(@PathVariable("idUsuario") int idUsuario, @PathVariable("dataInicio") String dataInicio, @PathVariable("dataFim") String dataFim) {
+		return tarefasCustom.consultaHorasLancadasDia(idUsuario, dataInicio, dataFim);
+	}
+
+	@GetMapping("/consultar-lancamentos-dia/{idUsuario}/{dataLancamento}")
+	public List<ConsultaHorasLancadas> consultaLancamentosDia(@PathVariable("idUsuario") int idUsuario, @PathVariable("dataLancamento") String dataLancamento) {
+		return tarefasCustom.consultaLancamentosDia(idUsuario, dataLancamento);
+	}
+
+	@GetMapping("/consultar-tarefas-atribuidas-chave/{idUsuario}/{listarAbertos}")
+	public List<ConteudoChaveNumerica> consultarTarefasAtribuidas(@PathVariable("idUsuario") int idUsuario, @PathVariable("listarAbertos") boolean listarAbertos) {
+		return tarefasCustom.findAllTarefasAtribuidas(idUsuario, listarAbertos);
+	}
 }

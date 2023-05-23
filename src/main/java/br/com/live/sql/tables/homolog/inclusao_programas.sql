@@ -29,12 +29,6 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (10, 'Inspeção de Qualidade', 'Confecção', '/inspecao-qualidade');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (11, 'Cadastro de Tarefas', 'TI', '/tarefas');
-
-insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
-values (12, 'Lançamento de Horas', 'TI', '/lancamento-horas');
-
-insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (13, 'Exportação de Tags (China)', 'Confecção', '/exportacao-tags');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)

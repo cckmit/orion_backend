@@ -1,18 +1,17 @@
 package br.com.live.custom;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import br.com.live.model.*;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.MetasPorUsuario;
-import br.com.live.model.ConsultaDadosLancHoras;
-import br.com.live.model.ConsultaGridTarefas;
-import br.com.live.model.ConsultaHorasLancadas;
-import br.com.live.model.ConsultaHorasTarefa;
-import br.com.live.model.ReturnTarefasPrincipais;
 import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.FormataData;
 
@@ -77,7 +76,6 @@ public class TarefasCustom {
 		if (listarAbertos == true) {
 			query += " and a.situacao <> 1 ";
 		}
-				
 				query += " group by a.id,a.origem, a.sistema, a.situacao,a.titulo,c.nome,a.data_prevista, a.tempo_estimado, d.nome";
 		
 		try {
@@ -106,6 +104,25 @@ public class TarefasCustom {
 		}
 		return tarefas;		
 	}
+
+	public List<ConteudoChaveNumerica> findAllTarefasAtribuidas(int idUsuario, boolean listarAbertos) {
+
+		List <ConteudoChaveNumerica> tarefas= null;
+
+		String query = " select a.id value, a.titulo label from orion_adm_001 a"
+				+ " where a.usuario_atribuido = " + idUsuario;
+
+		if (listarAbertos == true) {
+			query += " and a.situacao <> 1 ";
+		}
+
+		try {
+			tarefas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+		} catch (Exception e) {
+			tarefas = new ArrayList<ConteudoChaveNumerica>();
+		}
+		return tarefas;
+	}
 	
 	public List<ConsultaHorasTarefa> findAllLancamentosTarefa(int idTarefa) {
 		List<ConsultaHorasTarefa> horasTarefa = null;
@@ -113,7 +130,7 @@ public class TarefasCustom {
 		String query = " select w.id, e.nome usuario, w.data_lancamento dataLancamento, w.descricao, w.tempo_gasto tempoGasto from orion_adm_002 w, orion_001 e "
 				+ " where w.id_tarefa = " + idTarefa
 				+ " and w.id_usuario = e.id "
-				+ " order by w.data_lancamento ";
+				+ " order by w.data_lancamento desc ";
 		
 		try {
 			horasTarefa = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHorasTarefa.class));
@@ -123,7 +140,7 @@ public class TarefasCustom {
 		return horasTarefa;
 	}
 	
-	public List<ConsultaGridTarefas> findAllTarefasGridConsulta(boolean listarAbertos) {
+	public List<ConsultaGridTarefas> findAllTarefasGridConsulta(boolean listarAbertos, int idUsuario) {
 		List<ConsultaGridTarefas> gridTarefas = null;
 		
 		String query = " select d.id,d.sistema,d.origem,d.titulo,d.situacao,d.data_prevista dataPrevista, d.tempo_estimado tempoEstimado, e.nome usuarioSolicitante, f.nome usuarioAtribuido, nvl(sum(b.tempo_gasto), 0) horasLancadas"
@@ -135,8 +152,13 @@ public class TarefasCustom {
 		if (listarAbertos == true) {
 			query += " and d.situacao <> 1 ";
 		}
+
+		if (idUsuario != 0){
+			query += " and d.usuario_atribuido = " + idUsuario;
+		}
 		
-		query += " group by d.id,d.origem, d.sistema, d.situacao, d.titulo, e.nome, d.data_prevista, d.tempo_estimado, f.nome "; 
+		query += " group by d.id,d.origem, d.sistema, d.situacao, d.titulo, e.nome, d.data_prevista, d.tempo_estimado, f.nome " +
+				 " order by d.data_prevista DESC ";
 		
 		try {
 			gridTarefas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaGridTarefas.class));
@@ -241,5 +263,60 @@ public class TarefasCustom {
 		
 		return totalMeta;
 	}
-	
+
+	public List<ConsultaControleLancamentoHoras> consultaHorasLancadasDia (int idUsuario, String dataInicio, String dataFim){
+
+		DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+		LocalDate dataInicioIn = LocalDate.parse(dataInicio, inputFormatter);
+		LocalDate dataFimIn = LocalDate.parse(dataFim, inputFormatter);
+
+		String dataInicioConvert = dataInicioIn.format(outputFormatter);
+		String dataFimConvert = dataFimIn.format(outputFormatter);
+
+		List<ConsultaControleLancamentoHoras> consultaHorasList = null;
+
+		String query = "SELECT " +
+				"    totalHorasLancamentoDia.dataLancamento, " +
+				"    NVL(SUM(oa.TEMPO_GASTO), 0) AS totalHorasLancamentoDia, " +
+				" 	 CASE WHEN TO_CHAR(totalHorasLancamentoDia.dataLancamento, 'D') IN (1, 7) THEN 0 ELSE 1 END AS diaTrabalhado " +
+				" FROM " +
+				"    ( " +
+				"        SELECT " +
+				"            TRUNC(to_date('"+ dataInicioConvert +"', 'dd/mm/yyyy') + level - 1) AS dataLancamento " +
+				"        FROM " +
+				"            dual " +
+				"        CONNECT BY " +
+				"            level <= (to_date('"+ dataFimConvert +"', 'dd/mm/yyyy') - to_date('"+ dataInicioConvert +"', 'dd/mm/yyyy') + 1) + 1 " +
+				"    ) totalHorasLancamentoDia " +
+				" LEFT JOIN " +
+				"    orion_adm_002 oa ON TRUNC(oa.data_lancamento) = totalHorasLancamentoDia.dataLancamento AND oa.id_usuario = " + idUsuario +
+				" GROUP BY " +
+				"    totalHorasLancamentoDia.dataLancamento " +
+				" ORDER BY " +
+				"    totalHorasLancamentoDia.dataLancamento DESC";
+
+		try {
+			consultaHorasList = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaControleLancamentoHoras.class));
+		} catch (Exception e) {
+			consultaHorasList = new ArrayList<ConsultaControleLancamentoHoras>();
+		}
+
+		return consultaHorasList;
+	}
+
+	public List<ConsultaHorasLancadas> consultaLancamentosDia(int idUsuario, String dataLancamento) {
+
+		System.out.println(idUsuario);
+		System.out.println(dataLancamento);
+
+		String query = " select a.id, a.id_usuario || ' - ' || b.nome usuario, a.data_lancamento data, a.id_tarefa || ' - ' || c.titulo tarefa, c.situacao, c.origem, a.tempo_gasto tempo, c.sistema from orion_adm_002 a, orion_001 b, orion_adm_001 c "
+				+ " where a.id_usuario = b.id "
+				+ " and a.id_tarefa= c.id "
+				+ " and a.id_usuario = " + idUsuario
+				+ " and a.data_lancamento = ' " + dataLancamento + " '"
+				+ " order by a.data_lancamento desc ";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHorasLancadas.class));
+	}
 }
