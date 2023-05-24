@@ -315,7 +315,7 @@ public class TarefasCustom {
 				+ " where a.id_usuario = b.id "
 				+ " and a.id_tarefa= c.id "
 				+ " and a.id_usuario = " + idUsuario
-				+ " and a.data_lancamento = ' " + dataLancamento + " '"
+				+ " and a.data_lancamento = to_date('" + dataLancamento + "', 'dd-mm-yyyy')"
 				+ " order by a.data_lancamento desc ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaHorasLancadas.class));
 	}
