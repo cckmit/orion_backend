@@ -46,6 +46,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 	private final OrdemProducaoCustom ordemProducaoCustom;	
 	private final SuprimentoCustom suprimentoCustom; 
 
+	private int periodoMostruario;
 	private int regraReserva;
 	private String depositosTecidos;
 	private String depositosAviamentos;
@@ -82,6 +83,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		
 		iniciarListasAuxiliares();
 		
+		this.periodoMostruario=parsePeriodoToPeriodoMostruario(periodoFinal); // A análise de mostruário sempre vai se basear pelo periodo inicial informado na tela.
 		this.regraReserva = regraReserva;		
 		this.depositosTecidos = depositosTecidos;
 		this.depositosAviamentos = depositosAviamentos;
@@ -668,7 +670,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		Map<String, Object> mapQtdeEstoqueQtdeEmpenhada = new HashMap<String, Object>();
 
 		double qtdeEstoque = estoqueProdutoCustom.findQtdeEstoqueByProdutoAndDepositos(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositos);					
-		double qtdeEmpenhada = sugestaoReservaMaterialCustom.findQtdeReservadaByProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, this.isMostruario);
+		double qtdeEmpenhada = sugestaoReservaMaterialCustom.findQtdeReservadaByProduto(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, this.isMostruario, this.periodoMostruario);
 		
 		mapQtdeEstoqueQtdeEmpenhada.put("qtdeEstoque", qtdeEstoque);
 		mapQtdeEstoqueQtdeEmpenhada.put("qtdeEmpenhada", qtdeEmpenhada);
@@ -908,4 +910,9 @@ public class SugestaoReservaMaterialPorOrdensService {
 	private String chaveMapDadosPorProduto(String nivel, String grupo, String sub, String item, int alternativa, int roteiro) {
 		return nivel + "." + grupo + "." + sub + "." + item + "." + alternativa + "." + roteiro;
 	}	
+	
+	private int parsePeriodoToPeriodoMostruario(int periodo) {
+		int valor = periodo / 100;
+		return valor = valor * 100;
+	}
 }	

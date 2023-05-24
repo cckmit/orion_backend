@@ -34,7 +34,7 @@ public class PeriodoProducaoCustom {
 		 + " from pcpc_010 p "  
 		 + " where p.area_periodo = 1 " 
 		 + " and p.codigo_empresa = 500 "
-		 + " and p.data_ini_periodo > '01-JAN-2021' ";
+		 + " and p.data_ini_periodo > SYSDATE - 360 ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class));
 	}
@@ -46,7 +46,7 @@ public class PeriodoProducaoCustom {
 				 + " from pcpc_010 p "  
 				 + " where p.area_periodo = 1 " 
 				 + " and p.codigo_empresa = 1 "
-				 + " and p.data_ini_periodo > '01-JAN-2021' ";
+				 + " and p.data_ini_periodo > SYSDATE - 360 ";
 					
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class));
 	}

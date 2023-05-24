@@ -2,6 +2,7 @@ package br.com.live.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -132,5 +133,12 @@ public class FormataData {
 		int finalDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 		String strDate = String.format("%02d",finalDay) + "-" + String.format("%02d",month)  + "-" + year;
 		return parseStringToDate(strDate);		
-	}	
+	}
+	
+    public static int getLastDigitOfYear() {
+        LocalDate currentDate = LocalDate.now();
+        int year = currentDate.getYear();
+        int lastDigit = year % 10;
+        return lastDigit;
+    }
 }
