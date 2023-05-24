@@ -2,7 +2,7 @@ package br.com.live.custom;
 
 import br.com.live.entity.ParametroGeralDreEntity;
 import br.com.live.model.*;
-import br.com.live.util.DataUtils;
+import br.com.live.util.FormataData;
 import br.com.live.util.FormataCNPJ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -232,8 +232,8 @@ public class DreLojaCustom {
     public LancamentoLojaMesAno obterDadosLancamentoLojaMesAnoVendaCigam(String cnpjLoja, int mesLancamento, int anoLancamento){
 
         String cnpj = FormataCNPJ.formatar2(cnpjLoja);
-        String primeiroDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 1);
-        String ultimoDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 2);
+        String primeiroDiaMes = FormataData.obterDataMesAno(mesLancamento, anoLancamento, 1);
+        String ultimoDiaMes = FormataData.obterDataMesAno(mesLancamento, anoLancamento, 2);
 
         String query = " SELECT " +
                 "  NVL(SUM(b.QTDE), 0) AS qtdPecaFaturada, " +
@@ -259,8 +259,8 @@ public class DreLojaCustom {
     public LancamentoLojaMesAno obterDadosLancamentoLojaMesAnoCompraCigam(String cnpjLoja, int mesLancamento, int anoLancamento){
 
         String cnpj = FormataCNPJ.formatar2(cnpjLoja);
-        String primeiroDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 1);
-        String ultimoDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 2);
+        String primeiroDiaMes = FormataData.obterDataMesAno(mesLancamento, anoLancamento, 1);
+        String ultimoDiaMes = FormataData.obterDataMesAno(mesLancamento, anoLancamento, 2);
 
         String query = " SELECT " +
                 "  NVL(SUM(b.QTDE), 0) AS qtdPecaFaturada, " +
@@ -286,8 +286,8 @@ public class DreLojaCustom {
 
         int qtdPecaConsumo = 0;
         String cnpj = FormataCNPJ.formatar2(cnpjLoja);
-        String primeiroDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 1);
-        String ultimoDiaMes = DataUtils.obterDataMesAno(mesLancamento, anoLancamento, 2);
+        String primeiroDiaMes = FormataData.obterDataMesAno(mesLancamento, anoLancamento, 1);
+        String ultimoDiaMes = FormataData.obterDataMesAno(mesLancamento, anoLancamento, 2);
 
         String query = " SELECT " +
                 " NVL(SUM(b.QTDE), 0) AS qtdPecaConsumo " +
