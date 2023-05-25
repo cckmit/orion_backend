@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.model.ArtigoCapacidadeProducao;
+import br.com.live.model.CapacidadeEmMinutosMes;
 import br.com.live.model.EstagioCapacidadeProducao;
 
 @Repository
@@ -105,4 +106,13 @@ public class CapacidadeProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ArtigoCapacidadeProducao.class));
 	}
 
+	public CapacidadeEmMinutosMes findCapacidadeEmMinutosByMesAno(int mes, int ano) {
+		
+		String query = "select o.mes, o.ano, sum(o.capacidade_total) qtdeMinutos from ORION_CFC_320 o "
+		+ " where o.mes = ? "
+		+ " and o.ano = ? "
+		+ " group by o.mes, o.ano ";  		
+		
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(CapacidadeEmMinutosMes.class), mes, ano);
+	}
 }

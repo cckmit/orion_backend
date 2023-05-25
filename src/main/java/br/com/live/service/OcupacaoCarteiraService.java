@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.body.BodyOcupacaoCarteira;
+import br.com.live.custom.CapacidadeProducaoCustom;
 import br.com.live.custom.MetasDoOrcamentoCustom;
 import br.com.live.custom.OcupacaoCarteiraCustom;
+import br.com.live.model.CapacidadeEmMinutosMes;
 import br.com.live.model.MetaOrcamentoPorMesAno;
 import br.com.live.model.ResumoOcupacaoCarteiraPorCanalVenda;
 import br.com.live.model.ResumoOcupacaoCarteiraPorModalidade;
@@ -21,10 +24,12 @@ public class OcupacaoCarteiraService {
 
 	private final OcupacaoCarteiraCustom ocupacaoCarteiraCustom;
 	private final MetasDoOrcamentoCustom metasDoOrcamentoCustom;
+	private final CapacidadeProducaoCustom capacidadeProducaoCustom;
 	
-	public OcupacaoCarteiraService(OcupacaoCarteiraCustom ocupacaoCarteiraCustom, MetasDoOrcamentoCustom metasDoOrcamentoCustom) {
+	public OcupacaoCarteiraService(OcupacaoCarteiraCustom ocupacaoCarteiraCustom, MetasDoOrcamentoCustom metasDoOrcamentoCustom, CapacidadeProducaoCustom capacidadeProducaoCustom) {
 		this.ocupacaoCarteiraCustom = ocupacaoCarteiraCustom;
 		this.metasDoOrcamentoCustom = metasDoOrcamentoCustom;
+		this.capacidadeProducaoCustom = capacidadeProducaoCustom;
 	}
 	
 	public BodyOcupacaoCarteira consultar(String valorResumir, int mes, int ano, String tipoOrcamento, boolean pedidosDisponibilidade, boolean pedidosProgramados, boolean pedidosProntaEntrega) {				                                                																		
@@ -32,7 +37,7 @@ public class OcupacaoCarteiraService {
 		List<ResumoOcupacaoCarteiraPorCanalVenda> resumoCarteiraPorCanaisAtacado = consultarOcupacaoCarteiraPorCanal(valorResumir, mes, ano, tipoOrcamento, pedidosDisponibilidade, pedidosProgramados, pedidosProntaEntrega, OcupacaoCarteiraCustom.MODALIDADE_ATACADO);		
 		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorVarejo = agruparPorModalidade(OcupacaoCarteiraCustom.MODALIDADE_VAREJO, resumoCarteiraPorCanaisVarejo);
 		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraPorAtacado = agruparPorModalidade(OcupacaoCarteiraCustom.MODALIDADE_ATACADO, resumoCarteiraPorCanaisAtacado);	
-		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraTotal = somar(resumoOcupacaoCarteiraPorVarejo, resumoOcupacaoCarteiraPorAtacado);
+		ResumoOcupacaoCarteiraPorModalidade resumoOcupacaoCarteiraTotal = somar(resumoOcupacaoCarteiraPorVarejo, resumoOcupacaoCarteiraPorAtacado, mes, ano, valorResumir);
 		return new BodyOcupacaoCarteira(resumoCarteiraPorCanaisVarejo, resumoCarteiraPorCanaisAtacado, resumoOcupacaoCarteiraPorVarejo, resumoOcupacaoCarteiraPorAtacado, resumoOcupacaoCarteiraTotal);
 	}
 	
@@ -54,8 +59,14 @@ public class OcupacaoCarteiraService {
 		return new ResumoOcupacaoCarteiraPorModalidade(tipoModalidade, valorOrcado, valorReal, valorConfirmar, valorTotal, percentual);
 	}
 	
-	private ResumoOcupacaoCarteiraPorModalidade somar(ResumoOcupacaoCarteiraPorModalidade varejo, ResumoOcupacaoCarteiraPorModalidade atacado) {
-		double valorOrcado = varejo.getValorOrcado() + atacado.getValorOrcado(); 
+	private ResumoOcupacaoCarteiraPorModalidade somar(ResumoOcupacaoCarteiraPorModalidade varejo, ResumoOcupacaoCarteiraPorModalidade atacado, int mes, int ano, String tipoOcupacao) {
+		double valorOrcado = 0;		
+		// quando a ocupacao for em minutos, deve ser considerado o tempo total do mes, pois não existe rateio por canal.
+		if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_MINUTOS)) {
+			CapacidadeEmMinutosMes capacidadeEmMinutos = capacidadeProducaoCustom.findCapacidadeEmMinutosByMesAno(mes, ano);
+			valorOrcado = capacidadeEmMinutos.getQtdeMinutos();
+		}
+		else valorOrcado = varejo.getValorOrcado() + atacado.getValorOrcado();			
 		double valorReal = varejo.getValorReal() + atacado.getValorReal(); 
 		double valorConfirmar = varejo.getValorConfirmar() + atacado.getValorConfirmar(); 
 		double valorTotal = valorReal + valorConfirmar; 
@@ -71,22 +82,21 @@ public class OcupacaoCarteiraService {
 			listOcupacaoEmValor = ocupacaoCarteiraCustom.consultarCarteiraPorValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta);
 			listOcupacaoConfirmarEmValor = ocupacaoCarteiraCustom.consultarCarteiraConfirmarPorValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta);				
 		}				
-		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacaoEmValor, listOcupacaoConfirmarEmValor); 
+		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacaoEmValor, listOcupacaoConfirmarEmValor, false); 
 	}	
 	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoEmQuantidade(int mes, int ano, String tipoPedido, int tipoClassificao, int tipoMeta, String tipoModalidade) {
 		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoEmQtde = ocupacaoCarteiraCustom.consultarCarteiraPorQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
 		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmarEmQtde = ocupacaoCarteiraCustom.consultarCarteiraConfirmarPorQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);				
-		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacaoEmQtde, listOcupacaoConfirmarEmQtde); 
+		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacaoEmQtde, listOcupacaoConfirmarEmQtde, false); 
 	}	
 
-	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoEmMinutos(int mes, int ano, String tipoPedido, int tipoClassificao, int tipoMeta, String tipoModalidade) {
-		double minutosFabricacao = metasDoOrcamentoCustom.findMinutosPorPecaByTipoMetaAnoMes(tipoMeta, mes, ano);
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao = ocupacaoCarteiraCustom.consultarCarteiraPorMinutos(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade, minutosFabricacao);
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar = ocupacaoCarteiraCustom.consultarCarteiraConfirmarPorMinutos(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade, minutosFabricacao);						
-		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacao, listOcupacaoConfirmar); 
+	private List<ResumoOcupacaoCarteiraPorCanalVenda> consultarOcupacaoEmMinutos(int mes, int ano, String tipoPedido, int tipoClassificao, int tipoMeta, String tipoModalidade) {		
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao = ocupacaoCarteiraCustom.consultarCarteiraPorMinutos(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
+		List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar = ocupacaoCarteiraCustom.consultarCarteiraConfirmarPorMinutos(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);						
+		return atualizarDadosOrcadoVersusRealizado(mes, ano, tipoMeta, tipoModalidade, listOcupacao, listOcupacaoConfirmar, true); 
 	}	
 	
-	private List<ResumoOcupacaoCarteiraPorCanalVenda> atualizarDadosOrcadoVersusRealizado(int mes, int ano, int tipoMeta, String tipoModalidade,  List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao, List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar) {
+	private List<ResumoOcupacaoCarteiraPorCanalVenda> atualizarDadosOrcadoVersusRealizado(int mes, int ano, int tipoMeta, String tipoModalidade,  List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao, List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar, boolean isMinutos) {
 		Map<String, ResumoOcupacaoCarteiraPorCanalVenda> mapOcupacao = new HashMap<String, ResumoOcupacaoCarteiraPorCanalVenda>();
 	    List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoPorCanal = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
 		List<MetaOrcamentoPorMesAno> metasCadastradas = metasDoOrcamentoCustom.findMetasOrcamentoByTipoMetaMesAno(tipoMeta, mes, ano, tipoModalidade);		
@@ -94,7 +104,8 @@ public class OcupacaoCarteiraService {
 	    for (MetaOrcamentoPorMesAno orcado : metasCadastradas) {
 	    	ResumoOcupacaoCarteiraPorCanalVenda resumo = new ResumoOcupacaoCarteiraPorCanalVenda();
 	    	resumo.setCanal(orcado.getCanal());
-	    	resumo.setValorOrcado(orcado.getValor());
+	    	if (isMinutos) resumo.setValorOrcado(0);
+	    	else resumo.setValorOrcado(orcado.getValor());
 	    	mapOcupacao.put(resumo.getCanal(), resumo);	    	
 	    }
 		if (listOcupacao != null) {
@@ -128,7 +139,7 @@ public class OcupacaoCarteiraService {
 		if ((pedidosDisponibilidade)&(!pedidosProgramados)&(!pedidosProntaEntrega)) tipoClassificao = OcupacaoCarteiraCustom.CLASSIFICACAO_DISPONIBILIDADE;
 		
 		List<ResumoOcupacaoCarteiraPorCanalVenda> listDados = null;
-				
+		
 		if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_VALORES)) {
 			int tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FATURAMENTO : MetasDoOrcamentoCustom.METAS_FATURAMENTO_REALINHADO;
 			listDados = consultarOcupacaoEmValor(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
@@ -136,7 +147,8 @@ public class OcupacaoCarteiraService {
 			int tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS : MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS_REALINHADO;
 			listDados = consultarOcupacaoEmQuantidade(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
 		} else if (tipoOcupacao.equalsIgnoreCase(OcupacaoCarteiraCustom.OCUPACAO_EM_MINUTOS)) {
-			int tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_MINUTOS : MetasDoOrcamentoCustom.METAS_FAT_EM_MINUTOS_REALINHADO;
+			// não existe meta em minutos por canal, então nesse caso utilizamos o tipo de meta de peças.
+			int tipoMeta = tipoOrcamento.equalsIgnoreCase(OcupacaoCarteiraCustom.META_ORCADA) ? MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS : MetasDoOrcamentoCustom.METAS_FAT_EM_PECAS_REALINHADO;
 			listDados = consultarOcupacaoEmMinutos(mes, ano, tipoPedido, tipoClassificao, tipoMeta, tipoModalidade);
 		}
 		
