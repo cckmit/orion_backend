@@ -301,7 +301,7 @@ public class ComercialService {
 		listPedidos = comercialCustom.findPedidosPorCliente(dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2);
 
 		for (ConsultaPedidosPorCliente dadosPedido : listPedidos) {
-			float valorDescCalculado = totalDesconto;;
+			float valorDescCalculado = totalDesconto;
 			String obsPedido = " Desconto Total de " + valorDescCalculado;
 			
 			// Verifica se o pedido é FRANCHISING -- Aplica somente 50% do desconto
@@ -319,7 +319,7 @@ public class ComercialService {
 
 			// Inserir os Pedidos que irão aparecer no Grid
 			String cnpjEdit = String.format("%08d", dadosPedido.cnpj9) + String.format("%04d",dadosPedido.cnpj4) + String.format("%02d",dadosPedido.cnpj2);
-
+			
 			PedidosComDescontoAConfirmar pedidos = new PedidosComDescontoAConfirmar(dadosPedido.cnpj9, dadosPedido.cnpj4, dadosPedido.cnpj2, cnpjEdit, dadosPedido.valorSaldo,
 					valorDescCalculado, obsPedido, dadosPedido.dataEmbarque, dadosPedido.pedido);
 			listPedidosComDesconto.add(pedidos);

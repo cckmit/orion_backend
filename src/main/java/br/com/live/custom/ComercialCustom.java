@@ -133,9 +133,9 @@ public class ComercialCustom {
 	}
 
 	public List<ClientesImportados> findClientesImportados() {
-		String query = " select dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2, dadosCliente.observacao, dadosCliente.valor  from (" +
-				" select c.cnpj_9 cnpj9, c.cnpj_4 cnpj4, c.cnpj_2 cnpj2, c.observacao, sum(c.valor) valor from orion_com_290 c " +
-				" group by c.cnpj_9, c.cnpj_4, c.cnpj_2, c.observacao) dadosCliente " +
+		String query = " select dadosCliente.cnpj9, dadosCliente.cnpj4, dadosCliente.cnpj2, dadosCliente.valor  from (" +
+				" select c.cnpj_9 cnpj9, c.cnpj_4 cnpj4, c.cnpj_2 cnpj2, sum(c.valor) valor from orion_com_290 c " +
+				" group by c.cnpj_9, c.cnpj_4, c.cnpj_2) dadosCliente " +
 				" where dadosCliente.valor > 0 ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ClientesImportados.class));
 	}
