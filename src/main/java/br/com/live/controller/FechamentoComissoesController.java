@@ -90,7 +90,7 @@ public class FechamentoComissoesController {
 	
 	@RequestMapping(value = "/find-mostruario-adquirido", method = RequestMethod.POST)
     public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(@RequestBody BodyFinanceiro body) {
-        return financeiroService.findMostruarioAdquirido(body.mes, body.ano, body.listRepresentante);
+        return financeiroService.findMostruarioAdquirido(body.mes, body.ano, body.listRepresentante, body.estacao);
     }
 	
 	@RequestMapping(value = "/find-mostruario-devolvido", method = RequestMethod.POST)

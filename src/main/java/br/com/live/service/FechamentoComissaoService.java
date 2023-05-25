@@ -52,13 +52,12 @@ public class FechamentoComissaoService {
 		this.parcelaMostruarioRepository = parcelaMostruarioRepository;
 	}
 
-	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosAnalitico(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);
+	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosAnalitico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
+		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);
 		return financeiroCustom.findTitulosAtrasadosAnalitico(dataInicio, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findLancamentosFaturamento(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findLancamentosFaturamento(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
@@ -67,8 +66,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findLancamentosFaturamento(mesComZero, ano, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findLancamentosBaixaTitulos(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findLancamentosBaixaTitulos(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
@@ -77,8 +75,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findLancamentosBaixaTitulos(mesComZero, ano, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosSintetico(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findTitulosAtrasadosSintetico(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 		String dataInicio = findDataInicioCobrancaAtrasadas(mes, ano);
 		String dataAnterior = findMesAnteriorDatInicio(dataInicio);
 		return financeiroCustom.findTitulosAtrasadosSintetico(dataInicio, dataAnterior, listRepresentante);
@@ -156,8 +153,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findAllEstacoes();
 	}
 
-	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 
 		float totalFaturado = 0;
 		float valorProporcional = 0;
@@ -204,8 +200,7 @@ public class FechamentoComissaoService {
 				regiao, metaFitness, metaBeach);
 	}
 
-	public List<ConsultaFechamentoComissoes> findDevolucaoPorRepresentante(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findDevolucaoPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 
 		String mesComZero = "";
 		if (mes < 10) {
@@ -215,8 +210,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findDevolucoes(mesComZero, ano, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findLanctoManuaisPorRepresentante(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 
 		String mesComZero = "";
 		if (mes < 10) {
@@ -226,7 +220,7 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findTotaisLanctoManuaisPorRepresentante(int mes, int ano,	List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findTotaisLanctoManuaisPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
 
 		String mesComZero = "";
 		if (mes < 10) {
@@ -235,7 +229,13 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findTotaisLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(int mes, int ano,	List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(int mes, int ano,	List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
+		
+		String tabPreco = financeiroCustom.findTabPrecoEstacao(estacao);
+		String[] tabPrecoConcat = tabPreco.split("[-]");
+		int tabCol = Integer.parseInt(tabPrecoConcat[0]);
+		int tabMes = Integer.parseInt(tabPrecoConcat[1]);
+		int tabSeq = Integer.parseInt(tabPrecoConcat[2]);
 		
 		String mesComZero = "";
 		if (mes < 10) {
@@ -244,7 +244,7 @@ public class FechamentoComissaoService {
 		
 		String dataInicial = financeiroCustom.findDataInicialMostruario(mesComZero, ano);
 		Date dataFinal = FormataData.getFinalDay(mes, ano);		
-		return financeiroCustom.findPedidoVendaMostruario(listRepresentante, dataInicial, FormataData.parseDateToString(dataFinal));
+		return financeiroCustom.findPedidoVendaMostruario(listRepresentante, dataInicial, FormataData.parseDateToString(dataFinal), tabCol, tabMes, tabSeq);
 	}
 
 	public List<ConsultaFechamentoComissoes> findMostruarioDevolvido(List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
@@ -306,12 +306,15 @@ public class FechamentoComissaoService {
 		// ----------------------------------------------------------
 		String dataInicial = financeiroCustom.findDataInicialMostruario(mesComZero, ano);
 		Date dataFinal = FormataData.getFinalDay(mes, ano);
-		List<ConsultaFechamentoComissoes> listaMsotruarioEnviado = financeiroCustom.findPedidoVendaMostruario(listRepresentante, dataInicial, FormataData.parseDateToString(dataFinal));
+		// ----------------------------------------------------------
 		String tabPreco = financeiroCustom.findTabPrecoEstacao(estacao);
 		String[] tabPrecoConcat = tabPreco.split("[-]");
 		int tabCol = Integer.parseInt(tabPrecoConcat[0]);
 		int tabMes = Integer.parseInt(tabPrecoConcat[1]);
 		int tabSeq = Integer.parseInt(tabPrecoConcat[2]);
+		
+		List<ConsultaFechamentoComissoes> listaMsotruarioEnviado = financeiroCustom.findPedidoVendaMostruario(listRepresentante, dataInicial, 
+				FormataData.parseDateToString(dataFinal), tabCol, tabMes, tabSeq);
 
 		// Buscando o Percentual atingido no periodo na linha Fitness
 		float percAtingFitness = financeiroCustom.findPercAtingidoEstacaoFitness(dtInicioEstFitness, dtFimEstFitness,	tabCol, tabMes, tabSeq, metaFitness, listRepresentante);
@@ -346,8 +349,7 @@ public class FechamentoComissaoService {
 			};
 			valorCobrado = valor - (desc60Porc + bonus30Porc + bonus100Porc); // Gravar no BD
 			fechamentoMostruario = new FechamentoDevolucaoMostruario(id, codRepres, estacao, itens.nivel, itens.grupo, itens.subGrupo, itens.item, itens.quantidade, 
-					qtdeDevolvida, diferenca, valor, desc60Porc,
-					bonus30Porc, bonus100Porc, valorCobrado, itens.tabCol, itens.tabMes, itens.tabSeq);
+					qtdeDevolvida, diferenca, valor, desc60Porc, bonus30Porc, bonus100Porc, valorCobrado, itens.tabCol, itens.tabMes, itens.tabSeq);
 			fechamentoDevolucaoMostruarioRepository.saveAndFlush(fechamentoMostruario);
 			qtdeDevolvida = 0;
 			diferenca = 0;

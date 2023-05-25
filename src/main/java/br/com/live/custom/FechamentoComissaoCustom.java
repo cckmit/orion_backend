@@ -925,7 +925,8 @@ public class FechamentoComissaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
 	
-	public List<ConsultaFechamentoComissoes> findPedidoVendaMostruario(List<ConteudoChaveAlfaNum> listRepresentante, String dataInicial, String dataFinal){
+	public List<ConsultaFechamentoComissoes> findPedidoVendaMostruario(List<ConteudoChaveAlfaNum> listRepresentante, String dataInicial, String dataFinal, 
+			int tabCol, int tabMes, int tabSeq){
 		
 		String query = " SELECT a.pedido_venda pedido, "
 				+ "       a.data_entr_venda, "
@@ -940,8 +941,8 @@ public class FechamentoComissaoCustom {
 				+ "       a.colecao_tabela tabCol, "
 				+ "       a.mes_tabela tabMes, "
 				+ "       a.sequencia_tabela tabSeq, "
-				+ "       c.valor_unitario precoUnt, "
-				+ "       c.qtde_pedida * c.valor_unitario total "
+				+ "       inter_fn_get_val_unit_tab(" + tabCol + ", " + tabMes + ", " + tabSeq + ", c.cd_it_pe_nivel99, c.cd_it_pe_grupo, c.cd_it_pe_subgrupo, c.cd_it_pe_item) precoUnt, "
+				+ "       c.qtde_pedida * inter_fn_get_val_unit_tab(" + tabCol + ", " + tabMes + ", " + tabSeq + ", c.cd_it_pe_nivel99, c.cd_it_pe_grupo, c.cd_it_pe_subgrupo, c.cd_it_pe_item) total "
 				+ "       FROM pedi_100 a, pedi_020 b, pedi_110 c, basi_030 d "
 				+ "       WHERE a.cli_ped_cgc_cli9 = b.cgc_9 "
 				+ "       AND a.cli_ped_cgc_cli4 = b.cgc_4 "
