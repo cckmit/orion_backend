@@ -17,8 +17,6 @@ public class MetasDoOrcamentoCustom {
 	public final static int METAS_FATURAMENTO_REALINHADO = 3;
 	public final static int METAS_FAT_EM_PECAS = 4;
 	public final static int METAS_FAT_EM_PECAS_REALINHADO = 5;
-	public final static int METAS_FAT_EM_MINUTOS = 6;
-	public final static int METAS_FAT_EM_MINUTOS_REALINHADO = 7;
 		
 	private JdbcTemplate jdbcTemplate;
 	
@@ -76,14 +74,5 @@ public class MetasDoOrcamentoCustom {
 	    + " and modalidade = '" + tipoModalidade + "'";
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MetaOrcamentoPorMesAno.class));
-	}
-	
-	public double findMinutosPorPecaByTipoMetaAnoMes(int tipoMeta, int mes, int ano) {
-		
-		String query = " select " + parseColunaMinutosByMes(mes) + " from orion_com_151 "
-		+ " where ano = " + ano
-		+ " and tipo_meta = " + tipoMeta;  
-
-		return jdbcTemplate.queryForObject(query, Double.class);
 	}	
 }
