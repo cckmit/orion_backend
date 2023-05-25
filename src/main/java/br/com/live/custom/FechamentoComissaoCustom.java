@@ -1,6 +1,7 @@
 package br.com.live.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -11,6 +12,7 @@ import br.com.live.model.ConsultaFechamentoComissoes;
 import br.com.live.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 
 @Repository
 public class FechamentoComissaoCustom {
@@ -890,6 +892,20 @@ public class FechamentoComissaoCustom {
 		return linhaProduto;
 	}
 	
+	public String findDataInicialMostruario(String mes, int ano){
+		
+		String dataInicial = "";
+		
+		String query = " SELECT TO_CHAR(ADD_MONTHS(TO_DATE('" + mes + "/" + ano + "', 'MM/YYYY'), -6), 'MM/YYYY') AS resultado FROM dual ";
+		
+		try {
+			dataInicial = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			dataInicial = "";
+		}
+		return "01/" + dataInicial;
+	}
+	
 	public List<ConsultaFechamentoComissoes> findItensDevolvidos(List<ConteudoChaveAlfaNum> listRepresentante, String estacao){
 		
 		String query = " SELECT a.representante || ' - ' || b.nome_rep_cliente representante, "
@@ -909,9 +925,10 @@ public class FechamentoComissaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
 	
-	public List<ConsultaFechamentoComissoes> findPedidoVendaMostruario(List<ConteudoChaveAlfaNum> listRepresentante){
+	public List<ConsultaFechamentoComissoes> findPedidoVendaMostruario(List<ConteudoChaveAlfaNum> listRepresentante, String dataInicial, String dataFinal){
 		
 		String query = " SELECT a.pedido_venda pedido, "
+				+ "       a.data_entr_venda, "
 				+ "       c.cd_it_pe_nivel99 || '.' || c.cd_it_pe_grupo || '.' || c.cd_it_pe_subgrupo || '.' || c.cd_it_pe_item || ' - ' || d.descr_referencia produto, "
 				+ "       c.qtde_pedida quantidade, "
 				+ "       c.cd_it_pe_nivel99 nivel, "
@@ -925,17 +942,19 @@ public class FechamentoComissaoCustom {
 				+ "       a.sequencia_tabela tabSeq, "
 				+ "       c.valor_unitario precoUnt, "
 				+ "       c.qtde_pedida * c.valor_unitario total "
-				+ "		FROM pedi_100 a, pedi_020 b, pedi_110 c, basi_030 d "
-				+ "		WHERE a.cli_ped_cgc_cli9 = b.cgc_9 "
-				+ "		AND a.cli_ped_cgc_cli4 = b.cgc_4 "
-				+ "		AND a.cli_ped_cgc_cli2 = b.cgc_2 "
-				+ "		AND a.pedido_venda = c.pedido_venda "
-				+ "		AND d.nivel_estrutura = c.cd_it_pe_nivel99 "
-				+ "		AND d.referencia = c.cd_it_pe_grupo "
-				+ "		AND a.situacao_venda = 10 "
-				+ "		AND b.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
-				+ "		AND a.data_entr_venda >= sysdate - 180 ";
-	
+				+ "       FROM pedi_100 a, pedi_020 b, pedi_110 c, basi_030 d "
+				+ "       WHERE a.cli_ped_cgc_cli9 = b.cgc_9 "
+				+ "       AND a.cli_ped_cgc_cli4 = b.cgc_4 "
+				+ "       AND a.cli_ped_cgc_cli2 = b.cgc_2 "
+				+ "       AND a.pedido_venda = c.pedido_venda "
+				+ "       AND d.nivel_estrutura = c.cd_it_pe_nivel99 "
+				+ "       AND d.referencia = c.cd_it_pe_grupo "
+				+ "       AND a.situacao_venda = 10 "
+				+ "       AND a.cond_pgto_venda <> 27 "
+				+ "       AND a.cod_forma_pagto <> 99 "
+				+ "       AND b.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
+				+ "  AND TO_DATE(TO_CHAR(a.data_emis_venda, 'DD/MM/YYYY'), 'DD/MM/YYYY') BETWEEN TO_DATE('" + dataInicial + "', 'DD/MM/YYYY') AND TO_DATE('" + dataFinal +"', 'DD/MM/YYYY')";
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
 	

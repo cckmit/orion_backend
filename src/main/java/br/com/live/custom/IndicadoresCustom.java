@@ -7,16 +7,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.entity.AreaIndicador;
-import br.com.live.entity.IndicadoresDiario;
+import br.com.live.entity.Indicadores;
 import br.com.live.entity.IndicadoresMensal;
-import br.com.live.entity.IndicadoresSemanal;
-import br.com.live.entity.ResultadosIndicadorDiario;
 import br.com.live.entity.ResultadosIndicadorMensal;
 import br.com.live.entity.ResultadosIndicadorSemanal;
-import br.com.live.model.IndicadoresAdministrativos;
+import br.com.live.model.ConsultaIndicadores;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
-import static org.springframework.util.StringUtils.capitalize;
 
 @Repository
 public class IndicadoresCustom {
@@ -27,15 +24,26 @@ public class IndicadoresCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
-	public List<ConteudoChaveAlfaNum> findAllIndicadores(String idUsuario){
-		String query = " SELECT a.id value, a.nome_indicador || ' -  ' || " 
-					+ "     DECODE(a.frequencia_monitoramento, 1, 'DIÁRIO', "
-					+ " 	DECODE(a.frequencia_monitoramento, 2, 'SEMANAL', "
-					+ " 	DECODE(a.frequencia_monitoramento, 3, 'MENSAL')))label FROM orion_ind_110 a, orion_001 c "
-					+ " 	WHERE c.id = a.responsavel_registro "
-					+ " 	AND a.responsavel_registro = ? ";
+	public List<ConsultaIndicadores> findAllIndicadores(int idUsuario){
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class), idUsuario);
+		String query = " SELECT a.id id, "
+				+ "       a.nome_indicador nome, "
+				+ "       (SELECT b.descricao FROM orion_ind_020 b WHERE b.tipo = 1 AND b.sequencia = a.grupo_indicador) grupo, "
+				+ "       (SELECT b.descricao FROM orion_ind_020 b WHERE b.tipo = 2 AND b.sequencia = a.area) area, "
+				+ "       (SELECT b.descricao FROM orion_ind_020 b WHERE b.tipo = 3 AND b.sequencia = a.departamento) dpto, "
+				+ "       (SELECT b.descricao FROM orion_ind_020 b WHERE b.tipo = 4 AND b.sequencia = a.setor) setor, "
+				+ "       (SELECT b.descricao FROM orion_ind_020 b WHERE b.tipo = 5 AND b.sequencia = a.unidade_medida) undMedida, "
+				+ "       a.fonte_dados fonteDados, "
+				+ "       a.polaridade polaridade, "
+				+ "       c.nome respPublic, "
+				+ "       a.observacao obs, "
+				+ "       a.formula_calculo formula, "
+				+ "       a.situacao situacao "
+				+ "   FROM orion_ind_110 a, orion_001 c "
+				+ "   WHERE c.id = a.responsavel_publicacao "
+				+ "   AND a.responsavel_registro = ? ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaIndicadores.class), idUsuario);
 	}
 	
 	public List<ConteudoChaveNumerica> findArea(int tipo) {
@@ -81,17 +89,6 @@ public class IndicadoresCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResultadosIndicadorMensal.class), ano, idIndicador);
 	}
 	
-	public List<IndicadoresSemanal> findDadosMesAno(String mes, int ano, int idIndicador) {
-				
-		String query = " SELECT a.id, a.mes, a.ano, a.variaveis, a.codigo, a.descricao, a.semana_1 semana1, a.semana_2 semana2, a.semana_3 semana3, a.semana_4 semana4, a.semana_5 semana5 FROM orion_ind_070 a "
-				+ "   WHERE a.mes = '" + mes + "'"
-				+ "   AND a.ano = " + ano  
-				+ "   AND a.id_indicador = " + idIndicador
-				+ "	  ORDER BY a.codigo ";
-		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(IndicadoresSemanal.class));
-	}
-	
 	public List<ResultadosIndicadorSemanal> findResultadosSemanal(String mes, int ano, int idIndicador) {
 		
 		String query = " SELECT a.id, a.codigo codigo, a.descricao, a.semana_1 semana1, a.semana_2 semana2, a.semana_3 semana3, "
@@ -104,42 +101,30 @@ public class IndicadoresCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResultadosIndicadorSemanal.class));
 	}
-
-	public List<IndicadoresDiario> findDadosDia(String mes, int ano, int idIndicador) {
-				
-		String query = " SELECT a.id, a.mes, a.ano, a.variaveis, a.codigo, a.descricao, a.dia_1 dia1, a.dia_2 dia2, a.dia_3 dia3, a.dia_4 dia4, a.dia_5 dia5, "
-		        + "   a.dia_6 dia6, a.dia_7 dia7, a.dia_8 dia8, a.dia_9 dia9, a.dia_10 dia10, a.dia_11 dia11, a.dia_12 dia12, a.dia_13 dia13, a.dia_14 dia14, a.dia_15 dia15, "
-				+ "   a.dia_16 dia16, a.dia_17 dia17, a.dia_18 dia18, a.dia_19 dia19, a.dia_20 dia20, a.dia_21 dia21, a.dia_22 dia22, a.dia_23 dia23, a.dia_24 dia24, "
-				+ "   a.dia_25 dia25, a.dia_26 dia26, a.dia_27 dia27, a.dia_28 dia28, a.dia_29 dia29, a.dia_30 dia30, a.dia_31 dia31 "
-		        + "   FROM orion_ind_090 a "
-				+ "   WHERE a.mes = '" + mes + "'"
-				+ "   AND a.ano = " + ano  
-				+ "   AND a.id_indicador = " + idIndicador
-				+ "	  ORDER BY a.codigo ";
-		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(IndicadoresDiario.class));
-	}
-
-	public List<ResultadosIndicadorDiario> findResultadosDiarios(String mes, int ano, int idIndicador) {
-		
-		String query = " SELECT a.id, a.codigo codigo, a.descricao, a.dia_1 dia1, a.dia_2 dia2, a.dia_3 dia3, a.dia_4 dia4, a.dia_5 dia5, "
-				+ "    a.dia_6 dia6, a.dia_7 dia7, a.dia_8 dia8, a.dia_9 dia9, a.dia_10 dia10, a.dia_11 dia11, a.dia_12 dia12, a.dia_13 dia13, a.dia_14 dia14, a.dia_15 dia15, "
-				+ "    a.dia_16 dia16, a.dia_17 dia17, a.dia_18 dia18, a.dia_19 dia19, a.dia_20 dia20, a.dia_21 dia21, a.dia_22 dia22, a.dia_23 dia23, a.dia_24 dia24, "
-				+ "    a.dia_25 dia25, a.dia_26 dia26, a.dia_27 dia27, a.dia_28 dia28, a.dia_29 dia29, a.dia_30 dia30, a.dia_31 dia31 "
-				+ "    FROM orion_ind_100 a, orion_ind_110 b "
-				+ "    WHERE b.id = a.id_indicador "
-				+ "    AND a.mes = '" + mes + "'"
-				+ "    AND a.ano = " + ano
-				+ "    AND a.id_indicador = " + idIndicador;
-		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResultadosIndicadorDiario.class));
-	}
 	
-	public IndicadoresAdministrativos findIndicadorSelect(long id) {
+	public Indicadores findIndicadorSelect(long id) {
 		
-		String query = " SELECT c.nome_indicador, c.frequencia_monitoramento, c.variaveis FROM orion_ind_110 c WHERE c.id = ? ";
+		String query = " SELECT a.id id, "
+				+ "       a.nome_indicador nomeIndicador, "
+				+ "       a.grupo_indicador grupoIndicador, "
+				+ "       a.area area, "
+				+ "       a.departamento departamento, "
+				+ "       a.setor setor, "
+				+ "       a.gestor_avaliado gestorAvaliado, "
+				+ "       a.unidade_medida unidadeMedida, "
+				+ "       a.frequencia_monitoramento frequenciaMonitoramento, "
+				+ "       a.fonte_dados fonteDados, "
+				+ "       a.polaridade polaridade, "
+				+ "       a.responsavel_registro responsavelRegistro, "
+				+ "       a.responsavel_publicacao responsavelPublicacao, "
+				+ "       a.observacao observacao, "
+				+ "       a.variaveis variaveis, "
+				+ "       a.formula_calculo formulaCalculo, "
+				+ "       a.situacao situacao "
+				+ "   FROM orion_ind_110 a "
+				+ "   WHERE a.id = ? ";
 		
-		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(IndicadoresAdministrativos.class), id);
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(Indicadores.class), id);
 		
 	}
 	public List<String> findvariaveisMensaisById(int idIndicador, int ano) {
@@ -289,54 +274,6 @@ public class IndicadoresCustom {
 		
 		try {
 			jdbcTemplate.update(queryResultMensal, idIndicador);
-				
-		} catch (Exception e) {
-			System.out.println(e);
-		} 
-	}
-	
-	public void deleteValoresSemanais(int idIndicador) {
-		
-		String querySemanal = " DELETE FROM orion_ind_070 WHERE id_indicador = ? ";
-		
-		try {
-			jdbcTemplate.update(querySemanal, idIndicador);
-				
-		} catch (Exception e) {
-			System.out.println(e);
-		} 
-	}
-	
-	public void deleteResultadosSemanais(int idIndicador) {
-		
-		String queryResultSemanal = " DELETE FROM orion_ind_080 WHERE id_indicador = ? ";
-		
-		try {
-			jdbcTemplate.update(queryResultSemanal, idIndicador);
-				
-		} catch (Exception e) {
-			System.out.println(e);
-		} 
-	}
-	
-	public void deleteValoresDiarios(int idIndicador) {
-		
-		String queryDiario = " DELETE FROM orion_ind_090 WHERE id_indicador = ? ";
-		
-		try {
-			jdbcTemplate.update(queryDiario, idIndicador);
-				
-		} catch (Exception e) {
-			System.out.println(e);
-		} 
-	}
-	
-	public void deleteResultadosDiarios(int idIndicador) {
-		
-		String queryResultDiario = " DELETE FROM orion_ind_100 WHERE id_indicador = ? ";
-		
-		try {
-			jdbcTemplate.update(queryResultDiario, idIndicador);
 				
 		} catch (Exception e) {
 			System.out.println(e);

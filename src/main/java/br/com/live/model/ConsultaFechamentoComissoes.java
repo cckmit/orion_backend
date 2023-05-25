@@ -1,5 +1,6 @@
 package br.com.live.model;
 
+import java.util.Date;
 import java.util.List;
 
 import br.com.live.util.ConteudoChaveNumerica;
@@ -82,7 +83,9 @@ public class ConsultaFechamentoComissoes {
 	public float bonus100Porcento;
 	public float valorCobrado;
 	public int numParcela;
-	public int status; 
+	public int status;
+	public Date dataInicial;
+	public Date dataFinal;
 	
 	public List<ConteudoChaveNumerica> listRepresentante;
 	
@@ -710,6 +713,22 @@ public class ConsultaFechamentoComissoes {
 		this.status = status;
 	}
 
+	public Date getDataInicial() {
+		return dataInicial;
+	}
+
+	public void setDataInicial(Date dataInicial) {
+		this.dataInicial = dataInicial;
+	}
+
+	public Date getDataFinal() {
+		return dataFinal;
+	}
+
+	public void setDataFinal(Date dataFinal) {
+		this.dataFinal = dataFinal;
+	}
+
 	public ConsultaFechamentoComissoes() {
 		
 	}
@@ -726,7 +745,7 @@ public class ConsultaFechamentoComissoes {
 			float debito, float credito, String estacao, String nivel, String grupo, String subGrupo, String item,
 			String produto, int tabCol, int tabMes, int tabSeq, String tabPreco, int quantidade, int codRepresentante,
 			float precoUnt, float total, int linhaProduto, int qtdeEnviada, int qtdeDevolvida, int diferenca, float desc60Porcento, float bonus30Porcento,
-			float bonus100Porcento, float valorCobrado, List<ConteudoChaveNumerica> listRepresentante, int numParcela, int status) {
+			float bonus100Porcento, float valorCobrado, List<ConteudoChaveNumerica> listRepresentante, int numParcela, int status, Date dataInicial, Date dataFinal) {
 		super();
 		this.id = id;
 		this.portador = portador;
@@ -806,7 +825,8 @@ public class ConsultaFechamentoComissoes {
 		this.valorCobrado = valorCobrado;
 		this.numParcela = numParcela;
 		this.status = status;
-		
+		this.dataInicial = dataInicial;
+		this.dataFinal = dataFinal;		
 	}
 	
 }

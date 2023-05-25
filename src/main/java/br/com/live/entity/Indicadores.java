@@ -26,15 +26,15 @@ public class Indicadores {
 	public int gestorAvaliado;
 	
 	@Column(name = "unidade_medida")	
-	public String unidadeMedida;
+	public int unidadeMedida;
 	
 	@Column(name = "frequencia_monitoramento")	
-	public String frequenciaMonitoramento;
+	public int frequenciaMonitoramento;
     
 	@Column(name = "fonte_dados")	
-	public String fonteDados;
+	public int fonteDados;
 	
-    public String polaridade;
+    public int polaridade;
     
     @Column(name = "responsavel_registro")	
 	public int responsavelRegistro;
@@ -47,6 +47,7 @@ public class Indicadores {
     @Column(name = "formula_calculo")	
 	public String formulaCalculo;
     public String variaveis;
+    public int situacao;
 
 	public long getId() {
 		return id;
@@ -90,28 +91,28 @@ public class Indicadores {
 	public void setGestorAvaliado(int gestorAvaliado) {
 		this.gestorAvaliado = gestorAvaliado;
 	}
-	public String getUnidadeMedida() {
+	public int getUnidadeMedida() {
 		return unidadeMedida;
 	}
-	public void setUnidadeMedida(String unidadeMedida) {
+	public void setUnidadeMedida(int unidadeMedida) {
 		this.unidadeMedida = unidadeMedida;
 	}
-	public String getFrequenciaMonitoramento() {
+	public int getFrequenciaMonitoramento() {
 		return frequenciaMonitoramento;
 	}
-	public void setFrequenciaMonitoramento(String frequenciaMonitoramento) {
+	public void setFrequenciaMonitoramento(int frequenciaMonitoramento) {
 		this.frequenciaMonitoramento = frequenciaMonitoramento;
 	}
-	public String getFonteDados() {
+	public int getFonteDados() {
 		return fonteDados;
 	}
-	public void setFonteDados(String fonteDados) {
+	public void setFonteDados(int fonteDados) {
 		this.fonteDados = fonteDados;
 	}
-	public String getPolaridade() {
+	public int getPolaridade() {
 		return polaridade;
 	}
-	public void setPolaridade(String polaridade) {
+	public void setPolaridade(int polaridade) {
 		this.polaridade = polaridade;
 	}
 	public int getResponsavelRegistro() {
@@ -144,12 +145,18 @@ public class Indicadores {
 	public void setVariaveis(String variaveis) {
 		this.variaveis = variaveis;
 	}
+	public int getSituacao() {
+		return situacao;
+	}
+	public void setSituacao(int situacao) {
+		this.situacao = situacao;
+	}
 	public Indicadores() {
     	
     }
 	public Indicadores(long id, String nomeIndicador, int grupoIndicador, int area, int departamento, int setor,
-			int gestorAvaliado, String unidadeMedida, String frequenciaMonitoramento, String fonteDados,
-			String polaridade, int responsavelRegistro, int responsavelPublicacao, String observacao, String formulaCalculo, String variaveis) {
+			int gestorAvaliado, int unidadeMedida, int frequenciaMonitoramento, int fonteDados,
+			int polaridade, int responsavelRegistro, int responsavelPublicacao, String observacao, String formulaCalculo, String variaveis, int situacao) {
 		this.id = id;
 		this.nomeIndicador = nomeIndicador;
 		this.grupoIndicador = grupoIndicador;
@@ -166,5 +173,6 @@ public class Indicadores {
 		this.observacao = observacao;
 		this.formulaCalculo = formulaCalculo;
 		this.variaveis = variaveis;
+		this.situacao = situacao;
 	}
 }

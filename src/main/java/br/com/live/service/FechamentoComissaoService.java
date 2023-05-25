@@ -1,6 +1,7 @@
 package br.com.live.service;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -225,24 +226,28 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findTotaisLanctoManuaisPorRepresentante(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findTotaisLanctoManuaisPorRepresentante(int mes, int ano,	List<ConteudoChaveAlfaNum> listRepresentante) {
 
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
-		}
-		;
+		};
 		return financeiroCustom.findTotaisLanctoManuaisPorRepresentante(mesComZero, ano, listRepresentante);
 	}
 
-	public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(int mes, int ano,
-			List<ConteudoChaveAlfaNum> listRepresentante) {
-		return financeiroCustom.findPedidoVendaMostruario(listRepresentante);
+	public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(int mes, int ano,	List<ConteudoChaveAlfaNum> listRepresentante) {
+		
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
+		
+		String dataInicial = financeiroCustom.findDataInicialMostruario(mesComZero, ano);
+		Date dataFinal = FormataData.getFinalDay(mes, ano);		
+		return financeiroCustom.findPedidoVendaMostruario(listRepresentante, dataInicial, FormataData.parseDateToString(dataFinal));
 	}
 
-	public List<ConsultaFechamentoComissoes> findMostruarioDevolvido(List<ConteudoChaveAlfaNum> listRepresentante,
-			String estacao) {
+	public List<ConsultaFechamentoComissoes> findMostruarioDevolvido(List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
 		return financeiroCustom.findItensDevolvidos(listRepresentante, estacao);
 	}
 	
@@ -262,6 +267,11 @@ public class FechamentoComissaoService {
 	}
 
 	public List<ConsultaFechamentoComissoes> findMostruarioAnalitico(List<ConteudoChaveAlfaNum> listRepresentante, int mes, int ano, String estacao) {
+		
+		String mesComZero = "";
+		if (mes < 10) {
+			mesComZero = "0" + mes;
+		};
 
 		FechamentoDevolucaoMostruario fechamentoMostruario = null;
 		ParcelaMostruario parcelaMostruario = null;
@@ -294,7 +304,9 @@ public class FechamentoComissaoService {
 		codRepresentante = codRepresentante.replace("'", "").strip();
 		int codRepres = Integer.parseInt(codRepresentante);
 		// ----------------------------------------------------------
-		List<ConsultaFechamentoComissoes> listaMsotruarioEnviado = financeiroCustom.findPedidoVendaMostruario(listRepresentante);
+		String dataInicial = financeiroCustom.findDataInicialMostruario(mesComZero, ano);
+		Date dataFinal = FormataData.getFinalDay(mes, ano);
+		List<ConsultaFechamentoComissoes> listaMsotruarioEnviado = financeiroCustom.findPedidoVendaMostruario(listRepresentante, dataInicial, FormataData.parseDateToString(dataFinal));
 		String tabPreco = financeiroCustom.findTabPrecoEstacao(estacao);
 		String[] tabPrecoConcat = tabPreco.split("[-]");
 		int tabCol = Integer.parseInt(tabPrecoConcat[0]);
