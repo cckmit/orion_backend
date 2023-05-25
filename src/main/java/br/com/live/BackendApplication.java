@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EntityScan(basePackages = { "br.com.live.entity" })
 @EnableJpaRepositories(basePackages = { "br.com.live.repository" })
-@ComponentScan(basePackages = {"br.com.live.controller", "br.com.live.service", "br.com.live.custom"})
+@ComponentScan(basePackages = {"br.com.live.controller", "br.com.live.service", "br.com.live.custom", "br.com.live.jobs"})
 public class BackendApplication {
 
 	public static void main(String[] args) {
