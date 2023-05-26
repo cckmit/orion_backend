@@ -98,7 +98,7 @@ public class PoliticaVendasCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(RegrasPoliticaVendas.class),tipo);
 	}
 	
-	public List<DivergenciasPoliticaVendas> findDivergencias() {
+	public List<DivergenciasPoliticaVendas> findPedidosDivergencias() {
 		
 		String query = " SELECT REGRAS.PEDIDO CODPEDIDO, "
 				+ "       TO_CHAR(SYSDATE, 'DD/MM/YYYY') DATA_AUDITORIA, "
@@ -480,6 +480,49 @@ public class PoliticaVendasCustom {
 				+ "       (live_fn_calc_perc_desconto(pedidos.desconto1, pedidos.desconto2, pedidos.desconto3) / 100)))) between -5 and 5 ))) REGRAS "
 				+ "       WHERE REGRAS.NUMERO IS NOT NULL"
 				+ "       ORDER BY REGRAS.PEDIDO ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DivergenciasPoliticaVendas.class));
+	}
+	
+	public List<DivergenciasPoliticaVendas> findDivergenciasGrupoEmbarque(int tabCol, int tabMes, int tabSeq) {
+		
+		String query = " SELECT DECODE(a.cli_ped_cgc_cli4, 0, "
+				+ "       'CPF: ' || SUBSTR(LPAD(a.cli_ped_cgc_cli9, 9, 0), 1, 3) || '.' || SUBSTR(LPAD(a.cli_ped_cgc_cli9, 9, 0), 4, 3) || '.' || SUBSTR(LPAD(a.cli_ped_cgc_cli9, 9, 0), 7, 3) || '-' || LPAD(a.cli_ped_cgc_cli2, 2, 0)  || ' - ' || f.nome_cliente, "
+				+ "       'CNPJ: ' || LPAD(a.cli_ped_cgc_cli9, 8, 0) || '/' || LPAD(a.cli_ped_cgc_cli4, 4, 0) || '-' || LPAD(a.cli_ped_cgc_cli2, 2, 0) || ' - ' || f.nome_cliente) cliente, "
+				+ "       TO_CHAR(SYSDATE, 'DD/MM/YYYY') data_auditoria, "
+				+ "       a.pedido_venda codPedido, "
+				+ "       'GRUPO: ' || TO_CHAR(d.data_entrega, 'DD/MM') || '-BLOCO: ' || d.grupo_embarque grupoEmbarque, "
+				+ "       a.data_entr_venda dataEmbarque, "
+				+ "       d.data_entrega dataEmbarqueItem, "
+				+ "       b.cd_it_pe_nivel99 || '.' || b.cd_it_pe_grupo || '.' || b.cd_it_pe_subgrupo || '.' || b.cd_it_pe_item || ' - ' || e.narrativa produto, "
+				+ "       SUM(b.qtde_pedida) qtde "
+				+ "		FROM pedi_100 a, pedi_110 b, pcpc_010 c, basi_590 d, basi_010 e, pedi_010 f "
+				+ "		WHERE b.pedido_venda = a.pedido_venda "
+				+ "		AND c.periodo_producao = a.num_periodo_prod "
+				+ "		AND d.nivel = b.cd_it_pe_nivel99 "
+				+ "		AND d.grupo = b.cd_it_pe_grupo "
+				+ "		AND d.subgrupo = b.cd_it_pe_subgrupo "
+				+ "		AND d.item = b.cd_it_pe_item "
+				+ "     AND e.nivel_estrutura = b.cd_it_pe_nivel99 "
+				+ "     AND e.grupo_estrutura = b.cd_it_pe_grupo "
+				+ "     AND e.subgru_estrutura = b.cd_it_pe_subgrupo "
+				+ "     AND e.item_estrutura = b.cd_it_pe_item "
+				+ "     AND f.cgc_9 = a.cli_ped_cgc_cli9 "
+				+ "     AND f.cgc_4 = a.cli_ped_cgc_cli4 "
+				+ "     AND f.cgc_2 = a.cli_ped_cgc_cli2 "
+				+ "		AND a.situacao_venda <> 10 "
+				+ "		AND a.cod_cancelamento = 0 "
+				+ "		AND b.cod_cancelamento = 0 "
+				+ "		AND (b.qtde_pedida - b.qtde_faturada) > 0 "
+				+ "		AND c.codigo_empresa = 1 "
+				+ "		AND c.area_periodo = 1 "
+				+ "		AND d.data_entrega > c.data_fim_fatu "
+				+ "		AND a.colecao_tabela = " + tabCol
+				+ "		AND a.mes_tabela = " + tabMes
+				+ "		AND a.sequencia_tabela = " + tabSeq
+				+ "		GROUP BY a.cli_ped_cgc_cli4, a.cli_ped_cgc_cli9, a.cli_ped_cgc_cli2, a.pedido_venda, d.data_entrega, d.grupo_embarque, a.data_entr_venda, "
+				+ "         	b.cd_it_pe_nivel99, b.cd_it_pe_grupo, b.cd_it_pe_subgrupo, b.cd_it_pe_item, b.qtde_pedida, f.nome_cliente, e.narrativa "
+				+ "		ORDER BY a.pedido_venda, b.cd_it_pe_nivel99, b.cd_it_pe_grupo, b.cd_it_pe_subgrupo, b.cd_it_pe_item ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DivergenciasPoliticaVendas.class));
 	}

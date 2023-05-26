@@ -427,8 +427,7 @@ public class FechamentoComissaoService {
 		return parameters;
 	}
 
-	public void importarDevolucoesMostruario(List<ConteudoChaveAlfaNum> listRepresentante, String estacao,
-			List<ConsultaFechamentoComissoes> listDevMostruario) {
+	public void importarDevolucoesMostruario(List<ConteudoChaveAlfaNum> listRepresentante, String estacao, List<ConsultaFechamentoComissoes> listDevMostruario) {
 
 		DevolucaoMostruario devolucaoMostruario = null;
 		String tabPreco = "";
@@ -449,12 +448,10 @@ public class FechamentoComissaoService {
 			int col = Integer.parseInt(tabPrecoConcat[0]);
 			int mes = Integer.parseInt(tabPrecoConcat[1]);
 			int seq = Integer.parseInt(tabPrecoConcat[2]);
-			preco = financeiroCustom.findPrecoProduto(col, mes, seq, dados.nivel, dados.grupo, dados.subGrupo,
-					dados.item);
+			preco = financeiroCustom.findPrecoProduto(col, mes, seq, dados.nivel, dados.grupo, dados.subGrupo, dados.item);
 			linhaProduto = financeiroCustom.findLinhaProduto(dados.nivel, dados.grupo);
-			devolucaoMostruario = new DevolucaoMostruario(id, codRepres, estacao, dados.nivel, dados.grupo,
-					dados.subGrupo, dados.item, linhaProduto, dados.quantidade, col, mes, seq, preco,
-					preco * dados.quantidade);
+			devolucaoMostruario = new DevolucaoMostruario(id, codRepres, estacao, dados.nivel, dados.grupo,	dados.subGrupo, dados.item, linhaProduto, 
+					dados.quantidade, col, mes, seq, preco,	preco * dados.quantidade);
 			devolucaoMostruarioRepository.saveAndFlush(devolucaoMostruario);
 		}
 	}

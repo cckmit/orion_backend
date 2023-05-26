@@ -5,10 +5,13 @@ import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import br.com.live.custom.FechamentoComissaoCustom;
+import br.com.live.custom.PoliticaVendasCustom;
 import br.com.live.custom.TabelaPrecoCustom;
 import br.com.live.entity.LancamentoContabeisImport;
 import br.com.live.entity.PoliticaVendas;
 import br.com.live.model.ConsultaPoliticaVendas;
+import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.repository.PoliticaVendasRepository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.FormataData;
@@ -19,15 +22,35 @@ public class PoliticaVendasService {
 	
 	private final PoliticaVendasRepository politicaVendasRepository;
 	private final TabelaPrecoCustom tabelaPrecoCustom;
+	private final PoliticaVendasCustom politicaVendasCustom;
+	private final FechamentoComissaoCustom fechamentoComissaoCustom;
 	
-	public PoliticaVendasService(PoliticaVendasRepository politicaVendasRepository, TabelaPrecoCustom tabelaPrecoCustom) {
+	public PoliticaVendasService(PoliticaVendasRepository politicaVendasRepository, TabelaPrecoCustom tabelaPrecoCustom, PoliticaVendasCustom politicaVendasCustom,
+			FechamentoComissaoCustom fechamentoComissaoCustom) {
 		this.politicaVendasRepository = politicaVendasRepository;
 		this.tabelaPrecoCustom = tabelaPrecoCustom;
+		this.politicaVendasCustom = politicaVendasCustom;
+		this.fechamentoComissaoCustom = fechamentoComissaoCustom;
 	}
 	
 	
 	public void deleteRegraById(int id) {
 		politicaVendasRepository.deleteById(id);
+	}
+	
+	public List<DivergenciasPoliticaVendas> findPedidosDivergencias(){
+		return politicaVendasCustom.findPedidosDivergencias();
+	}
+	
+	public List<DivergenciasPoliticaVendas> findDivergenciasGrupoEmbarque(String estacao){
+		
+		String tabPreco = fechamentoComissaoCustom.findTabPrecoEstacao(estacao);
+		String[] tabPrecoConcat = tabPreco.split("[-]");
+		int tabCol = Integer.parseInt(tabPrecoConcat[0]);
+		int tabMes = Integer.parseInt(tabPrecoConcat[1]);
+		int tabSeq = Integer.parseInt(tabPrecoConcat[2]);
+		
+		return politicaVendasCustom.findDivergenciasGrupoEmbarque(tabCol, tabMes, tabSeq);
 	}
 	
 	public void saveRegra(int id, int tipo, int formaPagamento, int portador, String cnpj, int codFuncionario, float descCapa, int tipoPedido, int depositoItens,

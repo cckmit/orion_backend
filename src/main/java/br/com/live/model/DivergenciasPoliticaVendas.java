@@ -5,6 +5,8 @@ public class DivergenciasPoliticaVendas {
 	private int codPedido;
 	private String canal;
 	private String dataEmbarque;
+	private String dataEmbarqueItem;
+	private String grupoEmbarque;
 	private String dataEmissao;
 	private String dataAuditoria;
 	private String divergencia;
@@ -12,6 +14,8 @@ public class DivergenciasPoliticaVendas {
 	private String cliente;
 	private String funcionario;
 	private int numero;
+	private String produto;
+	private int qtde;
 	
 	public int getCodPedido() {
 		return codPedido;
@@ -73,22 +77,50 @@ public class DivergenciasPoliticaVendas {
 	public void setNumero(int numero) {
 		this.numero = numero;
 	}
+	public String getDataEmbarqueItem() {
+		return dataEmbarqueItem;
+	}
+	public void setDataEmbarqueItem(String dataEmbarqueItem) {
+		this.dataEmbarqueItem = dataEmbarqueItem;
+	}
+	public String getGrupoEmbarque() {
+		return grupoEmbarque;
+	}
+	public void setGrupoEmbarque(String grupoEmbarque) {
+		this.grupoEmbarque = grupoEmbarque;
+	}
+	public String getProduto() {
+		return produto;
+	}
+	public void setProduto(String produto) {
+		this.produto = produto;
+	}
+	public int getQtde() {
+		return qtde;
+	}
+	public void setQtde(int qtde) {
+		this.qtde = qtde;
+	}
 	public DivergenciasPoliticaVendas() {
 		
 	}
-	
-	public DivergenciasPoliticaVendas(int codPedido, String canal, String dataEmbarque, String dataEmissao, String divergencia, String dataAuditoria,
-			String pedidoCliente, String cliente, String funcionario, int numero) {
+	public DivergenciasPoliticaVendas(int codPedido, String canal, String dataEmbarque, String dataEmbarqueItem, String grupoEmbarque,
+			String dataEmissao, String dataAuditoria, String divergencia, String pedidoCliente, String cliente,
+			String funcionario, int numero, String produto, int qtde) {
 		
 		this.codPedido = codPedido;
 		this.canal = canal;
 		this.dataEmbarque = dataEmbarque;
+		this.dataEmbarqueItem = dataEmbarqueItem;
+		this.grupoEmbarque = grupoEmbarque;
 		this.dataEmissao = dataEmissao;
-		this.divergencia = divergencia;
 		this.dataAuditoria = dataAuditoria;
+		this.divergencia = divergencia;
 		this.pedidoCliente = pedidoCliente;
 		this.cliente = cliente;
 		this.funcionario = funcionario;
 		this.numero = numero;
-	}
+		this.produto = produto;
+		this.qtde = qtde;
+	}	
 }

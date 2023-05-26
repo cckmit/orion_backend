@@ -22,6 +22,7 @@ public class BodyPoliticaVendas {
 	public int naturezaOperacao;
 	public float desconto;
 	public String tabelaPreco;
+	public String estacao;
 	
 	public List<ConsultaPoliticaVendas> tabImportarRegras;
 
