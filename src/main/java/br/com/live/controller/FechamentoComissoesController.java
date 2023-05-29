@@ -11,16 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.body.BodyChamado;
-import br.com.live.body.BodyContabilidade;
-import br.com.live.body.BodyExpedicao;
 import br.com.live.body.BodyFinanceiro;
 import br.com.live.custom.FechamentoComissaoCustom;
 import br.com.live.model.ConsultaFechamentoComissoes;
-import br.com.live.model.RetornoLancamentoCont;
 import br.com.live.service.FechamentoComissaoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
-import br.com.live.util.ConteudoChaveNumerica;
 import net.sf.jasperreports.engine.JRException;
 
 

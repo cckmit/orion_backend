@@ -1,7 +1,5 @@
 package br.com.live.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyContabilidade;
 import br.com.live.custom.ContabilidadeCustom;
-import br.com.live.model.ConsultaLanctoContabeis;
 import br.com.live.model.RetornoLancamentoCont;
 import br.com.live.service.ContabilidadeService;
 

@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyMetasOrcamento;
-import br.com.live.custom.ComercialCustom;
 import br.com.live.model.ConsultaMetasOrcamento;
 import br.com.live.service.MetasDoOrcamentoService;
-import br.com.live.util.ConteudoChaveAlfaNum;
 
 import java.util.List;
 
@@ -22,12 +20,10 @@ import java.util.List;
 public class MetasDoOrcamentoController {
 	
 	private final MetasDoOrcamentoService metasDoOrcamentoService;
-	private final ComercialCustom comercialCustom;
 	
 	@Autowired
-	public MetasDoOrcamentoController(MetasDoOrcamentoService metasDoOrcamentoService, ComercialCustom comercialCustom) {
+	public MetasDoOrcamentoController(MetasDoOrcamentoService metasDoOrcamentoService) {
 		this.metasDoOrcamentoService = metasDoOrcamentoService;
-		this.comercialCustom = comercialCustom;
 	}
 	
 	@RequestMapping(value = "/find-dados-grid/{ano}/{tipoMeta}", method = RequestMethod.GET)

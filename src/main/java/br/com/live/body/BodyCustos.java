@@ -1,7 +1,5 @@
 package br.com.live.body;
 
-import br.com.live.model.CopiaFichaCustos;
-
 import java.util.List;
 
 public class BodyCustos {

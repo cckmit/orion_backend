@@ -6,7 +6,6 @@ import br.com.live.custom.DreLojaCustom;
 import br.com.live.model.ConciliacaoLojaDre;
 import br.com.live.model.DreLoja;
 import br.com.live.model.DreLojaConsulta;
-import br.com.live.model.LancamentoLojaMesAno;
 import br.com.live.service.DreLojaService;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;

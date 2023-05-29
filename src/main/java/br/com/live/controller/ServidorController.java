@@ -1,22 +1,16 @@
 package br.com.live.controller;
 
-import br.com.live.body.BodyGestaoAtivos;
-import br.com.live.custom.GestaoAtivosCustom;
-import br.com.live.entity.GestaoAtivosOportunidade;
 import br.com.live.entity.Servidor;
 import br.com.live.model.ConsultaGestaoAtivos;
-import br.com.live.repository.GestaoAtivosOportunidadeRepository;
 import br.com.live.repository.ServidorRepository;
 import br.com.live.service.ServidorService;
 import br.com.live.util.ConteudoChaveAlfaNum;
-import br.com.live.util.ConteudoChaveNumerica;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -26,13 +20,11 @@ public class ServidorController {
 
     private ServidorRepository servidorRepository;
     private ServidorService servidorService;
-    private GestaoAtivosOportunidadeRepository gestaoAtivosOportunidadeRepository;
 
     @Autowired
-    public ServidorController(ServidorRepository servidorRepository, ServidorService servidorService, GestaoAtivosOportunidadeRepository gestaoAtivosOportunidadeRepository) {
+    public ServidorController(ServidorRepository servidorRepository, ServidorService servidorService) {
         this.servidorRepository = servidorRepository;
         this.servidorService = servidorService;
-        this.gestaoAtivosOportunidadeRepository = gestaoAtivosOportunidadeRepository;
     }
 
     @RequestMapping(value = "/find-all-servidores", method = RequestMethod.GET)

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyOrdemProducao;
-import br.com.live.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.model.ConsultaPreOrdemProducao;
 import br.com.live.model.DadosTagChina;
 import br.com.live.model.EstagioProducao;

@@ -10,18 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.body.BodyContabilidade;
-import br.com.live.body.BodyFinanceiro;
 import br.com.live.body.BodyPoliticaVendas;
 import br.com.live.custom.PoliticaVendasCustom;
-import br.com.live.model.ConsultaFechamentoComissoes;
 import br.com.live.model.ConsultaPoliticaVendas;
 import br.com.live.model.DivergenciasPoliticaVendas;
 import br.com.live.model.RegrasPoliticaVendas;
-import br.com.live.model.RetornoLancamentoCont;
-import br.com.live.model.TabelaPreco;
 import br.com.live.service.PoliticaVendasService;
-import br.com.live.service.TabelaPrecoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 

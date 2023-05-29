@@ -11,11 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.body.BodyDebitoCreditoPorRepresentante;
-import br.com.live.body.BodyEngenharia;
 import br.com.live.custom.DebitoCreditoPorRepresentanteCustom;
-import br.com.live.entity.DebitoCreditoPorRepresentante;
-import br.com.live.entity.Servico;
-import br.com.live.entity.TiposFio;
 import br.com.live.model.ConsultaDebCredPorRepresentante;
 import br.com.live.service.DebitoCreditoPorRepresentanteService;
 import br.com.live.util.ConteudoChaveAlfaNum;

@@ -1,6 +1,5 @@
 package br.com.live.body;
 
-import br.com.live.model.MotivoRejeicao;
 import br.com.live.util.ConteudoChaveNumerica;
 
 import java.util.List;

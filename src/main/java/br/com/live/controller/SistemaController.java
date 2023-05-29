@@ -4,7 +4,6 @@ import br.com.live.entity.Sistema;
 import br.com.live.model.ConsultaGestaoAtivos;
 import br.com.live.repository.SistemaRepository;
 import br.com.live.service.SistemaService;
-import br.com.live.util.ErrorMessageException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

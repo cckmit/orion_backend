@@ -3,7 +3,6 @@ package br.com.live.body;
 import java.util.List;
 
 import br.com.live.model.ConsultaFechamentoComissoes;
-import br.com.live.model.ConsultaLanctoContabeis;
 import br.com.live.util.ConteudoChaveAlfaNum;
 
 public class BodyFinanceiro {

@@ -11,13 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.body.BodyEngenharia;
-import br.com.live.body.BodyMinutaTransporte;
 import br.com.live.body.BodyOrdemBeneficiamento;
 import br.com.live.custom.OrdemBeneficiamentoCustom;
 import br.com.live.entity.OrdemBeneficiamentoItem;
 import br.com.live.model.AnaliseQualidade;
-import br.com.live.model.ConsultaTempoMaquinaCM;
 import br.com.live.model.OrdemBeneficiamentoItens;
 import br.com.live.repository.OrdemBeneficiamentoItemRepository;
 import br.com.live.service.OrdemBeneficiamentoService;

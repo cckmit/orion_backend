@@ -1,10 +1,8 @@
 package br.com.live.controller;
 
-
 import java.util.List;
 
 import br.com.live.model.*;
-import javassist.runtime.Desc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +15,9 @@ import br.com.live.body.BodyComercial;
 import br.com.live.custom.ComercialCustom;
 import br.com.live.entity.BloqueioTitulosForn;
 import br.com.live.entity.FaturamentoLiveClothing;
-import br.com.live.entity.Micromovimentos;
 import br.com.live.entity.TpClienteXTabPreco;
 import br.com.live.entity.TpClienteXTabPrecoItem;
 import br.com.live.model.ConsultaMetasCategoria;
-import br.com.live.model.ConsultaTiposFio;
 import br.com.live.model.ConsultaTitulosBloqForn;
 import br.com.live.repository.TpClienteXTabPrecoRepository;
 import br.com.live.repository.TpClienteXTabPrecoItemRepository;

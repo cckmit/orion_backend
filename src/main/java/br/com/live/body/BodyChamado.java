@@ -2,7 +2,6 @@ package br.com.live.body;
 
 import br.com.live.model.ConsultaChamado;
 
-import java.util.Date;
 import java.util.List;
 
 public class BodyChamado {

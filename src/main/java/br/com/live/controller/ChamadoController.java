@@ -1,7 +1,6 @@
 package br.com.live.controller;
 
 import br.com.live.body.BodyChamado;
-import br.com.live.body.BodyEngenharia;
 import br.com.live.custom.ChamadoCustom;
 import br.com.live.entity.Chamado;
 import br.com.live.model.ConsultaChamado;

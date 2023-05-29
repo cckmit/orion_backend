@@ -3,8 +3,6 @@ package br.com.live.body;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import br.com.live.entity.MetasCategoria;
 import br.com.live.entity.TpClienteXTabPreco;
 import br.com.live.model.ConsultaPedidosPorCliente;
