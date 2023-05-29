@@ -292,7 +292,7 @@ public class ExpedicaoController {
     public StatusGravacao volumeAllocation(@RequestBody BodyExpedicao body) {
     	String chaveNFe = body.notaFiscal;
     	int notaFiscal = Integer.parseInt(chaveNFe.substring(25,34));
-    	return expedicaoService.allocateBox(body.endereco, body.volume, notaFiscal);
+    	return expedicaoService.allocateBox(body.endereco, body.volume, notaFiscal, chaveNFe);
     }
     
     @RequestMapping(value = "/clean-allocation-volume", method = RequestMethod.POST)
@@ -303,8 +303,8 @@ public class ExpedicaoController {
     @RequestMapping(value = "/count-volumes-sem-enderecar/{chaveNFe}", method = RequestMethod.GET)
     public int countVolumesSemEndereco(@PathVariable("chaveNFe") String chaveNFe) {
     	int notaFiscal = Integer.parseInt(chaveNFe.substring(28,34));
-    	String transportadora = expedicaoCustom.findTransportadoraNotaFiscal(notaFiscal);
-    	return expedicaoCustom.countVolumeSemEndereco(notaFiscal, transportadora);
+    	String transportadora = expedicaoCustom.findTransportadoraNotaFiscal(chaveNFe);
+    	return expedicaoCustom.countVolumeSemEndereco(chaveNFe, transportadora);
     }
     
     @RequestMapping(value = "/validate-volume-enderecado", method = RequestMethod.POST)

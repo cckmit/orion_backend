@@ -1330,12 +1330,13 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 
-	public String findTransportadoraNotaFiscal(int notaFiscal) {
+	public String
+
+	findTransportadoraNotaFiscal(String chaveNFe) {
 		String transportadora = "";
 
 		String query = " select fatu_050.transpor_forne9 || fatu_050.transpor_forne4 || fatu_050.transpor_forne2 from fatu_050 "
-				+ " where fatu_050.num_nota_fiscal = " + notaFiscal
-				+ " and fatu_050.serie_nota_fisc = '2' ";
+				+ " where fatu_050.numero_danf_nfe = '" + chaveNFe + "' ";
 		try {
 			transportadora = jdbcTemplate.queryForObject(query, String.class);
 		} catch (Exception e) {
@@ -1344,15 +1345,14 @@ public class ExpedicaoCustom {
 		return transportadora;
 	}
 
-	public int countVolumeSemEndereco(int notaFiscal, String transportadora) {
+	public int countVolumeSemEndereco(String chaveNFe, String transportadora) {
 		int countVolumes = 0;
 
 		String query = " select count(*) from pcpc_320 a "
 				+ " where a.local_caixa = 7 "
 				+ " and a.data_montagem >= sysdate-1 "
 				+ " and exists (select 1 from fatu_050 "
-				+ "                            where fatu_050.num_nota_fiscal = a.nota_fiscal"
-				+ "                              and fatu_050.serie_nota_fisc = '2' "
+				+ "                            where fatu_050.numero_danf_nfe = '" + chaveNFe + "' "
 				+ "                              and fatu_050.codigo_empresa = a.cod_empresa "
 				+ "                              and fatu_050.transpor_forne9 || fatu_050.transpor_forne4 || fatu_050.transpor_forne2 = "
 				+ transportadora + ")";

@@ -718,13 +718,13 @@ public class ExpedicaoService {
 		expedicaoCustom.insertProductInEstq110(dataTag.nivel, dataTag.grupo, dataTag.subGrupo, dataTag.item, dataTag.deposito, endereco);
 	}
 	
-	public StatusGravacao allocateBox(String allocation, int volume, int notaFiscal) {
+	public StatusGravacao allocateBox(String allocation, int volume, int notaFiscal, String chaveNfe) {
 		StatusGravacao status = null;
 		
 		String volumeComp = "" + volume + "";
 		String volumeEdit = volumeComp.substring(0, 7);
 		
-		status = validateVolume(Integer.parseInt(volumeEdit), notaFiscal, allocation);
+		status = validateVolume(Integer.parseInt(volumeEdit), notaFiscal, allocation, chaveNfe);
 		
 		if (status == null) {
 			expedicaoCustom.updateBox(Integer.parseInt(volumeEdit), allocation);
@@ -733,7 +733,7 @@ public class ExpedicaoService {
 		return status;
 	}
 	
-	public StatusGravacao validateVolume(int volume, int notaFiscal, String endereco) {
+	public StatusGravacao validateVolume(int volume, int notaFiscal, String endereco, String chaveNFe) {
 		StatusGravacao status = null;
 		int notaFiscalVolume = 0;
 		int openOrClose = 0;
@@ -741,7 +741,7 @@ public class ExpedicaoService {
 		String transpEndereco = "";
 		
 		transpEndereco = expedicaoCustom.findTransportadoraEndereco(endereco);
-		transpNota = expedicaoCustom.findTransportadoraNotaFiscal(notaFiscal);
+		transpNota = expedicaoCustom.findTransportadoraNotaFiscal(chaveNFe);
 		
 		openOrClose = expedicaoCustom.validateOrdered(volume);
 		if (openOrClose != 1) {

@@ -126,9 +126,10 @@ public class ComercialCustom {
 				" and a.cli_ped_cgc_cli9 = " + cnpj9 +
 				" and a.cli_ped_cgc_cli4 = " + cnpj4 +
 				" and a.cli_ped_cgc_cli2 = " + cnpj2 +
+				" and a.data_entr_venda <> trunc(sysdate) " +
 				" and not exists (select 1 from orion_com_291 b " +
 				"                    where b.pedido = a.pedido_venda) " +
-				" order by a.data_entr_venda desc, a.valor_saldo_pedi desc ";
+				" order by a.data_entr_venda asc, a.valor_saldo_pedi desc ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
 	}
 
