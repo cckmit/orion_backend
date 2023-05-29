@@ -664,6 +664,8 @@ public class ExpedicaoCustom {
 				+ "           and c.cgc_2 = b.cli_ped_cgc_cli2 "
 				+ "           and e.pedido_venda = a.pedido_venda "
 				+ " 		  and e.nota_fiscal = a.num_nota_fiscal "
+				+ "			  and e.serie_nota = a.serie_nota_fisc "
+				+ "			  and e.cod_empresa = a.codigo_empresa "
 				+ "           and e.local_caixa = 9 "
 				+ "           and e.situacao_volume = 2 "
 				+ "           and a.cod_rep_cliente = 162 "
@@ -1369,7 +1371,9 @@ public class ExpedicaoCustom {
 
 		String query = " select nvl(min(c.transpor_forne9) || min(c.transpor_forne4) || min(c.transpor_forne2), '') from pcpc_320 a, fatu_050 c "
 				+ " where a.live_endereco_volume = '" + endereco + "' "
-				+ " and c.num_nota_fiscal = a.nota_fiscal ";
+				+ " and c.num_nota_fiscal = a.nota_fiscal "
+				+ " and c.serie_nota_fisc = a.serie_nota "
+				+ " and c.codigo_empresa = a.cod_empresa ";
 		try {
 			transpEndereco = jdbcTemplate.queryForObject(query, String.class);
 		} catch (Exception e) {
