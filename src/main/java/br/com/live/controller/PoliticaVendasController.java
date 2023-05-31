@@ -84,28 +84,18 @@ public class PoliticaVendasController {
     public List<DivergenciasPoliticaVendas> findPedidosDivergencias() {
         return politicaVendasService.findPedidosDivergencias();
 	    }
-	// Carrregar todos os Pedidos com Divergências
-	//@RequestMapping(value = "/find-grupo-embarque-divergencias", method = RequestMethod.GET)
-    //public List<DivergenciasPoliticaVendas> findDivergenciasGrupoEmbarque() {
-    //    return politicaVendasService.findDivergenciasGrupoEmbarque();
-	//}
 	
 	@RequestMapping(value = "/find-grupo-embarque-divergencias", method = RequestMethod.POST)
     public List<DivergenciasPoliticaVendas> findDivergenciasGrupoEmbarque(@RequestBody BodyPoliticaVendas body) {
         return politicaVendasService.findDivergenciasGrupoEmbarque(body.estacao);
     }
 	
-	
-	
-	
-	
-	
 	// Carregar GRID Regra (Forma de Pagamento X Portador)	
 	@RequestMapping(value = "/find-all-regra/{tipo}", method = RequestMethod.GET)
     public List<RegrasPoliticaVendas> findAllPoliticaVendas(@PathVariable("tipo") int tipo) {
         return politicaVendasCustom.findAllRegrasByTipo(tipo);
     }
-	//
+
     // Salvar Regra
     @RequestMapping(value = "/save-regra", method = RequestMethod.POST)
     public void saveRegra(@RequestBody BodyPoliticaVendas body) {                  
