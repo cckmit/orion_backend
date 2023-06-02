@@ -53,7 +53,6 @@ public class PoliticaVendasService {
 		if (regra9) opcoes += (opcoes.isEmpty()) ? "9" : ",9";
 		if (regra10) opcoes += (opcoes.isEmpty()) ? "10" : ",10";		
 		
-		System.out.println(opcoes);
 		return politicaVendasCustom.findPedidosDivergencias(opcoes);
 	}
 	

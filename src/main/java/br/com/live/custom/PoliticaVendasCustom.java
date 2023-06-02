@@ -499,7 +499,7 @@ public class PoliticaVendasCustom {
 				+ "       WHERE REGRAS.NUMERO IS NOT NULL "
 				+ "       AND REGRAS.OPCOES IN (" + opcoes + ")"
 				+ "       ORDER BY REGRAS.PEDIDO ";
-		System.out.println(query);
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DivergenciasPoliticaVendas.class));
 	}
 	
