@@ -26,8 +26,9 @@ public class CustosService {
     }
 
     public void inserirDadosParametrosFichaCustos(String nivel, String grupo, String subGrupo, String item, int empresa, int tipoParam, int mesDestino, int anoDestino, float consumo,
-                                                  String descParam, String valorPercentual, int seqParam) {
-        custosCustom.inserirParametrosFichaCustos(nivel, grupo, subGrupo, item, empresa, tipoParam, mesDestino, anoDestino, consumo, descParam, valorPercentual, seqParam);
+                                                  String descParam, String valorPercentual, int seqParam, int aplic, int estagio) {
+        custosCustom.inserirParametrosFichaCustos(nivel, grupo, subGrupo, item, empresa, tipoParam, mesDestino, anoDestino, consumo, descParam, valorPercentual, 
+        		seqParam, aplic, estagio);
     }
 
     public void copiarParametrosFichaCustos(int empresa, String produto, int tipoParam, List<String> listProdutosSel) {
@@ -42,7 +43,8 @@ public class CustosService {
 
             for (CopiaFichaCustos dadosOrigem : listOrigem){
                 try {
-                    inserirDadosParametrosFichaCustos(nivel,grupo,subGrupo,item,empresa,tipoParam,dadosOrigem.mesDestino,dadosOrigem.anoDestino,dadosOrigem.consumo,dadosOrigem.descParametro,dadosOrigem.valorPercentual, dadosOrigem.sequenciaParam);
+                    inserirDadosParametrosFichaCustos(nivel,grupo,subGrupo,item,empresa,tipoParam,dadosOrigem.mesDestino,dadosOrigem.anoDestino,dadosOrigem.consumo,
+                    		dadosOrigem.descParametro,dadosOrigem.valorPercentual, dadosOrigem.sequenciaParam, dadosOrigem.aplic, dadosOrigem.estagio);
                 } catch (Exception e) {
                     System.out.println("Ocorreu um erro na cópia dos parametros");
                 }

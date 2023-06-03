@@ -38,8 +38,22 @@ public class PoliticaVendasService {
 		politicaVendasRepository.deleteById(id);
 	}
 	
-	public List<DivergenciasPoliticaVendas> findPedidosDivergencias(){
-		return politicaVendasCustom.findPedidosDivergencias();
+	public List<DivergenciasPoliticaVendas> findPedidosDivergencias(boolean regra1, boolean regra2, boolean regra3, boolean regra4, boolean regra5,
+			boolean regra6, boolean regra7, boolean regra8, boolean regra9, boolean regra10){
+		
+		String opcoes = "11,12,14";
+		if (regra1) opcoes += (opcoes.isEmpty()) ? "1" : ",1";
+		if (regra2) opcoes += (opcoes.isEmpty()) ? "2" : ",2";
+		if (regra3) opcoes += (opcoes.isEmpty()) ? "3" : ",3";
+		if (regra4) opcoes += (opcoes.isEmpty()) ? "4" : ",4";
+		if (regra5) opcoes += (opcoes.isEmpty()) ? "5" : ",5";
+		if (regra6) opcoes += (opcoes.isEmpty()) ? "6" : ",6";
+		if (regra7) opcoes += (opcoes.isEmpty()) ? "7" : ",7";
+		if (regra8) opcoes += (opcoes.isEmpty()) ? "8" : ",8";
+		if (regra9) opcoes += (opcoes.isEmpty()) ? "9" : ",9";
+		if (regra10) opcoes += (opcoes.isEmpty()) ? "10" : ",10";		
+		
+		return politicaVendasCustom.findPedidosDivergencias(opcoes);
 	}
 	
 	public List<DivergenciasPoliticaVendas> findDivergenciasGrupoEmbarque(String estacao){
