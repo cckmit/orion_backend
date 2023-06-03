@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import br.com.live.model.ResumoOcupacaoCarteiraPorCanalVenda;
+import br.com.live.model.ResumoOcupacaoCarteiraPorPedido;
 import br.com.live.util.FormataData;
 
 @Repository
@@ -17,12 +17,12 @@ public class OcupacaoCarteiraCustom {
 	public final static String OCUPACAO_EM_VALORES = "VALORES";
 	public final static String OCUPACAO_EM_PECAS = "PECAS";
 	public final static String OCUPACAO_EM_MINUTOS = "MINUTOS";
-	public final static String NATUREZAS_FRANCHISING = "421,422,423,424";
-	public final static int CLASSIFICACAO_DISPONIBILIDADE = 4;	
+	public final static String NATUREZAS_FRANCHISING = "421,422,423,424";	
 	public final static String MODALIDADE_ATACADO = "ATACADO";
 	public final static String MODALIDADE_VAREJO = "VAREJO";
 	public final static String META_ORCADA = "ORCADO";
 	public final static String META_REALINHADA = "REALINHADO";
+	public final static int CLASSIFICACAO_DISPONIBILIDADE = 4;
 	
 	private JdbcTemplate jdbcTemplate;
 
@@ -30,14 +30,14 @@ public class OcupacaoCarteiraCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
+	public List<ResumoOcupacaoCarteiraPorPedido> consultarCarteiraPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
 		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
 		
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
 		
-		String query = "select canais_valores.canal, sum(canais_valores.valor_liquido - ((canais_valores.valor_liquido * canais_valores.desconto_capa) / 100)) valorReal "
+		String query = "select canais_valores.canal, canais_valores.pedido_venda pedidoVenda, sum(canais_valores.valor_liquido - ((canais_valores.valor_liquido * canais_valores.desconto_capa) / 100)) valorReal "
 		+ " from ( "
 		+ " select c.live_agrup_tipo_cliente canal, a.pedido_venda, LIVE_FN_CONVERTE_MOEDA(a.codigo_moeda, sum(pedi110.valor - ((pedi110.valor * pedi110.desconto) / 100))) valor_liquido, "
 		+ "        live_fn_calc_perc_desconto(a.desconto1, a.desconto2, a.desconto3) desconto_capa "
@@ -75,25 +75,25 @@ public class OcupacaoCarteiraCustom {
 		+ " and orion_150.modalidade = '" + OcupacaoCarteiraCustom.MODALIDADE_ATACADO + "') " // CONSIDERAR APENAS VALORES DE ATACADO 
 		+ " group by c.live_agrup_tipo_cliente, a.pedido_venda, a.desconto1, a.desconto2, a.desconto3, a.codigo_moeda "
 		+ " ) canais_valores "
-		+ " group by canais_valores.canal ";
+		+ " group by canais_valores.canal, canais_valores.pedido_venda ";
 
 		try {
-			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);				
-		} catch (Exception e) {			
-			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorPedido.class), dataInicio, dataFim);				
+		} catch (Exception e) {				
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorPedido>();
 		}
 		
 		return listResumoOcupacaoCarteiraPorCanalVenda;		
 	}
 	
-	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraConfirmarPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
+	public List<ResumoOcupacaoCarteiraPorPedido> consultarCarteiraConfirmarPorValor(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta) {
 		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
 		
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
 		
-		String query = " select canais_valores_integ.canal, sum(canais_valores_integ.valor_liquido - ((canais_valores_integ.valor_liquido * canais_valores_integ.desconto_capa) / 100)) valorConfirmar "
+		String query = " select canais_valores_integ.canal, canais_valores_integ.pedido_venda pedidoVenda, sum(canais_valores_integ.valor_liquido - ((canais_valores_integ.valor_liquido * canais_valores_integ.desconto_capa) / 100)) valorConfirmar "
 		+ " from ( "
 		+ " select c.live_agrup_tipo_cliente canal, a.pedido_venda, LIVE_FN_CONVERTE_MOEDA(a.codigo_moeda, sum(inte110.valor - ((inte110.valor * inte110.desconto) / 100))) valor_liquido, "
 		+ " (live_fn_calc_perc_desconto(a.desconto1, a.desconto2, a.desconto3)/100) desconto_capa "
@@ -127,24 +127,24 @@ public class OcupacaoCarteiraCustom {
 		+ " and orion_150.ano = " + ano
 		+ " and orion_150.modalidade = '" + OcupacaoCarteiraCustom.MODALIDADE_ATACADO + "') " // CONSIDERAR APENAS VALORES DE ATACADO
 		+ " group by c.live_agrup_tipo_cliente, a.pedido_venda, a.desconto1, a.desconto2, a.desconto3, a.codigo_moeda "
-		+ " ) canais_valores_integ group by canais_valores_integ.canal ";
+		+ " ) canais_valores_integ group by canais_valores_integ.canal, canais_valores_integ.pedido_venda ";
 
 		try {
-			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);	
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorPedido.class), dataInicio, dataFim);	
 		} catch (Exception e) {
-			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorPedido>();
 		}
 		
 		return listResumoOcupacaoCarteiraPorCanalVenda;						
 	}	
 	
-	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraPorQuantidade(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {		
+	public List<ResumoOcupacaoCarteiraPorPedido> consultarCarteiraPorQuantidade(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
 		
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
 				
-		String query = " select d.live_agrup_tipo_cliente canal, sum(b.qtde_pedida) valorReal "
+		String query = " select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_pedida) valorReal "
 		+ " from pedi_100 a, pedi_110 b, pedi_010 c, pedi_085 d "
 		+ " where a.data_entr_venda between ? and ? "
 		+ " and a.cod_cancelamento = 0 "
@@ -163,25 +163,25 @@ public class OcupacaoCarteiraCustom {
 		+ " where orion_150.tipo_meta = " + tipoMeta   
 		+ " and orion_150.ano = " + ano
 		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
-		+ " group by d.live_agrup_tipo_cliente ";                                               
+		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";
 
 		try {
-			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);				
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorPedido.class), dataInicio, dataFim);				
 		} catch (Exception e) {			
-			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorPedido>();
 		}
 		
 		return listResumoOcupacaoCarteiraPorCanalVenda;		
 	}
 
-	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraConfirmarPorQuantidade(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {
+	public List<ResumoOcupacaoCarteiraPorPedido> consultarCarteiraConfirmarPorQuantidade(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {
 		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
 				
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
 		
-		String query = " select d.live_agrup_tipo_cliente canal, sum(b.qtde_pedida) valorConfirmar "
+		String query = " select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_pedida) valorConfirmar "
 		+ " from inte_100 a, inte_110 b, pedi_010 c, pedi_085 d "
 		+ " where a.data_entrega between ? and ? "
 		+ " and b.pedido_venda = a.pedido_venda ";
@@ -198,24 +198,24 @@ public class OcupacaoCarteiraCustom {
 		+ " where orion_150.tipo_meta = " + tipoMeta   
 		+ " and orion_150.ano = " + ano
 		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
-		+ " group by d.live_agrup_tipo_cliente ";                                               
+		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";
 
 		try {
-			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);				
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorPedido.class), dataInicio, dataFim);				
 		} catch (Exception e) {			
-			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorPedido>();
 		}
 		
 		return listResumoOcupacaoCarteiraPorCanalVenda;		
 	}
 
-	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraPorMinutos(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {		
+	public List<ResumoOcupacaoCarteiraPorPedido> consultarCarteiraPorMinutos(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade) {		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
 		
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
 				
-		String query = " select d.live_agrup_tipo_cliente canal, sum(b.qtde_tempo_producao) valorReal " 
+		String query = " select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_tempo_producao) valorReal " 
 		+ " from pedi_100 a, pedi_010 c, pedi_085 d, " 
 		+ " (select z.pedido_venda, z.seq_item_pedido, z.cd_it_pe_grupo, z.cd_it_pe_subgrupo, z.cd_it_pe_item, z.qtde_pedida, nvl(max(w.tempo),0) tempo, (z.qtde_pedida * nvl(max(w.tempo),0)) qtde_tempo_producao "  
 		+ " from pedi_110 z, orion_vi_itens_x_tempo_estagio w "
@@ -240,24 +240,24 @@ public class OcupacaoCarteiraCustom {
 		+ " where orion_150.tipo_meta = " + tipoMeta   
 		+ " and orion_150.ano = " + ano
 		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
-		+ " group by d.live_agrup_tipo_cliente ";                                               
+		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";                                               
 
 		try {
-			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);				
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorPedido.class), dataInicio, dataFim);				
 		} catch (Exception e) {			
-			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorPedido>();
 		}
 		
 		return listResumoOcupacaoCarteiraPorCanalVenda;				
 	}
 	
-	public List<ResumoOcupacaoCarteiraPorCanalVenda> consultarCarteiraConfirmarPorMinutos(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade ) {		
+	public List<ResumoOcupacaoCarteiraPorPedido> consultarCarteiraConfirmarPorMinutos(int mes, int ano, String tipoPedido, int tipoClassificacao, int tipoMeta, String tipoModalidade ) {		
 		Date dataInicio = FormataData.getStartingDay(mes, ano);		
 		Date dataFim = FormataData.getFinalDay(mes, ano);
 				
-		List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoOcupacaoCarteiraPorCanalVenda;
+		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
 				
-		String query = "select d.live_agrup_tipo_cliente canal, sum(b.qtde_tempo_producao) valorConfirmar "
+		String query = "select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_tempo_producao) valorConfirmar "
 		+ " from inte_100 a, pedi_010 c, pedi_085 d, "		  
 		+ " (select z.pedido_venda, z.seq_item_pedido, z.item_grupo, z.item_sub, z.item_item, z.qtde_pedida, nvl(max(w.tempo),0) tempo, (z.qtde_pedida * nvl(max(w.tempo),0)) qtde_tempo_producao "  
 		+ " from inte_110 z, orion_vi_itens_x_tempo_estagio w "
@@ -280,12 +280,12 @@ public class OcupacaoCarteiraCustom {
 		+ " where orion_150.tipo_meta = " + tipoMeta   
 		+ " and orion_150.ano = " + ano
 		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
-		+ " group by d.live_agrup_tipo_cliente ";                                               
+		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";                                               
 
 		try {
-			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorCanalVenda.class), dataInicio, dataFim);				
+			listResumoOcupacaoCarteiraPorCanalVenda = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ResumoOcupacaoCarteiraPorPedido.class), dataInicio, dataFim);				
 		} catch (Exception e) {			
-			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
+			listResumoOcupacaoCarteiraPorCanalVenda = new ArrayList<ResumoOcupacaoCarteiraPorPedido>();
 		}
 		
 		return listResumoOcupacaoCarteiraPorCanalVenda;		

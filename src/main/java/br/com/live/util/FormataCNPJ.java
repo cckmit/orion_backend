@@ -7,13 +7,33 @@ public class FormataCNPJ {
 
 	// TODO: Recebe string '35303139006120' e formata para '35.303.139/0061-20'
 	public static String formatar(String cnpj) {
-		String cnpjFormatado = cnpj;
-		try {
-			MaskFormatter mask = new MaskFormatter("##.###.###/####-##");
-			mask.setValueContainsLiteralCharacters(false);
-			cnpjFormatado = mask.valueToString(cnpj);
-		} catch (ParseException ex) {
-			System.out.println("Erro na formatação do CNPJ!");
+		String cnpjFormatado = cnpj.replaceAll("[^0-9]", "");
+		
+		if (cnpjFormatado.length() < 15) cnpjFormatado = String.format("%15s", cnpjFormatado).replace(' ', '0');  
+		
+		String blocoInscricao = cnpjFormatado.substring(0, 9);
+		String blocoMatrizFilial = cnpjFormatado.substring(9, 13);
+		String blocoDigitoVerificador = cnpjFormatado.substring(13, 15);
+		
+		if (blocoMatrizFilial.equalsIgnoreCase("0000")) {
+			String cnpjFormatar = blocoInscricao + "" + blocoDigitoVerificador;  			
+			try {
+				MaskFormatter mask = new MaskFormatter("###.###.###-##");
+				mask.setValueContainsLiteralCharacters(false);
+				cnpjFormatado = mask.valueToString(cnpjFormatar);
+			} catch (ParseException ex) {
+				System.out.println("Erro na formatação do CPF!");
+			}
+		} else {						
+			String cnpjFormatar = blocoInscricao + blocoMatrizFilial + blocoDigitoVerificador;
+			cnpjFormatar = (cnpjFormatar.length() > 14) ? cnpjFormatar.substring(1, 15) : cnpjFormatar;			
+			try {
+				MaskFormatter mask = new MaskFormatter("##.###.###/####-##");
+				mask.setValueContainsLiteralCharacters(false);
+				cnpjFormatado = mask.valueToString(cnpjFormatar);
+			} catch (ParseException ex) {
+				System.out.println("Erro na formatação do CNPJ!");
+			}
 		}
 		return cnpjFormatado;
 	}

@@ -30,6 +30,64 @@ public class PedidoVendaCustom {
 		jdbcTemplate.update(query);
 	}
 	
+	public PedidoVenda findPedidoVenda(int pedidoVenda) {			
+
+		PedidoVenda pedidoEncontrado = null;
+		
+		String query = "select a.pedido_venda id, "
+        + " a.pedido_venda pedidoVenda, "
+        + " a.num_periodo_prod periodo, "
+        + " a.valor_total_pedi valor, "
+        + " lpad(a.cli_ped_cgc_cli9,9,0) || lpad(a.cli_ped_cgc_cli4,4,0) || lpad(a.cli_ped_cgc_cli2,2,0) cnpjCpfCliente, "
+        + " b.nome_cliente descCliente, "
+        + " a.data_emis_venda dataEmissao, "
+        + " a.data_entr_venda dataEmbarque, "
+        + " c.live_agrup_tipo_cliente canal "       
+        + " from pedi_100 a, pedi_010 b, pedi_085 c "
+        + " where b.cgc_9 = a.cli_ped_cgc_cli9 "
+        + " and b.cgc_4 = a.cli_ped_cgc_cli4 "
+        + " and b.cgc_2 = a.cli_ped_cgc_cli2 "
+        + " and c.tipo_cliente = b.tipo_cliente "
+        + " and a.pedido_venda = ? " ;		
+		
+		try {
+			pedidoEncontrado = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(PedidoVenda.class), pedidoVenda);
+		} catch (Exception e) {
+			pedidoEncontrado = findPedidoVendaAConfirmar(pedidoVenda);
+		}
+		
+		return pedidoEncontrado; 		
+	}	
+
+	private PedidoVenda findPedidoVendaAConfirmar(int pedidoVenda) {			
+
+		PedidoVenda pedidoEncontrado = null;
+		
+		String query = "select a.pedido_venda id, "
+		+ " a.pedido_venda pedidoVenda, "
+		+ " 0 periodo, "
+		+ " 0 valor, "
+		+ " lpad(a.cliente9,9,0) || lpad(a.cliente4,4,0) || lpad(a.cliente2,2,0) cnpjCpfCliente, "
+		+ " b.nome_cliente descCliente, "
+		+ " a.data_emis_venda dataEmissao, "
+		+ " a.data_entrega dataEmbarque, "
+		+ " c.live_agrup_tipo_cliente canal "
+		+ " from inte_100 a, pedi_010 b, pedi_085 c "
+		+ " where b.cgc_9 = a.cliente9 "
+		+ " and b.cgc_4 = a.cliente4 "
+		+ " and b.cgc_2 = a.cliente2 "
+		+ " and c.tipo_cliente = b.tipo_cliente "
+		+ " and a.pedido_venda = ? ";
+	  
+		try {
+			pedidoEncontrado = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(PedidoVenda.class), pedidoVenda);
+		} catch (Exception e) {
+			pedidoEncontrado = null;
+		}
+		
+		return pedidoEncontrado;		
+	}	
+	
 	public int findSugestaoLocked(int codigoEmpresa) {
 
 		Integer sugestao;
