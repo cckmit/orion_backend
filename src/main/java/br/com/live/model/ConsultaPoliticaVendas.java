@@ -17,7 +17,7 @@ public class ConsultaPoliticaVendas {
 	public float comissao;
 	public int condPagamento;
 	public int naturezaOp;
-	public int desconto;
+	public float desconto;
 	public int tipoCliente;
 	public int tabCol;
 	public int tabMes;
@@ -113,10 +113,10 @@ public class ConsultaPoliticaVendas {
 	public void setNaturezaOp(int naturezaOp) {
 		this.naturezaOp = naturezaOp;
 	}
-	public int getDesconto() {
+	public float getDesconto() {
 		return desconto;
 	}
-	public void setDesconto(int desconto) {
+	public void setDesconto(float desconto) {
 		this.desconto = desconto;
 	}
 	public int getTipoCliente() {
@@ -149,7 +149,7 @@ public class ConsultaPoliticaVendas {
 	}
 	public ConsultaPoliticaVendas(int id, int tipo, int formaPagamento, int portador, int cnpj9, int cnpj4, int cnpj2,
 			int codFuncionario, float descCapa, int tipoPedido, int depositoItens, float descMaxCliente, float comissao,
-			int condPagamento, int naturezaOp, int desconto, int tipoCliente, int tabCol, int tabMes, int tabSeq) {
+			int condPagamento, int naturezaOp, float desconto, int tipoCliente, int tabCol, int tabMes, int tabSeq) {
 		
 		this.id = id;
 		this.tipo = tipo;
