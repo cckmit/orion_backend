@@ -291,3 +291,9 @@ values (99, 'Servidores', 'TI', '/servidor');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (100, 'Inspeção de Qualidade', 'Confecção', '/inspecao-de-qualidade');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (102, 'Orion Reports Programa', 'BI', '/orion-reports-programas');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (103, 'Orion Reports Usuários', 'BI', '/orion-reports-usuarios');
