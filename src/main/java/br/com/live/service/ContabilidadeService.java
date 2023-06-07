@@ -20,9 +20,7 @@ public class ContabilidadeService {
 	
 	private final LanctoContabilImportacaoRepository lanctoContabilImportacaoRepository;
 	private final ContabilidadeCustom contabilidadeCustom;
-	
-	
-	
+
 	public ContabilidadeService(LanctoContabilImportacaoRepository lanctoContabilImportacaoRepository, ContabilidadeCustom contabilidadeCustom) {
 		this.lanctoContabilImportacaoRepository = lanctoContabilImportacaoRepository;
 		this.contabilidadeCustom = contabilidadeCustom;
@@ -120,9 +118,10 @@ public class ContabilidadeService {
 		return mensagem;
 	}
 	
-	public int gerarNumLote(int empresa, int exercicio, int origem, String dataLancto) {
+	public int gerarNumLote(int empresa, int exercicio, int origem, String dataLancto, int situacao) {
 		
 		int numLote = 0;
+
 		int loteExistente = contabilidadeCustom.findLoteExistenteParaParametros(empresa, exercicio, origem, dataLancto);
 		
 		if(loteExistente == 0) {
@@ -220,12 +219,11 @@ public class ContabilidadeService {
 					for (ConsultaLanctoContabeis dados : listDados) {
 						
 						String contaContabil = contabilidadeCustom.findContaContabByContaRed(dados.contaReduzida);
-						int lote = gerarNumLote(lancamento.codEmpresa, dados.exercicio, dados.origem, dados.dataLancto);
+						int lote = gerarNumLote(lancamento.codEmpresa, dados.exercicio, dados.origem, dados.dataLancto, 0);
 						contabilidadeCustom.inserirLanctoContabilSystextil(lancamento.codEmpresa, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
 								dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, FormataData.parseStringToDate(dados.dataLancto), dados.complHistor1, 
 								FormataData.parseStringToDate(dados.datainsercao), programa, dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
 						System.out.println(numLancto);
-						
 					}
 				}
 			}

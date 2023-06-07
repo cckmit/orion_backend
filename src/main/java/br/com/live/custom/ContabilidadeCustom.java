@@ -3,6 +3,7 @@ package br.com.live.custom;
 import java.util.Date;
 import java.util.List;
 
+import br.com.live.util.FormataData;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -143,8 +144,13 @@ public class ContabilidadeCustom {
 		
 		String query = " SELECT d.conta_contabil contaContabil FROM cont_535 d WHERE d.cod_reduzido = ? "
 				+ "     AND d.data_cadastro = (SELECT MAX(g.data_cadastro) FROM cont_535 g WHERE g.cod_reduzido = ? ) ";
-		
-		contaContabil = jdbcTemplate.queryForObject(query, String.class, contaReduzida, contaReduzida);
+
+		try {
+			contaContabil = jdbcTemplate.queryForObject(query, String.class, contaReduzida, contaReduzida);
+		} catch (Exception e) {
+			contaContabil = "";
+		}
+
 		
 		return contaContabil;
 	}
@@ -205,13 +211,12 @@ public class ContabilidadeCustom {
 				+ "       WHERE a.cod_empresa = " + empresa
 				+ "       AND a.exercicio = " + exercicio
 				+ "       AND a.origem = " + origem;
-		
+
 		String queryInsert = "INSERT INTO cont_520(cod_empresa, exercicio, origem, lote, data_lote, situacao)VALUES(?, ?, ?, ?, ?, 0)";
-		
 		try {
 			loteNovo = jdbcTemplate.queryForObject(query, Integer.class);
 			jdbcTemplate.update(queryInsert, empresa, exercicio, origem, loteNovo, dataLancto);
-						
+
 		} catch (Exception e) {
 			loteNovo = 0;
 		}
@@ -266,7 +271,7 @@ public class ContabilidadeCustom {
 				+ "         hist_contabil, compl_histor1, data_lancto, valor_lancto, filial_lancto, prg_gerador, usuario, datainsercao) "
 				+ "         values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 		
-		jdbcTemplate.update(query, codMatriz, exercicio, numeroLanc, seqLanc, origem, lote, periodo, contaContabil, contaReduzida ,centroCusto, debitoCredito, histContabil, 
+		jdbcTemplate.update(query, codMatriz, exercicio, numeroLanc, seqLanc, origem, lote, periodo, contaContabil, contaReduzida ,centroCusto, debitoCredito, histContabil,
 				complHistor1, dataLancto, valorLancto, filialLancto, programa, usuario, datainsercao);
 		
 	}

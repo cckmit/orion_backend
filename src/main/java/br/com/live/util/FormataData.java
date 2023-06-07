@@ -1,6 +1,7 @@
 package br.com.live.util;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -141,8 +142,8 @@ public class FormataData {
         int year = currentDate.getYear();
         int lastDigit = year % 10;
         return lastDigit;
-    }
 
+    }
 	public static String obterDataMesAno(int mes, int ano, int tipo) {
 
 		LocalDate data = LocalDate.of(ano, mes, 1);
@@ -155,6 +156,22 @@ public class FormataData {
 			return data.withDayOfMonth(data.lengthOfMonth()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		} else {
 			throw new IllegalArgumentException("Tipo inválido. Deve ser 1 para primeiro dia do mês ou 2 para último dia do mês.");
+		}
+	}
+
+	// Recebe data yyyy-mm-dd e retorna dd/mm/yyyy
+	public static String converterDataFormato(String dataString) {
+
+		SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat formatoSaida = new SimpleDateFormat("dd/MM/yyyy");
+
+		try {
+			Date data = formatoEntrada.parse(dataString);
+			return formatoSaida.format(data);
+		} catch (ParseException e) {
+			System.out.println("Erro ao converter a data.");
+			e.printStackTrace();
+			return null;
 		}
 	}
 }
