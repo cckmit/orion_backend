@@ -1,7 +1,7 @@
 package br.com.live.custom;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.com.live.service.ProdutoService;
@@ -158,7 +158,7 @@ public class OrdemProducaoCustom {
 		
 		System.out.println("gravarCapa: " + idOrdemProducao + " -> " + referencia);
 		
-		Date dataProgramacao = Date.valueOf(new Date(System.currentTimeMillis()).toString());
+		Date dataProgramacao = new Date();
 		
 		String query = " insert into pcpc_020 ( " 
 	    + " ordem_producao, periodo_producao, "             
@@ -918,7 +918,7 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 	
-	public int findQtdePecasApontadaNoDiaPorArtigo(int codEstagio, boolean consideraArtigos, String artigos) {
+	public int findQtdePecasApontadaNoDiaPorArtigo(int codEstagio, boolean consideraArtigos, String artigos, Date dataInicial, Date dataFinal) {
 
 		String considera = "in";
 		
@@ -926,7 +926,7 @@ public class OrdemProducaoCustom {
 		
 		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p " 
 		+ " where p.pcpc040_estconf = " + codEstagio
-   	    + " and p.data_producao = trunc(sysdate) " 
+   	    + " and p.data_producao between ? and ? " 
 		+ " and exists (select 1 from pcpc_020 m "
 		+ " where m.ordem_producao = p.ordem_producao " 
 		+ " and m.referencia_peca not like ('TM%')) "
@@ -939,10 +939,10 @@ public class OrdemProducaoCustom {
         + " and v.referencia = z.proconf_grupo "
         + " and v.artigo " + considera + " ( " + artigos + " )) ";
 		
-		return jdbcTemplate.queryForObject(query, Integer.class);
+		return jdbcTemplate.queryForObject(query, Integer.class, dataInicial, dataFinal);
 	}
 
-	public double findQtdeMinutosApontadoNoDiaPorArtigo(int codEstagio, boolean consideraArtigos, String artigos) {
+	public double findQtdeMinutosApontadoNoDiaPorArtigo(int codEstagio, boolean consideraArtigos, String artigos, Date dataInicial, Date dataFinal) {
 
 		String considera = "in";
 		
@@ -960,7 +960,7 @@ public class OrdemProducaoCustom {
         + " and m.codigo_estagio = " + ESTAGIO_COSTURA + "),0) * nvl(sum(p.qtde_produzida),0) total "    
         + " from pcpc_045 p, pcpc_040 z, pcpc_020 y, basi_030 v " 
    	    + " where p.pcpc040_estconf = " + codEstagio
-		+ " and p.data_producao = trunc(sysdate) "
+		+ " and p.data_producao between ? and ? "
 		+ " and z.periodo_producao = p.pcpc040_perconf " 
 		+ " and z.ordem_confeccao = p.pcpc040_ordconf " 
 		+ " and z.codigo_estagio = p.pcpc040_estconf "
@@ -974,14 +974,14 @@ public class OrdemProducaoCustom {
 		+ " and v.artigo " + considera + " ( " + artigos + " ) "
 		+ " group by z.proconf_nivel99, z.proconf_grupo, z.proconf_subgrupo, z.proconf_item, y.alternativa_peca, y.roteiro_peca) minutos_costura";
 		
-		return jdbcTemplate.queryForObject(query, Double.class);
+		return jdbcTemplate.queryForObject(query, Double.class, dataInicial, dataFinal);
 	}
 	
-	public int findQtdePecasFlatApontadaNoDia(int codEstagio) {
+	public int findQtdePecasFlatApontadaNoDia(int codEstagio, Date dataInicial, Date dataFinal) {
 		
 		String query = " select nvl(sum(p.qtde_produzida),0) from pcpc_045 p " 
 		+ " where p.pcpc040_estconf = " + codEstagio
-		+ " and p.data_producao = trunc(sysdate) " 
+		+ " and p.data_producao between ? and ? " 
 		+ " and exists (select 1 from pcpc_020 m " 
 		+ " where m.ordem_producao = p.ordem_producao " 
 		+ " and m.referencia_peca not like ('TM%')) "
@@ -1000,10 +1000,10 @@ public class OrdemProducaoCustom {
 		+ " and m.codigo_operacao in (select y.codigo_operacao from mqop_040 y " 
 		+ " where y.nome_operacao like '%FLAT%')) ";
 				
-		return jdbcTemplate.queryForObject(query, Integer.class);
+		return jdbcTemplate.queryForObject(query, Integer.class, dataInicial, dataFinal);
 	}
 
-	public double findQtdeMinutosFlatApontadaNoDia(int codEstagio) {
+	public double findQtdeMinutosFlatApontadaNoDia(int codEstagio, Date dataInicial, Date dataFinal) {
 		
 		String query = " select nvl(sum(minutos_costura.total),0) total "
 		+ " from ( "
@@ -1017,7 +1017,7 @@ public class OrdemProducaoCustom {
 		+ " and m.codigo_estagio = " + ESTAGIO_COSTURA + "),0) * nvl(sum(p.qtde_produzida),0) total "    
 		+ " from pcpc_045 p, pcpc_040 z, pcpc_020 y, basi_030 v " 
 		+ " where p.pcpc040_estconf = " + codEstagio
-		+ " and p.data_producao = trunc(sysdate) " 
+		+ " and p.data_producao between ? and ? " 
 		+ " and z.periodo_producao = p.pcpc040_perconf " 
 		+ " and z.ordem_confeccao = p.pcpc040_ordconf " 
 		+ " and z.codigo_estagio = p.pcpc040_estconf " 
@@ -1038,7 +1038,7 @@ public class OrdemProducaoCustom {
 		+ " and m.codigo_operacao in (select w.codigo_operacao from mqop_040 w where w.nome_operacao like '%FLAT%')) "    
 		+ " group by z.proconf_nivel99, z.proconf_grupo, z.proconf_subgrupo, z.proconf_item, y.alternativa_peca, y.roteiro_peca) minutos_costura ";
 		
-		return jdbcTemplate.queryForObject(query, Double.class);
+		return jdbcTemplate.queryForObject(query, Double.class, dataInicial, dataFinal);
 	}	
 	
 	public int findUltimaSeqPrioridadeDia() {

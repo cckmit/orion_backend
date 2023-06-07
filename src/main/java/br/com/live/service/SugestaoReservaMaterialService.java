@@ -2,7 +2,10 @@ package br.com.live.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +18,7 @@ import br.com.live.model.Produto;
 import br.com.live.model.SugestaoReservaConfigArtigos;
 import br.com.live.model.SugestaoReservaMateriaisReservados;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 import br.com.live.model.SugestaoReservaMateriais;
 
 @Service
@@ -51,15 +55,15 @@ public class SugestaoReservaMaterialService {
 		return ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioUsuario(2);
 	}	
 
-	public int findQtdeFlatPecasLiberadasDia() {
-		return ordemProducaoService.findQtdePecasFlatApontadaNoDia(2);
+	public int findQtdeFlatPecasLiberadasDia(Date dataInicial, Date dataFinal) {
+		return ordemProducaoService.findQtdePecasFlatApontadaNoDia(2, dataInicial, dataFinal);
 	}	
 
-	public double findQtdeMinutosFlatLiberadasDia() {
-		return ordemProducaoService.findQtdeMinutosFlatApontadaNoDia(2);
+	public double findQtdeMinutosFlatLiberadasDia(Date dataInicial, Date dataFinal) {
+		return ordemProducaoService.findQtdeMinutosFlatApontadaNoDia(2, dataInicial, dataFinal);
 	}	
 	
-	public int[] findQtdePecasLiberadasDiaPorArtigo() {		
+	public int[] findQtdePecasLiberadasDiaPorArtigo(Date dataInicial, Date dataFinal) {		
 		List<SugestaoReservaConfigArtigos> configArtigos = sugestaoReservaMaterialCustom.findConfigArtigos();		
 		String artigosConfig = "";
 		int quantidade = 0;
@@ -80,7 +84,7 @@ public class SugestaoReservaMaterialService {
 				if (artigosConfig.isEmpty()) artigosConfig += configuracao.getArtigos();
 				else artigosConfig += "," + configuracao.getArtigos();
 				
-				quantidade = ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioArtigos(2, true, configuracao.getArtigos());
+				quantidade = ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioArtigos(2, true, configuracao.getArtigos(), dataInicial, dataFinal);
 	
 				if (configuracao.getColuna() == 1) qtde1 = quantidade;
 				if (configuracao.getColuna() == 2) qtde2 = quantidade;
@@ -93,7 +97,7 @@ public class SugestaoReservaMaterialService {
 				if (configuracao.getColuna() == 9) qtde9 = quantidade;
 			}
 		}
-		qtdeOutros = ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioArtigos(2, false, artigosConfig);		
+		qtdeOutros = ordemProducaoService.findQtdePecasApontadaNoDiaPorEstagioArtigos(2, false, artigosConfig, dataInicial, dataFinal);		
 		
 		quantidades[0] = qtdeOutros;
 		quantidades[1] = qtde1;
@@ -109,7 +113,7 @@ public class SugestaoReservaMaterialService {
 		return quantidades;
 	}	
 
-	public double[] findQtdeMinutosLiberadosDiaPorArtigo() {		
+	public double[] findQtdeMinutosLiberadosDiaPorArtigo(Date dataInicial, Date dataFinal) {
 		List<SugestaoReservaConfigArtigos> configArtigos = sugestaoReservaMaterialCustom.findConfigArtigos();		
 		String artigosConfig = "";
 		double quantidade = 0;
@@ -130,7 +134,7 @@ public class SugestaoReservaMaterialService {
 				if (artigosConfig.isEmpty()) artigosConfig += configuracao.getArtigos();
 				else artigosConfig += "," + configuracao.getArtigos();
 				
-				quantidade = ordemProducaoService.findQtdeMinutosApontadoNoDiaPorEstagioArtigos(2, true, configuracao.getArtigos());
+				quantidade = ordemProducaoService.findQtdeMinutosApontadoNoDiaPorEstagioArtigos(2, true, configuracao.getArtigos(), dataInicial, dataFinal);
 	
 				if (configuracao.getColuna() == 1) qtde1 = quantidade;
 				if (configuracao.getColuna() == 2) qtde2 = quantidade;
@@ -143,7 +147,7 @@ public class SugestaoReservaMaterialService {
 				if (configuracao.getColuna() == 9) qtde9 = quantidade;
 			}
 		}
-		qtdeOutros = ordemProducaoService.findQtdeMinutosApontadoNoDiaPorEstagioArtigos(2, false, artigosConfig);		
+		qtdeOutros = ordemProducaoService.findQtdeMinutosApontadoNoDiaPorEstagioArtigos(2, false, artigosConfig, dataInicial, dataFinal);
 		
 		quantidades[0] = qtdeOutros;
 		quantidades[1] = qtde1;
@@ -206,15 +210,20 @@ public class SugestaoReservaMaterialService {
 		return configArtigos;
 	}
 	
-	public BodySugestaoReservaMateriais findQtdePecasLiberadasDiaPorArtigos() {
+	public BodySugestaoReservaMateriais findQtdePecasLiberadasDiaPorArtigos(Date dataInicial, Date dataFinal) {
+		
+		int nrDiasConsulta = FormataData.getDiffInDays(dataInicial, dataFinal) + 1;		
+				
+	    long diffInMilliseconds = dataFinal.getTime() - dataInicial.getTime();
+	    int diffInDays = (int) TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
 		
 		List<SugestaoReservaConfigArtigos> artigos = findListConfigArtigos();
-		int[] qtdesProduzidas = findQtdePecasLiberadasDiaPorArtigo();
-		double[] minutosProduzidos = findQtdeMinutosLiberadosDiaPorArtigo();
+		int[] qtdesProduzidas = findQtdePecasLiberadasDiaPorArtigo(dataInicial, dataFinal);
+		double[] minutosProduzidos = findQtdeMinutosLiberadosDiaPorArtigo(dataInicial, dataFinal);
 		
 		BodySugestaoReservaMateriais bodyRetorno = new BodySugestaoReservaMateriais(); 
 		
-		bodyRetorno.qtdeFlatProduzida = findQtdeFlatPecasLiberadasDia();
+		bodyRetorno.qtdeFlatProduzida = findQtdeFlatPecasLiberadasDia(dataInicial, dataFinal);
 		bodyRetorno.qtdeOutros = qtdesProduzidas[0];
 		bodyRetorno.qtdeProduzida1 = qtdesProduzidas[1];
 		bodyRetorno.qtdeProduzida2 = qtdesProduzidas[2];
@@ -226,7 +235,7 @@ public class SugestaoReservaMaterialService {
 		bodyRetorno.qtdeProduzida8 = qtdesProduzidas[8];
 		bodyRetorno.qtdeProduzida9 = qtdesProduzidas[9];
 		
-		bodyRetorno.minutosFlatProduzidos = findQtdeMinutosFlatLiberadasDia();
+		bodyRetorno.minutosFlatProduzidos = findQtdeMinutosFlatLiberadasDia(dataInicial, dataFinal);
 		bodyRetorno.minutosOutros = minutosProduzidos[0];		
 		bodyRetorno.minutosProduzidos1 = minutosProduzidos[1];
 		bodyRetorno.minutosProduzidos2 = minutosProduzidos[2];
@@ -241,40 +250,40 @@ public class SugestaoReservaMaterialService {
 		for (SugestaoReservaConfigArtigos artigo : artigos) {
 			if (artigo.getColuna() == 1) {
 				bodyRetorno.descricao1 = artigo.getDescricao();
-				bodyRetorno.meta1 = artigo.getMeta();
-				bodyRetorno.metaMinutos1 = artigo.getMetaMinutos();
+				bodyRetorno.meta1 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos1 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 2) {
 				bodyRetorno.descricao2 = artigo.getDescricao();
-				bodyRetorno.meta2 = artigo.getMeta();
-				bodyRetorno.metaMinutos2 = artigo.getMetaMinutos();
+				bodyRetorno.meta2 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos2 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 3) {
 				bodyRetorno.descricao3 = artigo.getDescricao();
-				bodyRetorno.meta3 = artigo.getMeta();
-				bodyRetorno.metaMinutos3 = artigo.getMetaMinutos();
+				bodyRetorno.meta3 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos3 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 4) {
 				bodyRetorno.descricao4 = artigo.getDescricao();
-				bodyRetorno.meta4 = artigo.getMeta();
-				bodyRetorno.metaMinutos4 = artigo.getMetaMinutos();
+				bodyRetorno.meta4 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos4 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 5) {
 				bodyRetorno.descricao5 = artigo.getDescricao();
-				bodyRetorno.meta5 = artigo.getMeta();
-				bodyRetorno.metaMinutos5 = artigo.getMetaMinutos();
+				bodyRetorno.meta5 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos5 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 6) {
 				bodyRetorno.descricao6 = artigo.getDescricao();
-				bodyRetorno.meta6 = artigo.getMeta();
-				bodyRetorno.metaMinutos6 = artigo.getMetaMinutos();
+				bodyRetorno.meta6 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos6 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 7) {
 				bodyRetorno.descricao7 = artigo.getDescricao();
-				bodyRetorno.meta7 = artigo.getMeta();
-				bodyRetorno.metaMinutos7 = artigo.getMetaMinutos();
+				bodyRetorno.meta7 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos7 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 8) {
 				bodyRetorno.descricao8 = artigo.getDescricao();
-				bodyRetorno.meta8 = artigo.getMeta();
-				bodyRetorno.metaMinutos8 = artigo.getMetaMinutos();
+				bodyRetorno.meta8 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos8 = artigo.getMetaMinutos() * nrDiasConsulta;
 			} else if (artigo.getColuna() == 9) {
 				bodyRetorno.descricao9 = artigo.getDescricao();
-				bodyRetorno.meta9 = artigo.getMeta();
-				bodyRetorno.metaMinutos9 = artigo.getMetaMinutos();
+				bodyRetorno.meta9 = artigo.getMeta() * nrDiasConsulta;
+				bodyRetorno.metaMinutos9 = artigo.getMetaMinutos() * nrDiasConsulta;
 			}
 		}
 		

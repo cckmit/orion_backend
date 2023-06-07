@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 public class FormataData {
 
@@ -144,6 +145,13 @@ public class FormataData {
         return lastDigit;
 
     }
+    
+    public static int getDiffInDays(Date dateStart, Date dateFinish) {
+	    long diffInMilliseconds = dateFinish.getTime() - dateStart.getTime();
+	    long diffInDays = TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
+	    return (int) diffInDays;
+    }
+    
 	public static String obterDataMesAno(int mes, int ano, int tipo) {
 
 		LocalDate data = LocalDate.of(ano, mes, 1);

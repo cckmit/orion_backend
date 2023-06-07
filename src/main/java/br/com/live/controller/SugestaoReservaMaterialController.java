@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +16,7 @@ import br.com.live.model.SugestaoReservaMateriais;
 import br.com.live.service.SugestaoReservaMaterialService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 
 @RestController
 @CrossOrigin
@@ -39,9 +41,9 @@ public class SugestaoReservaMaterialController {
 		return sugestaoReservaMaterialService.findQtdePecasLiberadasDia();
 	}
 
-	@RequestMapping(value = "/qtde-pc-liberada-dia-artigos", method = RequestMethod.GET)
-	public BodySugestaoReservaMateriais findQtdePecasLiberadasDiaPorArtigos() {
-		return sugestaoReservaMaterialService.findQtdePecasLiberadasDiaPorArtigos();		
+	@RequestMapping(value = "/qtde-pc-liberada-dia-artigos/{dataInicial}/{dataFinal}", method = RequestMethod.GET)
+	public BodySugestaoReservaMateriais findQtdePecasLiberadasDiaPorArtigos(@PathVariable("dataInicial") String dataInicial, @PathVariable("dataFinal") String dataFinal) {
+		return sugestaoReservaMaterialService.findQtdePecasLiberadasDiaPorArtigos(FormataData.parseStringToDate(dataInicial), FormataData.parseStringToDate(dataFinal));		
 	}
 	
 	@RequestMapping(value = "/calcular", method = RequestMethod.POST)

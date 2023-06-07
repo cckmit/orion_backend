@@ -1,5 +1,6 @@
 package br.com.live.service;
 
+import java.util.Date;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,20 +76,20 @@ public class OrdemProducaoService {
 		return ordemProducaoCustom.findQtdePecasApontadaNoDia(codEstagio);
 	}	
 
-	public int findQtdePecasApontadaNoDiaPorEstagioArtigos(int codEstagio, boolean consideraArtigos, String artigos) {		
-		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorArtigo(codEstagio, consideraArtigos, artigos);
+	public int findQtdePecasApontadaNoDiaPorEstagioArtigos(int codEstagio, boolean consideraArtigos, String artigos, Date dataInicial, Date dataFinal) {		
+		return ordemProducaoCustom.findQtdePecasApontadaNoDiaPorArtigo(codEstagio, consideraArtigos, artigos, dataInicial, dataFinal);
 	}	
 
-	public double findQtdeMinutosApontadoNoDiaPorEstagioArtigos(int codEstagio, boolean consideraArtigos, String artigos) {		
-		return ordemProducaoCustom.findQtdeMinutosApontadoNoDiaPorArtigo(codEstagio, consideraArtigos, artigos);
+	public double findQtdeMinutosApontadoNoDiaPorEstagioArtigos(int codEstagio, boolean consideraArtigos, String artigos, Date dataInicial, Date dataFinal) {		
+		return ordemProducaoCustom.findQtdeMinutosApontadoNoDiaPorArtigo(codEstagio, consideraArtigos, artigos, dataInicial, dataFinal);
 	}	
 	
-	public int findQtdePecasFlatApontadaNoDia(int codEstagio) {
-		return ordemProducaoCustom.findQtdePecasFlatApontadaNoDia(codEstagio);
+	public int findQtdePecasFlatApontadaNoDia(int codEstagio, Date dataInicial, Date dataFinal) {
+		return ordemProducaoCustom.findQtdePecasFlatApontadaNoDia(codEstagio, dataInicial, dataFinal);
 	}
 
-	public double findQtdeMinutosFlatApontadaNoDia(int codEstagio) {
-		return ordemProducaoCustom.findQtdeMinutosFlatApontadaNoDia(codEstagio);
+	public double findQtdeMinutosFlatApontadaNoDia(int codEstagio, Date dataInicial, Date dataFinal) {
+		return ordemProducaoCustom.findQtdeMinutosFlatApontadaNoDia(codEstagio, dataInicial, dataFinal);
 	}
 
 	public void gravarObservacao(int ordemProducao, String observacao) {
