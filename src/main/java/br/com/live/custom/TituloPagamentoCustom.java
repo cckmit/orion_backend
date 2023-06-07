@@ -489,4 +489,19 @@ public class TituloPagamentoCustom {
 
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
     }
+
+    public boolean validaUsuarioAtivoIntegracao(){
+
+        boolean existUsuarioConfigurado = false;
+
+        String query = "SELECT 1 FROM orion_005 WHERE TIPO_NOTIFICACAO = 3 AND ROWNUM = 1";
+
+        try {
+            existUsuarioConfigurado = jdbcTemplate.queryForObject(query, boolean.class);
+        } catch (Exception e) {
+            existUsuarioConfigurado = false;
+        }
+        return existUsuarioConfigurado;
+
+    }
 }

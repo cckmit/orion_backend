@@ -73,6 +73,11 @@ public class TituloPagamentoService {
 
     public void gerarTitulosNFSePrefeituraJob(){
 
+        if (!tituloPagamentoCustom.validaUsuarioAtivoIntegracao()){
+            System.out.println("Não possui usuários configurados na tabela orion_005 / tipo 3. A integração não será executada!");
+            return;
+        }
+
         String url = "http://e-gov.betha.com.br/e-nota-contribuinte-ws/consultarNfseV110";
         String body = obterBodyTitulosNFSePrefeitura();
 
