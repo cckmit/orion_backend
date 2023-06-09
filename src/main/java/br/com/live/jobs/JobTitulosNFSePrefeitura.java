@@ -7,21 +7,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 @EnableScheduling
-public class JobExecutor {
+public class JobTitulosNFSePrefeitura {
 
     private final static int SEGUNDO = 1000;
-    private final static int MINUTO = 60000;
-    private final static int HORA = 3600000;
+    private final static int MINUTO = SEGUNDO * 60;
+    private final static int HORA = MINUTO * 60;
     private final static int DIA = HORA * 24;
 
     TituloPagamentoService tituloPagamentoService;
 
-    public JobExecutor(TituloPagamentoService tituloPagamentoService) {
+    public JobTitulosNFSePrefeitura(TituloPagamentoService tituloPagamentoService) {
         this.tituloPagamentoService = tituloPagamentoService;
     }
 
     @Scheduled(fixedRate = HORA)
     public void gerarTitulosNFSePrefeitura(){
+    	System.out.println("gerarTitulosNFSePrefeitura");
         tituloPagamentoService.gerarTitulosNFSePrefeituraJob();
     }
 
