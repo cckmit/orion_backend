@@ -13,7 +13,7 @@ public class Parametros {
     @Id
     public String id;
 
-    @Column(name = "VALOS_STR")
+    @Column(name = "VALOR_STR")
     public String valorStr;
 
     @Column(name = "VALOR_INT")

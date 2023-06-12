@@ -67,6 +67,24 @@ public class FormataData {
 
 		return day;		
 	}
+
+	public static int getMonthOfDate(Date data) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(data);
+
+		int month = calendar.get(Calendar.MONTH) + 1;
+
+		return month;		
+	}
+
+	public static int getYearOfDate(Date data) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(data);
+
+		int month = calendar.get(Calendar.YEAR);
+
+		return month;		
+	}
 	
 	public static String getDescDayOfWeek(int dayOfWeek) {
 		String descDay = "";
