@@ -317,12 +317,14 @@ public class IntegracaoFluxogamaService {
 
 		filtrosArray.put(filtroObject);
 
-		//JSONObject filtro2Object = new JSONObject();
-		//filtro2Object.put("campo", "modelo.ds_referencia");
-		//filtro2Object.put("operador", "=");
-		//filtro2Object.put("valor", "BC704 teste integração");
+		/* 	UTILIZADO PARA TESTES
+		JSONObject filtro2Object = new JSONObject();
+		filtro2Object.put("campo", "modelo.ds_referencia");
+		filtro2Object.put("operador", "=");
+		filtro2Object.put("valor", "52331");
 
-		//filtrosArray.put(filtro2Object);
+		filtrosArray.put(filtro2Object);
+		*/
 
 		requestBody.put("filtros", filtrosArray);
 

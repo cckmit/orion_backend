@@ -140,8 +140,8 @@ public class IntegracaoFluxogamaCustom {
                 queryInsert += " ,codigo_contabil";
             }
 
-            queryInsert += ") values ('1'," + referencia.toUpperCase() + ", " + tamanho.toUpperCase() + ", " + cor.toUpperCase() +
-                    ",(select max(g.descricao) from basi_100 g where g.cor_sortimento = '" + cor.toUpperCase() + "' )";
+            queryInsert += ") values ('1', '" + referencia.toUpperCase() + "', '" + tamanho.toUpperCase() + "', '" + cor.toUpperCase() +
+                    "',(select max(g.descricao) from basi_100 g where g.cor_sortimento = '" + cor.toUpperCase() + "' )";
             if (classFiscal != null) {
                 queryInsert += " ,'" + classFiscal + "' ";
             }
@@ -152,6 +152,7 @@ public class IntegracaoFluxogamaCustom {
                 queryInsert += " ," + Integer.parseInt(codContabil);
             }
             queryInsert += ")";
+
             jdbcTemplate.update(queryInsert);
         } catch (Exception e) {
             String queryUpdate = " update basi_010 " +
