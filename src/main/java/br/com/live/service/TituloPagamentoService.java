@@ -367,7 +367,7 @@ public class TituloPagamentoService {
 
         tituloPagamentoCustom.inserirLogTituloIntegracao(codEmpresa, cnpjTomador, nrNota, FormataData.parseStringToDate(dataEmissaoFormat), "Sucesso", "", complemento, nrParcela, FormataData.parseStringToDate(dataVencimentoFormat), valorParcela);
 
-        enviarEmailNotaIntegrada("Sucesso", nrNota, nrParcela, cnpjTomador, nomeCliente, "");
+        // enviarEmailNotaIntegrada("Sucesso", nrNota, nrParcela, cnpjTomador, nomeCliente, "");
 
         System.out.println("Finalizado integração da Nota: " + nrNota + " / nrParcela: " + nrParcela + " / cnpjTomador: " + cnpjTomador);
 
