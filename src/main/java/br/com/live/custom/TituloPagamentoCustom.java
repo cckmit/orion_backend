@@ -413,8 +413,6 @@ public class TituloPagamentoCustom {
     public void inserirLogTituloIntegracao(int codEmpresa, String cnpjCliente, int numDuplicata, Date dataEmissaoDuplicata, String situacaoIntegracao,
                                 String descricaoIntegracao, String complemento, int seqDuplicata, Date dataVencDuplicata, double valorDuplicata) {
 
-        System.out.println(descricaoIntegracao);
-
         int id = obterProxIdLogTitulo();
         Date dataHoraAtual = new Date();
 

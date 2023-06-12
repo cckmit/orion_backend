@@ -331,8 +331,6 @@ public class TituloPagamentoService {
                                       int contaContabilClienteRdz, String contaContabil, String contaContabilCliente, int codHistorico, int codExercicio, int codPeriodo,
                                       String complemento) throws Exception {
 
-        System.out.println("Iniciando integração da Nota: " + nrNota + " / nrParcela: " + nrParcela + " / cnpjTomador: " + cnpjTomador);
-
         int cgc9Tomador = Integer.parseInt(cnpjTomador.substring(0, 8));
         int cgc4Tomador = Integer.parseInt(cnpjTomador.substring(8, 12));
         int cgc2Tomador = Integer.parseInt(cnpjTomador.substring(12));
@@ -368,8 +366,6 @@ public class TituloPagamentoService {
         tituloPagamentoCustom.inserirLogTituloIntegracao(codEmpresa, cnpjTomador, nrNota, FormataData.parseStringToDate(dataEmissaoFormat), "Sucesso", "", complemento, nrParcela, FormataData.parseStringToDate(dataVencimentoFormat), valorParcela);
 
         // enviarEmailNotaIntegrada("Sucesso", nrNota, nrParcela, cnpjTomador, nomeCliente, "");
-
-        System.out.println("Finalizado integração da Nota: " + nrNota + " / nrParcela: " + nrParcela + " / cnpjTomador: " + cnpjTomador);
 
     }
 
