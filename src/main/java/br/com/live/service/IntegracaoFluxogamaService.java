@@ -103,8 +103,6 @@ public class IntegracaoFluxogamaService {
 						String pilar = dadosFluxo.getUno99();
 						String idSegemento = dadosFluxo.getUno101();
 
-						System.out.println(dadosFluxo.getUno317());
-
 						if (dadosFluxo.getUno315Ds() != null) {
 							compradoFabricado = dadosFluxo.getUno315Ds().substring(0,1);
 						}
@@ -319,12 +317,12 @@ public class IntegracaoFluxogamaService {
 
 		filtrosArray.put(filtroObject);
 
-		JSONObject filtro2Object = new JSONObject();
-		filtro2Object.put("campo", "modelo.ds_referencia");
-		filtro2Object.put("operador", "=");
-		filtro2Object.put("valor", "BC704 teste integração");
+		//JSONObject filtro2Object = new JSONObject();
+		//filtro2Object.put("campo", "modelo.ds_referencia");
+		//filtro2Object.put("operador", "=");
+		//filtro2Object.put("valor", "BC704 teste integração");
 
-		filtrosArray.put(filtro2Object);
+		//filtrosArray.put(filtro2Object);
 
 		requestBody.put("filtros", filtrosArray);
 
@@ -355,8 +353,6 @@ public class IntegracaoFluxogamaService {
 
 		// Converte o objeto JSON para uma string formatada
 		String formattedRequestBody = requestBody.toString(4);
-
-		System.out.println("BODY: " + formattedRequestBody);
 
 		return formattedRequestBody;
 	}
