@@ -16,4 +16,4 @@ insert into orion_parametros (id, valor_int) values ('OBRF_702-NAT_BC_CRED', 0);
 insert into orion_parametros (id, valor_int) values ('OBRF_702-IND_ORIG_CRED', 0);
 insert into orion_parametros (id, valor_str) values ('PROC_REFERENCIADO-SERIES', '2');
 insert into orion_parametros (id, valor_str) values ('PROC_REFERENCIADO-NATUREZAS', '104,803,883,627,930,264,657,0,660,225,465,325,25,701,823,801,180,421,868,810,422,867,304,360,893');
-insert into orion_parametros (id, valor_date) values ('PROC_REFERENCIADO-DATA-INICIAL', '01-jan-2024');
+insert into orion_parametros (id, valor_date) values ('PROC_REFERENCIADO-DATA-INICIAL', '10-NOV-2022');
