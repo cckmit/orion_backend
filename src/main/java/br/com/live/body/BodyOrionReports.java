@@ -1,5 +1,7 @@
 package br.com.live.body;
 
+import java.util.List;
+
 public class BodyOrionReports {
 	
 	public int id;
@@ -9,5 +11,14 @@ public class BodyOrionReports {
 	public String email;
 	public int situacao;
 	public int administrador;
+	public String idPrograma;
+	public int codArea;
+	public String area;
+	public String modulo;
+	public int nrPrograma;
+	public String descricao;
+	public int powerbi;
+	public String linkPowerbi;
+	public List<String> listaIdsProgramas;
 
 }
