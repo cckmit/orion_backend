@@ -15,9 +15,9 @@ public class ProcessoReferenciadoCustom {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<ConsultaNotaFiscal> findNotasProcessoReferenciado(String series, String naturezas, Date dataInicial) {
+    public List<ConsultaNotaFiscal> findNotasProcessoReferenciado(String empresas, String naturezas, Date dataInicial) {
     	
-    	System.out.println("series: " + series);
+    	System.out.println("series: " + empresas);
     	System.out.println("naturezas: " + naturezas);
     	System.out.println("dataInicial: " + dataInicial);
     	
@@ -29,7 +29,7 @@ public class ProcessoReferenciadoCustom {
         + " a.cgc_4 cnpj4, "
         + " a.cgc_2 cnpj2 "       
         + " from fatu_050 a "
-        + " where a.serie_nota_fisc in (" + series + ") "
+        + " where a.codigo_empresa in (" + empresas + ") "
         + " and a.natop_nf_nat_oper in (" + naturezas + ") "
         + " and a.data_emissao >= ? "
         + " and not exists (select 1 from obrf_701 b "
