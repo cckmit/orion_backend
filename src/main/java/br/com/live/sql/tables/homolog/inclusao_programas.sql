@@ -304,3 +304,6 @@ values (103, 'Orion Reports Usuários', 'BI', '/orion-reports-usuarios');
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (104, 'Painel de Integração do Fluxogama', 'Engenharia', '/painel-integ-fluxogama');
 
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (105, 'Painel de Planejamento', 'Confecção', '/painel-de-planejamento');
+
