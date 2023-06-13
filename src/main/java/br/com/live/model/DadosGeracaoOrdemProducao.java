@@ -13,6 +13,7 @@ public class DadosGeracaoOrdemProducao {
 	private String observacao2;
 	private int quantidade;
 	private int pedido;
+	private int colecaoPlanoMestre;
 	private List<DadosGeracaoOrdemProducaoItem> gradeTamanhosCores;
 	
 	public DadosGeracaoOrdemProducao(String referencia, int periodo, int alternativa, int roteiro, String observacao1,
@@ -25,6 +26,7 @@ public class DadosGeracaoOrdemProducao {
 		this.observacao1 = observacao1;
 		this.observacao2 = observacao2;
 		this.pedido = 0;
+		this.colecaoPlanoMestre = 0;
 		this.gradeTamanhosCores = new ArrayList<DadosGeracaoOrdemProducaoItem>();
 	}
 	
@@ -38,9 +40,24 @@ public class DadosGeracaoOrdemProducao {
 		this.observacao1 = observacao1;
 		this.observacao2 = observacao2;
 		this.pedido = pedido;
+		this.colecaoPlanoMestre = 0;
 		this.gradeTamanhosCores = new ArrayList<DadosGeracaoOrdemProducaoItem>();
 	}
 
+	public DadosGeracaoOrdemProducao(String referencia, int periodo, int alternativa, int roteiro, String observacao1,
+			String observacao2, int pedido, int colecaoPlanoMestre) {
+		super();
+		this.referencia = referencia;
+		this.periodo = periodo;
+		this.alternativa = alternativa;
+		this.roteiro = roteiro;
+		this.observacao1 = observacao1;
+		this.observacao2 = observacao2;
+		this.pedido = pedido;
+		this.colecaoPlanoMestre = colecaoPlanoMestre;
+		this.gradeTamanhosCores = new ArrayList<DadosGeracaoOrdemProducaoItem>();
+	}
+	
 	public void addItem(String tamanho, String cor, int quantidade) {
 		this.gradeTamanhosCores.add(new DadosGeracaoOrdemProducaoItem(tamanho, cor, quantidade));
 		this.quantidade += quantidade;
@@ -80,6 +97,10 @@ public class DadosGeracaoOrdemProducao {
 	
 	public int getPedido() {
 		return pedido;
+	}
+
+	public int getColecaoPlanoMestre() {
+		return colecaoPlanoMestre;
 	}
 
 	public List<DadosGeracaoOrdemProducaoItem> getGradeTamanhosCores() {

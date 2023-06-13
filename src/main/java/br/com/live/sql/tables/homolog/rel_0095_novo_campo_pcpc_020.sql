@@ -1,0 +1,1 @@
+alter table pcpc_020 add live_colecao_plano_mestre number(3) default 0;
