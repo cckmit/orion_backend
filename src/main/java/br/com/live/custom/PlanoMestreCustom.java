@@ -518,4 +518,38 @@ public class PlanoMestreCustom {
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
+	public int findColecaoProdutoByRangeColecoes(String nivel, String grupo, String sub, String item, String colecoes) {
+		
+		// Localiza pelo produto completo
+		String query = " select nvl(max(o.colecao),0) colecao "
+		+ " from orion_vi_itens_x_colecoes o "
+		+ " where o.nivel = '" + nivel + "' "
+		+ " and o.referencia = '" + grupo + "'"
+  	    + " and o.tamanho = '" + sub + "'"
+  	    + " and o.cor = '" + item + "'"
+		+ " and o.colecao not in (select basi_140.colecao from basi_140 "
+        + " where basi_140.descricao_espanhol like '%PERMANENTE%')";
+		
+		if ((colecoes != null) && (!colecoes.isEmpty()))
+			query += " and o.colecao in (" + colecoes + ")";
+		
+		int colecao = jdbcTemplate.queryForObject(query, Integer.class);
+		
+		// Caso não encontre, localiza apenas pela referência
+		if (colecao == 0) {
+			query = " select nvl(max(o.colecao),0) colecao "
+			+ " from orion_vi_itens_x_colecoes o "
+			+ " where o.nivel = '" + nivel + "' "
+			+ " and o.referencia = '" + grupo + "'"
+			+ " and o.colecao not in (select basi_140.colecao from basi_140 "
+	        + " where basi_140.descricao_espanhol like '%PERMANENTE%')";
+
+			if ((colecoes != null) && (!colecoes.isEmpty()))
+				query += " and o.colecao in (" + colecoes + ")";
+			
+			colecao = jdbcTemplate.queryForObject(query, Integer.class);
+		}
+					
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
 }

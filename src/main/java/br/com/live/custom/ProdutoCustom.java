@@ -1448,5 +1448,5 @@ public class ProdutoCustom {
 				+ "     AND a.nivel_estrutura || a.grupo_estrutura ||  a.subgru_estrutura || a.item_estrutura LIKE '%" + produto + "%'";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
-	}
+	}	
 }

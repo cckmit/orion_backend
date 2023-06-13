@@ -12,9 +12,12 @@ import br.com.live.custom.OrdemProducaoCustom;
 import br.com.live.custom.PlanoMestreCustom;
 import br.com.live.custom.ProdutoCustom;
 import br.com.live.entity.PlanoMestre;
+import br.com.live.entity.PlanoMestreParametros;
 import br.com.live.entity.PlanoMestrePreOrdem;
 import br.com.live.entity.PlanoMestrePreOrdemItem;
 import br.com.live.model.DadosGeracaoOrdemProducao;
+import br.com.live.model.DadosGeracaoOrdemProducaoItem;
+import br.com.live.repository.PlanoMestreParametrosRepository;
 import br.com.live.repository.PlanoMestrePreOrdemItemRepository;
 import br.com.live.repository.PlanoMestrePreOrdemRepository;
 import br.com.live.repository.PlanoMestreRepository;
@@ -30,16 +33,21 @@ public class OrdemProducaoPlanoMestreServiceTransaction {
 	private final OrdemProducaoCustom ordemProducaoCustom;
 	private final ProdutoCustom produtoCustom;	 
 	private final OrdemProducaoService ordemProducaoService;
+	private final PlanoMestreParametrosRepository planoMestreParametrosRepository;
+	private final PlanoMestreCustom planoMestreCustom; 
 
 	public OrdemProducaoPlanoMestreServiceTransaction(PlanoMestreRepository planoMestreRepository, PlanoMestrePreOrdemRepository planoMestrePreOrdemRepository, 
 			PlanoMestrePreOrdemItemRepository planoMestrePreOrdemItemRepository, 
-			OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom, PlanoMestreCustom planoMestreCustom, OrdemProducaoService ordemProducaoService) {
+			OrdemProducaoCustom ordemProducaoCustom, ProdutoCustom produtoCustom, PlanoMestreCustom planoMestreCustom, OrdemProducaoService ordemProducaoService,
+			PlanoMestreParametrosRepository planoMestreParametrosRepository) {
 		this.planoMestreRepository = planoMestreRepository;
 		this.planoMestrePreOrdemRepository = planoMestrePreOrdemRepository;
 		this.planoMestrePreOrdemItemRepository = planoMestrePreOrdemItemRepository;		
 		this.ordemProducaoCustom = ordemProducaoCustom;
 		this.produtoCustom = produtoCustom;
 		this.ordemProducaoService = ordemProducaoService;
+		this.planoMestreParametrosRepository = planoMestreParametrosRepository;
+		this.planoMestreCustom = planoMestreCustom;
 	}	
 	
 	public boolean validarDadosOrdem(PlanoMestrePreOrdem preOrdem, Map<Long, StatusGravacao> mapPreOrdensComErro) {
@@ -106,7 +114,20 @@ public class OrdemProducaoPlanoMestreServiceTransaction {
 			}			
 		}				
 	}	
-	
+
+	private int findColecaoProduto(PlanoMestrePreOrdem preOrdem, List<PlanoMestrePreOrdemItem> preOrdemItens) {
+		String colecoes = "";
+		
+		PlanoMestreParametros parametros = planoMestreParametrosRepository.findByIdPlanoMestre(preOrdem.idPlanoMestre);
+		if (parametros.colecoes != null) colecoes = parametros.colecoes;  
+		
+		PlanoMestrePreOrdemItem preOrdemItem = preOrdemItens.get(0);
+				
+		int colecaoProduto = planoMestreCustom.findColecaoProdutoByRangeColecoes("1", preOrdem.grupo, preOrdemItem.sub, preOrdemItem.item, colecoes);
+		
+		return colecaoProduto;
+	}
+
 	public boolean gerarOrdem(long idPreOrdem) {
 		boolean ordemValida = true;			
 		
@@ -115,7 +136,9 @@ public class OrdemProducaoPlanoMestreServiceTransaction {
 		
 		PlanoMestrePreOrdem preOrdem = planoMestrePreOrdemRepository.findById(idPreOrdem);
 		List<PlanoMestrePreOrdemItem> preOrdemItens = planoMestrePreOrdemItemRepository.findByIdOrdem(idPreOrdem);			
-				
+						
+		int colecaoProdutoPlanoMestre = findColecaoProduto(preOrdem, preOrdemItens);
+		
 		if (preOrdem.ordemGerada > 0) return false;
 		
 		if (!validarDadosOrdem(preOrdem, mapPreOrdensComErro)) ordemValida = false;
@@ -124,12 +147,12 @@ public class OrdemProducaoPlanoMestreServiceTransaction {
 		if (ordemValida) {	
 			
 			try {										
-				DadosGeracaoOrdemProducao dadosOrdem = new DadosGeracaoOrdemProducao(preOrdem.grupo, preOrdem.periodo, preOrdem.alternativa, preOrdem.roteiro, preOrdem.observacao, "PLANO MESTRE: " + preOrdem.idPlanoMestre);
+				DadosGeracaoOrdemProducao dadosOrdem = new DadosGeracaoOrdemProducao(preOrdem.grupo, preOrdem.periodo, preOrdem.alternativa, preOrdem.roteiro, preOrdem.observacao, "PLANO MESTRE: " + preOrdem.idPlanoMestre, 0, colecaoProdutoPlanoMestre);
 
 				for (PlanoMestrePreOrdemItem preOrdemItem : preOrdemItens) {
 					dadosOrdem.addItem(preOrdemItem.sub, preOrdemItem.item, preOrdemItem.quantidade);
 				}
-				
+
 				StatusGravacao status = ordemProducaoService.gerarOrdemProducao(dadosOrdem);
 				if (!status.isConcluido()) throw new Exception(status.getMensagemCompleta());
 
