@@ -156,11 +156,6 @@ public class IndicadoresService {
     public List<String> retornarVariaveisMensais(int idIndicador, int ano){
     	List<String> vars = indicadoresCustom.findvariaveisMensaisById(idIndicador, ano);
     	return vars;
-    }	
-    // -------------------------------------------------------------------------
-    public List<String> retornarVariaveisDiarias(int idIndicador, String mes, int ano){
-    	List<String> vars = indicadoresCustom.findvariaveisDiariasById(idIndicador, mes, ano);
-    	return vars;
     }
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
     public List<ConsultaIndicadores> deleteIndicador(int idIndicador, int idUsuario) {

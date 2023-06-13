@@ -2,6 +2,8 @@ package br.com.live.jobs;
 
 import java.io.IOException;
 
+import br.com.live.entity.Parametros;
+import br.com.live.repository.ParametrosRepository;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,13 +17,21 @@ public class JobIntegracaoFluxogama {
     private final static int MINUTO = SEGUNDO * 60;
     
     IntegracaoFluxogamaService integracaoFluxogamaService;
+    ParametrosRepository parametrosRepository;
     
-    public JobIntegracaoFluxogama(IntegracaoFluxogamaService integracaoFluxogamaService) {
+    public JobIntegracaoFluxogama(IntegracaoFluxogamaService integracaoFluxogamaService, ParametrosRepository parametrosRepository) {
     	this.integracaoFluxogamaService = integracaoFluxogamaService;
+        this.parametrosRepository = parametrosRepository;
     }
     
     @Scheduled(fixedRate = MINUTO * 5)
     public void gravarReferenciasIntegracaoFluxogama() throws IOException{
-    	//integracaoFluxogamaService.obterDadosFluxogamaJob();
+        Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_FLUXOGAMA_ATIVO");
+
+        if (params.valorInt == 0) {
+            integracaoFluxogamaService.obterDadosFluxogamaJob();
+        } else {
+            System.out.println("Integração Pausada!");
+        }
     }
 }
