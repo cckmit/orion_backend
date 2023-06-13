@@ -15,6 +15,7 @@ import br.com.live.service.IntegracaoFluxogamaService;
 public class JobIntegracaoFluxogama {
     private final static int SEGUNDO = 1000;
     private final static int MINUTO = SEGUNDO * 60;
+    private final static int ATIVO = 1;
     
     IntegracaoFluxogamaService integracaoFluxogamaService;
     ParametrosRepository parametrosRepository;
@@ -28,7 +29,7 @@ public class JobIntegracaoFluxogama {
     public void gravarReferenciasIntegracaoFluxogama() throws IOException{
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_FLUXOGAMA_ATIVO");
 
-        if (params.valorInt == 0) {
+        if (params.valorInt == ATIVO) {
             integracaoFluxogamaService.obterDadosFluxogamaJob();
         } else {
             System.out.println("Integração Pausada!");
