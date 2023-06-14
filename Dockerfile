@@ -9,4 +9,4 @@ RUN install -m644 arial-black.ttf /usr/share/fonts/truetype/
 RUN install -m644 arial.ttf /usr/share/fonts/truetype/
 WORKDIR /app
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=homol", "orionBackendJar.jar"]
-EXPOSE 8081
+EXPOSE 8080
