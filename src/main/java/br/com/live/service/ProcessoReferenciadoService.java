@@ -25,11 +25,11 @@ public class ProcessoReferenciadoService {
 	
 	public void atualizarNotas() {
 		// Parâmetros
-		String series = parametrosRepository.findByIdParametro("PROC_REFERENCIADO-SERIES").getValorStr();
+		String empresas = parametrosRepository.findByIdParametro("PROC_REFERENCIADO-EMPRESAS").getValorStr();
 		String naturezas = parametrosRepository.findByIdParametro("PROC_REFERENCIADO-NATUREZAS").getValorStr();
 		Date dataInicial = parametrosRepository.findByIdParametro("PROC_REFERENCIADO-DATA-INICIAL").getValorDate();
 		
-		List<ConsultaNotaFiscal> listaNotas = processoReferenciadoCustom.findNotasProcessoReferenciado(series, naturezas, dataInicial);
+		List<ConsultaNotaFiscal> listaNotas = processoReferenciadoCustom.findNotasProcessoReferenciado(empresas, naturezas, dataInicial);
 
 		// OBRF_701
 		String registro = parametrosRepository.findByIdParametro("OBRF_701-REG").getValorStr();
