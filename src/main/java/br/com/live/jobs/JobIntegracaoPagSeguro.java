@@ -23,7 +23,7 @@ public class JobIntegracaoPagSeguro {
         this.parametrosRepository = parametrosRepository;
     }
 
-    @Scheduled(fixedRate = MINUTO)
+    @Scheduled(fixedRate = HORA * 5)
     public void gravarMovimentosPagSeguroJob() {
         movimentoPagSeguroService.GravarMovimentosPagSeguroJob();
     }
