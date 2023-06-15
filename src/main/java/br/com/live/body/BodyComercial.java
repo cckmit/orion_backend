@@ -49,5 +49,6 @@ public class BodyComercial {
 	public List<ConsultaPedidosPorCliente> listPedidosSel;
 	public String usuario;
 	public String cnpjCliente;
+	public String observacao;
 }
 	

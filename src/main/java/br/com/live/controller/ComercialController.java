@@ -177,7 +177,7 @@ public class ComercialController {
 
 	@RequestMapping(value = "/aplicar-descontos-pedidos", method = RequestMethod.POST)
 	public StatusGravacao aplicarDescontosPedidos(@RequestBody BodyComercial body) {
-		return comercialService.aplicarDescontoEspecialPedidos(body.listClientesDesconto, body.usuario);
+		return comercialService.aplicarDescontoEspecialPedidos(body.listClientesDesconto, body.usuario, body.observacao);
 	}
 
 	@RequestMapping(value = "/consulta-hist-importacoes", method = RequestMethod.GET)
@@ -212,7 +212,7 @@ public class ComercialController {
 		int cnpj4 = Integer.parseInt(body.cnpjCliente.substring(8,12));
 		int cnpj2 = Integer.parseInt(body.cnpjCliente.substring(12,14));
 
-		comercialService.aplicarSaldosDescontoPedidos(body.listPedidosSel, cnpj9, cnpj4, cnpj2, body.usuario);
+		comercialService.aplicarSaldosDescontoPedidos(body.listPedidosSel, cnpj9, cnpj4, cnpj2, body.usuario, body.observacao);
 	}
 
 }

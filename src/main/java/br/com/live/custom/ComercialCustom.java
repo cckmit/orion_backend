@@ -184,7 +184,7 @@ public class ComercialCustom {
 
 	public List<DescontoClientesImportados> buscarHistoricoImportacoes() {
 		String query = " select a.id, lpad(a.cnpj_9,8, '0') || lpad(a.cnpj_4,4,'0') || lpad(a.cnpj_2,2,'0') cnpjCliente, " +
-				" a.data_insercao dataInsercao, a.valor valor, a.observacao, a.usuario from orion_com_290 a ";
+				" a.data_insercao dataInsercao, a.valor valor, a.usuario from orion_com_290 a ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DescontoClientesImportados.class));
 	}
 
@@ -212,22 +212,5 @@ public class ComercialCustom {
 			natureza = 0;
 		}
 		return natureza;
-	}
-
-	public String findObservacaoRepresentante(int cnpj9, int cnpj4, int cnpj2) {
-		String observacao = "";
-
-		String query = " select max(a.observacao) from orion_com_290 a " +
-				" where a.cnpj_9 = " + cnpj9 +
-				" and  a.cnpj_4 = " + cnpj4 +
-				" and  a.cnpj_2 = " + cnpj2;
-
-		System.out.println("query: " + query);
-		try {
-			observacao = jdbcTemplate.queryForObject(query, String.class);
-		} catch (Exception e) {
-			observacao = "";
-		}
-		return observacao;
 	}
 }

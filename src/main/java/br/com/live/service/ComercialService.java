@@ -250,7 +250,7 @@ public class ComercialService {
 			} else  {
 				try {
 					gravarControleDesconto(cnpj9, cnpj4, cnpj2, cliente.valor);
-					descontoCliente = new ValorDescontoClientesImportados(comercialCustom.findNextIdImpDescClientes(), cnpj9,cnpj4,cnpj2, FormataData.parseStringToDate(cliente.dataInsercao), cliente.valor, cliente.observacao, usuario);
+					descontoCliente = new ValorDescontoClientesImportados(comercialCustom.findNextIdImpDescClientes(), cnpj9,cnpj4,cnpj2, FormataData.parseStringToDate(cliente.dataInsercao), cliente.valor, usuario);
 					valorDescontoClientesImpRepository.saveAndFlush(descontoCliente);
 				} catch (Exception e) {
 					System.out.println("Ocorreu um erro ao gravar o desconto!");
@@ -348,14 +348,13 @@ public class ComercialService {
 		return valorCalculado;
 	}
 
-	public StatusGravacao aplicarDescontoEspecialPedidos(List<DescontoClientesImportados> listPedidosConfirmados, String usuario) {
+	public StatusGravacao aplicarDescontoEspecialPedidos(List<DescontoClientesImportados> listPedidosConfirmados, String usuario, String observacao) {
 		PedidosGravadosComDesconto pedidosGravados = null;
 		StatusGravacao status = new StatusGravacao(true, "Processo Conluído com Sucesso!");
 
 		for (DescontoClientesImportados dadosPedido : listPedidosConfirmados) {
 			ControleDescontoCliente dadosDesconto;
 			PedidosGravadosComDesconto pedidosConfirmados;
-			String observacao = "";
 
 			int naturezaPedido = comercialCustom.findNaturezaPedido(dadosPedido.pedido);
 
@@ -365,7 +364,6 @@ public class ComercialService {
 
 			dadosDesconto = controleDescontoClienteRepository.findByIdControle(cnpj9 + "-" + cnpj4 + "-" + cnpj2);
 			pedidosConfirmados = pedidosGravadosComDescontoRepository.findByIdPedido(dadosPedido.pedido);
-			observacao = comercialCustom.findObservacaoRepresentante(cnpj9,cnpj4,cnpj2);
 
 			if (pedidosConfirmados != null) {
 				status = new StatusGravacao(false, "Pedido " + dadosPedido.pedido + " já foi confirmado! Favor recalcular os descontos!");
@@ -409,7 +407,7 @@ public class ComercialService {
 		return comercialCustom.buscarSaldosClientes();
 	}
 
-	public void aplicarSaldosDescontoPedidos(List<ConsultaPedidosPorCliente> pedidosSelect, int cnpj9, int cnpj4, int cnpj2, String usuario) {
+	public void aplicarSaldosDescontoPedidos(List<ConsultaPedidosPorCliente> pedidosSelect, int cnpj9, int cnpj4, int cnpj2, String usuario, String observacao) {
 		ControleDescontoCliente dadosDesconto;
 		List<DescontoClientesImportados> listPedidosComDesconto = new ArrayList<>();
 
@@ -437,6 +435,6 @@ public class ComercialService {
 			listPedidosComDesconto.add(pedidos);
 		}
 
-		aplicarDescontoEspecialPedidos(listPedidosComDesconto, usuario);
+		aplicarDescontoEspecialPedidos(listPedidosComDesconto, usuario, observacao);
 	}
 }

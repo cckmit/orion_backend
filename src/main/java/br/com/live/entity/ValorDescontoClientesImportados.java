@@ -26,7 +26,6 @@ public class ValorDescontoClientesImportados {
     public Date dataInsercao;
 
     public float valor;
-    public String observacao;
     public String usuario;
 
     public long getId() {
@@ -77,14 +76,6 @@ public class ValorDescontoClientesImportados {
         this.valor = valor;
     }
 
-    public String getObservacao() {
-        return observacao;
-    }
-
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
-    }
-
     public String getUsuario() {
         return usuario;
     }
@@ -96,14 +87,13 @@ public class ValorDescontoClientesImportados {
     public ValorDescontoClientesImportados() {
     }
 
-    public ValorDescontoClientesImportados(long id, int cnpj9, int cnpj4, int cnpj2, Date dataInsercao, float valor, String observacao, String usuario) {
+    public ValorDescontoClientesImportados(long id, int cnpj9, int cnpj4, int cnpj2, Date dataInsercao, float valor, String usuario) {
         this.id = id;
         this.cnpj9 = cnpj9;
         this.cnpj4 = cnpj4;
         this.cnpj2 = cnpj2;
         this.dataInsercao = dataInsercao;
         this.valor = valor;
-        this.observacao = observacao;
         this.usuario = usuario;
     }
 }
