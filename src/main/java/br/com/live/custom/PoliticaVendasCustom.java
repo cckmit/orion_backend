@@ -74,6 +74,20 @@ public class PoliticaVendasCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
+	public List<ConteudoChaveAlfaNum> findAllEstacoes(){
+		
+		String query = " SELECT c.col_tab || '-' || c.mes_tab || '-' || c.seq_tab value, "
+				+ "   c.col_tab || '-' || c.mes_tab || '-' || c.seq_tab || ' - ' || d.descricao label "
+				+ "   FROM orion_073 c, orion_070 d "
+				+ "   WHERE d.cod_estacao = c.cod_estacao "
+				+ "   AND c.mes_tab = 1 "
+				+ "   GROUP BY c.col_tab, c.mes_tab, c.seq_tab, d.descricao"
+				+ "   ORDER BY d.descricao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));		
+		
+	}
+	
 	public List<RegrasPoliticaVendas> findAllRegrasByTipo(int tipo) {
 		String query = " SELECT a.id, "
 				+ "     (SELECT LPAD(b.forma_pgto, 2, 0) || ' - ' || b.descricao FROM loja_010 b WHERE b.forma_pgto = a.forma_pagamento) formapagamento, "

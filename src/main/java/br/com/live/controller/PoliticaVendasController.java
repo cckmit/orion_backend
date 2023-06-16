@@ -78,7 +78,12 @@ public class PoliticaVendasController {
 	@RequestMapping(value = "/find-all-cond-pagamento", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllCondPgto() {
         return politicaVendasCustom.findCondPagamento();
-	    }
+	}
+	// Carregar todos Codigos de Portador
+	@RequestMapping(value = "/find-all-estacoes", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllEstacoes() {
+        return politicaVendasService.findAllEstacoes();
+    }
 	// Carrregar todos os Pedidos com Divergências
 	@RequestMapping(value = "/find-pedidos-divergencias", method = RequestMethod.POST)
     public List<DivergenciasPoliticaVendas> findPedidosDivergencias(@RequestBody BodyPoliticaVendas body) {

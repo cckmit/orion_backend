@@ -38,6 +38,10 @@ public class PoliticaVendasService {
 		politicaVendasRepository.deleteById(id);
 	}
 	
+	public List<ConteudoChaveAlfaNum> findAllEstacoes(){
+		return politicaVendasCustom.findAllEstacoes();
+	}
+	
 	public List<DivergenciasPoliticaVendas> findPedidosDivergencias(boolean regra1, boolean regra2, boolean regra3, boolean regra4, boolean regra5,
 			boolean regra6, boolean regra7, boolean regra8, boolean regra9, boolean regra10){
 		
@@ -57,9 +61,8 @@ public class PoliticaVendasService {
 	}
 	
 	public List<DivergenciasPoliticaVendas> findDivergenciasGrupoEmbarque(String estacao){
-		
-		String tabPreco = fechamentoComissaoCustom.findTabPrecoEstacao(estacao);
-		String[] tabPrecoConcat = tabPreco.split("[-]");
+		 
+		String[] tabPrecoConcat = estacao.split("[-]");
 		int tabCol = Integer.parseInt(tabPrecoConcat[0]);
 		int tabMes = Integer.parseInt(tabPrecoConcat[1]);
 		int tabSeq = Integer.parseInt(tabPrecoConcat[2]);

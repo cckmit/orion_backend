@@ -23,6 +23,7 @@ public class BodyPoliticaVendas {
 	public float desconto;
 	public String tabelaPreco;
 	public String estacao;
+	public int codEstacao;
 	public boolean regra1;
 	public boolean regra2;
 	public boolean regra3;
