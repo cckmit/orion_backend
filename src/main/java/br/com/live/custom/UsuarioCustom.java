@@ -66,6 +66,13 @@ public class UsuarioCustom {
 		}
 		return modulos;
 	}
+
+	public List <ConteudoChaveAlfaNum> findAllModulosConfigurados() {
+
+		String query = " SELECT DISTINCT(MODULO) value, MODULO label FROM ORION_002 ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
 	
 	public DadosUsuario findDadosUsuario(long idUsuario){
 		DadosUsuario  dados = new DadosUsuario();

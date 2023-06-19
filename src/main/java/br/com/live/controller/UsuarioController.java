@@ -2,14 +2,10 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.entity.Programa;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.live.body.BodyUsuario;
 import br.com.live.entity.Usuario;
@@ -75,5 +71,22 @@ public class UsuarioController {
 	@RequestMapping(value = "usuario-redefinir/{usuario}/{senhaAtual}/{novaSenha}", method = RequestMethod.GET)
 	public boolean redefinirSenhaUsuario(@PathVariable("usuario") String usuario, @PathVariable("senhaAtual") String senhaAtual, @PathVariable("novaSenha") String novaSenha) {
 		return usuarioService.redefinirSenha(usuario, senhaAtual, novaSenha);
+	}
+
+	@GetMapping("find-all-modulos")
+	public List<ConteudoChaveAlfaNum> findAllModulos(){
+		return usuarioService.findAllModulos();
+	}
+
+	@PostMapping("/adicionar-programas-usuario")
+	public List<Programa> adicionarProgramasUsuario(@RequestBody BodyUsuario body) {
+		usuarioService.adicionarProgramas(body.id, body.listaIdsProgramas);
+		return usuarioService.findProgramasPorUsuario(body.id);
+	}
+
+	@PostMapping("/sobrepor-programas-usuario")
+	public List<Programa> sobreporProgramasUsuario(@RequestBody BodyUsuario body) {
+		usuarioService.sobreporProgramas(body.id, body.listaIdsProgramas);
+		return usuarioService.findProgramasPorUsuario(body.id);
 	}
 }

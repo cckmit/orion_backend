@@ -3,6 +3,8 @@ package br.com.live.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.live.entity.*;
+import br.com.live.repository.ProgramaRepository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.live.repository.UsuarioRepository;
 import br.com.live.repository.UsuarioProgramaRepository;
 import br.com.live.custom.UsuarioCustom;
-import br.com.live.entity.Usuario;
-import br.com.live.entity.UsuarioPrograma;
 import br.com.live.model.DadosUsuario;
 import br.com.live.util.Criptografia;
 
@@ -22,11 +22,13 @@ public class UsuarioService {
 	private final UsuarioRepository usuarioRepository;
 	private final UsuarioProgramaRepository usuarioProgramaRepository;
 	private final UsuarioCustom usuarioCustom;
+	private final ProgramaRepository programaRepository;
 
-	public UsuarioService(UsuarioRepository usuarioRepository, UsuarioCustom usuarioCustom, UsuarioProgramaRepository usuarioProgramaRepository) {
+	public UsuarioService(UsuarioRepository usuarioRepository, UsuarioCustom usuarioCustom, UsuarioProgramaRepository usuarioProgramaRepository, ProgramaRepository programaRepository) {
 		this.usuarioRepository = usuarioRepository;
 		this.usuarioCustom = usuarioCustom;
 		this.usuarioProgramaRepository = usuarioProgramaRepository;
+		this.programaRepository = programaRepository;
 	}
 
 	public Usuario findUsuarios(long idUsuario) {
@@ -133,5 +135,53 @@ public class UsuarioService {
 	public int findCodigoUsuarioSystextil(long idUsuarioOrion) {	
 		Usuario usuarioOrion = findUsuarios(idUsuarioOrion);		
 		return usuarioCustom.findCodigoUsuarioSystextil(usuarioOrion.usuarioSystextil);
-	}	
+	}
+
+	public List<ConteudoChaveAlfaNum> findAllModulos(){
+		return usuarioCustom.findAllModulosConfigurados();
+	}
+
+	public void adicionarProgramas(long codUsuario, List<Long> listaIdsProgramas) {
+		for (Long idPrograma : listaIdsProgramas) {
+			adicionarPrograma(codUsuario, idPrograma);
+		}
+	}
+
+	private void adicionarPrograma(long codUsuario, long idPrograma) {
+		UsuarioPrograma usuarioPrograma = usuarioProgramaRepository.findByIdUsuarioAndIdPrograma(codUsuario, idPrograma);
+		if (usuarioPrograma == null) {
+			usuarioPrograma = new UsuarioPrograma(codUsuario, idPrograma);
+			usuarioProgramaRepository.save(usuarioPrograma);
+		}
+	}
+
+	public void sobreporProgramas(long codUsuario, List<Long> listaIdsProgramas) {
+
+		usuarioProgramaRepository.deleteByIdUsuario(codUsuario);
+
+		for (Long idPrograma : listaIdsProgramas) {
+			UsuarioPrograma usuarioPrograma = usuarioProgramaRepository.findByIdUsuarioAndIdPrograma(codUsuario, idPrograma);
+			if (usuarioPrograma == null) {
+				usuarioPrograma = new UsuarioPrograma(codUsuario, idPrograma);
+				usuarioProgramaRepository.save(usuarioPrograma);
+			}
+		}
+	}
+
+	public List<Programa> findProgramasPorUsuario(long codUsuario) {
+
+		Programa dadosPrograma = null;
+
+		List<UsuarioPrograma> programas = usuarioProgramaRepository.findByIdUsuario(codUsuario);
+
+		List<Programa> listaIdsProgramas = new ArrayList<Programa>();
+
+		for (UsuarioPrograma programa : programas) {
+
+			dadosPrograma = programaRepository.findByIdPrograma(programa.idPrograma);
+
+			listaIdsProgramas.add(dadosPrograma);
+		}
+		return listaIdsProgramas;
+	}
 }

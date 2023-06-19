@@ -2,13 +2,9 @@ package br.com.live.controller;
 
 import java.util.List;
 
+import br.com.live.model.ProgramaConsulta;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.live.body.BodyPrograma;
 import br.com.live.entity.Programa;
@@ -53,5 +49,9 @@ public class ProgramaController {
 	public Programa findProgramaByDesc(@PathVariable("descricao") String descricao) {
 		return programaRepository.findProgramaByDescricao(descricao);
 	}
-	
+
+	@PostMapping("/programas-area-usuario")
+	public List<ProgramaConsulta> findProgramasByListaModulosAndUsuarios(@RequestBody BodyPrograma body) {
+		return programaService.findProgramasByListaModulosAndUsuarios(body.listaModulos, body.listaUsuarios);
+	}
 }
