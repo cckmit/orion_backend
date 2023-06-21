@@ -1,11 +1,14 @@
 package br.com.live.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.custom.PainelPlanejamentoCustom;
+import br.com.live.model.ConsultaPainelPlanejamento;
+import br.com.live.model.ConsultaPainelPlanejamentoListas;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -35,8 +38,12 @@ public class PainelPlanejamentoService {
     	return painelPlanejamentoCustom.findAllArtigo();
     }
     
-    public List<ConteudoChaveNumerica> findAllArtigoCotas(String artigoCotas){
-    	return painelPlanejamentoCustom.findAllArtigoCotas(artigoCotas);
+    public List<ConteudoChaveNumerica> findAllArtigoCotas(){
+    	return painelPlanejamentoCustom.findAllArtigoCotas();
+    }
+    
+    public List<ConteudoChaveNumerica> findAllOrdensProducao(int ordemProducao){
+    	return painelPlanejamentoCustom.findAllOrdensProducao(ordemProducao);
     }
     
     public List<ConteudoChaveNumerica> findAllContaEstoque(){
@@ -71,11 +78,62 @@ public class PainelPlanejamentoService {
     	return painelPlanejamentoCustom.findAllPeriodosProducao();
     }
     
+    public List<ConteudoChaveNumerica> findAllPeriodoAReceber(){
+    	return painelPlanejamentoCustom.findAllPeriodoAReceber();
+    }
+    
     public List<ConteudoChaveNumerica> findAllPeriodosCarteira(){
     	return painelPlanejamentoCustom.findAllPeriodosCarteira();
     }
     
     public List<ConteudoChaveNumerica> findAllNumInterno(){
     	return painelPlanejamentoCustom.findAllNumInterno();
+    }
+    
+    public List<ConteudoChaveNumerica> findAllEstagios(){
+    	return painelPlanejamentoCustom.findAllEstagios();
+    }
+    
+    public ConsultaPainelPlanejamentoListas findAcabados(List<ConteudoChaveNumerica> listColecao, List<ConteudoChaveNumerica> listSubColecao,
+            List<ConteudoChaveNumerica> listLinhaProduto, List<ConteudoChaveNumerica> listArtigo, List<ConteudoChaveNumerica> listArtigoCota, List<ConteudoChaveNumerica> listContaEstoq,
+            List<ConteudoChaveNumerica> listPublicoAlvo, List<ConteudoChaveNumerica> listSegmento, List<ConteudoChaveNumerica> listFaixaEtaria, List<ConteudoChaveAlfaNum> listComplemento,
+            List<ConteudoChaveNumerica> listDeposito, List<ConteudoChaveAlfaNum> listPerEmbarque, List<ConteudoChaveNumerica> listPerProducao, List<ConteudoChaveNumerica> listPerCarteira,
+            List<ConteudoChaveNumerica> listNumInterno, int bloqueado) {
+    	
+    	List<ConsultaPainelPlanejamento> listaPainelPlanejamento = painelPlanejamentoCustom.findAcabadosPlanejamento(ConteudoChaveNumerica.parseValueToString(listColecao), ConteudoChaveNumerica.parseValueToString(listSubColecao),
+        		ConteudoChaveNumerica.parseValueToString(listLinhaProduto), ConteudoChaveNumerica.parseValueToString(listArtigo), ConteudoChaveNumerica.parseValueToString(listArtigoCota),
+        		ConteudoChaveNumerica.parseValueToString(listContaEstoq), ConteudoChaveNumerica.parseValueToString(listPublicoAlvo), ConteudoChaveNumerica.parseValueToString(listSegmento),
+        		ConteudoChaveNumerica.parseValueToString(listFaixaEtaria), ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listDeposito),
+        		ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listPerProducao), ConteudoChaveNumerica.parseValueToString(listPerCarteira),
+        		ConteudoChaveNumerica.parseValueToString(listNumInterno), bloqueado);
+    	
+    	List<ConsultaPainelPlanejamento> listaPainelDetalharEstoque = null;
+    			//painelPlanejamentoCustom.findAcabadosDetalharEstoque(ConteudoChaveNumerica.parseValueToString(listColecao), ConteudoChaveNumerica.parseValueToString(listSubColecao),
+        		//ConteudoChaveNumerica.parseValueToString(listLinhaProduto), ConteudoChaveNumerica.parseValueToString(listArtigo), ConteudoChaveNumerica.parseValueToString(listArtigoCota),
+        		//ConteudoChaveNumerica.parseValueToString(listContaEstoq), ConteudoChaveNumerica.parseValueToString(listPublicoAlvo), ConteudoChaveNumerica.parseValueToString(listSegmento),
+        		//ConteudoChaveNumerica.parseValueToString(listFaixaEtaria), ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listDeposito),
+        		//ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listPerProducao), ConteudoChaveNumerica.parseValueToString(listPerCarteira),
+        		//ConteudoChaveNumerica.parseValueToString(listNumInterno), bloqueado);
+    	
+    	List<ConsultaPainelPlanejamento> listaPainelDetalharCarteira = null;
+    			//painelPlanejamentoCustom.findAcabadosDetalharCarteira(ConteudoChaveNumerica.parseValueToString(listColecao), ConteudoChaveNumerica.parseValueToString(listSubColecao),
+    	        //		ConteudoChaveNumerica.parseValueToString(listLinhaProduto), ConteudoChaveNumerica.parseValueToString(listArtigo), ConteudoChaveNumerica.parseValueToString(listArtigoCota),
+    	        //		ConteudoChaveNumerica.parseValueToString(listContaEstoq), ConteudoChaveNumerica.parseValueToString(listPublicoAlvo), ConteudoChaveNumerica.parseValueToString(listSegmento),
+    	        //		ConteudoChaveNumerica.parseValueToString(listFaixaEtaria), ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listDeposito),
+    	        //		ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listPerProducao), ConteudoChaveNumerica.parseValueToString(listPerCarteira),
+    	        // 		ConteudoChaveNumerica.parseValueToString(listNumInterno), bloqueado);
+    	
+    	List<ConsultaPainelPlanejamento> listaPainelDetalharOrdens = null;
+    			//painelPlanejamentoCustom.findAcabadosDetalharOrdens(ConteudoChaveNumerica.parseValueToString(listColecao), ConteudoChaveNumerica.parseValueToString(listSubColecao),
+        		//ConteudoChaveNumerica.parseValueToString(listLinhaProduto), ConteudoChaveNumerica.parseValueToString(listArtigo), ConteudoChaveNumerica.parseValueToString(listArtigoCota),
+        		//ConteudoChaveNumerica.parseValueToString(listContaEstoq), ConteudoChaveNumerica.parseValueToString(listPublicoAlvo), ConteudoChaveNumerica.parseValueToString(listSegmento),
+        		//ConteudoChaveNumerica.parseValueToString(listFaixaEtaria), ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listDeposito),
+        		//ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listPerProducao), ConteudoChaveNumerica.parseValueToString(listPerCarteira),
+        		//ConteudoChaveNumerica.parseValueToString(listNumInterno), bloqueado);
+    			
+    			
+    	ConsultaPainelPlanejamentoListas result = new ConsultaPainelPlanejamentoListas(listaPainelPlanejamento, listaPainelDetalharEstoque, listaPainelDetalharCarteira, listaPainelDetalharOrdens);
+
+        return result;
     }
 }
