@@ -5,10 +5,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.body.BodyEngenharia;
+import br.com.live.body.BodyPainelPlanejamento;
+import br.com.live.entity.OperacaoXMicromovimentos;
+import br.com.live.model.ConsultaPainelPlanejamento;
+import br.com.live.model.ConsultaPainelPlanejamentoListas;
 import br.com.live.service.PainelPlanejamentoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -90,14 +96,36 @@ public class PainelPlanejamentoController {
 		return painelPlanejamentoService.findAllPeriodosCarteira();
 	}
 	
+	@RequestMapping(value = "/find-all-periodo-a-receber-reserva", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllPeriodoAReceber() {
+		return painelPlanejamentoService.findAllPeriodoAReceber();
+	}
+	
 	@RequestMapping(value = "/find-all-numero-interno", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findAllNumInterno() {
 		return painelPlanejamentoService.findAllNumInterno();
 	}
 	
-	@RequestMapping(value = "/find-all-artigo-cotas/{artigoCotas}", method = RequestMethod.GET)
-    public List<ConteudoChaveNumerica> findAllArtigoCotas(@PathVariable("artigoCotas") String artigoCotas) {
-		return painelPlanejamentoService.findAllArtigoCotas(artigoCotas);
+	@RequestMapping(value = "/find-all-estagios", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllEstagios() {
+		return painelPlanejamentoService.findAllEstagios();
 	}
+	
+	@RequestMapping(value = "/find-all-artigo-cota", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllArtigoCotas() {
+		return painelPlanejamentoService.findAllArtigoCotas();
+	}
+	
+	@RequestMapping(value = "/find-all-ordem-producao/{ordemProducao}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllOrdensProducao(@PathVariable("ordemProducao") int ordemProducao) {
+		return painelPlanejamentoService.findAllOrdensProducao(ordemProducao);
+	}
+	
+	@RequestMapping(value = "/find-acabados", method = RequestMethod.POST)
+    public ConsultaPainelPlanejamentoListas findAcabadosPlanejamento(@RequestBody BodyPainelPlanejamento body) { 
+		return painelPlanejamentoService.findAcabados(body.listColecao, body.listSubColecao, body.listLinhaProduto, body.listArtigo, body.listArtigoCota, body.listContaEstoq,
+				body.listPublicoAlvo, body.listSegmento, body.listFaixaEtaria, body.listComplemento, body.listDeposito, body.listPerEmbarque, body.listPerProducao,
+				body.listPerCarteira, body.listNumInterno, body.bloqueado);
+    }	
 
 }

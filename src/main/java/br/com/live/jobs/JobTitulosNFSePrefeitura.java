@@ -1,12 +1,10 @@
 package br.com.live.jobs;
 
 import br.com.live.service.TituloPagamentoService;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableScheduling
 public class JobTitulosNFSePrefeitura {
 
     private final static int SEGUNDO = 1000;

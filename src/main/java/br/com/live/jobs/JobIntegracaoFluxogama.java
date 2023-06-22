@@ -4,14 +4,13 @@ import java.io.IOException;
 
 import br.com.live.entity.Parametros;
 import br.com.live.repository.ParametrosRepository;
-import org.springframework.scheduling.annotation.EnableScheduling;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import br.com.live.service.IntegracaoFluxogamaService;
 
 @Component
-@EnableScheduling
 public class JobIntegracaoFluxogama {
     private final static int SEGUNDO = 1000;
     private final static int MINUTO = SEGUNDO * 60;

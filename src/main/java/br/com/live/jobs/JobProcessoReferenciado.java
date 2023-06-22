@@ -1,12 +1,10 @@
 package br.com.live.jobs;
 
 import br.com.live.service.ProcessoReferenciadoService;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableScheduling
 public class JobProcessoReferenciado {
 
     private final static int HORA = 3600000;

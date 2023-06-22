@@ -27,20 +27,22 @@ public class ControleRelaxadeiraService {
     }
 
     public List<ConsultaControleRelaxadeira> consultaNaoSincronizados(int status) {
-        return controleRelaxadeiraCustom.consultaDadosGridRelaxade(status);
+        return controleRelaxadeiraCustom.consultaDadosGridRelaxadeira(status);
     }
 
     public List<ConsultaControleRelaxadeira> consultaRelatorioRelaxadeira(String dataInicio, String dataFim, int statusSinc) {
         return controleRelaxadeiraCustom.consultaRelatorioRegistrosSincronizados(dataInicio, dataFim, statusSinc);
     }
 
-    public void salvarRolosControleRelaxadeira(int status, int codRolo, List<ConteudoChaveNumerica> listMotivos, float quantidade, float perdaMetros, int codAnalista) {
+    public void salvarRolosControleRelaxadeira(int status, int codRolo, List<ConteudoChaveNumerica> listMotivos, float quantidade, float perdaMetros, int codAnalista,
+                                               float largura, float gramatura, float metragem) {
 
         LocalDateTime dataHoraLocal = LocalDateTime.now();
         java.sql.Timestamp dataHoraSql = java.sql.Timestamp.valueOf(dataHoraLocal);
 
         for (ConteudoChaveNumerica motivo : listMotivos) {
-            ControleRelaxadeira dadosControle = new ControleRelaxadeira(status, codRolo, codAnalista, motivo.value, quantidade, perdaMetros, 0, null, dataHoraSql);
+            ControleRelaxadeira dadosControle = new ControleRelaxadeira(status, codRolo, codAnalista, motivo.value, quantidade, perdaMetros, 0, null, dataHoraSql,
+                    largura, gramatura, metragem);
             controleRelaxadeiraRepository.save(dadosControle);
         }
     }
@@ -54,7 +56,7 @@ public class ControleRelaxadeiraService {
 
         for (ControleRelaxadeira dadosMotivo : listSincronizar) {
             // Atualiza pcpt_020
-            controleRelaxadeiraCustom.atualizaInformacoesRolo(dadosMotivo.codAnalista, dadosMotivo.dataHoraBipagem, dadosMotivo.codRolo);
+            controleRelaxadeiraCustom.atualizaInformacoesRolo(dadosMotivo.codAnalista, dadosMotivo.dataHoraBipagem, dadosMotivo.codRolo, dadosMotivo.largura, dadosMotivo.gramatura, dadosMotivo.metragem);
 
             if (dadosMotivo.codMotivo > 0) {
                 ObterInfoRolos dadosRolo = controleRelaxadeiraCustom.obterInfoRolos(dadosMotivo.codRolo);
@@ -87,5 +89,9 @@ public class ControleRelaxadeiraService {
 
     public void deleteLancamentoById(String id) {
         controleRelaxadeiraRepository.deleteById(id);
+    }
+    
+    public ConsultaControleRelaxadeira findInformacoesRolo(int codigoRolo) {
+    	return controleRelaxadeiraCustom.findInformacoesRolo(codigoRolo);
     }
 }

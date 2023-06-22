@@ -38,6 +38,10 @@ public class ControleRelaxadeira {
     @Column(name = "data_hora_bipagem")
     public Date dataHoraBipagem;
 
+    public float largura;
+    public float gramatura;
+    public float metragem;
+
     public String getId() {
         return id;
     }
@@ -118,11 +122,36 @@ public class ControleRelaxadeira {
         this.dataHoraBipagem = dataHoraBipagem;
     }
 
+    public float getLargura() {
+        return largura;
+    }
+
+    public void setLargura(float largura) {
+        this.largura = largura;
+    }
+
+    public float getGramatura() {
+        return gramatura;
+    }
+
+    public void setGramatura(float gramatura) {
+        this.gramatura = gramatura;
+    }
+
+    public float getMetragem() {
+        return metragem;
+    }
+
+    public void setMetragem(float metragem) {
+        this.metragem = metragem;
+    }
+
     public ControleRelaxadeira() {
 
     }
 
-    public ControleRelaxadeira(int status, int codRolo, int codAnalista, int codMotivo, float quantidade, float perdaMetros, int sitSincronizacao, Date dataSincronizacao, Date dataHoraBipagem) {
+    public ControleRelaxadeira(int status, int codRolo, int codAnalista, int codMotivo, float quantidade, float perdaMetros, int sitSincronizacao, Date dataSincronizacao, Date dataHoraBipagem,
+                               float largura, float gramatura, float metragem) {
         this.id = status + "-" + codRolo + "-" + codMotivo;
         this.status = status;
         this.codRolo = codRolo;
@@ -133,5 +162,8 @@ public class ControleRelaxadeira {
         this.sitSincronizacao = sitSincronizacao;
         this.dataSincronizacao = dataSincronizacao;
         this.dataHoraBipagem = dataHoraBipagem;
+        this.largura = largura;
+        this.gramatura = gramatura;
+        this.metragem = metragem;
     }
 }
