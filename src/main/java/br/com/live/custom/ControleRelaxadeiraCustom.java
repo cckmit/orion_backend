@@ -1,6 +1,5 @@
 package br.com.live.custom;
 
-import br.com.live.entity.InspecaoQualidadeLanctoMedida;
 import br.com.live.model.ConsultaControleRelaxadeira;
 import br.com.live.model.ObterInfoRolos;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -19,15 +18,16 @@ public class ControleRelaxadeiraCustom {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<ConsultaControleRelaxadeira> consultaDadosGridRelaxade(int status) {
+    public List<ConsultaControleRelaxadeira> consultaDadosGridRelaxadeira(int status) {
         String query = " select a.id, a.status, a.cod_rolo codRolo, a.cod_motivo || ' - ' || nvl((select max(e.DESCRICAO) from EFIC_040 e " +
                 "                                                                                   where e.codigo_motivo (+) = a.cod_motivo " +
                 "                                                                                       and e.area_producao in (2,4)), 'SEM DEFEITO') motivoRejeicao, " +
                 " a.quantidade, a.perda_metros perdaMetros, " +
-                " a.sit_sincronizacao sitSincronizacao, a.data_sincronizacao dataSincronizacao, a.cod_analista || ' - ' || nvl(max(c.nome), 'ANALISTA GENÉRICO') codAnalista from orion_cfc_310 a, efic_040 b, efic_050 c " +
+                " a.sit_sincronizacao sitSincronizacao, a.data_sincronizacao dataSincronizacao, a.cod_analista || ' - ' || nvl(max(c.nome), 'ANALISTA GENÉRICO') codAnalista," +
+                " a.largura, a.gramatura, a.metragem from orion_cfc_310 a, efic_040 b, efic_050 c " +
                 " where a.sit_sincronizacao <> " + status +
                 " and c.cod_funcionario (+) = a.cod_analista " +
-                " group by a.id, a.status, a.cod_rolo, a.quantidade, a.perda_metros, a.sit_sincronizacao, a.data_sincronizacao, a.cod_motivo, a.cod_analista ";
+                " group by a.id, a.status, a.cod_rolo, a.quantidade, a.perda_metros, a.sit_sincronizacao, a.data_sincronizacao, a.cod_motivo, a.cod_analista, a.largura, a.gramatura, a.metragem ";
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaControleRelaxadeira.class));
     }
 
@@ -40,7 +40,8 @@ public class ControleRelaxadeiraCustom {
                 " a.sit_sincronizacao sitSincronizacao, a.data_sincronizacao dataSincronizacao, " +
                 " a.cod_analista || ' - ' || nvl(max(c.nome), 'ANALISTA GENERICO') codAnalista, " +
                 " d.PANOACAB_NIVEL99 || '.' || d.PANOACAB_GRUPO || '.' || d.PANOACAB_SUBGRUPO || '.' || " +
-                " d.PANOACAB_ITEM tecido, f.NARRATIVA descTecido, d.PESO_BRUTO pesoRolo " +
+                " d.PANOACAB_ITEM tecido, f.NARRATIVA descTecido, d.PESO_BRUTO pesoRolo," +
+                " a.largura, a.gramatura, a.metragem " +
                 " from orion_cfc_310 a, efic_040 b, efic_050 c, pcpt_020 d, basi_010 f " +
                 " where a.SIT_SINCRONIZACAO = 1 " +
                 " and c.cod_funcionario (+) = a.cod_analista " +
@@ -59,7 +60,7 @@ public class ControleRelaxadeiraCustom {
 
                 query += " group by a.id, a.status, a.cod_rolo, a.quantidade, a.perda_metros, " +
                 " a.sit_sincronizacao, a.data_sincronizacao, a.cod_motivo, a.cod_analista, " +
-                " d.PANOACAB_NIVEL99, d.PANOACAB_GRUPO, d.PANOACAB_SUBGRUPO, d.PANOACAB_ITEM, f.NARRATIVA, d.PESO_BRUTO ";
+                " d.PANOACAB_NIVEL99, d.PANOACAB_GRUPO, d.PANOACAB_SUBGRUPO, d.PANOACAB_ITEM, f.NARRATIVA, d.PESO_BRUTO, a.largura, a.gramatura, a.metragem ";
 
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaControleRelaxadeira.class));
     }
@@ -71,12 +72,15 @@ public class ControleRelaxadeiraCustom {
         return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ObterInfoRolos.class));
     }
 
-    public void atualizaInformacoesRolo(int codAnalista, Date dataHoraBipagem, int codRolo) {
+    public void atualizaInformacoesRolo(int codAnalista, Date dataHoraBipagem, int codRolo, float largura, float gramatura, float metragem) {
         String query = " UPDATE pcpt_020 A " +
                 " SET a.CODIGO_ANALISTA_QUALIDADE = ?, " +
-                " a.DATA_INSPECAO_QUALIDADE = ? " +
+                " a.DATA_INSPECAO_QUALIDADE = ?, " +
+                " a.LARGURA = ?, " +
+                " a.GRAMATURA = ?, " + 
+                " a.MT_LINEARES = ? " +
                 " WHERE a.CODIGO_ROLO = ? ";
-        jdbcTemplate.update(query, codAnalista, dataHoraBipagem, codRolo);
+        jdbcTemplate.update(query, codAnalista, dataHoraBipagem, largura, gramatura, metragem, codRolo);
     }
 
     public void inserirInformacaoRejeicao(int codRolo, int codAnalista, Date dataHoraBipagem, String observacao) {
@@ -123,5 +127,18 @@ public class ControleRelaxadeiraCustom {
                 " where a.cod_rolo = " + codRolo +
                 " and a.cod_motivo > 0 ";
         return jdbcTemplate.queryForObject(query, Date.class);
+    }
+    
+    public ConsultaControleRelaxadeira findInformacoesRolo(int codigoRolo) {
+    	ConsultaControleRelaxadeira dadosControle = null;
+    	
+    	try {
+    		String query = " select a.largura, a.gramatura, a.mt_lineares metragem from pcpt_020 a "
+        			+ " where a.codigo_rolo = " + codigoRolo;
+    		dadosControle = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaControleRelaxadeira.class));
+    	} catch (Exception e) {
+			
+		}
+    	return dadosControle;
     }
 }
