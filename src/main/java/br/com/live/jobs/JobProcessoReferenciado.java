@@ -1,8 +1,9 @@
 package br.com.live.jobs;
 
-import br.com.live.service.ProcessoReferenciadoService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import br.com.live.administrativo.service.ProcessoReferenciadoService;
 
 @Component
 public class JobProcessoReferenciado {

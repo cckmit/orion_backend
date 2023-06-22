@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.com.live.entity.ProdutoPlanoMestre;
-import br.com.live.model.ConsultaPrevisaoVendasItemTam;
-import br.com.live.model.MarcacaoRisco;
+import br.com.live.comercial.model.ConsultaPrevisaoVendasItemTam;
+import br.com.live.producao.entity.ProdutoPlanoMestre;
+import br.com.live.produto.model.MarcacaoRisco;
 
 public class CalculoDistribuicaoPecas {
 

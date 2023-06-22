@@ -1,14 +1,13 @@
 package br.com.live.bo;
 
-import br.com.live.entity.ProdutoPlanoMestre;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.com.live.entity.ProdutoPlanoMestrePorCor;
+import br.com.live.producao.entity.ProdutoPlanoMestre;
+import br.com.live.producao.entity.ProdutoPlanoMestrePorCor;
 
 public class AgrupadorReferCorPlanoMestre {
 

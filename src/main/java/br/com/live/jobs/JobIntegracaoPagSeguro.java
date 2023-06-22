@@ -1,7 +1,8 @@
 package br.com.live.jobs;
 
-import br.com.live.repository.ParametrosRepository;
-import br.com.live.service.MovimentoPagSeguroService;
+import br.com.live.administrativo.service.MovimentoPagSeguroService;
+import br.com.live.util.repository.ParametrosRepository;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

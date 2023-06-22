@@ -2,13 +2,12 @@ package br.com.live.jobs;
 
 import java.io.IOException;
 
-import br.com.live.entity.Parametros;
-import br.com.live.repository.ParametrosRepository;
-
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import br.com.live.service.IntegracaoFluxogamaService;
+import br.com.live.produto.service.IntegracaoFluxogamaService;
+import br.com.live.util.entity.Parametros;
+import br.com.live.util.repository.ParametrosRepository;
 
 @Component
 public class JobIntegracaoFluxogama {

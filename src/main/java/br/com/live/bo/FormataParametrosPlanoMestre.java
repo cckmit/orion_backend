@@ -3,7 +3,7 @@ package br.com.live.bo;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.live.body.BodyParametrosPlanoMestre;
+import br.com.live.producao.body.BodyParametrosPlanoMestre;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 

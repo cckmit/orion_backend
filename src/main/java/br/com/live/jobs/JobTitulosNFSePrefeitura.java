@@ -1,8 +1,9 @@
 package br.com.live.jobs;
 
-import br.com.live.service.TituloPagamentoService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import br.com.live.administrativo.service.TituloPagamentoService;
 
 @Component
 public class JobTitulosNFSePrefeitura {

@@ -6,17 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import br.com.live.body.BodyParametrosPlanoMestre;
-import br.com.live.entity.DemandaProdutoPlano;
-import br.com.live.entity.EstoqueProduto;
-import br.com.live.entity.PlanoMestre;
-import br.com.live.entity.PlanoMestreParamProgItem;
-import br.com.live.entity.PlanoMestreParametros;
-import br.com.live.entity.ProcessoProdutoPlano;
-import br.com.live.entity.ProdutoPlanoMestre;
-import br.com.live.entity.ProdutoPlanoMestrePorCor;
-import br.com.live.model.AlternativaRoteiroPadrao;
-import br.com.live.model.Produto;
+import br.com.live.producao.body.BodyParametrosPlanoMestre;
+import br.com.live.producao.entity.DemandaProdutoPlano;
+import br.com.live.producao.entity.PlanoMestre;
+import br.com.live.producao.entity.PlanoMestreParamProgItem;
+import br.com.live.producao.entity.PlanoMestreParametros;
+import br.com.live.producao.entity.ProcessoProdutoPlano;
+import br.com.live.producao.entity.ProdutoPlanoMestre;
+import br.com.live.producao.entity.ProdutoPlanoMestrePorCor;
+import br.com.live.produto.entity.EstoqueProduto;
+import br.com.live.produto.model.AlternativaRoteiroPadrao;
+import br.com.live.produto.model.Produto;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 

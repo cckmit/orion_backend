@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import br.com.live.entity.PlanoMestrePreOrdem;
-import br.com.live.entity.PlanoMestrePreOrdemItem;
-import br.com.live.model.PreOrdemProducao;
-import br.com.live.model.PreOrdemProducaoItem;
-import br.com.live.model.ProgramacaoPlanoMestre;
+import br.com.live.producao.entity.PlanoMestrePreOrdem;
+import br.com.live.producao.entity.PlanoMestrePreOrdemItem;
+import br.com.live.producao.model.PreOrdemProducao;
+import br.com.live.producao.model.PreOrdemProducaoItem;
+import br.com.live.producao.model.ProgramacaoPlanoMestre;
 
 public class GeracaoPreOrdens {
 

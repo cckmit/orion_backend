@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.com.live.entity.ParametrosCalendario;
-import br.com.live.model.EstagiosConfigCalend;
-import br.com.live.model.PeriodoProducaoArea;
+import br.com.live.producao.entity.ParametrosCalendario;
+import br.com.live.producao.model.CalendarioEstagiosProducao;
+import br.com.live.producao.model.CalendarioPeriodoProducao;
+import br.com.live.producao.model.EstagiosConfigCalend;
+import br.com.live.producao.model.PeriodoProducaoArea;
 import br.com.live.util.ConvertePeriodo;
 import br.com.live.util.FormataData;
-import br.com.live.model.CalendarioEstagiosProducao;
-import br.com.live.model.CalendarioPeriodoProducao;
 
 public class CalculoCalendarioProducao {
 	

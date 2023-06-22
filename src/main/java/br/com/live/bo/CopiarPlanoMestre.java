@@ -2,11 +2,11 @@ package br.com.live.bo;
 
 import org.springframework.beans.BeanUtils;
 
-import br.com.live.entity.PlanoMestre;
-import br.com.live.entity.PlanoMestreParamProgItem;
-import br.com.live.entity.PlanoMestreParametros;
-import br.com.live.entity.ProdutoPlanoMestre;
-import br.com.live.entity.ProdutoPlanoMestrePorCor;
+import br.com.live.producao.entity.PlanoMestre;
+import br.com.live.producao.entity.PlanoMestreParamProgItem;
+import br.com.live.producao.entity.PlanoMestreParametros;
+import br.com.live.producao.entity.ProdutoPlanoMestre;
+import br.com.live.producao.entity.ProdutoPlanoMestrePorCor;
 
 public class CopiarPlanoMestre {
 
