@@ -317,15 +317,77 @@ public class PainelPlanejamentoCustom {
 				+ "		b.narrativa descricao, "
 				+ "		SUM(a.qtde_estoque_atu) estoque, "
 				+ "		a.deposito deposito "
-				+ "	FROM estq_040 a, basi_010 b "
+				+ "	FROM estq_040 a, basi_010 b, basi_030 c "
 				+ "	WHERE b.nivel_estrutura = a.cditem_nivel99 "
 				+ "	AND b.grupo_estrutura = a.cditem_grupo "
 				+ "	AND b.subgru_estrutura = a.cditem_subgrupo "
 				+ "	AND b.item_estrutura = a.cditem_item "
+				+ " AND c.nivel_estrutura = a.cditem_nivel99 "
+				+ " AND c.referencia = a.cditem_grupo "
 				+ "	AND a.qtde_estoque_atu <> 0  "
-				+ " AND a.cditem_nivel99 = '1' "
-				+ " AND a.deposito IN (" + listDeposito + ") "				
-				+ "	GROUP BY a.cditem_nivel99, a.cditem_grupo, a.cditem_subgrupo, a.cditem_item, b.narrativa, a.deposito, a.qtde_estoque_atu "
+				+ " AND a.cditem_nivel99 = '1' ";
+		
+		if (!listColecao.equals("")) {
+			query += " AND c.colecao IN (" + listColecao + ")";
+		}
+		
+		if (!listSubColecao.equals("")) {
+			query += " AND EXISTS (SELECT 1 from basi_632 z "
+					+ "   WHERE z.grupo_ref = a.cditem_grupo "
+					+ "   AND z.subgrupo_ref = a.cditem_subgrupo "
+					+ "   AND z.item_ref = a.cditem_item "
+					+ "   AND z.cd_agrupador IN (" + listSubColecao + "))";
+		}
+		
+		if (!listLinhaProduto.equals("")) {
+			query += " AND c.linha_produto IN (" + listLinhaProduto + ")";
+		}
+		
+		if (!listArtigo.equals("")) {
+			query += " AND c.artigo IN (" + listArtigo + ")";
+		}
+		
+		if (!listArtigoCota.equals("")) {
+			query += " AND c.artigo_cotas IN (" + listArtigoCota + ")";
+		}
+		
+		if (!listContaEstoq.equals("")) {
+			query += " AND c.conta_estoque IN (" + listContaEstoq + ")";
+		}
+		
+		if (!listPublicoAlvo.equals("")) {
+			query += " AND c.publico_alvo IN (" + listPublicoAlvo + ")";
+		}
+		
+		if (!listSegmento.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 j "
+					+ "					WHERE j.tipo_informacao = 10 "
+				    + "                 AND j.nivel = b.nivel_estrutura "
+				    + "                 AND j.grupo = b.grupo_estrutura "
+				    + "                 AND j.subgrupo = b.subgru_estrutura "
+				    + "                 AND j.item = b.item_estrutura "
+				    + "                 AND j.codigo_informacao IN (" + listSegmento + ")";
+		}
+		
+		if (!listFaixaEtaria.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 k "
+					+ "					WHERE k.tipo_informacao = 805 "
+				    + "                 AND k.nivel = b.nivel_estrutura "
+				    + "                 AND k.grupo = b.grupo_estrutura "
+				    + "                 AND k.subgrupo = b.subgru_estrutura "
+				    + "                 AND k.item = b.item_estrutura "
+				    + "                 AND k.codigo_informacao IN (" + listFaixaEtaria + ")";
+		}
+				
+		if (!listComplemento.equals("")) {
+			query += " AND c.complemento IN (" + listComplemento + ")";
+		}		
+		
+		if (!listDeposito.equals("")) {
+			query += " AND a.deposito IN (" + listDeposito + ")";
+		}
+				
+		query +=  "	GROUP BY a.cditem_nivel99, a.cditem_grupo, a.cditem_subgrupo, a.cditem_item, b.narrativa, a.deposito, a.qtde_estoque_atu "
 				+ "	ORDER BY a.qtde_estoque_atu DESC ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
