@@ -1,5 +1,6 @@
 package br.com.live.custom;
 
+import br.com.live.model.AtributoRemessaPortadorEmpresa;
 import br.com.live.model.TituloPagamentoIntegrado;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -500,6 +501,100 @@ public class TituloPagamentoCustom {
             existUsuarioConfigurado = false;
         }
         return existUsuarioConfigurado;
+    }
 
+    public AtributoRemessaPortadorEmpresa obterAtributoRemessaPortadorEmpresa(int codEmpresa, int codPortador, int nrIdentificacao){
+
+        String query = "select pedi_051.cal_nr_tit_banco calcNrTituloBanco, pedi_051.numero_contrato numeroContrato, pedi_051.codigo_agencia codAgencia, pedi_051.conta_corrente contaCorrente, pedi_051.codigo_carteira codCarteira" +
+                " from pedi_051" +
+                " where pedi_051.codigo_empresa = " + codEmpresa +
+                " and pedi_051.codigo_banco = " + codPortador +
+                " and pedi_051.considera_cobran = 'S' " +
+                " and pedi_051.nr_identificacao = " + nrIdentificacao;
+
+        return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(AtributoRemessaPortadorEmpresa.class));
+    }
+
+    public String verificaPortadorConsideraCobranca(int codPortador){
+
+        String consideraCobraca = "";
+
+        String query = "select pedi_050.considera_cobran from pedi_050 " +
+                "where pedi_050.cod_portador = " + codPortador;
+
+        try {
+            consideraCobraca = jdbcTemplate.queryForObject(query, String.class);
+        } catch (Exception e) {
+            consideraCobraca = "";
+        }
+        return consideraCobraca;
+    }
+
+    public int obterProxSeqNrTituloBanco(int codEmpresa, int codPortador, int nrIdentificacao){
+
+        int nrTituloBanco;
+
+        String query = "SELECT pedi_051.seq_nr_tit_banco" +
+                        " FROM pedi_051 " +
+                        " WHERE pedi_051.codigo_empresa = " + codEmpresa +
+                        " AND pedi_051.codigo_banco = " + codPortador +
+                        " AND pedi_051.cart_cond_pgto_cobr = 0" +
+                        " AND pedi_051.considera_cobran = 'S' " +
+                        " AND pedi_051.nr_identificacao = " + nrIdentificacao;
+
+        try {
+            nrTituloBanco = jdbcTemplate.queryForObject(query, Integer.class);
+
+            boolean existFatu70 = false;
+
+            do {
+                nrTituloBanco ++;
+
+                String nrTituloBancoStr = String.format("%08d", nrTituloBanco);
+
+                String query2 = "SELECT 1 FROM fatu_070 " +
+                        " WHERE fatu_070.nr_titulo_banco = '"  + nrTituloBancoStr + "'" +
+                        "  AND fatu_070.portador_duplic = "  + codPortador;
+                try{
+                    existFatu70 = jdbcTemplate.queryForObject(query2, boolean.class);
+                } catch (Exception e){
+                    existFatu70 = false;
+                }
+            } while (existFatu70);
+
+        } catch (Exception e) {
+            nrTituloBanco = 0;
+        }
+
+        return nrTituloBanco;
+    }
+
+    public void atualizaSeqNrTituloBancoEmpresa(int codEmpresa, int codPortador, int seqNrTituloBanco, int numeroContrato, int codAgencia){
+
+        String sql = "UPDATE pedi_051 "
+                + " SET seq_nr_tit_banco = " + seqNrTituloBanco
+                + " WHERE codigo_banco = " + codPortador
+                + " AND codigo_empresa = " + codEmpresa
+                + " AND codigo_agencia = " + codAgencia
+                + " AND numero_contrato = " + numeroContrato
+                + " AND cart_cond_pgto_cobr = 0";
+
+        //jdbcTemplate.update(sql);
+    }
+
+    public void atualizaContaCorrenteTituloSystextil(int codEmpresa, int contaCorrente, int codCarteira, int tipoTitulo, int nrNota, int nrParcela, int cgc9Tomador, int cgc4Tomador, int cgc2Tomador){
+
+        String sql = "update fatu_070 " +
+                " set conta_corrente = " + contaCorrente +
+                " ,cod_carteira = " + codCarteira +
+                " where codigo_empresa = " + codEmpresa +
+                " and tipo_titulo = " + tipoTitulo +
+                " and num_duplicata = " + nrNota +
+                " and seq_duplicatas = " + nrParcela +
+                " and cli_dup_cgc_cli9 = " + cgc9Tomador +
+                " and cli_dup_cgc_cli4 = " + cgc4Tomador +
+                " and cli_dup_cgc_cli2 = " + cgc2Tomador;
+
+        //jdbcTemplate.update(sql);
     }
 }

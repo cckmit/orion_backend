@@ -3,6 +3,7 @@ package br.com.live.service;
 import br.com.live.custom.ContabilidadeCustom;
 import br.com.live.custom.TituloPagamentoCustom;
 import br.com.live.entity.Notificacao;
+import br.com.live.model.AtributoRemessaPortadorEmpresa;
 import br.com.live.model.ParcelaTituloPagamento;
 import br.com.live.model.TituloPagamento;
 import br.com.live.util.FormataCNPJ;
@@ -52,6 +53,11 @@ public class TituloPagamentoService {
         String dataInicial = dataAtual.minusDays(1).toString();
         String dataFinal = dataAtual.toString();
         String cnpj = "20026913000194";
+
+        // TODO: REMOVER, APENAS PARA TESTES
+        //dataInicial = "2023-06-16";
+        //dataFinal = "2023-06-16";
+
 
         String body = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:e=\"http://www.betha.com.br/e-nota-contribuinte-ws\">\n"
                 + "   <soapenv:Header/>\n"
@@ -207,7 +213,7 @@ public class TituloPagamentoService {
 
     public void gravarTitulosNFSe(List<TituloPagamento> complNfseList) throws Exception {
 
-        for (TituloPagamento dadosTituloPagamento : complNfseList){
+        for (TituloPagamento dadosTituloPagamento : complNfseList) {
 
             List<ParcelaTituloPagamento> parcelaTituloPagamentoList = dadosTituloPagamento.getParcelasTitulo();
 
@@ -251,13 +257,18 @@ public class TituloPagamentoService {
                 String nomeCliente = tituloPagamentoCustom.obterNomeCliente(cnpjTomador);
                 String complemento = String.format("%06d", nrNota) + "/" + String.format("%02d", nrParcela) + " - " + nomeCliente;
 
-                String msgErro = validaGravacaoTituloSystextil(codEmpresa, tipoTitulo, nrNota, cnpjTomador, nrParcela, valorParcela, dataEmissaoFormat, dataVencimentoFormat, respReceb, codEnderessoCobranca, codRepresentante, codPortador, codTransacao, contaContabilRdz, contaContabilClienteRdz, codHistorico, codExercicio, codPeriodo, cnpjLive, notaCancelada, complemento);
+                String msgErroGravacaoTitulo = validaGravacaoTituloSystextil(codEmpresa, tipoTitulo, nrNota, cnpjTomador, nrParcela, valorParcela, dataEmissaoFormat, dataVencimentoFormat, respReceb, codEnderessoCobranca, codRepresentante, codPortador, codTransacao, contaContabilRdz, contaContabilClienteRdz, codHistorico, codExercicio, codPeriodo, cnpjLive, notaCancelada, complemento);
 
-                if (msgErro.equals("")) {
+                if (msgErroGravacaoTitulo.equals("")) {
                     gravarTituloSystextil(codEmpresa, tipoTitulo, origem, programa, usuario, dataAtual, nrNota, discriminacao, cnpjTomador, nrParcela, valorParcela, dataEmissao,
                             dataEmissaoFormat, dataVencimentoFormat, codLocal, respReceb, codEnderessoCobranca, codMoeda, codRepresentante, codPortador, nrIdentificacao, codTransacao,
                             contaContabilRdz, contaContabilClienteRdz, contaContabil, contaContabilCliente, codHistorico, codExercicio, codPeriodo, complemento);
 
+                    //String msgErroEnvioCobrancaTitulo = validaEnvioCobrancaTituloSystextil(nrNota, nrParcela, codEmpresa, nrIdentificacao, cnpjTomador, codPortador, notaCancelada);
+
+                    //if (msgErroEnvioCobrancaTitulo.equals("")) {
+                    //    gravarEnvioCobrancaTituloSystextil(codEmpresa, codPortador, nrIdentificacao, cnpjTomador, tipoTitulo, nrNota, nrParcela);
+                    //}
                 }
             }
         }
@@ -324,6 +335,38 @@ public class TituloPagamentoService {
         return "";
     }
 
+    public String validaEnvioCobrancaTituloSystextil(int nrNota, int nrParcela, int codEmpresa, int nrIdentificacao, String cnpjTomador, int codPortador, boolean notaCancelada){
+
+        String msgErro = "Não foi possível enviar para a cobrança a nota: " + nrNota + " / Série: " + nrParcela + " / Cliente: " + cnpjTomador + ". ";
+
+        if (notaCancelada){
+            msgErro = "Situação da NF está cancelada no portal da prefeitura!";
+            return msgErro;
+        }
+
+        if (!tituloPagamentoCustom.verificaPortadorConsideraCobranca(codPortador).equals("S")){
+            msgErro = "Portador " + codPortador + " não está cadastrado para cobrança escritural!";
+            return msgErro;
+        }
+
+        AtributoRemessaPortadorEmpresa atributoRemessaPortadorEmpresa = null;
+        atributoRemessaPortadorEmpresa = tituloPagamentoCustom.obterAtributoRemessaPortadorEmpresa(codEmpresa, codPortador, nrIdentificacao);
+
+        if (atributoRemessaPortadorEmpresa == null) {
+            msgErro = "Portador " + codPortador + " não possui atributo de remessa cadastrado na empresa " + codEmpresa + ", ou não possui agência que considera cobrança!";
+            return msgErro;
+        }
+
+        int calcNrTituloBanco = atributoRemessaPortadorEmpresa.getCalcNrTituloBanco();
+
+        if (calcNrTituloBanco == 0){
+            msgErro = "Identificação do portador não está configurado para calcular a sequência do Título!";
+            return msgErro;
+        }
+
+        return "";
+    }
+
     @Transactional
     public void gravarTituloSystextil(int codEmpresa, int tipoTitulo, int origem, String programa, String usuario, Date dataAtual, int nrNota, String discriminacao, String cnpjTomador,
                                       int nrParcela, double valorParcela, String dataEmissao, String dataEmissaoFormat, String dataVencimentoFormat, int codLocal, int respReceb,
@@ -366,7 +409,26 @@ public class TituloPagamentoService {
         tituloPagamentoCustom.inserirLogTituloIntegracao(codEmpresa, cnpjTomador, nrNota, FormataData.parseStringToDate(dataEmissaoFormat), "Sucesso", "", complemento, nrParcela, FormataData.parseStringToDate(dataVencimentoFormat), valorParcela);
 
         // enviarEmailNotaIntegrada("Sucesso", nrNota, nrParcela, cnpjTomador, nomeCliente, "");
+    }
 
+    @Transactional
+    public void gravarEnvioCobrancaTituloSystextil(int codEmpresa, int codPortador, int nrIdentificacao, String cnpjTomador, int tipoTitulo, int nrNota, int nrParcela) throws Exception {
+
+        int cgc9Tomador = Integer.parseInt(cnpjTomador.substring(0, 8));
+        int cgc4Tomador = Integer.parseInt(cnpjTomador.substring(8, 12));
+        int cgc2Tomador = Integer.parseInt(cnpjTomador.substring(12));
+
+        AtributoRemessaPortadorEmpresa atributoRemessaPortadorEmpresa = tituloPagamentoCustom.obterAtributoRemessaPortadorEmpresa(codEmpresa, codPortador, nrIdentificacao);
+        int numeroContrato = atributoRemessaPortadorEmpresa.getNumeroContrato();
+        int codAgencia = atributoRemessaPortadorEmpresa.getCodAgencia();
+        int contaCorrente = atributoRemessaPortadorEmpresa.getContaCorrente();
+        int codCarteira = atributoRemessaPortadorEmpresa.getCodCarteira();
+        int seqNrTituloBanco = tituloPagamentoCustom.obterProxSeqNrTituloBanco(codEmpresa, codPortador, nrIdentificacao);
+
+        System.out.println("GRAVAR ENVIO COBRANCA TITULO SYSTÊXTIL: codEmpresa: " + codEmpresa + " / codPortador: " + codPortador + " / seqNrTituloBanco: " + seqNrTituloBanco + " / numeroContrato: " + numeroContrato + " / codAgencia: " + codAgencia);
+
+        tituloPagamentoCustom.atualizaSeqNrTituloBancoEmpresa(codEmpresa, codPortador, seqNrTituloBanco, numeroContrato, codAgencia);
+        tituloPagamentoCustom.atualizaContaCorrenteTituloSystextil(codEmpresa, contaCorrente, codCarteira, tipoTitulo, nrNota, nrParcela, cgc9Tomador, cgc4Tomador, cgc2Tomador);
     }
 
     public String validarCamposIntegracao(int nrNota, String cnpjTomador, int nrParcela, double valorParcela, String dataEmissao, String dataVencimento, int respReceb,
