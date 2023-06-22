@@ -22,10 +22,16 @@ public class ControleRelaxadeiraController {
     public List<ConsultaControleRelaxadeira> findLancamentoMedidasByIdInspecao(@PathVariable("status") int status) {
         return controleRelaxadeiraService.consultaNaoSincronizados(status);
     }
+    
+    @RequestMapping(value = "/find-informacoes-rolo/{codigoRolo}", method = RequestMethod.GET)
+    public ConsultaControleRelaxadeira findInformacoesRolo(@PathVariable("codigoRolo") int codigoRolo) {
+        return controleRelaxadeiraService.findInformacoesRolo(codigoRolo);
+    }
 
     @RequestMapping(value = "/incluir-rolos", method = RequestMethod.POST)
     public List<ConsultaControleRelaxadeira> incluirRolosControleRelaxe(@RequestBody BodyControleRelaxadeira body) {
-        controleRelaxadeiraService.salvarRolosControleRelaxadeira(body.status ? 1 : 2, body.codRolo, body.motivosSelect, body.quantidade, body.perdaMetros, body.codAnalista);
+        controleRelaxadeiraService.salvarRolosControleRelaxadeira(body.status ? 1 : 2, body.codRolo, body.motivosSelect, body.quantidade, body.perdaMetros, body.codAnalista,
+                body.largura, body.gramatura, body.metragem);
         return controleRelaxadeiraService.consultaNaoSincronizados(1);
     }
 

@@ -14,6 +14,9 @@ public class BodyControleRelaxadeira {
     public String dataInicio;
     public String dataFim;
     public int statusSinc;
+    public float largura;
+    public float gramatura;
+    public float metragem;
 }
 
 
