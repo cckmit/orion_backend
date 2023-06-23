@@ -216,7 +216,7 @@ public class PainelPlanejamentoCustom {
 		query +=  "   ) carteira, "
 				+ "		NVL(SUM(a.qtde_reservada), 0) reservas, "
 				+ "		NVL(SUM(a.qtde_areceber), 0) receber "
-				+ "	  FROM tmrp_041 a, basi_010 b, basi_030 e, estq_040 f "
+				+ "	  FROM tmrp_041 a, basi_010 b, basi_030 e, estq_040 f, basi_205 g "
 				+ "	  WHERE b.nivel_estrutura = a.nivel_estrutura "
 				+ "   AND b.grupo_estrutura = a.grupo_estrutura "
 				+ "   AND b.subgru_estrutura = a.subgru_estrutura "
@@ -227,8 +227,10 @@ public class PainelPlanejamentoCustom {
 				+ "	  AND f.cditem_grupo = a.grupo_estrutura "
 				+ "   AND f.cditem_subgrupo = a.subgru_estrutura "
 				+ "   AND f.cditem_item = a.item_estrutura "
+				+ "   AND g.codigo_deposito = f.deposito "
 				+ "   AND a.periodo_producao <> 0  "
-				+ "   AND a.nivel_estrutura = '1' ";
+				+ "   AND a.nivel_estrutura = '1' "
+				+ "   AND g.descricao NOT LIKE '%(IN)%' ";
 		
 		if (!listColecao.equals("")) {
 			query += " AND e.colecao IN (" + listColecao + ")";
@@ -259,7 +261,11 @@ public class PainelPlanejamentoCustom {
 		}
 		
 		if (!listPublicoAlvo.equals("")) {
-			query += " AND e.publico_alvo IN (" + listPublicoAlvo + ")";
+			query += " AND EXISTS (SELECT 1 FROM basi_400 w "
+					+ "   WHERE w.nivel = a.nivel_estrutura "
+					+ "   AND w.grupo = a.grupo_estrutura "
+					+ "   AND w.tipo_informacao = 9 "
+					+ "   AND w.codigo_informacao IN (" + listPublicoAlvo + ")) ";
 		}
 		
 		if (!listSegmento.equals("")) {
@@ -267,9 +273,7 @@ public class PainelPlanejamentoCustom {
 					+ "					WHERE j.tipo_informacao = 10 "
 				    + "                 AND j.nivel = a.nivel_estrutura "
 				    + "                 AND j.grupo = a.grupo_estrutura "
-				    + "                 AND j.subgrupo = a.subgru_estrutura "
-				    + "                 AND j.item = a.item_estrutura "
-				    + "                 AND j.codigo_informacao IN (" + listSegmento + ")";
+				    + "                 AND j.codigo_informacao IN (" + listSegmento + "))";
 		}
 		
 		if (!listFaixaEtaria.equals("")) {
@@ -277,13 +281,11 @@ public class PainelPlanejamentoCustom {
 					+ "					WHERE k.tipo_informacao = 805 "
 				    + "                 AND k.nivel = a.nivel_estrutura "
 				    + "                 AND k.grupo = a.grupo_estrutura "
-				    + "                 AND k.subgrupo = a.subgru_estrutura "
-				    + "                 AND k.item = a.item_estrutura "
-				    + "                 AND k.codigo_informacao IN (" + listFaixaEtaria + ")";
+				    + "                 AND k.codigo_informacao IN (" + listFaixaEtaria + "))";
 		}
 		
 		if (!listComplemento.equals("")) {
-			query += " AND e.complemento IN (" + listComplemento + ")";
+			query += " AND b.complemento IN (" + listComplemento + ")";
 		}
 		
 		if (!listDeposito.equals("")) {
@@ -298,9 +300,7 @@ public class PainelPlanejamentoCustom {
 			query += " AND EXISTS (SELECT 1 "
 					+ "       FROM pcpc_010 a WHERE a.area_periodo = 1 "
 					+ "       AND a.codigo_empresa = 1 "
-					+ "       AND a.periodo_producao IN (" + listPerCarteira + ")"
-					+ "       AND a.periodo_producao NOT IN (8000, 8001, 8800, 9900, 9999) "
-					+ "       AND a.periodo_producao > 2201) ";
+					+ "       AND a.periodo_producao IN (" + listPerCarteira + "))";
 		}
 		
 		query += "   GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.narrativa) DADOS ";
@@ -312,20 +312,22 @@ public class PainelPlanejamentoCustom {
 			String listContaEstoq, String listPublicoAlvo, String listSegmento, String listFaixaEtaria, String listComplemento, String listDeposito, String listPerEmbarque,
 			String listPerProducao, String listPerCarteira, String listNumInterno, int bloqueado){
 		
-		String query = " SELECT "
-				+ "		a.cditem_nivel99 || '.' || a.cditem_grupo || '.' || a.cditem_subgrupo || '.' || a.cditem_item produto, "
-				+ "		b.narrativa descricao, "
-				+ "		SUM(a.qtde_estoque_atu) estoque, "
-				+ "		a.deposito deposito "
-				+ "	FROM estq_040 a, basi_010 b, basi_030 c "
-				+ "	WHERE b.nivel_estrutura = a.cditem_nivel99 "
-				+ "	AND b.grupo_estrutura = a.cditem_grupo "
-				+ "	AND b.subgru_estrutura = a.cditem_subgrupo "
-				+ "	AND b.item_estrutura = a.cditem_item "
-				+ " AND c.nivel_estrutura = a.cditem_nivel99 "
-				+ " AND c.referencia = a.cditem_grupo "
-				+ "	AND a.qtde_estoque_atu <> 0  "
-				+ " AND a.cditem_nivel99 = '1' ";
+		String query = " SELECT  "
+				+ "     a.cditem_nivel99 || '.' || a.cditem_grupo || '.' || a.cditem_subgrupo || '.' || a.cditem_item produto, "
+				+ "     b.narrativa descricao, "
+				+ "     SUM(a.qtde_estoque_atu) estoque, "
+				+ "     a.deposito deposito "
+				+ "   FROM estq_040 a, basi_010 b, basi_030 c, basi_205 d "
+				+ "   WHERE b.nivel_estrutura = a.cditem_nivel99 "
+				+ "   AND b.grupo_estrutura = a.cditem_grupo "
+				+ "   AND b.subgru_estrutura = a.cditem_subgrupo "
+				+ "   AND b.item_estrutura = a.cditem_item "
+				+ "   AND c.nivel_estrutura = a.cditem_nivel99 "
+				+ "   AND c.referencia = a.cditem_grupo "
+				+ "   AND d.codigo_deposito = a.deposito "
+				+ "   AND a.qtde_estoque_atu <> 0 "
+				+ "   AND d.descricao NOT LIKE '%(IN)%' "
+				+ "   AND a.cditem_nivel99 = '1' ";
 		
 		if (!listColecao.equals("")) {
 			query += " AND c.colecao IN (" + listColecao + ")";
@@ -356,39 +358,75 @@ public class PainelPlanejamentoCustom {
 		}
 		
 		if (!listPublicoAlvo.equals("")) {
-			query += " AND c.publico_alvo IN (" + listPublicoAlvo + ")";
+			query += " AND EXISTS (SELECT 1 FROM basi_400 w "
+					+ "   WHERE w.nivel = a.cditem_nivel99 "
+					+ "   AND w.grupo = a.cditem_grupo "
+					+ "   AND w.tipo_informacao = 9 "
+					+ "   AND w.codigo_informacao IN (" + listPublicoAlvo + "))";
 		}
 		
 		if (!listSegmento.equals("")) {
 			query += " AND EXISTS (SELECT 1 FROM basi_400 j "
 					+ "					WHERE j.tipo_informacao = 10 "
-				    + "                 AND j.nivel = b.nivel_estrutura "
-				    + "                 AND j.grupo = b.grupo_estrutura "
-				    + "                 AND j.subgrupo = b.subgru_estrutura "
-				    + "                 AND j.item = b.item_estrutura "
-				    + "                 AND j.codigo_informacao IN (" + listSegmento + ")";
+				    + "                 AND j.nivel = a.cditem_nivel99 "
+				    + "                 AND j.grupo = a.cditem_grupo "
+				    + "                 AND j.codigo_informacao IN (" + listSegmento + "))";
 		}
 		
 		if (!listFaixaEtaria.equals("")) {
 			query += " AND EXISTS (SELECT 1 FROM basi_400 k "
 					+ "					WHERE k.tipo_informacao = 805 "
-				    + "                 AND k.nivel = b.nivel_estrutura "
-				    + "                 AND k.grupo = b.grupo_estrutura "
-				    + "                 AND k.subgrupo = b.subgru_estrutura "
-				    + "                 AND k.item = b.item_estrutura "
-				    + "                 AND k.codigo_informacao IN (" + listFaixaEtaria + ")";
+				    + "                 AND k.nivel = a.cditem_nivel99 "
+				    + "                 AND k.grupo = a.cditem_grupo "
+				    + "                 AND k.codigo_informacao IN (" + listFaixaEtaria + "))";
 		}
-				
+		
 		if (!listComplemento.equals("")) {
-			query += " AND c.complemento IN (" + listComplemento + ")";
-		}		
+			query += " AND b.complemento IN (" + listComplemento + ")";
+		}
 		
 		if (!listDeposito.equals("")) {
 			query += " AND a.deposito IN (" + listDeposito + ")";
 		}
+		
+		if (!listPerProducao.equals("")) {
+			query += " AND EXISTS (SELECT 1 "
+					+ "       FROM pcpc_010 x WHERE x.area_periodo = 1 "
+					+ "       AND x.codigo_empresa = 500 "
+					+ "       AND x.periodo_producao IN (" + listPerProducao + "))";
+		}
+		
+		if (!listPerCarteira.equals("")) {
+			query += " AND EXISTS (SELECT 1 "
+					+ "       FROM pcpc_010 y WHERE y.area_periodo = 1 "
+					+ "       AND y.codigo_empresa = 1 "
+					+ "       AND y.periodo_producao IN (" + listPerCarteira + "))";
+		}
+		
+		if (!listNumInterno.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM pedi_110 e, pedi_100 l "
+					+ "      WHERE l.pedido_venda = e.pedido_venda "
+					+ "      AND e.cd_it_pe_nivel99 = a.cditem_nivel99 "
+					+ "      AND e.cd_it_pe_grupo = a.cditem_grupo "
+					+ "      AND e.cd_it_pe_subgrupo = a.cditem_subgrupo "
+					+ "      AND e.cd_it_pe_item = a.cditem_item "
+					+ "      AND e.cod_cancelamento = 0 "
+					+ "      AND l.numero_controle IN (" + listNumInterno + "))";
+		}
+		
+		if (bloqueado == 1) {
+			query += " AND EXISTS (SELECT 1 FROM pedi_110 f, pedi_100 l "
+					+ "      WHERE l.pedido_venda = f.pedido_venda "
+					+ "      AND f.cd_it_pe_nivel99 = a.cditem_nivel99 "
+					+ "      AND f.cd_it_pe_grupo = a.cditem_grupo "
+					+ "      AND f.cd_it_pe_subgrupo = a.cditem_subgrupo "
+					+ "      AND f.cd_it_pe_item = a.cditem_item "
+					+ "      AND f.cod_cancelamento = 0 "
+					+ "      AND l.situacao_venda <> 0 )";
+		}
 				
 		query +=  "	GROUP BY a.cditem_nivel99, a.cditem_grupo, a.cditem_subgrupo, a.cditem_item, b.narrativa, a.deposito, a.qtde_estoque_atu "
-				+ "	ORDER BY a.qtde_estoque_atu DESC ";
+				+ " ORDER BY a.qtde_estoque_atu DESC ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
@@ -403,20 +441,121 @@ public class PainelPlanejamentoCustom {
 				+ "       d.nome_cliente cliente, "
 				+ "       TO_CHAR(c.data_prev_receb, 'DD/MM/YYYY') embarquePrevisto, "
 				+ "       NVL(SUM(a.qtde_pedida - a.qtde_faturada), 0) carteira "
-				+ "		FROM pedi_110 a, basi_010 b, pedi_100 c, pedi_010 d "
-				+ "		WHERE b.nivel_estrutura = a.cd_it_pe_nivel99 "
-				+ "		AND b.grupo_estrutura = a.cd_it_pe_grupo "
-				+ "		AND b.subgru_estrutura = a.cd_it_pe_subgrupo "
-				+ "		AND b.item_estrutura = a.cd_it_pe_item "
-				+ "		AND c.pedido_venda = a.pedido_venda "
-				+ "		AND d.cgc_9 = c.cli_ped_cgc_cli9 "
-				+ "		AND d.cgc_4 = c.cli_ped_cgc_cli4 "
-				+ "		AND d.cgc_2 = c.cli_ped_cgc_cli2 "
-				+ "		AND a.cod_cancelamento = 0 "
-				+ "		AND a.cd_it_pe_nivel99 = '1' "
-				+ "		AND a.qtde_pedida - a.qtde_faturada <> 0 "
-				+ "		GROUP BY a.cd_it_pe_nivel99, a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item, b.narrativa, a.pedido_venda, d.nome_cliente, c.data_prev_receb ";
-
+				+ "   FROM pedi_110 a, basi_010 b, pedi_100 c, pedi_010 d, basi_030 e, basi_205 f "
+				+ "   WHERE b.nivel_estrutura = a.cd_it_pe_nivel99 "
+				+ "	   AND b.grupo_estrutura = a.cd_it_pe_grupo "
+				+ "    AND b.subgru_estrutura = a.cd_it_pe_subgrupo "
+				+ "    AND b.item_estrutura = a.cd_it_pe_item "
+				+ "    AND c.pedido_venda = a.pedido_venda "
+				+ "    AND d.cgc_9 = c.cli_ped_cgc_cli9 "
+				+ "    AND d.cgc_4 = c.cli_ped_cgc_cli4 "
+				+ "    AND d.cgc_2 = c.cli_ped_cgc_cli2 "
+				+ "    AND e.nivel_estrutura = b.nivel_estrutura "
+				+ "    AND e.referencia = b.grupo_estrutura "
+				+ "    AND f.codigo_deposito = a.codigo_deposito "
+				+ "    AND a.cod_cancelamento = 0 "
+				+ "    AND a.cd_it_pe_nivel99 = '1' "
+				+ "    AND a.qtde_pedida - a.qtde_faturada <> 0 "
+				+ "    AND f.descricao NOT LIKE '%(IN)%' ";
+		
+		if (!listColecao.equals("")) {
+			query += " AND e.colecao IN (" + listColecao + ")";
+		}
+		
+		if (!listSubColecao.equals("")) {
+			query += " AND EXISTS (SELECT 1 from basi_632 z "
+					+ "   WHERE z.grupo_ref = a.cd_it_pe_grupo "
+					+ "   AND z.subgrupo_ref = a.cd_it_pe_subgrupo "
+					+ "   AND z.item_ref = a.cd_it_pe_item "
+					+ "   AND z.cd_agrupador IN (" + listSubColecao + "))";
+		}
+		
+		if (!listLinhaProduto.equals("")) {
+			query += " AND e.linha_produto IN (" + listLinhaProduto + ")";
+		}
+		
+		if (!listArtigo.equals("")) {
+			query += " AND e.artigo IN (" + listArtigo + ")";
+		}
+		
+		if (!listArtigoCota.equals("")) {
+			query += " AND e.artigo_cotas IN (" + listArtigoCota + ")";
+		}
+		
+		if (!listContaEstoq.equals("")) {
+			query += " AND e.conta_estoque IN (" + listContaEstoq + ")";
+		}
+				
+		if (!listPublicoAlvo.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 w "
+					+ "   WHERE w.nivel = a.cd_it_pe_nivel99 "
+					+ "   AND w.grupo = a.cd_it_pe_grupo "
+					+ "   AND w.tipo_informacao = 9 "
+					+ "   AND w.codigo_informacao IN (" + listPublicoAlvo + "))";
+		}
+		
+		if (!listSegmento.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 j "
+					+ "					WHERE j.tipo_informacao = 10 "
+				    + "                 AND j.nivel = a.cd_it_pe_nivel99 "
+				    + "                 AND j.grupo = a.cd_it_pe_grupo "
+				    + "                 AND j.codigo_informacao IN (" + listSegmento + "))";
+		}
+		
+		if (!listFaixaEtaria.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 k "
+					+ "					WHERE k.tipo_informacao = 805 "
+				    + "                 AND k.nivel = a.cd_it_pe_nivel99 "
+				    + "                 AND k.grupo = a.cd_it_pe_grupo "
+				    + "                 AND k.codigo_informacao IN (" + listFaixaEtaria + "))";
+		}
+		
+		if (!listComplemento.equals("")) {
+			query += " AND b.complemento IN (" + listComplemento + ")";
+		}
+		
+		if (!listDeposito.equals("")) {
+			query += " AND a.codigo_deposito IN (" + listDeposito + ")";
+		}
+		
+		if (!listPerProducao.equals("")) {
+			query += " AND EXISTS (SELECT 1 "
+					+ "       FROM pcpc_010 x WHERE x.area_periodo = 1 "
+					+ "       AND x.codigo_empresa = 500 "
+					+ "       AND x.periodo_producao IN (" + listPerProducao + "))";
+		}
+		
+		if (!listPerCarteira.equals("")) {
+			query += " AND EXISTS (SELECT 1 "
+					+ "       FROM pcpc_010 y WHERE y.area_periodo = 1 "
+					+ "       AND y.codigo_empresa = 1 "
+					+ "       AND y.periodo_producao IN (" + listPerCarteira + "))";
+		}
+		
+		if (!listNumInterno.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM pedi_110 e, pedi_100 l "
+					+ "      WHERE l.pedido_venda = e.pedido_venda "
+					+ "      AND e.cd_it_pe_nivel99 = a.cd_it_pe_nivel99 "
+					+ "      AND e.cd_it_pe_grupo = a.cd_it_pe_grupo "
+					+ "      AND e.cd_it_pe_subgrupo = a.cd_it_pe_subgrupo "
+					+ "      AND e.cd_it_pe_item = a.cd_it_pe_item "
+					+ "      AND e.cod_cancelamento = 0 "
+					+ "      AND l.numero_controle IN (" + listNumInterno + "))";
+		}
+		
+		if (bloqueado == 1) {
+			query += " AND EXISTS (SELECT 1 FROM pedi_110 f, pedi_100 l "
+					+ "      WHERE l.pedido_venda = f.pedido_venda "
+					+ "      AND f.cd_it_pe_nivel99 = a.cd_it_pe_nivel99 "
+					+ "      AND f.cd_it_pe_grupo = a.cd_it_pe_grupo "
+					+ "      AND f.cd_it_pe_subgrupo = a.cd_it_pe_subgrupo "
+					+ "      AND f.cd_it_pe_item = a.cd_it_pe_item "
+					+ "      AND f.cod_cancelamento = 0 "
+					+ "      AND l.situacao_venda <> 0 )";
+		}
+		
+		query += "  GROUP BY a.cd_it_pe_nivel99, a.cd_it_pe_grupo, a.cd_it_pe_subgrupo, a.cd_it_pe_item, b.narrativa, a.pedido_venda, d.nome_cliente, c.data_prev_receb ";
+	
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
@@ -432,16 +571,121 @@ public class PainelPlanejamentoCustom {
 				+ "		MIN(b.qtde_pecas_prog) qtdeOrdem, "
 				+ "		a.qtde_reservada reservas, "
 				+ "		a.qtde_areceber receber "
-				+ "		FROM tmrp_041 a, pcpc_040 b, basi_010 c WHERE b.periodo_producao = a.periodo_producao "
+				+ "	  FROM tmrp_041 a, pcpc_040 b, basi_010 c, basi_030 d, estq_040 e, basi_205 f "
+				+ "   WHERE b.periodo_producao = a.periodo_producao "
 				+ "		AND b.ordem_confeccao = a.seq_pedido_ordem "
 				+ "		AND c.nivel_estrutura = a.nivel_estrutura "
 				+ "		AND c.grupo_estrutura = a.grupo_estrutura "
 				+ "		AND c.subgru_estrutura = a.subgru_estrutura "
 				+ "		AND c.item_estrutura = a.item_estrutura "
-				+ "		AND a.nivel_estrutura = '1' "
-				+ "		GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, c.narrativa, "
-				+ "		a.periodo_producao, a.nr_pedido_ordem, a.seq_pedido_ordem, a.qtde_reservada, a.qtde_areceber ";
-
+				+ "     AND d.nivel_estrutura = a.nivel_estrutura "
+				+ "     AND d.referencia = a.grupo_estrutura "
+				+ "     AND e.cditem_nivel99 = a.nivel_estrutura "
+				+ "     AND e.cditem_grupo = a.grupo_estrutura "
+				+ "     AND e.cditem_subgrupo = a.subgru_estrutura "
+				+ "     AND e.cditem_item = a.item_estrutura "
+				+ "     AND f.codigo_deposito = e.deposito "
+				+ "		AND a.nivel_estrutura = '1' ";
+		
+		if (!listColecao.equals("")) {
+			query += " AND d.colecao IN (" + listColecao + ")";
+		}
+		
+		if (!listSubColecao.equals("")) {
+			query += " AND EXISTS (SELECT 1 from basi_632 z "
+					+ "   WHERE z.grupo_ref = a.grupo_estrutura "
+					+ "   AND z.subgrupo_ref = a.subgru_estrutura "
+					+ "   AND z.item_ref = a.item_estrutura "
+					+ "   AND z.cd_agrupador IN (" + listSubColecao + "))";
+		}
+		
+		if (!listLinhaProduto.equals("")) {
+			query += " AND d.linha_produto IN (" + listLinhaProduto + ")";
+		}
+		
+		if (!listArtigo.equals("")) {
+			query += " AND d.artigo IN (" + listArtigo + ")";
+		}
+		
+		if (!listArtigoCota.equals("")) {
+			query += " AND d.artigo_cotas IN (" + listArtigoCota + ")";
+		}
+		
+		if (!listContaEstoq.equals("")) {
+			query += " AND d.conta_estoque IN (" + listContaEstoq + ")";
+		}
+		
+		if (!listPublicoAlvo.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 w "
+					+ "   WHERE w.nivel = a.nivel_estrutura "
+					+ "   AND w.grupo = a.grupo_estrutura "
+					+ "   AND w.tipo_informacao = 9 "
+					+ "   AND w.codigo_informacao IN (" + listPublicoAlvo + "))";
+		}
+		
+		if (!listSegmento.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 j "
+					+ "					WHERE j.tipo_informacao = 10 "
+				    + "                 AND j.nivel = a.nivel_estrutura "
+				    + "                 AND j.grupo = a.grupo_estrutura "
+				    + "                 AND j.codigo_informacao IN (" + listSegmento + "))";
+		}
+		
+		if (!listFaixaEtaria.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_400 k "
+					+ "					WHERE k.tipo_informacao = 805 "
+				    + "                 AND k.nivel = a.nivel_estrutura "
+				    + "                 AND k.grupo = a.grupo_estrutura "
+				    + "                 AND k.codigo_informacao IN (" + listFaixaEtaria + "))";
+		}
+		
+		if (!listComplemento.equals("")) {
+			query += " AND c.complemento IN (" + listComplemento + ")";
+		}
+		
+		if (!listDeposito.equals("")) {
+			query += " AND e.deposito IN (" + listDeposito + ")";
+		}
+		
+		if (!listPerProducao.equals("")) {
+			query += " AND EXISTS (SELECT 1 "
+					+ "       FROM pcpc_010 x WHERE x.area_periodo = 1 "
+					+ "       AND x.codigo_empresa = 500 "
+					+ "       AND x.periodo_producao IN (" + listPerProducao + "))";
+		}
+		
+		if (!listPerCarteira.equals("")) {
+			query += " AND EXISTS (SELECT 1 "
+					+ "       FROM pcpc_010 y WHERE y.area_periodo = 1 "
+					+ "       AND y.codigo_empresa = 1 "
+					+ "       AND y.periodo_producao IN (" + listPerCarteira + "))";
+		}
+		
+		if (!listNumInterno.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM pedi_110 e, pedi_100 l "
+					+ "      WHERE l.pedido_venda = e.pedido_venda "
+					+ "      AND e.cd_it_pe_nivel99 = a.nivel_estrutura "
+					+ "      AND e.cd_it_pe_grupo = a.grupo_estrutura "
+					+ "      AND e.cd_it_pe_subgrupo = a.subgru_estrutura "
+					+ "      AND e.cd_it_pe_item = a.item_estrutura "
+					+ "      AND e.cod_cancelamento = 0 "
+					+ "      AND l.numero_controle IN (" + listNumInterno + "))";
+		}
+		
+		if (bloqueado == 1) {
+			query += " AND EXISTS (SELECT 1 FROM pedi_110 f, pedi_100 l "
+					+ "      WHERE l.pedido_venda = f.pedido_venda "
+					+ "      AND f.cd_it_pe_nivel99 = a.nivel_estrutura "
+					+ "      AND f.cd_it_pe_grupo = a.grupo_estrutura "
+					+ "      AND f.cd_it_pe_subgrupo = a.subgru_estrutura "
+					+ "      AND f.cd_it_pe_item = a.item_estrutura "
+					+ "      AND f.cod_cancelamento = 0 "
+					+ "      AND l.situacao_venda <> 0 )";
+		}
+		
+		query += "   GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, c.narrativa, "
+			  + "	a.periodo_producao, a.nr_pedido_ordem, a.seq_pedido_ordem, a.qtde_reservada, a.qtde_areceber ";
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
