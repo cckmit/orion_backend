@@ -1449,4 +1449,41 @@ public class ProdutoCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}	
+	
+	public List<ConteudoChaveNumerica> findAllMarcas() {
+		String query = "select h.codigo value, h.codigo || ' - ' || h.descricao label from hdoc_001 h "
+		+ " where h.tipo = 17 "
+		+ "order by h.codigo ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	public List<ConteudoChaveAlfaNum> findAllReferenciasPecas(String searchRef) {
+		String query = "select a.referencia value, a.referencia || ' - ' || a.descr_referencia label from basi_030 a"
+		+ " where a.nivel_estrutura = '1' "
+		+ " and a.referencia || ' - ' || a.descr_referencia like '%" + searchRef + "%'"
+  	    + " and rownum < 50 "
+		+ " and order by a.referencia";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+
+	public List<ConteudoChaveAlfaNum> findAllTamanhos() {
+		String query = "select a.tamanho_ref value, a.descr_tamanho label "
+		+ " from basi_220 a "
+		+ " order by a.ordem_tamanho ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+
+	public List<ConteudoChaveAlfaNum> findAllCores() {
+		String query = "select a.cor_sortimento value, a.cor_sortimento || ' - ' || a.descricao label "
+		+ " from basi_100 a "
+		+ " where a.cor_sortimento || ' - ' || a.descricao like '%00PT01%' "
+		+ " and a.tipo_cor = 1 "
+		+ " and rownum < 50 "
+		+ " order by a.cor_sortimento ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
 }

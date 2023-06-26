@@ -2,12 +2,19 @@ package br.com.live.producao.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.comercial.custom.PedidoVendaCustom;
+import br.com.live.comercial.custom.PoliticaVendasCustom;
+import br.com.live.producao.custom.OrdemProducaoCustom;
+import br.com.live.producao.custom.PainelPlanejamentoCustom;
+import br.com.live.produto.custom.ProdutoCustom;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @RestController
@@ -15,124 +22,98 @@ import br.com.live.util.ConteudoChaveNumerica;
 @RequestMapping("/painel-lista-prioridades")
 public class PainelListaPrioridadesController {
 
-/*
-
-ProducaoListasService
-EstoqueListasService
-ProdutoListasService
-ComercialListasService
-
-
-
-
--periodo - OK
--deposito Estoque - OK
--colecao - OK
--linha de produto - OK
--marca - ?
--segmento - OK
--artigo - OK
--referencia - ?
--tamanha - ?
--cor - ?
--natureza operacao - ?
--tipo natureza - ?
--situacao - ?
--faccao - ?
--familia - ?
--pedido das ordens - ?
--pedido comercial - ?
-numero interno - ?
-*/
-	 	
+	private ProdutoCustom produtoCustom;
+	private PoliticaVendasCustom politicaVendasCustom;
+	private PedidoVendaCustom pedidoVendaCustom; 
+	private OrdemProducaoCustom ordemProducaoCustom; 
+	private PainelPlanejamentoCustom painelPlanejamentoCustom;
+	
+	@Autowired
+	public PainelListaPrioridadesController(PainelPlanejamentoCustom painelPlanejamentoCustom, ProdutoCustom produtoCustom, PoliticaVendasCustom politicaVendasCustom, PedidoVendaCustom pedidoVendaCustom, OrdemProducaoCustom ordemProducaoCustom) {
+		this.painelPlanejamentoCustom = painelPlanejamentoCustom;
+		this.produtoCustom = produtoCustom;
+		this.politicaVendasCustom = politicaVendasCustom;
+		this.pedidoVendaCustom = pedidoVendaCustom;
+		this.ordemProducaoCustom = ordemProducaoCustom;
+	}	
+	
 	@GetMapping("/periodos")
     public List<ConteudoChaveNumerica> findPeriodos(){
-        return null;
+        return painelPlanejamentoCustom.findAllPeriodosProducao();
     }
 	
 	@GetMapping("/depositos")
     public List<ConteudoChaveNumerica> findDepositos(){
-        return null;
+        return painelPlanejamentoCustom.findAllDepositos();
     }
 
 	@GetMapping("/colecoes")
     public List<ConteudoChaveNumerica> findColecoes(){
-        return null;
+        return painelPlanejamentoCustom.findAllColecaoWithPermanentes();
     }
 	
 	@GetMapping("/linhas-produto")
     public List<ConteudoChaveNumerica> findLinhasProduto(){
-        return null;
-    }
-
-	@GetMapping("/marcas")
-    public List<ConteudoChaveNumerica> findMarcas(){
-        return null;
+        return painelPlanejamentoCustom.findAllLinhaProduto();
     }
 
 	@GetMapping("/segmentos")
     public List<ConteudoChaveNumerica> findSegmentos(){
-        return null;
+        return painelPlanejamentoCustom.findAllSegmento();
     }
 
 	@GetMapping("/artigos")
     public List<ConteudoChaveNumerica> findArtigos(){
-        return null;
+        return painelPlanejamentoCustom.findAllArtigo();
     }
 	
-	@GetMapping("/referencias")
-    public List<ConteudoChaveNumerica> findReferencias(){
-        return null;
+	@GetMapping("/referencias/{search}")
+    public List<ConteudoChaveAlfaNum> findReferencias(@PathVariable("search") String search){
+        return produtoCustom.findAllReferenciasPecas(search);
     }
 
 	@GetMapping("/tamanhos")
-    public List<ConteudoChaveNumerica> findTamanhos(){
-        return null;
+    public List<ConteudoChaveAlfaNum> findTamanhos(){
+        return produtoCustom.findAllTamanhos();
     }
 	
 	@GetMapping("/cores")
-    public List<ConteudoChaveNumerica> findCores(){
-        return null;
+    public List<ConteudoChaveAlfaNum> findCores(){
+        return produtoCustom.findAllCores();
     }
 	
 	@GetMapping("/naturezas-operacao")
     public List<ConteudoChaveNumerica> findNaturezasOperacoes(){
-        return null;
+        return politicaVendasCustom.findNaturezaOperacao();
     }
 	
-	@GetMapping("/tipos-naturezas-operacao")
-    public List<ConteudoChaveNumerica> findTiposNaturezasOperacoes(){
-        return null;
-    }
-
 	@GetMapping("/situacoes-pedidos")
     public List<ConteudoChaveNumerica> findSituacoesPedidos(){
-        return null;
+        return pedidoVendaCustom.findSituacoes();
     }
 
 	@GetMapping("/faccoes")
     public List<ConteudoChaveNumerica> findFaccoes(){
-        return null;
+        return ordemProducaoCustom.findFaccoes();
     }
 
 	@GetMapping("/familias")
     public List<ConteudoChaveNumerica> findFamilias(){
-        return null;
+        return ordemProducaoCustom.findFamiliasProducao();
     }
 
 	@GetMapping("/pedidos-ordens")
     public List<ConteudoChaveNumerica> findPedidosOrdens(){
-        return null;
+        return ordemProducaoCustom.findPedidosOrdens();
     }
 
-	@GetMapping("/pedidos-comerciais")
-    public List<ConteudoChaveNumerica> findPedidosComerciais(){
-        return null;
+	@GetMapping("/pedidos-comerciais/{search}")
+    public List<ConteudoChaveNumerica> findPedidosComerciais(@PathVariable("search") int search){
+        return pedidoVendaCustom.findPedidos(search);
     }
 
 	@GetMapping("/numeros-interno")
     public List<ConteudoChaveNumerica> findNumerosInternos(){
-        return null;
+        return pedidoVendaCustom.findNumerosInternos();
     }
-
 }
