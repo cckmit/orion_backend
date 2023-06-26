@@ -571,22 +571,26 @@ public class TituloPagamentoCustom {
 
     public void atualizaSeqNrTituloBancoEmpresa(int codEmpresa, int codPortador, int seqNrTituloBanco, int numeroContrato, int codAgencia){
 
-        String sql = "UPDATE pedi_051 "
-                + " SET seq_nr_tit_banco = " + seqNrTituloBanco
-                + " WHERE codigo_banco = " + codPortador
-                + " AND codigo_empresa = " + codEmpresa
-                + " AND codigo_agencia = " + codAgencia
-                + " AND numero_contrato = " + numeroContrato
-                + " AND cart_cond_pgto_cobr = 0";
+        String sql = "update pedi_051 "
+                + " set seq_nr_tit_banco = " + seqNrTituloBanco
+                + " where codigo_banco = " + codPortador
+                + " and codigo_empresa = " + codEmpresa
+                + " and codigo_agencia = " + codAgencia
+                + " and numero_contrato = " + numeroContrato
+                + " and cart_cond_pgto_cobr = 0";
 
-        //jdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
 
-    public void atualizaContaCorrenteTituloSystextil(int codEmpresa, int contaCorrente, int codCarteira, int tipoTitulo, int nrNota, int nrParcela, int cgc9Tomador, int cgc4Tomador, int cgc2Tomador){
+    public void atualizaContaCorrenteTituloSystextil(int codEmpresa, int contaCorrente, int codCarteira, int tipoTitulo, int nrNota, int nrParcela, int cgc9Tomador, int cgc4Tomador, int cgc2Tomador, int seqNrTituloBanco){
+
+        String nrTituloBancoStr = String.format("%08d", seqNrTituloBanco);
 
         String sql = "update fatu_070 " +
                 " set conta_corrente = " + contaCorrente +
                 " ,cod_carteira = " + codCarteira +
+                " ,nr_titulo_banco = '" + nrTituloBancoStr + "'" +
+                " ,duplic_emitida = 1 " +
                 " where codigo_empresa = " + codEmpresa +
                 " and tipo_titulo = " + tipoTitulo +
                 " and num_duplicata = " + nrNota +
@@ -595,6 +599,6 @@ public class TituloPagamentoCustom {
                 " and cli_dup_cgc_cli4 = " + cgc4Tomador +
                 " and cli_dup_cgc_cli2 = " + cgc2Tomador;
 
-        //jdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
 }

@@ -22,3 +22,5 @@ insert into orion_parametros (id, valor_int) values ('INTEGRACAO_FLUXOGAMA_ATIVO
 insert into orion_parametros (id, valor_int) values ('INTEGRACAO_MOVIMENTOS_PAGSEGURO_ATIVO', 1);
 insert into orion_parametros (id, valor_str) values ('INTEGRACAO_MOVIMENTOS_PAGSEGURO_USER', '73303871');
 insert into orion_parametros (id, valor_str) values ('INTEGRACAO_MOVIMENTOS_PAGSEGURO_PASSWORD', 'fe4f5db3111c44b6b806d6fd789bed5e');
+insert into orion_parametros (id, valor_int) values ('INTEGRACAO_TITULO_PAGAMENTO_ATIVO', 1);
+insert into orion_parametros (id, valor_int) values ('INTEGRACAO_SELECAO_PAGAMENTO_ATIVO', 1);

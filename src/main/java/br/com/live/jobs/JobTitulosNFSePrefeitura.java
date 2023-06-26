@@ -21,7 +21,6 @@ public class JobTitulosNFSePrefeitura {
 
     @Scheduled(fixedRate = HORA)
     public void gerarTitulosNFSePrefeitura(){
-    	System.out.println("gerarTitulosNFSePrefeitura");
         tituloPagamentoService.gerarTitulosNFSePrefeituraJob();
     }
 

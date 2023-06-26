@@ -3,6 +3,8 @@ package br.com.live.administrativo.service;
 import br.com.live.administrativo.custom.TituloPagamentoCustom;
 import br.com.live.administrativo.custom.ContabilidadeCustom;
 import br.com.live.util.entity.Notificacao;
+import br.com.live.util.entity.Parametros;
+import br.com.live.util.repository.ParametrosRepository;
 import br.com.live.util.service.EmailService;
 import br.com.live.util.service.NotificacaoService;
 import br.com.live.administrativo.model.AtributoRemessaPortadorEmpresa;
@@ -32,21 +34,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
-@Transactional
 public class TituloPagamentoService {
 
+    public static final int INATIVO = 0;
     private TituloPagamentoCustom tituloPagamentoCustom;
     private ContabilidadeCustom contabilidadeCustom;
     private ContabilidadeService contabilidadeService;
     private NotificacaoService notificacaoService;
     private EmailService email;
+    private ParametrosRepository parametrosRepository;
 
-    public TituloPagamentoService(TituloPagamentoCustom tituloPagamentoCustom, ContabilidadeCustom contabilidadeCustom, ContabilidadeService contabilidadeService, NotificacaoService notificacaoService, EmailService email) {
+    public TituloPagamentoService(TituloPagamentoCustom tituloPagamentoCustom, ContabilidadeCustom contabilidadeCustom, ContabilidadeService contabilidadeService, NotificacaoService notificacaoService, EmailService email, ParametrosRepository parametrosRepository) {
         this.tituloPagamentoCustom = tituloPagamentoCustom;
         this.contabilidadeCustom = contabilidadeCustom;
         this.contabilidadeService = contabilidadeService;
         this.notificacaoService = notificacaoService;
         this.email = email;
+        this.parametrosRepository = parametrosRepository;
     }
 
     public String obterBodyTitulosNFSePrefeitura(){
@@ -55,11 +59,6 @@ public class TituloPagamentoService {
         String dataInicial = dataAtual.minusDays(1).toString();
         String dataFinal = dataAtual.toString();
         String cnpj = "20026913000194";
-
-        // TODO: REMOVER, APENAS PARA TESTES
-        //dataInicial = "2023-06-16";
-        //dataFinal = "2023-06-16";
-
 
         String body = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:e=\"http://www.betha.com.br/e-nota-contribuinte-ws\">\n"
                 + "   <soapenv:Header/>\n"
@@ -80,6 +79,14 @@ public class TituloPagamentoService {
     }
 
     public void gerarTitulosNFSePrefeituraJob(){
+
+        Parametros paramstTitPagAtivo = parametrosRepository.findByIdParametro("INTEGRACAO_TITULO_PAGAMENTO_ATIVO");
+        int situacaoTitPagAtivo = paramstTitPagAtivo != null ? paramstTitPagAtivo.getValorInt() : 0;
+
+        if (situacaoTitPagAtivo == INATIVO) {
+            System.out.println("GerarTitulosNFSePrefeituraJob: Não será possível executar por falta de parâmetros configurados!");
+            return;
+        }
 
         if (!tituloPagamentoCustom.validaUsuarioAtivoIntegracao()){
             System.out.println("Não possui usuários configurados na tabela orion_005 / tipo 3. A integração não será executada!");
@@ -215,6 +222,13 @@ public class TituloPagamentoService {
 
     public void gravarTitulosNFSe(List<TituloPagamento> complNfseList) throws Exception {
 
+        Parametros paramstSelIndAtivo = parametrosRepository.findByIdParametro("INTEGRACAO_SELECAO_PAGAMENTO_ATIVO");
+        int situacaoSelIndAtivo = paramstSelIndAtivo != null ? paramstSelIndAtivo.getValorInt() : 0;
+
+        if (situacaoSelIndAtivo == INATIVO){
+            System.out.println("GravarEnvioCobrancaTituloSystextil: Não será possível executar por falta de parâmetros configurados!");
+        }
+
         for (TituloPagamento dadosTituloPagamento : complNfseList) {
 
             List<ParcelaTituloPagamento> parcelaTituloPagamentoList = dadosTituloPagamento.getParcelasTitulo();
@@ -266,11 +280,14 @@ public class TituloPagamentoService {
                             dataEmissaoFormat, dataVencimentoFormat, codLocal, respReceb, codEnderessoCobranca, codMoeda, codRepresentante, codPortador, nrIdentificacao, codTransacao,
                             contaContabilRdz, contaContabilClienteRdz, contaContabil, contaContabilCliente, codHistorico, codExercicio, codPeriodo, complemento);
 
-                    //String msgErroEnvioCobrancaTitulo = validaEnvioCobrancaTituloSystextil(nrNota, nrParcela, codEmpresa, nrIdentificacao, cnpjTomador, codPortador, notaCancelada);
+                    if (situacaoSelIndAtivo != INATIVO) {
 
-                    //if (msgErroEnvioCobrancaTitulo.equals("")) {
-                    //    gravarEnvioCobrancaTituloSystextil(codEmpresa, codPortador, nrIdentificacao, cnpjTomador, tipoTitulo, nrNota, nrParcela);
-                    //}
+                        String msgErroEnvioCobrancaTitulo = validaEnvioCobrancaTituloSystextil(nrNota, nrParcela, codEmpresa, nrIdentificacao, cnpjTomador, codPortador, notaCancelada);
+
+                        if (msgErroEnvioCobrancaTitulo.equals("")) {
+                            gravarEnvioCobrancaTituloSystextil(codEmpresa, codPortador, nrIdentificacao, cnpjTomador, tipoTitulo, nrNota, nrParcela);
+                        }
+                    }
                 }
             }
         }
@@ -339,15 +356,27 @@ public class TituloPagamentoService {
 
     public String validaEnvioCobrancaTituloSystextil(int nrNota, int nrParcela, int codEmpresa, int nrIdentificacao, String cnpjTomador, int codPortador, boolean notaCancelada){
 
-        String msgErro = "Não foi possível enviar para a cobrança a nota: " + nrNota + " / Série: " + nrParcela + " / Cliente: " + cnpjTomador + ". ";
+        String nomeCliente = tituloPagamentoCustom.obterNomeCliente(cnpjTomador);
+
+        String msgErro = "A NF foi integrada no Systêxtil, mas não foi possível fazer o envio automático para a cobrança: " + nrNota + " / Série: " + nrParcela + " / Cliente: " + cnpjTomador + ". ";
+        String msgEmail = "";
+
+        if (codPortador != 341){
+            msgEmail = "Portador diferentes de ITAU - 341!";
+            msgErro += msgEmail;
+            return msgErro;
+        }
 
         if (notaCancelada){
-            msgErro = "Situação da NF está cancelada no portal da prefeitura!";
+            msgEmail = "Situação da NF está cancelada no portal da prefeitura!";
+            msgErro += msgEmail;
             return msgErro;
         }
 
         if (!tituloPagamentoCustom.verificaPortadorConsideraCobranca(codPortador).equals("S")){
-            msgErro = "Portador " + codPortador + " não está cadastrado para cobrança escritural!";
+            msgEmail = "Portador " + codPortador + " não está cadastrado para cobrança escritural!";
+            msgErro += msgEmail;
+            enviarEmailNotaIntegrada("ErroSelecao", nrNota, nrParcela, cnpjTomador, nomeCliente, msgEmail);
             return msgErro;
         }
 
@@ -355,14 +384,18 @@ public class TituloPagamentoService {
         atributoRemessaPortadorEmpresa = tituloPagamentoCustom.obterAtributoRemessaPortadorEmpresa(codEmpresa, codPortador, nrIdentificacao);
 
         if (atributoRemessaPortadorEmpresa == null) {
-            msgErro = "Portador " + codPortador + " não possui atributo de remessa cadastrado na empresa " + codEmpresa + ", ou não possui agência que considera cobrança!";
+            msgEmail = "Portador " + codPortador + " não possui atributo de remessa cadastrado na empresa " + codEmpresa + ", ou não possui agência que considera cobrança!";
+            msgErro += msgEmail;
+            enviarEmailNotaIntegrada("ErroSelecao", nrNota, nrParcela, cnpjTomador, nomeCliente, msgEmail);
             return msgErro;
         }
 
         int calcNrTituloBanco = atributoRemessaPortadorEmpresa.getCalcNrTituloBanco();
 
         if (calcNrTituloBanco == 0){
-            msgErro = "Identificação do portador não está configurado para calcular a sequência do Título!";
+            msgEmail = "Identificação do portador não está configurado para calcular a sequência do Título!";
+            msgErro += msgEmail;
+            enviarEmailNotaIntegrada("ErroSelecao", nrNota, nrParcela, cnpjTomador, nomeCliente, msgEmail);
             return msgErro;
         }
 
@@ -414,7 +447,7 @@ public class TituloPagamentoService {
     }
 
     @Transactional
-    public void gravarEnvioCobrancaTituloSystextil(int codEmpresa, int codPortador, int nrIdentificacao, String cnpjTomador, int tipoTitulo, int nrNota, int nrParcela) throws Exception {
+    public void gravarEnvioCobrancaTituloSystextil(int codEmpresa, int codPortador, int nrIdentificacao, String cnpjTomador, int tipoTitulo, int nrNota, int nrParcela) {
 
         int cgc9Tomador = Integer.parseInt(cnpjTomador.substring(0, 8));
         int cgc4Tomador = Integer.parseInt(cnpjTomador.substring(8, 12));
@@ -427,10 +460,8 @@ public class TituloPagamentoService {
         int codCarteira = atributoRemessaPortadorEmpresa.getCodCarteira();
         int seqNrTituloBanco = tituloPagamentoCustom.obterProxSeqNrTituloBanco(codEmpresa, codPortador, nrIdentificacao);
 
-        System.out.println("GRAVAR ENVIO COBRANCA TITULO SYSTÊXTIL: codEmpresa: " + codEmpresa + " / codPortador: " + codPortador + " / seqNrTituloBanco: " + seqNrTituloBanco + " / numeroContrato: " + numeroContrato + " / codAgencia: " + codAgencia);
-
         tituloPagamentoCustom.atualizaSeqNrTituloBancoEmpresa(codEmpresa, codPortador, seqNrTituloBanco, numeroContrato, codAgencia);
-        tituloPagamentoCustom.atualizaContaCorrenteTituloSystextil(codEmpresa, contaCorrente, codCarteira, tipoTitulo, nrNota, nrParcela, cgc9Tomador, cgc4Tomador, cgc2Tomador);
+        tituloPagamentoCustom.atualizaContaCorrenteTituloSystextil(codEmpresa, contaCorrente, codCarteira, tipoTitulo, nrNota, nrParcela, cgc9Tomador, cgc4Tomador, cgc2Tomador, seqNrTituloBanco);
     }
 
     public String validarCamposIntegracao(int nrNota, String cnpjTomador, int nrParcela, double valorParcela, String dataEmissao, String dataVencimento, int respReceb,
@@ -501,6 +532,7 @@ public class TituloPagamentoService {
     // tipoEnvioEmail = "Sucesso"
     // tipoEnvioEmail = "Erro"
     // tipoEnvioEmail = "Cancelamento"
+    // tipoEnvioEmail = "ErroSelecao"
     public void enviarEmailNotaIntegrada(String tipoEnvioEmail, int nrNota, int nrSerie, String cnpj, String nomeCliente, String msgErro) {
 
         String assunto= "";
@@ -538,13 +570,30 @@ public class TituloPagamentoService {
 
         if (tipoEnvioEmail.equals("Cancelamento")) {
 
-            assunto = FormataString.convertUtf8("Integração de Título a Receber - Cancelamento de Nota");
+            assunto = "Integração de Título a Receber - Cancelamento de Nota";
             corpoEmail = "<h4>" + FormataString.convertUtf8("Informamos que a Nota fiscal foi cancelada no portal da Prefeitura.") + "</h4>" +
                     "<p>" + FormataString.convertUtf8("Ações necessárias:") + "</p>" +
                     "<ul>" +
                     "  <li>" + FormataString.convertUtf8("Será necessário realizar o cancelamento manual do título relacionado à nota no Systêxtil.") + "</li>" +
                     "</ul>" +
                     "<p>" + FormataString.convertUtf8("Detalhes da nota cancelada:") + "</p>" +
+                    "<ul>" +
+                    "  <li>" + FormataString.convertUtf8("Nota: " + nrNota) + "</li>" +
+                    "  <li>" + FormataString.convertUtf8("Série: " + nrSerie) + " </li>" +
+                    "  <li>" + FormataString.convertUtf8("Loja: " + cnpj + " - " + nomeCliente) + "</li>" +
+                    "  <li>" + FormataString.convertUtf8("Motivo: " + msgErro) + "</li>" +
+                    "</ul>" +
+                    "<p>" + FormataString.convertUtf8("Em caso de dúvidas, estamos à disposição.") + "</p>";
+        }
+
+        if (tipoEnvioEmail.equals("ErroSelecao")) {
+            assunto = "Integração de Título a Receber - Erro na Seleção Individual de Titulo";
+            corpoEmail = "<h4>" + FormataString.convertUtf8("Informamos que não foi possível fazer a selecção individual do título.") + "</h4>" +
+                    "<p>" + FormataString.convertUtf8("Ações necessárias:") + "</p>" +
+                    "<ul>" +
+                    "  <li>" + FormataString.convertUtf8("Será necessário realizar a seleção manual do título no Systêxtil.") + "</li>" +
+                    "</ul>" +
+                    "<p>" + FormataString.convertUtf8("Detalhes da nota:") + "</p>" +
                     "<ul>" +
                     "  <li>" + FormataString.convertUtf8("Nota: " + nrNota) + "</li>" +
                     "  <li>" + FormataString.convertUtf8("Série: " + nrSerie) + " </li>" +
