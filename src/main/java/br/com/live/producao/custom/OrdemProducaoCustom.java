@@ -15,6 +15,7 @@ import br.com.live.producao.model.OrdemProducao;
 import br.com.live.producao.model.OrdemProducaoItem;
 import br.com.live.produto.service.ProdutoService;
 import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
 public class OrdemProducaoCustom {
@@ -22,6 +23,7 @@ public class OrdemProducaoCustom {
 	private JdbcTemplate jdbcTemplate;
 	private final ProdutoService produtoService;  
 	public final static int ESTAGIO_COSTURA = 20;  
+	public final static int LINHA_FACCAO = 1001;
 	
 	public OrdemProducaoCustom(JdbcTemplate jdbcTemplate, ProdutoService produtoService) {
 		this.jdbcTemplate = jdbcTemplate;
@@ -1148,4 +1150,37 @@ public class OrdemProducaoCustom {
 		return (encontrou == 1);
 		
 	}
+	
+	public List<ConteudoChaveNumerica> findFamiliasProducao() {
+		String query = " select p.codigo_familia value, p.codigo_familia label from pcpc_600 p " 
+		+ " group by p.codigo_familia "
+		+ " order by p.codigo_familia "; 
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	public List<ConteudoChaveNumerica> findFaccoes() {
+		String query = " select a.divisao_producao value, a.divisao_producao || ' - ' || a.descricao label from basi_180 a "
+		+ " where a.tipo_linha = ? "
+		+ " and a.faccionista9 > 0 "
+		+ " order by a.divisao_producao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), LINHA_FACCAO);
+	}
+
+	public List<ConteudoChaveNumerica> findPedidosOrdens() {		
+		String query = " select p.pedido_venda value, p.pedido_venda label from pcpc_020 p "
+		+ " where p.cod_cancelamento = 0 "
+		+ " and p.pedido_venda > 0 "		  
+		+ " and exists (select 1 from pcpc_040 m "
+		+ " where m.ordem_producao = p.ordem_producao "
+		+ " and m.codigo_estagio = p.ultimo_estagio "
+		+ " and m.qtde_a_produzir_pacote > 0) "		  
+		+ " group by p.pedido_venda "
+		+ " order by p.pedido_venda ";		
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	
 }

@@ -1,5 +1,6 @@
 package br.com.live.comercial.custom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.comercial.model.PedidoVenda;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
 public class PedidoVendaCustom {
@@ -59,6 +61,28 @@ public class PedidoVendaCustom {
 		return pedidoEncontrado; 		
 	}	
 
+	public List<ConteudoChaveNumerica> findPedidos(int searchPedido) {
+		String query = " select p.pedido_venda value, p.pedido_venda label "
+		+ " from pedi_100 p "
+		+ " where p.situacao_venda <> 10 " 
+	    + " and p.cod_cancelamento = 0 "
+	    + " and p.pedido_venda like '%" + searchPedido + "%'"
+	    + " and rownum <= 50 ";
+				
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	public List<ConteudoChaveNumerica> findNumerosInternos() {
+		String query = " select p.numero_controle value, p.numero_controle label "
+		+ " from pedi_100 p "
+		+ " where p.situacao_venda <> 10 " 
+		+ " and p.cod_cancelamento = 0 "
+		+ " and p.numero_controle > 0 "
+		+ " group by p.numero_controle ";  		
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
 	private PedidoVenda findPedidoVendaAConfirmar(int pedidoVenda) {			
 
 		PedidoVenda pedidoEncontrado = null;
@@ -109,5 +133,14 @@ public class PedidoVendaCustom {
 				+ "set sugestao_libera = 0"
 				+ "where nr_sugestao = " + numeroSugestao;
 		jdbcTemplate.update(query);
+	}
+	
+	public List<ConteudoChaveNumerica> findSituacoes() {
+		List<ConteudoChaveNumerica> situacoes = new ArrayList<ConteudoChaveNumerica>();
+		situacoes.add(new ConteudoChaveNumerica(0, "Liberado"));
+		situacoes.add(new ConteudoChaveNumerica(5, "Suspenso"));
+		situacoes.add(new ConteudoChaveNumerica(9, "Parcial"));
+		situacoes.add(new ConteudoChaveNumerica(15, "Nota Fiscal Cancelada"));		
+		return situacoes;
 	}
 }
