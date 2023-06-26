@@ -14,6 +14,7 @@ public class ConsultaPedidosPorCliente {
     public String cnpjCliente;
     public String observacao;
     public String pedidoCliente;
+    public Date dataDesconto;
 
     public int getPedido() {
         return pedido;
@@ -103,6 +104,14 @@ public class ConsultaPedidosPorCliente {
         this.pedidoCliente = pedidoCliente;
     }
 
+    public Date getDataDesconto() {
+        return dataDesconto;
+    }
+
+    public void setDataDesconto(Date dataDesconto) {
+        this.dataDesconto = dataDesconto;
+    }
+
     public ConsultaPedidosPorCliente() {
     }
 
@@ -116,11 +125,12 @@ public class ConsultaPedidosPorCliente {
         this.dataEmbarque = dataEmbarque;
     }
 
-    public ConsultaPedidosPorCliente(int pedido, float valorSaldo, String usuario, String cnpjCliente, String observacao) {
+    public ConsultaPedidosPorCliente(int pedido, float valorSaldo, String usuario, String cnpjCliente, String observacao, Date dataDesconto) {
         this.pedido = pedido;
         this.valorSaldo = valorSaldo;
         this.usuario = usuario;
         this.cnpjCliente = cnpjCliente;
         this.observacao = observacao;
+        this.dataDesconto = dataDesconto;
     }
 }

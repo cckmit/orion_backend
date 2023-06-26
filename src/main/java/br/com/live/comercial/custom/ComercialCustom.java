@@ -1,17 +1,15 @@
 package br.com.live.comercial.custom;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import br.com.live.comercial.model.*;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
-import br.com.live.comercial.model.ClientesImportados;
-import br.com.live.comercial.model.ConsultaPedidosPorCliente;
-import br.com.live.comercial.model.ConsultaTitulosBloqForn;
-import br.com.live.comercial.model.ConsultaTpClienteXTabPreco;
-import br.com.live.comercial.model.DescontoClientesImportados;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -145,8 +143,12 @@ public class ComercialCustom {
 	public void atualizarDescontoEspecialPedido(float desconto, String observacao, int pedido, String observacaoImportacao) {
 		String observacaoAtual = findObservacaoPedi(pedido);
 
+		LocalDate dataAtual = LocalDate.now();
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String dataAtualFormatada = dataAtual.format(dateFormat);
+
 		String query = " UPDATE pedi_100 " +
-				" SET OBSERVACAO = '" + observacaoAtual + "' || chr(13) || '" + observacao + "' || chr(13) || '" + observacaoImportacao + "', "  +
+				" SET OBSERVACAO = '" + observacaoAtual + "' || chr(13) || '" + observacao + "' || chr(13) || " + dataAtualFormatada + " || chr(13) || '" + observacaoImportacao + "', "  +
 				" DESCONTO_ESPECIAL = ? " +
 				" WHERE pedi_100.PEDIDO_VENDA = ? ";
 		jdbcTemplate.update(query, desconto, pedido);
@@ -191,13 +193,16 @@ public class ComercialCustom {
 
 	public List<ConsultaPedidosPorCliente> buscarHistoricoDescontos() {
 		String query = " select b.pedido, c.cod_ped_cliente pedidoCliente, lpad(b.cnpj_9,8, '0') || lpad(b.cnpj_4,4,'0') || lpad(b.cnpj_2,2,'0') cnpjCliente, " +
-				" b.valor_desconto valorSaldo, b.observacao, b.usuario from orion_com_291 b, pedi_100 c" +
+				" b.valor_desconto valorSaldo, b.observacao, b.usuario, b.data_desconto dataDesconto from orion_com_291 b, pedi_100 c" +
 				" where c.pedido_venda = b.pedido ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
 	}
 
 	public List<DescontoClientesImportados> buscarSaldosClientes() {
-		String query = " select g.cnpj_9 || g.cnpj_4 || g.cnpj_2 id, lpad(g.cnpj_9,8, '0') || lpad(g.cnpj_4,4,'0') || lpad(g.cnpj_2,2,'0') cnpjCliente, g.valor_desconto valor from orion_com_292 g ";
+		String query = " select g.cnpj_9 || g.cnpj_4 || g.cnpj_2 id, lpad(g.cnpj_9,8, '0') || lpad(g.cnpj_4,4,'0') || lpad(g.cnpj_2,2,'0') || ' - ' || b.nome_cliente cnpjCliente, g.valor_desconto valor from orion_com_292 g, pedi_010 b" +
+				" where b.cgc_9 = g.cnpj_9 " +
+				" and b.cgc_4 = g.cnpj_4 " +
+				" and b.cgc_2 = g.cnpj_2 ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DescontoClientesImportados.class));
 	}
 	
@@ -213,5 +218,14 @@ public class ComercialCustom {
 			natureza = 0;
 		}
 		return natureza;
+	}
+
+	public ConsultaEmailClienteCashback findEmailPedidoCliente(int pedido) {
+		String query = " SELECT a.COD_PED_CLIENTE pedidoCliente, b.E_MAIL emailCliente  FROM pedi_100 a, pedi_010 b " +
+				" WHERE a.pedido_venda = " + pedido +
+				" AND b.CGC_9 = a.CLI_PED_CGC_CLI9 " +
+				" AND b.CGC_4 = a.CLI_PED_CGC_CLI4 " +
+				" AND b.CGC_2 = a.CLI_PED_CGC_CLI2 ";
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaEmailClienteCashback.class));
 	}
 }

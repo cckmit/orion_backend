@@ -31,6 +31,9 @@ public class PedidosGravadosComDesconto {
     public String observacao;
     public String usuario;
 
+    @Column(name = "data_desconto")
+    public Date dataDesconto;
+
     public int getPedido() {
         return pedido;
     }
@@ -95,10 +98,18 @@ public class PedidosGravadosComDesconto {
         this.usuario = usuario;
     }
 
+    public Date getDataDesconto() {
+        return dataDesconto;
+    }
+
+    public void setDataDesconto(Date dataDesconto) {
+        this.dataDesconto = dataDesconto;
+    }
+
     public PedidosGravadosComDesconto() {
     }
 
-    public PedidosGravadosComDesconto(int pedido, int cnpj9, int cnpj4, int cnpj2, Date dataInsercao, float valor, String observacao, String usuario) {
+    public PedidosGravadosComDesconto(int pedido, int cnpj9, int cnpj4, int cnpj2, Date dataInsercao, float valor, String observacao, String usuario, Date dataDesconto) {
         this.pedido = pedido;
         this.cnpj9 = cnpj9;
         this.cnpj4 = cnpj4;
@@ -107,5 +118,6 @@ public class PedidosGravadosComDesconto {
         this.valor = valor;
         this.observacao = observacao;
         this.usuario = usuario;
+        this.dataDesconto = dataDesconto;
     }
 }

@@ -1,10 +1,14 @@
 package br.com.live.comercial.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import br.com.live.comercial.model.*;
 import br.com.live.util.FormataData;
+import br.com.live.util.FormataString;
+import br.com.live.util.service.EmailService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +21,6 @@ import br.com.live.comercial.entity.PedidosGravadosComDesconto;
 import br.com.live.comercial.entity.TpClienteXTabPreco;
 import br.com.live.comercial.entity.TpClienteXTabPrecoItem;
 import br.com.live.comercial.entity.ValorDescontoClientesImportados;
-import br.com.live.comercial.model.ClientesImportados;
-import br.com.live.comercial.model.ConsultaPedidosPorCliente;
-import br.com.live.comercial.model.ConsultaTitulosBloqForn;
-import br.com.live.comercial.model.DescontoClientesImportados;
-import br.com.live.comercial.model.PedidosComDescontoAConfirmar;
 import br.com.live.comercial.repository.BloqueioTitulosFornRepository;
 import br.com.live.comercial.repository.ControleDescontoClienteRepository;
 import br.com.live.comercial.repository.FaturamentoLiveClothingRepository;
@@ -50,10 +49,12 @@ public class ComercialService {
 	private final PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository;
 	private final ControleDescontoClienteRepository controleDescontoClienteRepository;
 	private final FaturamentoLiveClothingRepository faturamentoLiveClothingRepository;
+	private final EmailService emailService;
   
 	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository,
 			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, ValorDescontoClientesImpRepository valorDescontoClientesImpRepository,
-							PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository) {
+							PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, ControleDescontoClienteRepository controleDescontoClienteRepository,
+							FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, EmailService emailService) {
 
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
@@ -64,7 +65,8 @@ public class ComercialService {
 		this.valorDescontoClientesImpRepository = valorDescontoClientesImpRepository;
 		this.pedidosGravadosComDescontoRepository = pedidosGravadosComDescontoRepository;
 		this.controleDescontoClienteRepository = controleDescontoClienteRepository;
-    this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
+    	this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
+		this.emailService = emailService;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
@@ -383,13 +385,27 @@ public class ComercialService {
 					dadosPedido.valor = dadosPedido.valor * 2;
 				}
 
-				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario);
+				Date dataAtual = new Date();
+
+				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario, dataAtual);
 				atualizarControleDesconto(cnpj9, cnpj4, cnpj2, dadosPedido.valor);
 
 				pedidosGravadosComDescontoRepository.save(pedidosGravados);
+				enviarEmailDescontoPedido(dadosPedido.pedido, dadosPedido.valor);
 			}
 		}
 		return status;
+	}
+
+	public void enviarEmailDescontoPedido(int pedido, float valorDesconto) {
+		ConsultaEmailClienteCashback dadosCliente = comercialCustom.findEmailPedidoCliente(pedido);
+
+		DecimalFormat formato = new DecimalFormat("0.00");
+		String valorFormatado = formato.format(valorDesconto);
+
+		String corpoEmail = FormataString.convertUtf8(" Crédito concedido no pedido ") + dadosCliente.pedidoCliente + FormataString.convertUtf8(" no valor de R$") + valorFormatado + " <br/> " + FormataString.convertUtf8("Att, Comercial LIVE!");
+
+		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosCliente.emailCliente);
 	}
 
 	public void atualizarControleDesconto(int cnpj9, int cnpj4, int cnpj2, float valorAtual) {
