@@ -341,6 +341,7 @@ public class IntegracaoFluxogamaService {
 
 		JSONArray filtroAlteracoesCamposArray = new JSONArray();
 		filtroAlteracoesCamposArray.put("alteracao.modelo.ds_referencia");
+		filtroAlteracoesCamposArray.put("alteracao.modelo.cores");
 		filtroAlteracoesCamposArray.put("alteracao.uno.98");
 		filtroAlteracoesCamposArray.put("alteracao.uno.99");
 		filtroAlteracoesCamposArray.put("alteracao.uno.101");

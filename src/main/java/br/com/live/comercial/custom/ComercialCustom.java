@@ -1,5 +1,7 @@
 package br.com.live.comercial.custom;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -145,8 +147,12 @@ public class ComercialCustom {
 	public void atualizarDescontoEspecialPedido(float desconto, String observacao, int pedido, String observacaoImportacao) {
 		String observacaoAtual = findObservacaoPedi(pedido);
 
+		LocalDate dataAtual = LocalDate.now();
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		String dataAtualFormatada = dataAtual.format(dateFormat);
+
 		String query = " UPDATE pedi_100 " +
-				" SET OBSERVACAO = '" + observacaoAtual + "' || chr(13) || '" + observacao + "' || chr(13) || '" + observacaoImportacao + "', "  +
+				" SET OBSERVACAO = '" + observacaoAtual + "' || chr(13) || '" + observacao + "' || chr(13) || " + dataAtualFormatada + " || chr(13) || '" + observacaoImportacao + "', "  +
 				" DESCONTO_ESPECIAL = ? " +
 				" WHERE pedi_100.PEDIDO_VENDA = ? ";
 		jdbcTemplate.update(query, desconto, pedido);
@@ -191,13 +197,16 @@ public class ComercialCustom {
 
 	public List<ConsultaPedidosPorCliente> buscarHistoricoDescontos() {
 		String query = " select b.pedido, c.cod_ped_cliente pedidoCliente, lpad(b.cnpj_9,8, '0') || lpad(b.cnpj_4,4,'0') || lpad(b.cnpj_2,2,'0') cnpjCliente, " +
-				" b.valor_desconto valorSaldo, b.observacao, b.usuario from orion_com_291 b, pedi_100 c" +
+				" b.valor_desconto valorSaldo, b.observacao, b.usuario, b.data_desconto dataDesconto from orion_com_291 b, pedi_100 c" +
 				" where c.pedido_venda = b.pedido ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPedidosPorCliente.class));
 	}
 
 	public List<DescontoClientesImportados> buscarSaldosClientes() {
-		String query = " select g.cnpj_9 || g.cnpj_4 || g.cnpj_2 id, lpad(g.cnpj_9,8, '0') || lpad(g.cnpj_4,4,'0') || lpad(g.cnpj_2,2,'0') cnpjCliente, g.valor_desconto valor from orion_com_292 g ";
+		String query = " select g.cnpj_9 || g.cnpj_4 || g.cnpj_2 id, lpad(g.cnpj_9,8, '0') || lpad(g.cnpj_4,4,'0') || lpad(g.cnpj_2,2,'0') || ' - ' || b.nome_cliente cnpjCliente, g.valor_desconto valor from orion_com_292 g, pedi_010 b" +
+				" where b.cgc_9 = g.cnpj_9 " +
+				" and b.cgc_4 = g.cnpj_4 " +
+				" and b.cgc_2 = g.cnpj_2 ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DescontoClientesImportados.class));
 	}
 	

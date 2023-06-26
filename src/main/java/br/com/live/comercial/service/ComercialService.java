@@ -383,7 +383,9 @@ public class ComercialService {
 					dadosPedido.valor = dadosPedido.valor * 2;
 				}
 
-				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario);
+				Date dataAtual = new Date();
+
+				pedidosGravados = new PedidosGravadosComDesconto(dadosPedido.pedido, cnpj9, cnpj4, cnpj2, FormataData.parseStringToDate(dadosPedido.dataInsercao), dadosPedido.valor, dadosPedido.observacao, usuario, dataAtual);
 				atualizarControleDesconto(cnpj9, cnpj4, cnpj2, dadosPedido.valor);
 
 				pedidosGravadosComDescontoRepository.save(pedidosGravados);
