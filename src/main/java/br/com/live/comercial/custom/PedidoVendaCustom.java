@@ -78,7 +78,8 @@ public class PedidoVendaCustom {
 		+ " where p.situacao_venda <> 10 " 
 		+ " and p.cod_cancelamento = 0 "
 		+ " and p.numero_controle > 0 "
-		+ " group by p.numero_controle ";  		
+		+ " group by p.numero_controle "
+		+ " order by p.numero_controle ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}

@@ -13,6 +13,7 @@ import br.com.live.comercial.custom.PedidoVendaCustom;
 import br.com.live.comercial.custom.PoliticaVendasCustom;
 import br.com.live.producao.custom.OrdemProducaoCustom;
 import br.com.live.producao.custom.PainelPlanejamentoCustom;
+import br.com.live.producao.custom.PeriodoProducaoCustom;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -22,6 +23,7 @@ import br.com.live.util.ConteudoChaveNumerica;
 @RequestMapping("/painel-lista-prioridades")
 public class PainelListaPrioridadesController {
 
+	private PeriodoProducaoCustom periodoProducaoCustom;
 	private ProdutoCustom produtoCustom;
 	private PoliticaVendasCustom politicaVendasCustom;
 	private PedidoVendaCustom pedidoVendaCustom; 
@@ -29,17 +31,18 @@ public class PainelListaPrioridadesController {
 	private PainelPlanejamentoCustom painelPlanejamentoCustom;
 	
 	@Autowired
-	public PainelListaPrioridadesController(PainelPlanejamentoCustom painelPlanejamentoCustom, ProdutoCustom produtoCustom, PoliticaVendasCustom politicaVendasCustom, PedidoVendaCustom pedidoVendaCustom, OrdemProducaoCustom ordemProducaoCustom) {
+	public PainelListaPrioridadesController(PainelPlanejamentoCustom painelPlanejamentoCustom, ProdutoCustom produtoCustom, PoliticaVendasCustom politicaVendasCustom, PedidoVendaCustom pedidoVendaCustom, OrdemProducaoCustom ordemProducaoCustom, PeriodoProducaoCustom periodoProducaoCustom) {
 		this.painelPlanejamentoCustom = painelPlanejamentoCustom;
 		this.produtoCustom = produtoCustom;
 		this.politicaVendasCustom = politicaVendasCustom;
 		this.pedidoVendaCustom = pedidoVendaCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;
+		this.periodoProducaoCustom = periodoProducaoCustom;
 	}	
 	
 	@GetMapping("/periodos")
     public List<ConteudoChaveNumerica> findPeriodos(){
-        return painelPlanejamentoCustom.findAllPeriodosProducao();
+        return periodoProducaoCustom.findPeriodosProducaoListContChaveNum();
     }
 	
 	@GetMapping("/depositos")
@@ -69,7 +72,8 @@ public class PainelListaPrioridadesController {
 	
 	@GetMapping("/referencias/{search}")
     public List<ConteudoChaveAlfaNum> findReferencias(@PathVariable("search") String search){
-        return produtoCustom.findAllReferenciasPecas(search);
+		System.out.println("search: " + search);
+		return produtoCustom.findAllReferenciasPecas(search);
     }
 
 	@GetMapping("/tamanhos")
@@ -77,9 +81,9 @@ public class PainelListaPrioridadesController {
         return produtoCustom.findAllTamanhos();
     }
 	
-	@GetMapping("/cores")
-    public List<ConteudoChaveAlfaNum> findCores(){
-        return produtoCustom.findAllCores();
+	@GetMapping("/cores/{search}")
+    public List<ConteudoChaveAlfaNum> findCores(@PathVariable("search") String search){		
+        return produtoCustom.findAllCores(search);
     }
 	
 	@GetMapping("/naturezas-operacao")

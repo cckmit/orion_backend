@@ -1461,9 +1461,11 @@ public class ProdutoCustom {
 	public List<ConteudoChaveAlfaNum> findAllReferenciasPecas(String searchRef) {
 		String query = "select a.referencia value, a.referencia || ' - ' || a.descr_referencia label from basi_030 a"
 		+ " where a.nivel_estrutura = '1' "
-		+ " and a.referencia || ' - ' || a.descr_referencia like '%" + searchRef + "%'"
+		+ " and a.referencia || ' - ' || a.descr_referencia like '%" + searchRef.toUpperCase() + "%'"
   	    + " and rownum < 50 "
-		+ " and order by a.referencia";
+		+ " order by a.referencia";
+		
+		System.out.println("query: " + query);
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
@@ -1476,13 +1478,14 @@ public class ProdutoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 
-	public List<ConteudoChaveAlfaNum> findAllCores() {
-		String query = "select a.cor_sortimento value, a.cor_sortimento || ' - ' || a.descricao label "
-		+ " from basi_100 a "
-		+ " where a.cor_sortimento || ' - ' || a.descricao like '%00PT01%' "
-		+ " and a.tipo_cor = 1 "
-		+ " and rownum < 50 "
-		+ " order by a.cor_sortimento ";
+	public List<ConteudoChaveAlfaNum> findAllCores(String searchCor) {
+		String query = "select a.item_estrutura value, a.item_estrutura || ' - ' || a.descricao_15 label "
+		+ " from basi_010 a "
+		+ " where a.nivel_estrutura = '1' " 
+		+ " and a.item_estrutura || ' - ' || a.descricao_15 like '%" + searchCor.toUpperCase() + "%' " 
+		+ " and rownum < 50 " 
+		+ " group by a.item_estrutura, a.item_estrutura, a.descricao_15 "  
+		+ " order by a.item_estrutura, a.item_estrutura, a.descricao_15 ";  
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}

@@ -8,12 +8,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.producao.model.PeriodoProducao;
+import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
 public class PeriodoProducaoCustom {
 
+	public static final int EMPRESA_DEMANDA = 1;
+	public static final int EMPRESA_PRODUCAO = 500;		
 	private JdbcTemplate jdbcTemplate;
-
+	
 	public PeriodoProducaoCustom(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
@@ -33,11 +36,24 @@ public class PeriodoProducaoCustom {
 		 + " to_char(p.data_fim_periodo, 'dd/mm/yyyy') dataFimPeriodo, to_char(p.data_ini_fatu, 'dd/mm/yyyy') dataIniFaturamento, to_char(p.data_fim_fatu, 'dd/mm/yyyy') dataFimFaturamento "
 		 + " from pcpc_010 p "  
 		 + " where p.area_periodo = 1 " 
-		 + " and p.codigo_empresa = 500 "
+		 + " and p.codigo_empresa = ? "
 		 + " and p.data_ini_periodo > SYSDATE - 360 ";
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class), EMPRESA_PRODUCAO);
 	}
+
+	public List<ConteudoChaveNumerica> findPeriodosProducaoListContChaveNum() {
+		
+		String query = " select p.periodo_producao value, p.periodo_producao || ' - ' || to_char(p.data_ini_periodo, 'dd/mm/yyyy') || ' até ' || to_char(p.data_fim_periodo, 'dd/mm/yyyy') label " 
+				+ " from pcpc_010 p " 
+				+ " where p.area_periodo = 1 " 
+				+ " and p.codigo_empresa = ? "
+				+ " and p.data_ini_periodo > SYSDATE - 360 " 
+				+ " order by p.periodo_producao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), EMPRESA_PRODUCAO);
+	}
+
 	
 	public List<PeriodoProducao> findPeriodosDemanda() {
 		
@@ -45,10 +61,10 @@ public class PeriodoProducaoCustom {
 				 + " to_char(p.data_fim_periodo, 'dd/mm/yyyy') dataFimPeriodo, to_char(p.data_ini_fatu, 'dd/mm/yyyy') dataIniFaturamento, to_char(p.data_fim_fatu, 'dd/mm/yyyy') dataFimFaturamento "
 				 + " from pcpc_010 p "  
 				 + " where p.area_periodo = 1 " 
-				 + " and p.codigo_empresa = 1 "
+				 + " and p.codigo_empresa = ? "
 				 + " and p.data_ini_periodo > SYSDATE - 360 ";
 					
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class));
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PeriodoProducao.class), EMPRESA_DEMANDA);
 	}
 	
 	public boolean periodoExiste(int periodo) {
