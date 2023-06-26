@@ -4,16 +4,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import br.com.live.comercial.model.*;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
-import br.com.live.comercial.model.ClientesImportados;
-import br.com.live.comercial.model.ConsultaPedidosPorCliente;
-import br.com.live.comercial.model.ConsultaTitulosBloqForn;
-import br.com.live.comercial.model.ConsultaTpClienteXTabPreco;
-import br.com.live.comercial.model.DescontoClientesImportados;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -222,5 +218,14 @@ public class ComercialCustom {
 			natureza = 0;
 		}
 		return natureza;
+	}
+
+	public ConsultaEmailClienteCashback findEmailPedidoCliente(int pedido) {
+		String query = " SELECT a.COD_PED_CLIENTE pedidoCliente, b.E_MAIL emailCliente  FROM pedi_100 a, pedi_010 b " +
+				" WHERE a.pedido_venda = " + pedido +
+				" AND b.CGC_9 = a.CLI_PED_CGC_CLI9 " +
+				" AND b.CGC_4 = a.CLI_PED_CGC_CLI4 " +
+				" AND b.CGC_2 = a.CLI_PED_CGC_CLI2 ";
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaEmailClienteCashback.class));
 	}
 }
