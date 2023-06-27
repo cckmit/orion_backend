@@ -47,7 +47,7 @@ public class ProdutoCustom {
 
 	public List<ProdutoReferencia> findProdutosByParameters(BodyFiltroProduto filtro) {
 
-		String query = "select new br.com.live.entity.ProdutoReferencia (p.id, p.grupo, p.descricao, p.colecao, p.permanente) from ProdutoReferencia p ";
+		String query = "select new br.com.live.produto.entity.ProdutoReferencia (p.id, p.grupo, p.descricao, p.colecao, p.permanente) from ProdutoReferencia p ";
 		String condicao = "where ";
 
 		if (!filtro.getColecoes().equalsIgnoreCase("")) {
@@ -137,7 +137,7 @@ public class ProdutoCustom {
 
 	public List<ProdutoReferenciaCor> findItensByParameters(BodyFiltroProduto filtro) {
 
-		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
+		String query = "select new br.com.live.produto.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
 		String condicao = "where ";
 
 		if (!filtro.getReferencias().equalsIgnoreCase("")) {
@@ -240,7 +240,7 @@ public class ProdutoCustom {
 	}
 
 	public ProdutoReferenciaCor findItemByCodigo(String grupo, String item) {
-		String query = "select new br.com.live.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
+		String query = "select new br.com.live.produto.entity.ProdutoReferenciaCor (p.id, p.grupo, p.item, p.descricao, p.colecao, p.permanente, p.embarque, p.alternativaPadrao, p.roteiroPadrao, p.riscoPadrao) from ProdutoReferenciaCor p ";
 		query += " where p.grupo = '" + grupo + "'";
 		query += " and p.item = '" + item + "'";
 

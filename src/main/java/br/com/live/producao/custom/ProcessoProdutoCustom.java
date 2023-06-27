@@ -46,7 +46,7 @@ public class ProcessoProdutoCustom {
 
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
 
-		String query = "select new br.com.live.entity.ProcessoProduto (p.id, p.nivel, p.grupo, p.sub, p.item, p.quantidade, p.periodo, p.colecao, p.linha, p.artigo, p.artigoCotas, p.origem, p.permanente, p.embarque) from ProcessoProduto p ";
+		String query = "select new br.com.live.producao.entity.ProcessoProduto (p.id, p.nivel, p.grupo, p.sub, p.item, p.quantidade, p.periodo, p.colecao, p.linha, p.artigo, p.artigoCotas, p.origem, p.permanente, p.embarque) from ProcessoProduto p ";
 		String condicao = "where ";
 
 		if (parametrosFormatados.getPeriodoProcessoInicio() > 0) {
