@@ -126,6 +126,7 @@ public class ComercialCustom {
 				" and a.cli_ped_cgc_cli4 = " + cnpj4 +
 				" and a.cli_ped_cgc_cli2 = " + cnpj2 +
 				" and a.data_entr_venda <> trunc(sysdate) " +
+				" and a.natop_pv_nat_oper in (421,422,0,104,325,175) " +
 				" and not exists (select 1 from orion_com_291 b " +
 				"                    where b.pedido = a.pedido_venda) " +
 				" order by a.data_entr_venda asc, a.valor_saldo_pedi desc ";
@@ -148,7 +149,7 @@ public class ComercialCustom {
 		String dataAtualFormatada = dataAtual.format(dateFormat);
 
 		String query = " UPDATE pedi_100 " +
-				" SET OBSERVACAO = '" + observacaoAtual + "' || chr(13) || '" + observacao + "' || chr(13) || " + dataAtualFormatada + " || chr(13) || '" + observacaoImportacao + "', "  +
+				" SET OBSERVACAO = '" + observacaoAtual + "' || chr(13) || '" + observacao + "' || chr(13) || '" + dataAtualFormatada + "' || chr(13) || '" + observacaoImportacao + "', "  +
 				" DESCONTO_ESPECIAL = ? " +
 				" WHERE pedi_100.PEDIDO_VENDA = ? ";
 		jdbcTemplate.update(query, desconto, pedido);
