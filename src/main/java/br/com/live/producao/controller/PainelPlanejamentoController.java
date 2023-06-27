@@ -122,10 +122,17 @@ public class PainelPlanejamentoController {
 	}
 	
 	@RequestMapping(value = "/find-acabados", method = RequestMethod.POST)
-    public ConsultaPainelPlanejamentoListas findAcabadosPlanejamento(@RequestBody BodyPainelPlanejamento body) { 
+    public ConsultaPainelPlanejamentoListas findAcabados(@RequestBody BodyPainelPlanejamento body) { 
 		return painelPlanejamentoService.findAcabados(body.listColecao, body.listSubColecao, body.listLinhaProduto, body.listArtigo, body.listArtigoCota, body.listContaEstoq,
 				body.listPublicoAlvo, body.listSegmento, body.listFaixaEtaria, body.listComplemento, body.listDeposito, body.listPerEmbarque, body.listPerProducao,
 				body.listPerCarteira, body.listNumInterno, body.bloqueado);
-    }	
+    }
+	
+	@RequestMapping(value = "/find-materiais", method = RequestMethod.POST)
+    public ConsultaPainelPlanejamentoListas findMateriais(@RequestBody BodyPainelPlanejamento body) { 
+		System.out.println("Entrou");
+		return painelPlanejamentoService.findMateriais(body.listComplemento, body.listContaEstoq, body.listPerEmbarque, body.listDeposito, body.listPerAReceber, body.listPerReserva, 
+				body.listOrdemProducao,	body.listEstagio);
+    }
 
 }
