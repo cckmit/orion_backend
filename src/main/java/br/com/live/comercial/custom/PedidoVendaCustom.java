@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.comercial.model.PedidoVenda;
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
@@ -143,5 +144,13 @@ public class PedidoVendaCustom {
 		situacoes.add(new ConteudoChaveNumerica(9, "Parcial"));
 		situacoes.add(new ConteudoChaveNumerica(15, "Nota Fiscal Cancelada"));		
 		return situacoes;
+	}
+	
+	public List<ConteudoChaveAlfaNum> findNaturezasOperacao() {
+		String query = "select a.cod_natureza || a.divisao_natur value, a.cod_natureza || a.divisao_natur || ' - ' || MIN(a.descr_nat_oper) label from pedi_080 a " 
+		+ " group by a.cod_natureza, a.divisao_natur "
+		+ " order by a.cod_natureza, a.divisao_natur ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));		
 	}
 }

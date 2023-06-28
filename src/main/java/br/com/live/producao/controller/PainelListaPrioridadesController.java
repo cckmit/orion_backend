@@ -25,16 +25,14 @@ public class PainelListaPrioridadesController {
 
 	private PeriodoProducaoCustom periodoProducaoCustom;
 	private ProdutoCustom produtoCustom;
-	private PoliticaVendasCustom politicaVendasCustom;
 	private PedidoVendaCustom pedidoVendaCustom; 
 	private OrdemProducaoCustom ordemProducaoCustom; 
 	private PainelPlanejamentoCustom painelPlanejamentoCustom;
 	
 	@Autowired
-	public PainelListaPrioridadesController(PainelPlanejamentoCustom painelPlanejamentoCustom, ProdutoCustom produtoCustom, PoliticaVendasCustom politicaVendasCustom, PedidoVendaCustom pedidoVendaCustom, OrdemProducaoCustom ordemProducaoCustom, PeriodoProducaoCustom periodoProducaoCustom) {
+	public PainelListaPrioridadesController(PainelPlanejamentoCustom painelPlanejamentoCustom, ProdutoCustom produtoCustom, PedidoVendaCustom pedidoVendaCustom, OrdemProducaoCustom ordemProducaoCustom, PeriodoProducaoCustom periodoProducaoCustom) {
 		this.painelPlanejamentoCustom = painelPlanejamentoCustom;
-		this.produtoCustom = produtoCustom;
-		this.politicaVendasCustom = politicaVendasCustom;
+		this.produtoCustom = produtoCustom;		
 		this.pedidoVendaCustom = pedidoVendaCustom;
 		this.ordemProducaoCustom = ordemProducaoCustom;
 		this.periodoProducaoCustom = periodoProducaoCustom;
@@ -87,8 +85,8 @@ public class PainelListaPrioridadesController {
     }
 	
 	@GetMapping("/naturezas-operacao")
-    public List<ConteudoChaveNumerica> findNaturezasOperacoes(){
-        return politicaVendasCustom.findNaturezaOperacao();
+    public List<ConteudoChaveAlfaNum> findNaturezasOperacoes(){
+        return pedidoVendaCustom.findNaturezasOperacao();
     }
 	
 	@GetMapping("/situacoes-pedidos")
