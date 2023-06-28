@@ -8,5 +8,7 @@ RUN mkdir -p /usr/share/fonts/truetype/
 RUN install -m644 arial-black.ttf /usr/share/fonts/truetype/
 RUN install -m644 arial.ttf /usr/share/fonts/truetype/
 WORKDIR /app
+RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+RUN echo "America/Sao_Paulo" > /etc/timezone
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "orionBackendJar.jar"]
 EXPOSE 8081
