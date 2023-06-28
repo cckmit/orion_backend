@@ -403,7 +403,7 @@ public class ComercialService {
 		DecimalFormat formato = new DecimalFormat("0.00");
 		String valorFormatado = formato.format(valorDesconto);
 
-		String corpoEmail = FormataString.convertUtf8(" Crédito concedido no pedido ") + dadosCliente.pedidoCliente + FormataString.convertUtf8(" no valor de R$") + valorFormatado + " <br/> " + FormataString.convertUtf8("Att, Comercial LIVE!");
+		String corpoEmail = FormataString.convertUtf8(" Crédito concedido no pedido ") + dadosCliente.pedidoCliente + FormataString.convertUtf8(" no valor de R$") + valorFormatado + " " + FormataString.convertUtf8("referente ao Cashback + URL.") + " <br/> " + FormataString.convertUtf8("Att, Comercial LIVE!");
 
 		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosCliente.emailCliente);
 	}
