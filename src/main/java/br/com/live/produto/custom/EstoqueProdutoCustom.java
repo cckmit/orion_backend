@@ -26,7 +26,7 @@ public class EstoqueProdutoCustom {
 
 	public List<EstoqueProduto> findByParameters(BodyParametrosPlanoMestre parametros) {
 
-		String query = "select new br.com.live.entity.EstoqueProduto (e.id, e.nivel, e.grupo, e.sub, e.item, e.deposito, e.quantidade, e.colecao, e.linha, e.artigo, e.artigoCotas, e.origem, e.permanente, e.embarque) from EstoqueProduto e ";
+		String query = "select new br.com.live.produto.entity.EstoqueProduto (e.id, e.nivel, e.grupo, e.sub, e.item, e.deposito, e.quantidade, e.colecao, e.linha, e.artigo, e.artigoCotas, e.origem, e.permanente, e.embarque) from EstoqueProduto e ";
 		String condicao = "where ";
 		
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);

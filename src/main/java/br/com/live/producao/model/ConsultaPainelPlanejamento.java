@@ -2,6 +2,7 @@ package br.com.live.producao.model;
 
 public class ConsultaPainelPlanejamento {
 	
+	public int id;
 	public String produto;
 	public String descricao;
 	public String periodo;
@@ -11,18 +12,24 @@ public class ConsultaPainelPlanejamento {
 	public int reservas;
 	public float receber;
 	public String deposito;
-	public float estoque;
+	public int estoque;
 	public int pedido;
 	public String cliente;
 	public String embarquePrevisto;
 	public float carteira;
-	public String unidMedida;
+	public String undMedida;
 	public float saldo;
 	public String emissao;
 	public String fornecedor;
 	public String entregaPrevista;
 	public int qtdePedida;
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getProduto() {
 		return produto;
 	}
@@ -77,10 +84,10 @@ public class ConsultaPainelPlanejamento {
 	public void setDeposito(String deposito) {
 		this.deposito = deposito;
 	}
-	public float getEstoque() {
+	public int getEstoque() {
 		return estoque;
 	}
-	public void setEstoque(float estoque) {
+	public void setEstoque(int estoque) {
 		this.estoque = estoque;
 	}
 	public int getPedido() {
@@ -107,11 +114,11 @@ public class ConsultaPainelPlanejamento {
 	public void setCarteira(float carteira) {
 		this.carteira = carteira;
 	}
-	public String getUnidMedida() {
-		return unidMedida;
+	public String getUndMedida() {
+		return undMedida;
 	}
-	public void setUnidMedida(String unidMedida) {
-		this.unidMedida = unidMedida;
+	public void setUndMedida(String undMedida) {
+		this.undMedida = undMedida;
 	}
 	public float getSaldo() {
 		return saldo;
@@ -149,11 +156,12 @@ public class ConsultaPainelPlanejamento {
 		
 	}
 	
-	public ConsultaPainelPlanejamento(String produto, String descricao, String periodo, int ordemProd, int ordemConf,
-			int qtdeOrdem, int reservas, float receber, String deposito, float estoque, int pedido, String cliente,
-			String embarquePrevisto, float carteira, String unidMedida, float saldo, String emissao, String fornecedor,
+	public ConsultaPainelPlanejamento(int id, String produto, String descricao, String periodo, int ordemProd, int ordemConf,
+			int qtdeOrdem, int reservas, float receber, String deposito, int estoque, int pedido, String cliente,
+			String embarquePrevisto, float carteira, String undMedida, float saldo, String emissao, String fornecedor,
 			String entregaPrevista, int qtdePedida) {
 		
+		this.id = id;
 		this.produto = produto;
 		this.descricao = descricao;
 		this.periodo = periodo;
@@ -168,7 +176,7 @@ public class ConsultaPainelPlanejamento {
 		this.cliente = cliente;
 		this.embarquePrevisto = embarquePrevisto;
 		this.carteira = carteira;
-		this.unidMedida = unidMedida;
+		this.undMedida = undMedida;
 		this.saldo = saldo;
 		this.emissao = emissao;
 		this.fornecedor = fornecedor;

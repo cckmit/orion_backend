@@ -48,7 +48,7 @@ public class DemandaProdutoCustom {
 
 		FormataParametrosPlanoMestre parametrosFormatados = new FormataParametrosPlanoMestre(parametros);
 
-		String query = "select new br.com.live.entity.DemandaProduto (d.id, d.nivel, d.grupo, d.sub, d.item, d.quantidade, d.periodo, d.colecao, d.linha, d.artigo, d.artigoCotas, d.origem, d.permanente, d.natureza, d.nrInterno, d.pedido, d.embarque, d.situacaoVenda, d.deposito) from DemandaProduto d ";
+		String query = "select new br.com.live.producao.entity.DemandaProduto (d.id, d.nivel, d.grupo, d.sub, d.item, d.quantidade, d.periodo, d.colecao, d.linha, d.artigo, d.artigoCotas, d.origem, d.permanente, d.natureza, d.nrInterno, d.pedido, d.embarque, d.situacaoVenda, d.deposito) from DemandaProduto d ";
 		String condicao = "where ";
 
 		if (parametrosFormatados.getPeriodoDemandaInicio() > 0) {

@@ -129,8 +129,42 @@ public class PainelPlanejamentoService {
         		ConteudoChaveNumerica.parseValueToString(listNumInterno), bloqueado);
     			
     			
-    	ConsultaPainelPlanejamentoListas result = new ConsultaPainelPlanejamentoListas(listaPainelPlanejamento, listaPainelDetalharEstoque, listaPainelDetalharCarteira, listaPainelDetalharOrdens);
+    	ConsultaPainelPlanejamentoListas result = new ConsultaPainelPlanejamentoListas(listaPainelPlanejamento, listaPainelDetalharEstoque, listaPainelDetalharCarteira, listaPainelDetalharOrdens, new ArrayList<>(), new ArrayList<>(),
+    			new ArrayList<>(), new ArrayList<>());
 
         return result;
     }
+    
+    public ConsultaPainelPlanejamentoListas findMateriais(List<ConteudoChaveAlfaNum> listComplemento, List<ConteudoChaveNumerica> listContaEstoq, List<ConteudoChaveAlfaNum> listPerEmbarque,
+    		List<ConteudoChaveNumerica> listDeposito, List<ConteudoChaveNumerica> listPerAReceber, List<ConteudoChaveNumerica> listPerReserva, List<ConteudoChaveNumerica> listOrdemProducao,
+    		List<ConteudoChaveNumerica> listEstagio) {
+    	
+    	System.out.println("Entrou Service");
+    	List<ConsultaPainelPlanejamento> listaMateriaisPlanejamento = painelPlanejamentoCustom.findMateriaisPlanejamento(ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq),
+    			ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), ConteudoChaveNumerica.parseValueToString(listPerAReceber), 
+        		ConteudoChaveNumerica.parseValueToString(listPerReserva), ConteudoChaveNumerica.parseValueToString(listOrdemProducao), 
+        		ConteudoChaveNumerica.parseValueToString(listEstagio));
+    	System.out.println("Entrou 2 Service");
+    	List<ConsultaPainelPlanejamento> listaMateriaisDetalharEstoque = painelPlanejamentoCustom.findMateriaisDetalharEstoque(ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq),
+    			ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), ConteudoChaveNumerica.parseValueToString(listPerAReceber), 
+        		ConteudoChaveNumerica.parseValueToString(listPerReserva), ConteudoChaveNumerica.parseValueToString(listOrdemProducao), 
+        		ConteudoChaveNumerica.parseValueToString(listEstagio));
+    	System.out.println("Entrou 3 Service");
+    	List<ConsultaPainelPlanejamento> listaMateriaisDetalharOrdens = painelPlanejamentoCustom.findMateriaisDetalharOrdens(ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq),
+    			ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), ConteudoChaveNumerica.parseValueToString(listPerAReceber), 
+        		ConteudoChaveNumerica.parseValueToString(listPerReserva), ConteudoChaveNumerica.parseValueToString(listOrdemProducao), 
+        		ConteudoChaveNumerica.parseValueToString(listEstagio));
+    	System.out.println("Entrou 4 Service");
+    	List<ConsultaPainelPlanejamento> listaMateriaislDetalharOrdens = painelPlanejamentoCustom.findMateriaisDetalharCompras(ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq),
+    			ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), ConteudoChaveNumerica.parseValueToString(listPerAReceber), 
+        		ConteudoChaveNumerica.parseValueToString(listPerReserva), ConteudoChaveNumerica.parseValueToString(listOrdemProducao), 
+        		ConteudoChaveNumerica.parseValueToString(listEstagio));
+    	
+    	
+    	ConsultaPainelPlanejamentoListas result = new ConsultaPainelPlanejamentoListas(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
+    			listaMateriaisPlanejamento, listaMateriaisDetalharEstoque, listaMateriaisDetalharOrdens, listaMateriaislDetalharOrdens);
+    	
+    	return result;
+    }
+    
 }
