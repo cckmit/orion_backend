@@ -1171,7 +1171,7 @@ public class ExpedicaoCustom {
 		try {
 			jdbcTemplate.update(query, nivel, grupo, subGrupo, item, deposito, endereco);
 		} catch (Exception e) {
-			System.out.println(e);
+			//System.out.println(e);
 		}
 	}
 

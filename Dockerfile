@@ -10,5 +10,7 @@ RUN install -m644 arial.ttf /usr/share/fonts/truetype/
 WORKDIR /app
 RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 RUN echo "America/Sao_Paulo" > /etc/timezone
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=homol", "orionBackendJar.jar"]
+RUN mkdir /app/logs  # Cria o diretório de logs dentro do contêiner
+VOLUME /app/logs  # Cria um volume para o diretório de logs
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=homol", "orionBackendJar.jar", ">>", "/app/logs/logs.txt", "2>&1"]
 EXPOSE 8080

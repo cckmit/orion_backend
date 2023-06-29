@@ -1,9 +1,11 @@
 version: '3.7'
 services:
-    backend-homolog:
-      container_name: back-end-homologacao
-      build:
-        context: .
-        dockerfile: Dockerfile
-      ports:
-        - '8080:8080'
+  backend-homolog:
+    container_name: back-end-homologacao
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - /Orion/Logs:/app/logs
