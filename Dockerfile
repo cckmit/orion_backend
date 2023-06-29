@@ -12,5 +12,5 @@ RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 RUN echo "America/Sao_Paulo" > /etc/timezone
 RUN mkdir /app/logs  # Cria o diretório de logs dentro do contêiner
 VOLUME /app/logs  # Cria um volume para o diretório de logs
-ENTRYPOINT ["sh", "-c", "java -jar -Dspring.profiles.active=homol orionBackendJar.jar > /app/logs/logs.txt 2>&1"]
+ENTRYPOINT ["sh", "-c", "cp /app/logs/logs.txt /app/logs/last_logs.txt && java -jar -Dspring.profiles.active=homol orionBackendJar.jar > /app/logs/logs.txt 2>&1"]
 EXPOSE 8080
