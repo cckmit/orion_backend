@@ -19,6 +19,28 @@ public class PainelPlanejamentoCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
+	public List<ConteudoChaveAlfaNum> findAllReferencia(String referencia) {
+		
+		String query = " SELECT a.referencia value, a.referencia label "
+				+ "	FROM basi_030 a WHERE a.referencia LIKE '%" + referencia + "%' ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
+	public List<ConteudoChaveAlfaNum> findAllTamanho() {
+		
+		String query = " SELECT a.tamanho_ref value, a.tamanho_ref || ' - ' || a.descr_tamanho label FROM basi_220 a ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+
+	public List<ConteudoChaveAlfaNum> findAllCor(String cor) {
+	
+	String query = " SELECT a.cor_sortimento value, a.cor_sortimento label FROM basi_100 a WHERE a.cor_sortimento LIKE '%" + cor +"%' ";
+
+	return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+}
+	
 	public List<ConteudoChaveNumerica> findAllColecaoWithPermanentes() {
 		
 		String query = " SELECT b.colecao value, b.colecao || ' - ' || b.descr_colecao label FROM basi_140 b "
@@ -135,6 +157,40 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
+	public int findPeriodoInicialAno() {
+		
+		int periodoInicial = 0;
+		
+		String query = " SELECT MIN(a.periodo_producao) FROM pcpc_010 a WHERE a.area_periodo = 1 "
+				+ "      AND a.codigo_empresa = 500 "
+				+ "		 AND a.periodo_producao NOT IN(9998, 9960, 9950, 9051, 5998) "
+				+ "      AND TO_CHAR(a.data_ini_periodo, 'YYYY') = TO_CHAR(sysdate, 'YYYY') ";
+		
+		try {
+			periodoInicial = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			periodoInicial = 0;
+		}
+		return periodoInicial;
+	}
+	
+	public int findPeriodoAtual() {
+		
+		int periodoAtual = 0;
+		
+		String query = " SELECT MAX(a.periodo_producao) FROM pcpc_010 a WHERE a.area_periodo = 1 "
+				+ "      AND a.codigo_empresa = 500 "
+				+ "		 AND a.periodo_producao NOT IN(9998, 9960, 9950, 9051, 5998) "
+				+ "      AND TO_CHAR(a.data_ini_periodo, 'YYYY') = TO_CHAR(sysdate, 'YYYY') ";
+		
+		try {
+			periodoAtual = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			periodoAtual = 0;
+		}
+		return periodoAtual;
+	}
+	
 	public List<ConteudoChaveNumerica> findAllPeriodosCarteira() {
 		
 		String query = " SELECT a.periodo_producao value, a.periodo_producao || ' - Dê: ' || TO_CHAR(a.data_ini_periodo, 'DD/MM/YYYY') || ' Até: ' || TO_CHAR(a.data_fim_periodo, 'DD/MM/YYYY') label "
@@ -148,6 +204,42 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
+	public int findCarteiraInicialAno() {
+		
+		int carteiraInicial = 0;
+		
+		String query = " SELECT MIN(a.periodo_producao) FROM pcpc_010 a WHERE a.area_periodo = 1 "
+				+ "      AND a.codigo_empresa = 1 "
+				+ "		 AND a.periodo_producao NOT IN (8000, 8001, 8800, 9900, 9999) "
+				+ "		 AND a.periodo_producao > 2201 "
+				+ "      AND TO_CHAR(a.data_ini_periodo, 'YYYY') = TO_CHAR(sysdate, 'YYYY') ";
+		
+		try {
+			carteiraInicial = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			carteiraInicial = 0;
+		}
+		return carteiraInicial;
+	}
+	
+	public int findCarteiraAtual() {
+		
+		int carteiraAtual = 0;
+		
+		String query = " SELECT MAX(a.periodo_producao) FROM pcpc_010 a WHERE a.area_periodo = 1 "
+				+ "      AND a.codigo_empresa = 1 "
+				+ "		 AND a.periodo_producao NOT IN (8000, 8001, 8800, 9900, 9999) "
+				+ "		 AND a.periodo_producao > 2201 "
+				+ "      AND TO_CHAR(a.data_ini_periodo, 'YYYY') = TO_CHAR(sysdate, 'YYYY') ";
+		
+		try {
+			carteiraAtual = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			carteiraAtual = 0;
+		}
+		return carteiraAtual;
+	}
+
 	public List<ConteudoChaveNumerica> findAllPeriodoAReceber() {
 		
 		String query = " SELECT a.periodo_producao value, a.periodo_producao || ' - Dê: ' || TO_CHAR(a.data_ini_periodo, 'DD/MM/YYYY') || ' Até: ' || TO_CHAR(a.data_fim_periodo, 'DD/MM/YYYY') label "
@@ -181,9 +273,9 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findAcabadosPlanejamento(String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
+	public List<ConsultaPainelPlanejamento> findAcabadosPlanejamento(String listReferencia, String listTamanho, String listCor, String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
 			String listContaEstoq, String listPublicoAlvo, String listSegmento, String listFaixaEtaria, String listComplemento, String listDeposito, String listPerEmbarque,
-			String listPerProducao, String listPerCarteira, String listNumInterno, int bloqueado){
+			String periodoProdInicio, String periodoProdFim, String periodoCartInicio, String periodoCartFim, String listNumInterno, int bloqueado){
 		
 		String query = " SELECT DADOS.PRODUTO, "
 				+ "       DADOS.DESCRICAO, "
@@ -233,7 +325,21 @@ public class PainelPlanejamentoCustom {
 				+ "   AND g.codigo_deposito = f.deposito "
 				+ "   AND a.periodo_producao <> 0  "
 				+ "   AND a.nivel_estrutura = '1' "
-				+ "   AND g.descricao NOT LIKE '%(IN)%' ";
+				+ "   AND g.descricao NOT LIKE '%(IN)%' "
+				+ "   AND a.periodo_producao BETWEEN " + periodoProdInicio + " AND " + periodoProdFim + " "
+				+ "   AND f.deposito IN (" + listDeposito + ") ";
+		
+		if (!listReferencia.equals("")) {
+			query += " AND a.grupo_estrutura IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND a.subgru_estrutura IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND a.item_estrutura IN (" + listCor + ")";
+		}
 		
 		if (!listColecao.equals("")) {
 			query += " AND e.colecao IN (" + listColecao + ")";
@@ -289,21 +395,13 @@ public class PainelPlanejamentoCustom {
 		
 		if (!listComplemento.equals("")) {
 			query += " AND b.complemento IN (" + listComplemento + ")";
-		}
-		
-		if (!listDeposito.equals("")) {
-			query += " AND f.deposito IN (" + listDeposito + ")";
-		}
-		
-		if (!listPerProducao.equals("")) {
-			query += " AND a.periodo_producao IN (" + listPerProducao + ")";
-		}
-		
-		if (!listPerCarteira.equals("")) {
+		}			
+	
+		if ((periodoCartInicio != null) && (periodoCartFim != null)) {
 			query += " AND EXISTS (SELECT 1 "
 					+ "       FROM pcpc_010 a WHERE a.area_periodo = 1 "
 					+ "       AND a.codigo_empresa = 1 "
-					+ "       AND a.periodo_producao IN (" + listPerCarteira + "))";
+					+ "       AND a.periodo_producao BETWEEN " + periodoCartInicio + " AND " + periodoCartFim + " )";
 		}
 		
 		query += "   GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.narrativa) DADOS ";
@@ -311,9 +409,9 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findAcabadosDetalharEstoque(String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
+	public List<ConsultaPainelPlanejamento> findAcabadosDetalharEstoque(String listReferencia, String listTamanho, String listCor, String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
 			String listContaEstoq, String listPublicoAlvo, String listSegmento, String listFaixaEtaria, String listComplemento, String listDeposito, String listPerEmbarque,
-			String listPerProducao, String listPerCarteira, String listNumInterno, int bloqueado){
+			String periodoProdInicio, String periodoProdFim, String periodoCartInicio, String periodoCartFim, String listNumInterno, int bloqueado){
 		
 		String query = " SELECT  "
 				+ "     a.cditem_nivel99 || '.' || a.cditem_grupo || '.' || a.cditem_subgrupo || '.' || a.cditem_item produto, "
@@ -330,7 +428,20 @@ public class PainelPlanejamentoCustom {
 				+ "   AND d.codigo_deposito = a.deposito "
 				+ "   AND a.qtde_estoque_atu <> 0 "
 				+ "   AND d.descricao NOT LIKE '%(IN)%' "
-				+ "   AND a.cditem_nivel99 = '1' ";
+				+ "   AND a.cditem_nivel99 = '1' "
+				+ "   AND a.deposito IN (" + listDeposito + ") ";
+		
+		if (!listReferencia.equals("")) {
+			query += " AND a.cditem_grupo IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND a.cditem_subgrupo IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND a.cditem_item IN (" + listCor + ")";
+		}
 		
 		if (!listColecao.equals("")) {
 			query += " AND c.colecao IN (" + listColecao + ")";
@@ -387,23 +498,19 @@ public class PainelPlanejamentoCustom {
 		if (!listComplemento.equals("")) {
 			query += " AND b.complemento IN (" + listComplemento + ")";
 		}
-		
-		if (!listDeposito.equals("")) {
-			query += " AND a.deposito IN (" + listDeposito + ")";
-		}
-		
-		if (!listPerProducao.equals("")) {
+
+		if (!periodoProdInicio.equals("") && !periodoProdFim.equals("")) {
 			query += " AND EXISTS (SELECT 1 "
 					+ "       FROM pcpc_010 x WHERE x.area_periodo = 1 "
 					+ "       AND x.codigo_empresa = 500 "
-					+ "       AND x.periodo_producao IN (" + listPerProducao + "))";
+					+ "       AND x.periodo_producao BETWEEN " + periodoProdInicio + " AND " + periodoProdFim +" ) ";
 		}
 		
-		if (!listPerCarteira.equals("")) {
+		if (periodoCartInicio != null && periodoCartFim != null) {
 			query += " AND EXISTS (SELECT 1 "
-					+ "       FROM pcpc_010 y WHERE y.area_periodo = 1 "
-					+ "       AND y.codigo_empresa = 1 "
-					+ "       AND y.periodo_producao IN (" + listPerCarteira + "))";
+					+ "       FROM pcpc_010 a WHERE a.area_periodo = 1 "
+					+ "       AND a.codigo_empresa = 1 "
+					+ "       AND a.periodo_producao BETWEEN " + periodoCartInicio + " AND " + periodoCartFim +" )";
 		}
 		
 		if (!listNumInterno.equals("")) {
@@ -434,9 +541,9 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findAcabadosDetalharCarteira(String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
+	public List<ConsultaPainelPlanejamento> findAcabadosDetalharCarteira(String listReferencia, String listTamanho, String listCor, String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
 			String listContaEstoq, String listPublicoAlvo, String listSegmento, String listFaixaEtaria, String listComplemento, String listDeposito, String listPerEmbarque,
-			String listPerProducao, String listPerCarteira, String listNumInterno, int bloqueado){
+			String periodoProdInicio, String periodoProdFim, String periodoCartInicio, String periodoCartFim, String listNumInterno, int bloqueado){
 		
 		String query = " SELECT a.cd_it_pe_nivel99 || '.' || a.cd_it_pe_grupo || '.' || a.cd_it_pe_subgrupo || '.' || a.cd_it_pe_item produto, "
 				+ "       b.narrativa descricao, "
@@ -459,7 +566,21 @@ public class PainelPlanejamentoCustom {
 				+ "    AND a.cod_cancelamento = 0 "
 				+ "    AND a.cd_it_pe_nivel99 = '1' "
 				+ "    AND a.qtde_pedida - a.qtde_faturada <> 0 "
-				+ "    AND f.descricao NOT LIKE '%(IN)%' ";
+				+ "    AND f.descricao NOT LIKE '%(IN)%' "
+				+ "    AND c.situacao_venda <> 10 "
+				+ "    AND a.codigo_deposito IN (" + listDeposito + ") ";
+		
+		if (!listReferencia.equals("")) {
+			query += " AND b.grupo_estrutura IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND b.subgru_estrutura IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND b.item_estrutura IN (" + listCor + ")";
+		}
 		
 		if (!listColecao.equals("")) {
 			query += " AND e.colecao IN (" + listColecao + ")";
@@ -517,22 +638,18 @@ public class PainelPlanejamentoCustom {
 			query += " AND b.complemento IN (" + listComplemento + ")";
 		}
 		
-		if (!listDeposito.equals("")) {
-			query += " AND a.codigo_deposito IN (" + listDeposito + ")";
-		}
-		
-		if (!listPerProducao.equals("")) {
+		if (periodoProdInicio != null && periodoProdFim != null) {
 			query += " AND EXISTS (SELECT 1 "
 					+ "       FROM pcpc_010 x WHERE x.area_periodo = 1 "
 					+ "       AND x.codigo_empresa = 500 "
-					+ "       AND x.periodo_producao IN (" + listPerProducao + "))";
+					+ "       AND x.periodo_producao BETWEEN " + periodoProdInicio + " AND " + periodoProdFim +" )";
 		}
 		
-		if (!listPerCarteira.equals("")) {
+		if (periodoCartInicio != null && periodoCartFim != null) {
 			query += " AND EXISTS (SELECT 1 "
-					+ "       FROM pcpc_010 y WHERE y.area_periodo = 1 "
-					+ "       AND y.codigo_empresa = 1 "
-					+ "       AND y.periodo_producao IN (" + listPerCarteira + "))";
+					+ "       FROM pcpc_010 a WHERE a.area_periodo = 1 "
+					+ "       AND a.codigo_empresa = 1 "
+					+ "       AND a.periodo_producao BETWEEN " + periodoCartInicio + " AND " + periodoCartFim + " )";
 		}
 		
 		if (!listNumInterno.equals("")) {
@@ -562,9 +679,9 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findAcabadosDetalharOrdens(String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
+	public List<ConsultaPainelPlanejamento> findAcabadosDetalharOrdens(String listReferencia, String listTamanho, String listCor, String listColecao, String listSubColecao, String listLinhaProduto, String listArtigo, String listArtigoCota,
 			String listContaEstoq, String listPublicoAlvo, String listSegmento, String listFaixaEtaria, String listComplemento, String listDeposito, String listPerEmbarque,
-			String listPerProducao, String listPerCarteira, String listNumInterno, int bloqueado){
+			String periodoProdInicio, String periodoProdFim, String periodoCartInicio, String periodoCartFim, String listNumInterno, int bloqueado){
 		
 		String query = " SELECT a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura produto, "
 				+ "		c.narrativa descricao, "
@@ -588,7 +705,20 @@ public class PainelPlanejamentoCustom {
 				+ "     AND e.cditem_subgrupo = a.subgru_estrutura "
 				+ "     AND e.cditem_item = a.item_estrutura "
 				+ "     AND f.codigo_deposito = e.deposito "
-				+ "		AND a.nivel_estrutura = '1' ";
+				+ "		AND a.nivel_estrutura = '1' "
+				+ "     AND e.deposito IN (" + listDeposito + ") ";
+		
+		if (!listReferencia.equals("")) {
+			query += " AND a.grupo_estrutura IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND a.subgru_estrutura IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND a.item_estrutura IN (" + listCor + ")";
+		}
 		
 		if (!listColecao.equals("")) {
 			query += " AND d.colecao IN (" + listColecao + ")";
@@ -645,23 +775,19 @@ public class PainelPlanejamentoCustom {
 		if (!listComplemento.equals("")) {
 			query += " AND c.complemento IN (" + listComplemento + ")";
 		}
-		
-		if (!listDeposito.equals("")) {
-			query += " AND e.deposito IN (" + listDeposito + ")";
-		}
-		
-		if (!listPerProducao.equals("")) {
+
+		if (!periodoProdInicio.equals("") && !periodoProdFim.equals("")) {
 			query += " AND EXISTS (SELECT 1 "
 					+ "       FROM pcpc_010 x WHERE x.area_periodo = 1 "
 					+ "       AND x.codigo_empresa = 500 "
-					+ "       AND x.periodo_producao IN (" + listPerProducao + "))";
+					+ "       AND x.periodo_producao BETWEEN " + periodoProdInicio + " AND " + periodoProdFim + " )";
 		}
 		
-		if (!listPerCarteira.equals("")) {
+		if (periodoCartInicio != null && periodoCartFim != null) {
 			query += " AND EXISTS (SELECT 1 "
-					+ "       FROM pcpc_010 y WHERE y.area_periodo = 1 "
-					+ "       AND y.codigo_empresa = 1 "
-					+ "       AND y.periodo_producao IN (" + listPerCarteira + "))";
+					+ "       FROM pcpc_010 a WHERE a.area_periodo = 1 "
+					+ "       AND a.codigo_empresa = 1 "
+					+ "       AND a.periodo_producao BETWEEN " + periodoCartInicio + " AND " + periodoCartFim +" )";
 		}
 		
 		if (!listNumInterno.equals("")) {
@@ -717,7 +843,7 @@ public class PainelPlanejamentoCustom {
 				+ "		AND b.item_estrutura = a.item_estrutura "
 				+ "		AND e.nivel_estrutura = a.nivel_estrutura "
 				+ "		AND e.referencia = a.grupo_estrutura  "
-				+ "     AND a.nivel_estrutura IN ('2', '9')"
+				+ "     AND a.nivel_estrutura <> '1' "
 				+ "     AND a.nr_pedido_ordem IN (" + listOrdemProducao + ") ";
 		
 		
@@ -877,6 +1003,7 @@ public class PainelPlanejamentoCustom {
 				+ "  AND e.cditem_grupo = a.grupo_estrutura "
 				+ "  AND e.cditem_subgrupo = a.subgru_estrutura "
 				+ "  AND e.cditem_item = a.item_estrutura "
+				+ "  AND a.nivel_estrutura <> '1' "
 				+ "  AND a.nr_pedido_ordem IN (" + listOrdemProducao + ") ";
 				
 		
@@ -925,26 +1052,69 @@ public class PainelPlanejamentoCustom {
 	}
 	
 	public List<ConsultaPainelPlanejamento> findMateriaisDetalharCompras(String listComplemento, String listContaEstoq, String listPerEmbarque, String listDeposito, 
-			String listPerAReceber, String listPerReserva, String listOrdemProducao, String listEstagio){
+			String listOrdemProducao, String listEstagio){
 		
-		String query = " SELECT rownum id, "
-				+ "       a.item_100_nivel99 || '.' || a.item_100_grupo || '.' || a.item_100_subgrupo || '.' || a.item_100_item produto, "
-				+ "       a.descricao_item descricao, "
-				+ "       a.unidade_medida undMedida, "
-				+ "       a.num_ped_compra pedido, "
-				+ "       TO_CHAR(b.dt_emis_ped_comp, 'DD/MM/YYYY') emissao, "
-				+ "       DECODE(b.forn_ped_forne4, 0, SUBSTR(LPAD(b.forn_ped_forne9, 9, 0), 0, 3), SUBSTR(LPAD(b.forn_ped_forne4, 9, 0), 4, 3), SUBSTR(LPAD(b.forn_ped_forne2, 9, 0), 7, 3), "
-				+ "       LPAD(b.forn_ped_forne9, 8, 0) || '/' || LPAD(b.forn_ped_forne4, 4, 0) || '-' || LPAD(b.forn_ped_forne2, 2, 0) "
-				+ "       || ' - ' || c.nome_fornecedor) fornecedor, "
-				+ "       TO_CHAR(a.data_prev_entr, 'DD/MM/YYYY') entregaPrevista, "
-				+ "       a.periodo_compras periodo, "
-				+ "       a.qtde_pedida_item qtde, "
-				+ "       a.qtde_saldo_item saldo  "
-				+ "   FROM supr_100 a, supr_090 b, supr_010 c  "
-				+ "   WHERE b.pedido_compra = a.num_ped_compra "
-				+ "   AND c.fornecedor9 = b.forn_ped_forne9 "
-				+ "   AND c.fornecedor4 = b.forn_ped_forne4 "
-				+ "   AND c.fornecedor2 = b.forn_ped_forne2 ";
+		String query = " SELECT a.item_100_nivel99 || '.' || a.item_100_grupo || '.' || a.item_100_subgrupo || '.' || a.item_100_item produto, "
+				+ "		a.descricao_item descricao, "
+				+ "		a.unidade_medida undMedida, "
+				+ "		a.num_ped_compra pedido, "
+				+ "		TO_CHAR(b.dt_emis_ped_comp, 'DD/MM/YYYY') emissao, "
+				+ "		DECODE(b.forn_ped_forne4, 0, SUBSTR(LPAD(b.forn_ped_forne9, 9, 0), 0, 3), SUBSTR(LPAD(b.forn_ped_forne4, 9, 0), 4, 3), SUBSTR(LPAD(b.forn_ped_forne2, 9, 0), 7, 3), "
+				+ "		LPAD(b.forn_ped_forne9, 8, 0) || '/' || LPAD(b.forn_ped_forne4, 4, 0) || '-' || LPAD(b.forn_ped_forne2, 2, 0) || ' - ' || c.nome_fornecedor) fornecedor, "
+				+ "		TO_CHAR(a.data_prev_entr, 'DD/MM/YYYY') entregaPrevista, "
+				+ "		a.periodo_compras periodo, "
+				+ "		SUM(a.qtde_pedida_item) qtde, "
+				+ "		SUM(a.qtde_saldo_item) saldo "
+				+ "  FROM supr_100 a, supr_090 b, supr_010 c, basi_010 d, basi_030 e "
+				+ "  WHERE b.pedido_compra = a.num_ped_compra "
+				+ "  AND c.fornecedor9 = b.forn_ped_forne9 "
+				+ "  AND c.fornecedor4 = b.forn_ped_forne4 "
+				+ "  AND c.fornecedor2 = b.forn_ped_forne2 "
+				+ "  AND d.nivel_estrutura = a.item_100_nivel99 "
+				+ "  AND d.grupo_estrutura = a.item_100_grupo "
+				+ "  AND d.subgru_estrutura = a.item_100_subgrupo "
+				+ "  AND d.item_estrutura = a.item_100_item "
+				+ "  AND e.nivel_estrutura = a.item_100_nivel99 "
+				+ "  AND e.referencia = a.item_100_grupo "
+				+ "  AND a.cod_cancelamento = 0 "
+				+ "  AND a.item_100_nivel99 <> '1' "
+				+ "  AND b.situacao_pedido NOT IN (4,8,9,7) "
+				+ "  AND a.situacao_item <> 3 ";
+		
+		if (!listComplemento.equals("")) {
+			query += " AND d.complemento IN (" + listComplemento + ")";
+		}
+		
+		if (!listContaEstoq.equals("")) {
+			query += " AND e.conta_estoque IN (" + listContaEstoq + ")";
+		}
+		
+		if (!listDeposito.equals("")) {
+			query += " AND a.codigo_deposito IN (" + listDeposito + ") ";
+		}
+		
+		
+		if (!listOrdemProducao.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM tmrp_041 j "
+					+ "     WHERE j.nivel_estrutura = a.item_100_nivel99 "
+					+ "		AND j.grupo_estrutura = a.item_100_grupo "
+					+ "		AND j.subgru_estrutura = a.item_100_subgrupo "
+					+ "		AND j.item_estrutura = a.item_100_item "
+					+ "		AND j.nr_pedido_ordem IN (" + listOrdemProducao + ")) ";
+		}
+		
+		if (!listEstagio.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM pcpc_040 z "
+					+ "  WHERE  z.proconf_nivel99 = a.item_100_nivel99 "
+					+ "  AND z.proconf_grupo = a.item_100_grupo "
+					+ "  AND z.proconf_subgrupo = a.item_100_subgrupo "
+					+ "  AND z.proconf_item = a.item_100_item "
+					+ "  AND z.qtde_a_produzir_pacote > 0 "
+					+ "  AND z.codigo_estagio IN (" + listEstagio + ")) ";
+		}
+		
+		query += "  GROUP BY a.item_100_nivel99, a.item_100_grupo, a.item_100_subgrupo, a.item_100_item, a.descricao_item, a.unidade_medida, "
+			  + "  a.num_ped_compra, b.dt_emis_ped_comp, b.forn_ped_forne9, b.forn_ped_forne4, b.forn_ped_forne2, c.nome_fornecedor, a.data_prev_entr, a.periodo_compras ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}

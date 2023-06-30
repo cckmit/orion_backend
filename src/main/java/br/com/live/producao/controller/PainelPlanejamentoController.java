@@ -11,11 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.producao.body.BodyPainelPlanejamento;
-import br.com.live.producao.model.ConsultaPainelPlanejamento;
 import br.com.live.producao.model.ConsultaPainelPlanejamentoListas;
 import br.com.live.producao.service.PainelPlanejamentoService;
-import br.com.live.produto.body.BodyEngenharia;
-import br.com.live.produto.entity.OperacaoXMicromovimentos;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -30,6 +27,21 @@ public class PainelPlanejamentoController {
 	public PainelPlanejamentoController(PainelPlanejamentoService painelPlanejamentoService) {
 		this.painelPlanejamentoService= painelPlanejamentoService;
 	}
+	
+	@RequestMapping(value = "/find-all-referencia/{referencia}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllReferencia(@PathVariable("referencia") String referencia) {
+          return painelPlanejamentoService.findAllReferencia(referencia);
+    }
+	
+	@RequestMapping(value = "/find-all-tamanho", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllTamanho() {
+          return painelPlanejamentoService.findAllTamanho();
+    }
+	
+	@RequestMapping(value = "/find-all-cor/{cor}", method = RequestMethod.GET)
+    public List<ConteudoChaveAlfaNum> findAllCor(@PathVariable("cor") String cor) {
+          return painelPlanejamentoService.findAllCor(cor);
+    }
 	
 	@RequestMapping(value = "/find-all-colecao", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findAllColecaoWithPermanentes() {
@@ -116,6 +128,26 @@ public class PainelPlanejamentoController {
 		return painelPlanejamentoService.findAllArtigoCotas();
 	}
 	
+	@RequestMapping(value = "/find-periodo-inicial", method = RequestMethod.GET)
+    public int findPeriodoInicial() {
+		return painelPlanejamentoService.findPeriodoInicial();
+	}
+	
+	@RequestMapping(value = "/find-periodo-atual", method = RequestMethod.GET)
+    public int findPeriodoAtual() {
+		return painelPlanejamentoService.findPeriodoAtual();
+	}
+	
+	@RequestMapping(value = "/find-carteira-inicial", method = RequestMethod.GET)
+    public int findCarteiraInicial() {
+		return painelPlanejamentoService.findCarteiraInicial();
+	}
+	
+	@RequestMapping(value = "/find-carteira-atual", method = RequestMethod.GET)
+    public int findCarteiraAtual() {
+		return painelPlanejamentoService.findCarteiraAtual();
+	}
+	
 	@RequestMapping(value = "/find-all-ordem-producao/{ordemProducao}", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findAllOrdensProducao(@PathVariable("ordemProducao") int ordemProducao) {
 		return painelPlanejamentoService.findAllOrdensProducao(ordemProducao);
@@ -123,14 +155,13 @@ public class PainelPlanejamentoController {
 	
 	@RequestMapping(value = "/find-acabados", method = RequestMethod.POST)
     public ConsultaPainelPlanejamentoListas findAcabados(@RequestBody BodyPainelPlanejamento body) { 
-		return painelPlanejamentoService.findAcabados(body.listColecao, body.listSubColecao, body.listLinhaProduto, body.listArtigo, body.listArtigoCota, body.listContaEstoq,
-				body.listPublicoAlvo, body.listSegmento, body.listFaixaEtaria, body.listComplemento, body.listDeposito, body.listPerEmbarque, body.listPerProducao,
-				body.listPerCarteira, body.listNumInterno, body.bloqueado);
+		return painelPlanejamentoService.findAcabados(body.listReferencia, body.listTamanho, body.listCor, body.listColecao, body.listSubColecao, body.listLinhaProduto, body.listArtigo, 
+				body.listArtigoCota, body.listContaEstoq, body.listPublicoAlvo, body.listSegmento, body.listFaixaEtaria, body.listComplemento, body.listDeposito, body.listPerEmbarque, 
+				body.periodoProdInicio, body.periodoProdFim, body.periodoCartInicio, body.periodoCartFim, body.listNumInterno, body.bloqueado);
     }
 	
 	@RequestMapping(value = "/find-materiais", method = RequestMethod.POST)
     public ConsultaPainelPlanejamentoListas findMateriais(@RequestBody BodyPainelPlanejamento body) { 
-		System.out.println("Entrou");
 		return painelPlanejamentoService.findMateriais(body.listComplemento, body.listContaEstoq, body.listPerEmbarque, body.listDeposito, body.listPerAReceber, body.listPerReserva, 
 				body.listOrdemProducao,	body.listEstagio);
     }

@@ -7,6 +7,9 @@ import br.com.live.util.ConteudoChaveNumerica;
 
 public class BodyPainelPlanejamento {
 	
+	public List<ConteudoChaveAlfaNum> listReferencia;
+	public List<ConteudoChaveAlfaNum> listTamanho;
+	public List<ConteudoChaveAlfaNum> listCor;
 	public List<ConteudoChaveNumerica> listColecao;
 	public List<ConteudoChaveNumerica> listSubColecao;
 	public List<ConteudoChaveNumerica> listLinhaProduto;
@@ -19,8 +22,10 @@ public class BodyPainelPlanejamento {
 	public List<ConteudoChaveAlfaNum> listComplemento;
 	public List<ConteudoChaveNumerica> listDeposito;
 	public List<ConteudoChaveAlfaNum> listPerEmbarque;
-	public List<ConteudoChaveNumerica> listPerProducao;
-	public List<ConteudoChaveNumerica> listPerCarteira;
+	public String periodoProdInicio;
+	public String periodoProdFim;
+	public String periodoCartInicio;
+	public String periodoCartFim;
 	public List<ConteudoChaveNumerica> listNumInterno;
 	public List<ConteudoChaveNumerica> listPerAReceber;
 	public List<ConteudoChaveNumerica> listPerReserva;
