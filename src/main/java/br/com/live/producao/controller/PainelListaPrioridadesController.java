@@ -6,14 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.comercial.custom.PedidoVendaCustom;
-import br.com.live.comercial.custom.PoliticaVendasCustom;
+import br.com.live.producao.body.BodyPainelListaPrioridades;
 import br.com.live.producao.custom.OrdemProducaoCustom;
 import br.com.live.producao.custom.PainelPlanejamentoCustom;
 import br.com.live.producao.custom.PeriodoProducaoCustom;
+import br.com.live.producao.model.PainelListaPrioridades;
+import br.com.live.producao.service.PainelListaPrioridadesService;
+import br.com.live.producao.service.PainelPlanejamentoService;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -28,9 +33,11 @@ public class PainelListaPrioridadesController {
 	private PedidoVendaCustom pedidoVendaCustom; 
 	private OrdemProducaoCustom ordemProducaoCustom; 
 	private PainelPlanejamentoCustom painelPlanejamentoCustom;
+	private PainelListaPrioridadesService painelListaPrioridadesService;
 	
 	@Autowired
-	public PainelListaPrioridadesController(PainelPlanejamentoCustom painelPlanejamentoCustom, ProdutoCustom produtoCustom, PedidoVendaCustom pedidoVendaCustom, OrdemProducaoCustom ordemProducaoCustom, PeriodoProducaoCustom periodoProducaoCustom) {
+	public PainelListaPrioridadesController(PainelListaPrioridadesService painelListaPrioridadesService, PainelPlanejamentoCustom painelPlanejamentoCustom, ProdutoCustom produtoCustom, PedidoVendaCustom pedidoVendaCustom, OrdemProducaoCustom ordemProducaoCustom, PeriodoProducaoCustom periodoProducaoCustom) {
+		this.painelListaPrioridadesService = painelListaPrioridadesService;
 		this.painelPlanejamentoCustom = painelPlanejamentoCustom;
 		this.produtoCustom = produtoCustom;		
 		this.pedidoVendaCustom = pedidoVendaCustom;
@@ -118,4 +125,10 @@ public class PainelListaPrioridadesController {
     public List<ConteudoChaveNumerica> findNumerosInternos(){
         return pedidoVendaCustom.findNumerosInternos();
     }
+	
+	@PostMapping("/find-lista-prioridades") 
+	public PainelListaPrioridades findListaPrioridadesAtendimento(@RequestBody BodyPainelListaPrioridades body) {
+		System.out.println("PainelListaPrioridadesController");
+		return painelListaPrioridadesService.findListaPrioridadesAtendimento(body);
+	}
 }
