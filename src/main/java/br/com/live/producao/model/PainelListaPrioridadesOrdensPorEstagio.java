@@ -1,6 +1,7 @@
 package br.com.live.producao.model;
 
 public class PainelListaPrioridadesOrdensPorEstagio {
+	private int id;
 	private int seqFila;
 	private int codEstagio;
 	private String descEstagio;
@@ -14,10 +15,11 @@ public class PainelListaPrioridadesOrdensPorEstagio {
 		super();
 	}
 
-	public PainelListaPrioridadesOrdensPorEstagio(int seqFila, int codEstagio, String descEstagio, int qtdeEmProducaoOP,
+	public PainelListaPrioridadesOrdensPorEstagio(int id, int seqFila, int codEstagio, String descEstagio, int qtdeEmProducaoOP,
 			int qtdeEmProducaoEstagio, double percentualQtdeEmProducao, int qtdeNecessaria,
 			double percentualQtdeNecessaria) {
 		super();
+		this.id = id;
 		this.seqFila = seqFila;
 		this.codEstagio = codEstagio;
 		this.descEstagio = descEstagio;
@@ -26,6 +28,14 @@ public class PainelListaPrioridadesOrdensPorEstagio {
 		this.percentualQtdeEmProducao = percentualQtdeEmProducao;
 		this.qtdeNecessaria = qtdeNecessaria;
 		this.percentualQtdeNecessaria = percentualQtdeNecessaria;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getSeqFila() {

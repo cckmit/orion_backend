@@ -26,31 +26,42 @@ import br.com.live.util.FormataData;
 public class PainelListaPrioridadesService {
 
 	private final PainelListaPrioridadesCustom painelListaPrioridadesCustom;
-	Map<String, PainelListaPrioridadesAnaliseCarteira> mapAnaliseCarteira;
-	List<PainelListaPrioridadesCarteiraPedidos> listCarteiraPedidos; 
-	List<PainelListaPrioridadesAnaliseCarteira> listAnaliseCarteira; 
-	List<PainelListaPrioridadesOrdensEmProducao> listOrdensEmProducao;
-	Map<Integer, PainelListaPrioridadesOrdensPorEstagio> mapOrdensPorEstagio;
-	List<PainelListaPrioridadesOrdensPorEstagio> listOrdensPorEstagio;
-	Map<String, Integer> mapQtdeEmProducaoPorOrdemEstagio;
+	private Map<String, PainelListaPrioridadesAnaliseCarteira> mapAnaliseCarteira;
+	private List<PainelListaPrioridadesCarteiraPedidos> listCarteiraPedidos; 
+	private List<PainelListaPrioridadesAnaliseCarteira> listAnaliseCarteira; 
+	private List<PainelListaPrioridadesOrdensEmProducao> listOrdensEmProducao;
+	private Map<Integer, PainelListaPrioridadesOrdensPorEstagio> mapOrdensPorEstagio;
+	private List<PainelListaPrioridadesOrdensPorEstagio> listOrdensPorEstagio;
 	
 	public PainelListaPrioridadesService(PainelListaPrioridadesCustom painelListaPrioridadesCustom) {
 		this.painelListaPrioridadesCustom = painelListaPrioridadesCustom;
+	}
+
+	public void inicializarListas() {
 		this.mapAnaliseCarteira = new TreeMap<String, PainelListaPrioridadesAnaliseCarteira>();
 		this.mapOrdensPorEstagio = new TreeMap<Integer, PainelListaPrioridadesOrdensPorEstagio>(); 
 		this.listCarteiraPedidos = new ArrayList<PainelListaPrioridadesCarteiraPedidos> ();
 		this.listAnaliseCarteira = new ArrayList<PainelListaPrioridadesAnaliseCarteira>();
 		this.listOrdensEmProducao = new ArrayList<PainelListaPrioridadesOrdensEmProducao>();
-		this.listOrdensPorEstagio = new ArrayList<PainelListaPrioridadesOrdensPorEstagio>();
+		this.listOrdensPorEstagio = new ArrayList<PainelListaPrioridadesOrdensPorEstagio>();		
 	}
-
+	
 	public PainelListaPrioridades findListaPrioridadesAtendimento(BodyPainelListaPrioridades parametros) {				
 		System.out.println("findListaPrioridadesAtendimento - inicio: " + new Date());
+		
+		inicializarListas();
 		analisarCarteiraEmAberto(parametros);
 		gerarCarteiraOrdenadaPorProduto(parametros.produtosComSobra, parametros.produtoscomFalta, parametros.produtosFaltaSemProducao);
 		analisarOrdensEmProducao(parametros);	
 		acumularProducaoPorEstagio();
+		
 		System.out.println("findListaPrioridadesAtendimento - fim: " + new Date());		
+		
+		System.out.println("listCarteiraPedidos: " + listCarteiraPedidos.size());
+		System.out.println("listAnaliseCarteira: " + listAnaliseCarteira.size());
+		System.out.println("listOrdensEmProducao: " + listOrdensEmProducao.size());
+		System.out.println("listOrdensPorEstagio: " + listOrdensPorEstagio.size());
+		
 		return new PainelListaPrioridades(listCarteiraPedidos, listAnaliseCarteira, listOrdensEmProducao, listOrdensPorEstagio);
 	}
 
@@ -71,7 +82,8 @@ public class PainelListaPrioridadesService {
 				ConteudoChaveNumerica.parseValueToString(parametros.listFaccoes), 
 				ConteudoChaveAlfaNum.parseValueToString(parametros.listNaturezas));							
 		for (PainelListaPrioridadesCarteiraPedidos item : listCarteiraPedidos) {
-			// cria um mapa de dados, para acumular os dados por produto
+			// cria um mapa de dados, para acumular os dados por produto			
+			//System.out.println(item.getPedidoVenda() + " - " + item.getReferencia() + " - " + item.getQtdeCarteira());			
 			acumularPorProduto(item);	
 		}					
 	}
@@ -85,7 +97,7 @@ public class PainelListaPrioridadesService {
 			itemAnaliseCarteira.setQtdeColetada(itemAnaliseCarteira.getQtdeColetada() + item.getQtdeColetada());
 			itemAnaliseCarteira.setQtdeSugerida(itemAnaliseCarteira.getQtdeSugerida() + item.getQtdeSugerida());
 		} else {						
-			itemAnaliseCarteira = new PainelListaPrioridadesAnaliseCarteira(item.getReferencia(), item.getDescReferencia(), item.getTamanho(), item.getCor(), item.getDescCor(), item.getQtdeCarteira(), item.getQtdeEstoque(), item.getQtdeEmProducao(), item.getQtdeSugerida(), item.getQtdeColetada());
+			itemAnaliseCarteira = new PainelListaPrioridadesAnaliseCarteira(item.getId(), item.getReferencia(), item.getDescReferencia(), item.getTamanho(), item.getCor(), item.getDescCor(), item.getQtdeCarteira(), item.getQtdeEstoque(), item.getQtdeEmProducao(), item.getQtdeSugerida(), item.getQtdeColetada());
 			mapAnaliseCarteira.put(produto, itemAnaliseCarteira);
 		}
 	}
@@ -107,26 +119,30 @@ public class PainelListaPrioridadesService {
 		for (PainelListaPrioridadesAnaliseCarteira itemCarteira : listAnaliseCarteira) {			
 						
 			int qtdeNecessaria = 0;
-			if (itemCarteira.getQtdeEstoque() < 0) qtdeNecessaria = itemCarteira.getQtdeEstoque() * -1;
+			int qtdeAtualizar = 0;
+			if (itemCarteira.getQtdeSobraFalta() < 0) qtdeNecessaria = itemCarteira.getQtdeSobraFalta() * -1;
 						
-			List<PainelListaPrioridadesOrdensEmProducao> ordens = painelListaPrioridadesCustom.findOrdensEmProducao(itemCarteira.getReferencia(), itemCarteira.getTamanho(), itemCarteira.getCor(), parametros.periodoProdInicio, parametros.periodoProdFim, ConteudoChaveNumerica.parseValueToString(parametros.listPedidosOrdens), ConteudoChaveNumerica.parseValueToString(parametros.listFamilias), ConteudoChaveNumerica.parseValueToString(parametros.listFaccoes));
-			
-			if (ordens.size() > 0) System.out.println("ordens: " + ordens.size());
+			List<PainelListaPrioridadesOrdensEmProducao> ordens = painelListaPrioridadesCustom.findOrdensEmProducao(itemCarteira.getReferencia(), itemCarteira.getTamanho(), itemCarteira.getCor(), parametros.periodoProdInicio, parametros.periodoProdFim, ConteudoChaveNumerica.parseValueToString(parametros.listPedidosOrdens), ConteudoChaveNumerica.parseValueToString(parametros.listFamilias), ConteudoChaveNumerica.parseValueToString(parametros.listFaccoes));			
+			//System.out.println("ordens: " + ordens.size());
 			
 			for (PainelListaPrioridadesOrdensEmProducao ordem : ordens) {				
 
-				// atualiza a qtde coletada e sugerida conforme a analise da carteira
+				// atualizar os dados do produto originados da analise da carteira.
+				ordem.setQtdeCarteira(itemCarteira.getQtdeCarteira());
+				ordem.setQtdeEstoque(itemCarteira.getQtdeEstoque());
+				ordem.setQtdeSobraFalta(itemCarteira.getQtdeSobraFalta());
 				ordem.setQtdeColetada(itemCarteira.getQtdeColetada());
 				ordem.setQtdeSugerida(itemCarteira.getQtdeSugerida());
 				
-				if (itemCarteira.getQtdeEstoque() < 0) {				
+				if (itemCarteira.getQtdeSobraFalta() < 0) {				
 					if (ordem.getQtdeEmProducaoPacote() < qtdeNecessaria)
-						qtdeNecessaria -= ordem.getQtdeEmProducaoPacote();
-					else qtdeNecessaria -= qtdeNecessaria;
+						qtdeAtualizar = ordem.getQtdeEmProducaoPacote();
+					else qtdeAtualizar = qtdeNecessaria;
 										
-					if (qtdeNecessaria > 0) {
-						ordem.setQtdeNecessaria(qtdeNecessaria);
+					if (qtdeAtualizar > 0) {
+						ordem.setQtdeNecessaria(qtdeAtualizar);
 						listOrdensEmProducao.add(ordem);
+						qtdeNecessaria -= qtdeAtualizar;
 					}
 				} else if (parametros.produtosComSobra) {
 					ordem.setQtdeEmProducaoPacote(0);
@@ -147,17 +163,23 @@ public class PainelListaPrioridadesService {
 			PainelListaPrioridadesOrdensPorEstagio ordemPorEstagio;
 			if (mapOrdensPorEstagio.containsKey(ordem.getCodEstagio())) {
 				ordemPorEstagio = mapOrdensPorEstagio.get(ordem.getCodEstagio());
-				ordemPorEstagio.setQtdeEmProducaoEstagio(ordem.getQtdeEmProducaoPacote());
-				ordemPorEstagio.setQtdeNecessaria(ordem.getQtdeNecessaria());
+				ordemPorEstagio.setQtdeEmProducaoEstagio(ordemPorEstagio.getQtdeEmProducaoEstagio() + ordem.getQtdeEmProducaoPacote());
+				ordemPorEstagio.setQtdeNecessaria(ordemPorEstagio.getQtdeNecessaria() + ordem.getQtdeNecessaria());
 			} else {
-				ordemPorEstagio = new PainelListaPrioridadesOrdensPorEstagio(ordem.getSeqFilaEstagio(), ordem.getCodEstagio(), ordem.getDescEstagio(), 0, ordem.getQtdeEmProducaoPacote(), 0, ordem.getQtdeNecessaria(), 0); 
+				ordemPorEstagio = new PainelListaPrioridadesOrdensPorEstagio(ordem.getId(), ordem.getSeqFilaEstagio(), ordem.getCodEstagio(), ordem.getDescEstagio(), 0, ordem.getQtdeEmProducaoPacote(), 0, ordem.getQtdeNecessaria(), 0); 
+				mapOrdensPorEstagio.put(ordem.getCodEstagio(), ordemPorEstagio);
 			}			
 		}		
 		// atualiza lista com os dados de produção por estágio
 		for (Integer estagio : mapOrdensPorEstagio.keySet()) {
 			int qtdeEmProducaoNoEstagio = painelListaPrioridadesCustom.findQtdeEmProducaoNoEstagio(estagio);
 			PainelListaPrioridadesOrdensPorEstagio ordemPorEstagio = mapOrdensPorEstagio.get(estagio);
-			ordemPorEstagio.setPercentualQtdeEmProducao(((double) ordemPorEstagio.getQtdeEmProducaoOP() / (double) totalQtdeEmProducaoEstagio) * 100);
+			
+			System.out.println("totalQtdeEmProducaoEstagio: " + totalQtdeEmProducaoEstagio);
+			System.out.println("ordemPorEstagio.getQtdeEmProducaoEstagio(): " + ordemPorEstagio.getQtdeEmProducaoEstagio());
+			System.out.println(((double) ordemPorEstagio.getQtdeEmProducaoEstagio() / (double) totalQtdeEmProducaoEstagio) * 100);
+			
+			ordemPorEstagio.setPercentualQtdeEmProducao(((double) ordemPorEstagio.getQtdeEmProducaoEstagio() / (double) totalQtdeEmProducaoEstagio) * 100);
 			ordemPorEstagio.setPercentualQtdeNecessaria(((double) ordemPorEstagio.getQtdeNecessaria() / (double) totalQtdeNecessaria) * 100);
 			ordemPorEstagio.setQtdeEmProducaoOP(qtdeEmProducaoNoEstagio);
 			listOrdensPorEstagio.add(ordemPorEstagio);	

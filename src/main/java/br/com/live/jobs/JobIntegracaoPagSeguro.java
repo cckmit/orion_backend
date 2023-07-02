@@ -25,4 +25,5 @@ public class JobIntegracaoPagSeguro {
     public void gravarMovimentosPagSeguroJob() {
         movimentoPagSeguroService.GravarMovimentosPagSeguroJob();
     }
+    
 }

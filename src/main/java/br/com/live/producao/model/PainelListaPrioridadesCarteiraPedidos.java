@@ -3,6 +3,7 @@ package br.com.live.producao.model;
 import java.util.Date;
 
 public class PainelListaPrioridadesCarteiraPedidos {
+	private int id;
 	private int pedidoVenda;
 	private Date dataEmbarque;
 	private String referencia;
@@ -20,9 +21,10 @@ public class PainelListaPrioridadesCarteiraPedidos {
 		super();	
 	}
 
-	public PainelListaPrioridadesCarteiraPedidos(int pedidoVenda, Date dataEmbarque, String referencia, String descReferencia, String tamanho, String cor,
+	public PainelListaPrioridadesCarteiraPedidos(int id, int pedidoVenda, Date dataEmbarque, String referencia, String descReferencia, String tamanho, String cor,
 			String descCor, int qtdeCarteira, int qtdeEstoque, int qtdeEmProducao,int qtdeSugerida, int qtdeColetada) {
 		super();
+		this.id = id; 
 		this.pedidoVenda = pedidoVenda;
 		this.dataEmbarque = dataEmbarque;
 		this.referencia = referencia;
@@ -35,6 +37,14 @@ public class PainelListaPrioridadesCarteiraPedidos {
 		this.qtdeEmProducao = qtdeEmProducao;
 		this.qtdeSugerida = qtdeSugerida;
 		this.qtdeColetada = qtdeColetada;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getPedidoVenda() {

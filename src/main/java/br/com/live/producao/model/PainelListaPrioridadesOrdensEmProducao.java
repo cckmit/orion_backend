@@ -1,6 +1,7 @@
 package br.com.live.producao.model;
 
 public class PainelListaPrioridadesOrdensEmProducao {
+	private int id;
 	private String referencia;
 	private String descReferencia;
 	private String tamanho;
@@ -19,7 +20,10 @@ public class PainelListaPrioridadesOrdensEmProducao {
 	private int qtdeEmProducaoOrdem;
 	private int qtdeNecessaria;
 	private int codFamilia;
-	private int descFaccao;
+	private String descFaccao;
+	private int qtdeCarteira;
+	private int qtdeEstoque;
+	private int qtdeSobraFalta;
 	private int qtdeSugerida;
 	private int qtdeColetada;
  	
@@ -27,11 +31,12 @@ public class PainelListaPrioridadesOrdensEmProducao {
 		super();	
 	}
 
-	public PainelListaPrioridadesOrdensEmProducao(String referencia, String descReferencia, String tamanho, String cor, String descCor,
+	public PainelListaPrioridadesOrdensEmProducao(int id, String referencia, String descReferencia, String tamanho, String cor, String descCor,
 			String ordemProducao, String ordemConfeccao, String periodo, int seqFilaEstagio, int seqEstagio, int seqOperacao,
 			int codEstagio, String descEstagio, int pedidoVenda, int qtdeEmProducaoPacote, int qtdeEmProducaoOrdem,
-			int qtdeNecessaria, int codFamilia, int descFaccao) {
+			int qtdeNecessaria, int codFamilia, String descFaccao) {
 		super();
+		this.id = id;
 		this.referencia = referencia;
 		this.descReferencia = descReferencia;
 		this.tamanho = tamanho;
@@ -51,6 +56,14 @@ public class PainelListaPrioridadesOrdensEmProducao {
 		this.qtdeNecessaria = qtdeNecessaria;
 		this.codFamilia = codFamilia;
 		this.descFaccao = descFaccao;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getReferencia() {
@@ -197,12 +210,28 @@ public class PainelListaPrioridadesOrdensEmProducao {
 		this.codFamilia = codFamilia;
 	}
 
-	public int getDescFaccao() {
+	public String getDescFaccao() {
 		return descFaccao;
 	}
 
-	public void setDescFaccao(int descFaccao) {
+	public void setDescFaccao(String descFaccao) {
 		this.descFaccao = descFaccao;
+	}
+	
+	public int getQtdeCarteira() {
+		return qtdeCarteira;
+	}
+
+	public void setQtdeCarteira(int qtdeCarteira) {
+		this.qtdeCarteira = qtdeCarteira;
+	}
+
+	public int getQtdeEstoque() {
+		return qtdeEstoque;
+	}
+
+	public void setQtdeEstoque(int qtdeEstoque) {
+		this.qtdeEstoque = qtdeEstoque;
 	}
 
 	public int getQtdeSugerida() {
@@ -219,5 +248,13 @@ public class PainelListaPrioridadesOrdensEmProducao {
 
 	public void setQtdeColetada(int qtdeColetada) {
 		this.qtdeColetada = qtdeColetada;
+	}
+
+	public int getQtdeSobraFalta() {
+		return qtdeSobraFalta;
+	}
+
+	public void setQtdeSobraFalta(int qtdeSobraFalta) {
+		this.qtdeSobraFalta = qtdeSobraFalta;
 	}
 }

@@ -1,6 +1,7 @@
 package br.com.live.producao.model;
 
 public class PainelListaPrioridadesAnaliseCarteira {
+	private int id;
 	private String referencia;
 	private String descReferencia;
 	private String tamanho;
@@ -18,9 +19,10 @@ public class PainelListaPrioridadesAnaliseCarteira {
 		super();	
 	}
 
-	public PainelListaPrioridadesAnaliseCarteira(String referencia, String descReferencia, String tamanho, String cor,
+	public PainelListaPrioridadesAnaliseCarteira(int id, String referencia, String descReferencia, String tamanho, String cor,
 			String descCor, int qtdeCarteira, int qtdeEstoque, int qtdeEmProducao, int qtdeSugerida, int qtdeColetada) {
 		super();
+		this.id = id;
 		this.referencia = referencia;
 		this.descReferencia = descReferencia;
 		this.tamanho = tamanho;
@@ -33,12 +35,20 @@ public class PainelListaPrioridadesAnaliseCarteira {
 		this.qtdeColetada = qtdeColetada;
 		calcularCampos();
 	}
-
+	
 	private void calcularCampos() {
 		this.qtdeSobraFalta = this.qtdeEstoque - this.qtdeCarteira;
 		this.qtdeNecessidade = this.qtdeSobraFalta + this.getQtdeEmProducao();
 	}
-	
+		
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getReferencia() {
 		return referencia;
 	}

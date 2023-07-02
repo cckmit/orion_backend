@@ -22,7 +22,7 @@ public class JobIntegracaoFluxogama {
     	this.integracaoFluxogamaService = integracaoFluxogamaService;
         this.parametrosRepository = parametrosRepository;
     }
-    
+
     @Scheduled(fixedRate = MINUTO * 5)
     public void gravarReferenciasIntegracaoFluxogama() throws IOException{
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_FLUXOGAMA_ATIVO");

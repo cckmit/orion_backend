@@ -28,7 +28,7 @@ public class PainelListaPrioridadesCustom {
 			if (!listaPedidosOrdens.isEmpty()) listaPedidos +=  "," + listaPedidosOrdens;
 		}
 
-		String query = " select analise.pedido_venda pedidoVenda, analise.data_entr_venda dataEmbarque, analise.grupo referencia, analise.descricao descReferencia, analise.sub tamanho, analise.item cor, analise.desc_cor descCor, " 
+		String query = " select rownum id, analise.pedido_venda pedidoVenda, analise.data_entr_venda dataEmbarque, analise.grupo referencia, analise.descricao descReferencia, analise.sub tamanho, analise.item cor, analise.desc_cor descCor, " 
 	    + " analise.carteira qtdeCarteira, analise.estoque qtdeEstoque, analise.em_producao qtdeEmProducao, analise.sugerido qtdeSugerida, analise.coletado qtdeColetada" 
 	    + " from ( "
 	    + " select a.pedido_venda, a.data_entr_venda, b.cd_it_pe_grupo grupo, b.cd_it_pe_subgrupo sub, b.cd_it_pe_item item, f.descr_referencia descricao, w.descricao_15 desc_cor, sum(b.qtde_pedida - b.qtde_faturada) carteira, sum(b.qtde_sugerida) sugerido, sum(b.qtde_afaturar) coletado, "
@@ -161,7 +161,7 @@ public class PainelListaPrioridadesCustom {
 	public List<PainelListaPrioridadesOrdensEmProducao> findOrdensEmProducao(String grupo, String sub, String item, int periodoInicial, int periodoFinal, String listaPedidosOrdens, String listaFamilias, String listaFaccoes) {
 		List<PainelListaPrioridadesOrdensEmProducao> resultado;		
 		
-		String query = " select a.proconf_grupo referencia, " 
+		String query = " select rownum id, a.proconf_grupo referencia, " 
         + " c.descr_referencia descReferencia, "
         + " a.proconf_subgrupo tamanho, "
         + " a.proconf_item cor, "
@@ -221,8 +221,6 @@ public class PainelListaPrioridadesCustom {
 	    
 	    query += " order by a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, a.sequencia_estagio desc, a.seq_operacao, a.codigo_estagio, b.periodo_producao, a.ordem_producao, a.ordem_confeccao ";
 	
-	    System.out.println(query);
-	    
 	    try {
 	    	resultado = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PainelListaPrioridadesOrdensEmProducao.class));
 		} catch (Exception e) {
