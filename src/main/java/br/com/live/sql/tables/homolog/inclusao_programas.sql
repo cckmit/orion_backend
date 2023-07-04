@@ -312,3 +312,6 @@ values (106, 'Relacionamento do Estabelecimento PagSeguro x Loja', 'Financeiro',
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (107, 'Painel de Lista de Prioridades', 'Confecção', '/painel-lista-prioridades');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (108, 'Gestor de Projetos', 'TI', '/gestor-projetos');
