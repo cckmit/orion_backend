@@ -43,9 +43,9 @@ public class PoliticaVendasService {
 	}
 	
 	public List<DivergenciasPoliticaVendas> findPedidosDivergencias(boolean regra1, boolean regra2, boolean regra3, boolean regra4, boolean regra5,
-			boolean regra6, boolean regra7, boolean regra8, boolean regra9, boolean regra10){
+			boolean regra6, boolean regra7, boolean regra8, boolean regra9, boolean regra10, boolean regra11, boolean regra12, boolean regra14){
 		
-		String opcoes = "11,12,14";
+		String opcoes = "";
 		if (regra1) opcoes += (opcoes.isEmpty()) ? "1" : ",1";
 		if (regra2) opcoes += (opcoes.isEmpty()) ? "2" : ",2";
 		if (regra3) opcoes += (opcoes.isEmpty()) ? "3" : ",3";
@@ -55,7 +55,10 @@ public class PoliticaVendasService {
 		if (regra7) opcoes += (opcoes.isEmpty()) ? "7" : ",7";
 		if (regra8) opcoes += (opcoes.isEmpty()) ? "8" : ",8";
 		if (regra9) opcoes += (opcoes.isEmpty()) ? "9" : ",9";
-		if (regra10) opcoes += (opcoes.isEmpty()) ? "10" : ",10";		
+		if (regra10) opcoes += (opcoes.isEmpty()) ? "10" : ",10";
+		if (regra11) opcoes += (opcoes.isEmpty()) ? "11" : ",11";
+		if (regra12) opcoes += (opcoes.isEmpty()) ? "12" : ",12";
+		if (regra14) opcoes += (opcoes.isEmpty()) ? "14" : ",14";
 		
 		return politicaVendasCustom.findPedidosDivergencias(opcoes);
 	}

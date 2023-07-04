@@ -34,6 +34,9 @@ public class BodyPoliticaVendas {
 	public boolean regra8;
 	public boolean regra9;
 	public boolean regra10;
+	public boolean regra11;
+	public boolean regra12;
+	public boolean regra14;
 	
 	
 	public List<ConsultaPoliticaVendas> tabImportarRegras;

@@ -88,7 +88,7 @@ public class PoliticaVendasController {
 	@RequestMapping(value = "/find-pedidos-divergencias", method = RequestMethod.POST)
     public List<DivergenciasPoliticaVendas> findPedidosDivergencias(@RequestBody BodyPoliticaVendas body) {
         return politicaVendasService.findPedidosDivergencias(body.regra1, body.regra2, body.regra3, body.regra4, body.regra5, body.regra6, body.regra7, 
-        		body.regra8, body.regra9, body.regra10);
+        		body.regra8, body.regra9, body.regra10, body.regra11, body.regra12, body.regra14);
 	    }
 	
 	@RequestMapping(value = "/find-grupo-embarque-divergencias", method = RequestMethod.POST)
