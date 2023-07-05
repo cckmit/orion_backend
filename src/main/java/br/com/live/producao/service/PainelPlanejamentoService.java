@@ -90,8 +90,12 @@ public class PainelPlanejamentoService {
     	return painelPlanejamentoCustom.findAllPeriodosProducao();
     }
     
-    public List<ConteudoChaveNumerica> findAllPeriodoAReceber(){
-    	return painelPlanejamentoCustom.findAllPeriodoAReceber();
+    public List<ConteudoChaveNumerica> findAllPeriodoAReceber(int periodo){
+    	return painelPlanejamentoCustom.findAllPeriodoAReceber(periodo);
+    }
+    
+    public List<ConteudoChaveNumerica> findAllPeriodoReserva(int periodo){
+    	return painelPlanejamentoCustom.findAllPeriodoReserva(periodo);
     }
     
     public List<ConteudoChaveNumerica> findAllPeriodosCarteira(){
@@ -167,27 +171,32 @@ public class PainelPlanejamentoService {
         return result;
     }
     
-    public ConsultaPainelPlanejamentoListas findMateriais(List<ConteudoChaveAlfaNum> listComplemento, List<ConteudoChaveNumerica> listContaEstoq, List<ConteudoChaveAlfaNum> listPerEmbarque,
-    		List<ConteudoChaveNumerica> listDeposito, List<ConteudoChaveNumerica> listPerAReceber, List<ConteudoChaveNumerica> listPerReserva, List<ConteudoChaveNumerica> listOrdemProducao,
-    		List<ConteudoChaveNumerica> listEstagio) {
+    public ConsultaPainelPlanejamentoListas findMateriais(List<ConteudoChaveAlfaNum> listNivel, List<ConteudoChaveAlfaNum> listReferencia, List<ConteudoChaveAlfaNum> listTamanho,
+    		List<ConteudoChaveAlfaNum> listCor,	List<ConteudoChaveAlfaNum> listComplemento, List<ConteudoChaveNumerica> listContaEstoq,
+    		List<ConteudoChaveNumerica> listDeposito, String periodoAReceberInicio, String periodoAReceberFim, String periodoReservaInicio, String periodoReservaFim, 
+    		List<ConteudoChaveNumerica> listOrdemProducao, List<ConteudoChaveNumerica> listEstagio) {
     	
-    	List<ConsultaPainelPlanejamento> listaMateriaisPlanejamento = painelPlanejamentoCustom.findMateriaisPlanejamento(ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq),
-    			ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), ConteudoChaveNumerica.parseValueToString(listPerAReceber), 
-        		ConteudoChaveNumerica.parseValueToString(listPerReserva), ConteudoChaveNumerica.parseValueToString(listOrdemProducao), 
-        		ConteudoChaveNumerica.parseValueToString(listEstagio));
-    	System.out.println("Entrou 2 Service");
-    	List<ConsultaPainelPlanejamento> listaMateriaisDetalharEstoque = painelPlanejamentoCustom.findMateriaisDetalharEstoque(ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq),
-    			ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), ConteudoChaveNumerica.parseValueToString(listPerAReceber), 
-        		ConteudoChaveNumerica.parseValueToString(listPerReserva), ConteudoChaveNumerica.parseValueToString(listOrdemProducao), 
-        		ConteudoChaveNumerica.parseValueToString(listEstagio));
-    	System.out.println("Entrou 3 Service");
-    	List<ConsultaPainelPlanejamento> listaMateriaisDetalharOrdens = painelPlanejamentoCustom.findMateriaisDetalharOrdens(ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq),
-    			ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), ConteudoChaveNumerica.parseValueToString(listPerAReceber), 
-        		ConteudoChaveNumerica.parseValueToString(listPerReserva), ConteudoChaveNumerica.parseValueToString(listOrdemProducao), 
-        		ConteudoChaveNumerica.parseValueToString(listEstagio));
-    	System.out.println("Entrou 4 Service");
-    	List<ConsultaPainelPlanejamento> listaMateriaislDetalharOrdens = painelPlanejamentoCustom.findMateriaisDetalharCompras(ConteudoChaveAlfaNum.parseValueToString(listComplemento), 
-    			ConteudoChaveNumerica.parseValueToString(listContaEstoq), ConteudoChaveAlfaNum.parseValueToString(listPerEmbarque), ConteudoChaveNumerica.parseValueToString(listDeposito), 
+    	List<ConsultaPainelPlanejamento> listaMateriaisPlanejamento = painelPlanejamentoCustom.findMateriaisPlanejamento(ConteudoChaveAlfaNum.parseValueToString(listNivel),
+    			ConteudoChaveAlfaNum.parseValueToString(listReferencia), ConteudoChaveAlfaNum.parseValueToString(listTamanho), ConteudoChaveAlfaNum.parseValueToString(listCor), 
+    			ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq), 
+    			ConteudoChaveNumerica.parseValueToString(listDeposito), periodoAReceberInicio, periodoAReceberFim, periodoReservaInicio, periodoReservaFim, 
+    			ConteudoChaveNumerica.parseValueToString(listOrdemProducao), ConteudoChaveNumerica.parseValueToString(listEstagio));
+    	
+    	List<ConsultaPainelPlanejamento> listaMateriaisDetalharEstoque = painelPlanejamentoCustom.findMateriaisDetalharEstoque(ConteudoChaveAlfaNum.parseValueToString(listNivel),
+    			ConteudoChaveAlfaNum.parseValueToString(listReferencia), ConteudoChaveAlfaNum.parseValueToString(listTamanho), ConteudoChaveAlfaNum.parseValueToString(listCor), 
+    			ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq), 
+    			ConteudoChaveNumerica.parseValueToString(listDeposito), periodoAReceberInicio, periodoAReceberFim, periodoReservaInicio, periodoReservaFim, 
+    			ConteudoChaveNumerica.parseValueToString(listOrdemProducao), ConteudoChaveNumerica.parseValueToString(listEstagio));
+    	
+    	List<ConsultaPainelPlanejamento> listaMateriaisDetalharOrdens = painelPlanejamentoCustom.findMateriaisDetalharOrdens(ConteudoChaveAlfaNum.parseValueToString(listNivel),
+    			ConteudoChaveAlfaNum.parseValueToString(listReferencia), ConteudoChaveAlfaNum.parseValueToString(listTamanho), ConteudoChaveAlfaNum.parseValueToString(listCor), 
+    			ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq), 
+    			ConteudoChaveNumerica.parseValueToString(listDeposito), periodoAReceberInicio, periodoAReceberFim, periodoReservaInicio, periodoReservaFim, 
+    			ConteudoChaveNumerica.parseValueToString(listOrdemProducao), ConteudoChaveNumerica.parseValueToString(listEstagio));
+    	
+    	List<ConsultaPainelPlanejamento> listaMateriaislDetalharOrdens = painelPlanejamentoCustom.findMateriaisDetalharCompras(ConteudoChaveAlfaNum.parseValueToString(listNivel),
+    			ConteudoChaveAlfaNum.parseValueToString(listReferencia), ConteudoChaveAlfaNum.parseValueToString(listTamanho), ConteudoChaveAlfaNum.parseValueToString(listCor), 
+    			ConteudoChaveAlfaNum.parseValueToString(listComplemento), ConteudoChaveNumerica.parseValueToString(listContaEstoq), ConteudoChaveNumerica.parseValueToString(listDeposito),
     			ConteudoChaveNumerica.parseValueToString(listOrdemProducao), ConteudoChaveNumerica.parseValueToString(listEstagio));
     	
     	

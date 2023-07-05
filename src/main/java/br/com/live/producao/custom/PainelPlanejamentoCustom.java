@@ -21,7 +21,7 @@ public class PainelPlanejamentoCustom {
 	
 	public List<ConteudoChaveAlfaNum> findAllReferencia(String referencia) {
 		
-		String query = " SELECT a.referencia value, a.referencia label "
+		String query = " SELECT a.referencia value, a.referencia || ' - ' || a.descr_referencia label "
 				+ "	FROM basi_030 a WHERE a.referencia LIKE '%" + referencia + "%' ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
@@ -36,7 +36,7 @@ public class PainelPlanejamentoCustom {
 
 	public List<ConteudoChaveAlfaNum> findAllCor(String cor) {
 	
-	String query = " SELECT a.cor_sortimento value, a.cor_sortimento label FROM basi_100 a WHERE a.cor_sortimento LIKE '%" + cor +"%' ";
+	String query = " SELECT a.cor_sortimento value, a.cor_sortimento || ' - ' || a.descricao label FROM basi_100 a WHERE a.cor_sortimento LIKE '%" + cor +"%' ";
 
 	return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 }
@@ -137,7 +137,7 @@ public class PainelPlanejamentoCustom {
 	
 	public List<ConteudoChaveAlfaNum> findAllPeriodosEmbarque() {
 		
-		String query = " SELECT 'GRUPO: ' || TO_CHAR(a.data_entrega, 'DD/MM') || '-BLOCO: ' || SUBSTR(a.grupo_embarque, LENGTH(a.grupo_embarque) - 1) value, "
+		String query = " SELECT a.grupo_embarque value, "
 				+ "       'GRUPO: ' || TO_CHAR(a.data_entrega, 'DD/MM') || '-BLOCO: ' || SUBSTR(a.grupo_embarque, LENGTH(a.grupo_embarque) - 1) label "
 				+ "		FROM basi_590 a "
 				+ "		GROUP BY a.data_entrega, a.grupo_embarque ";
@@ -240,15 +240,29 @@ public class PainelPlanejamentoCustom {
 		return carteiraAtual;
 	}
 
-	public List<ConteudoChaveNumerica> findAllPeriodoAReceber() {
+	public List<ConteudoChaveNumerica> findAllPeriodoAReceber(int periodo) {
 		
 		String query = " SELECT a.periodo_producao value, a.periodo_producao || ' - Dê: ' || TO_CHAR(a.data_ini_periodo, 'DD/MM/YYYY') || ' Até: ' || TO_CHAR(a.data_fim_periodo, 'DD/MM/YYYY') label "
-				+ "      FROM pcpc_010 a WHERE a.area_periodo = 1 "
-				+ "      AND a.codigo_empresa IN (1, 500) "
-				+ "      AND a.periodo_producao NOT IN(9998, 9960, 9950, 9051, 5998, 8000, 8001, 8800, 9900, 9999) "
-				+ "      AND a.periodo_producao > 2201 "
-				+ "      GROUP BY a.periodo_producao, a.data_ini_periodo, a.data_fim_periodo "
-				+ "      ORDER BY a.periodo_producao DESC ";
+				+ "       FROM pcpc_010 a WHERE a.area_periodo IN (2, 9)"
+				+ "       AND a.codigo_empresa IN (1, 600) "
+				+ "       AND a.periodo_producao > 2201 "
+				+ "       AND a.periodo_producao LIKE '%" + periodo + "%' "
+				+ "       GROUP BY a.periodo_producao, a.data_ini_periodo, a.data_fim_periodo "
+				+ "       ORDER BY a.periodo_producao DESC ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	public List<ConteudoChaveNumerica> findAllPeriodoReserva(int periodo) {
+		
+		String query = " SELECT a.periodo_producao value, a.periodo_producao || ' - Dê: ' || TO_CHAR(a.data_ini_periodo, 'DD/MM/YYYY') || ' Até: ' || TO_CHAR(a.data_fim_periodo, 'DD/MM/YYYY') label "
+				+ "		FROM pcpc_010 a WHERE a.area_periodo = 1 "
+				+ "	    AND a.codigo_empresa = 500 "
+				+ "     AND a.periodo_producao NOT IN(9998, 9960, 9950, 9051) "
+				+ "     AND a.periodo_producao > 5100 "
+				+ "		AND a.periodo_producao LIKE '%" + periodo + "%' "
+				+ "		GROUP BY a.periodo_producao, a.data_ini_periodo, a.data_fim_periodo "
+				+ "		ORDER BY a.periodo_producao DESC ";
 
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
@@ -395,7 +409,16 @@ public class PainelPlanejamentoCustom {
 		
 		if (!listComplemento.equals("")) {
 			query += " AND b.complemento IN (" + listComplemento + ")";
-		}			
+		}
+		
+		if (!listPerEmbarque.equals("")) {
+			query += " AND EXISTS (SELECT 1 FROM basi_590 q "
+					+ "		WHERE q.nivel = a.nivel_estrutura "
+					+ "     and q.grupo = a.grupo_estrutura "
+					+ "     and q.subgrupo = a.subgru_estrutura "
+					+ "     and q.item = a.item_estrutura "
+					+ "     and q.grupo_embarque IN (" + listPerEmbarque + " )) ";
+		}
 	
 		if ((periodoCartInicio != null) && (periodoCartFim != null)) {
 			query += " AND EXISTS (SELECT 1 "
@@ -818,84 +841,131 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findMateriaisPlanejamento(String listComplemento, String listContaEstoq, String listPerEmbarque, String listDeposito, 
-			String listPerAReceber, String listPerReserva, String listOrdemProducao, String listEstagio){
+	public List<ConsultaPainelPlanejamento> findMateriaisPlanejamento(String listNivel, String listReferencia, String listTamanho, String listCor, String listComplemento, 
+			String listContaEstoq, String listDeposito, String periodoAReceberInicio, String periodoAReceberFim, String periodoReservaInicio, 
+			String periodoReservaFim, String listOrdemProducao, String listEstagio){
 		
-		String query = " SELECT a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura produto, "
-				+ "		b.narrativa descricao, "
-				+ "		e.unidade_medida undMedida, "
-				+ "		(SELECT NVL(SUM(c.qtde_estoque_atu), 0) FROM estq_040 c WHERE c.cditem_nivel99 = a.nivel_estrutura "
-				+ "			AND c.cditem_grupo = a.grupo_estrutura "
-				+ "			AND c.cditem_subgrupo = a.subgru_estrutura "
-				+ "			AND c.cditem_item = a.item_estrutura "
-				+ "			AND c.deposito <> 200) estoque, "
-				+ "		NVL(SUM(a.qtde_reservada), 0) reservas, "
-				+ "		NVL(SUM(a.qtde_areceber), 0) receber, "
-				+ "		((SELECT NVL(SUM(c.qtde_estoque_atu), 0) FROM estq_040 c WHERE c.cditem_nivel99 = a.nivel_estrutura "
-				+ "			AND c.cditem_grupo = a.grupo_estrutura "
-				+ "			AND c.cditem_subgrupo = a.subgru_estrutura "
-				+ "			AND c.cditem_item = a.item_estrutura "
-				+ "			AND c.deposito <> 200) + SUM(a.qtde_areceber)) - SUM(a.qtde_reservada) saldo "
-				+ "		FROM tmrp_041 a, basi_010 b, basi_030 e "
-				+ "		WHERE b.nivel_estrutura = a.nivel_estrutura "
-				+ "		AND b.grupo_estrutura = a.grupo_estrutura "
-				+ "		AND b.subgru_estrutura = a.subgru_estrutura "
-				+ "		AND b.item_estrutura = a.item_estrutura "
-				+ "		AND e.nivel_estrutura = a.nivel_estrutura "
-				+ "		AND e.referencia = a.grupo_estrutura  "
-				+ "     AND a.nivel_estrutura <> '1' "
-				+ "     AND a.nr_pedido_ordem IN (" + listOrdemProducao + ") ";
+		String query = " SELECT DADOS.NIVEL || '.' || DADOS.GRUPO || '.' || DADOS.SUBGRUPO || '.' || DADOS.ITEM PRODUTO, "
+				+ "       DADOS.DESCRICAO, "
+				+ "       DADOS.UNDMEDIDA, "
+				+ "       DADOS.ESTOQUE, "
+				+ "       SUM(DADOS.RESERVAS) RESERVAS, "
+				+ "       SUM(DADOS.RECEBER) RECEBER, "
+				+ "       (DADOS.ESTOQUE + SUM(DADOS.RECEBER)) - SUM(DADOS.RESERVAS) SALDO "
+				+ "       FROM ( "
+				+ "  SELECT a.nivel_estrutura nivel, "
+				+ "         a.grupo_estrutura grupo, "
+				+ "         a.subgru_estrutura subgrupo, "
+				+ "         a.item_estrutura item, "
+				+ "         b.narrativa descricao, "
+				+ "         b.complemento complemento, "
+				+ "         e.conta_estoque contaEstoque, "
+				+ "         a.nr_pedido_ordem ordemProducao, "
+				+ "         e.unidade_medida undMedida, "
+				+ "         a.periodo_producao periodoProd, "
+				+ "         a.seq_pedido_ordem ordemConfeccao, "
+				+ "         (SELECT NVL(SUM(c.qtde_estoque_atu), 0) FROM estq_040 c WHERE c.cditem_nivel99 = a.nivel_estrutura "
+				+ "       AND c.cditem_grupo = a.grupo_estrutura  "
+				+ "       AND c.cditem_subgrupo = a.subgru_estrutura "
+				+ "       AND c.cditem_item = a.item_estrutura  "
+				+ "       AND c.deposito <> 200) estoque, "
+				+ "       NVL(SUM(a.qtde_reservada), 0) reservas, "
+				+ "       0 receber "
+				+ "       FROM tmrp_041 a, basi_010 b, basi_030 e "
+				+ "       WHERE b.nivel_estrutura = a.nivel_estrutura "
+				+ "       AND b.grupo_estrutura = a.grupo_estrutura "
+				+ "       AND b.subgru_estrutura = a.subgru_estrutura  "
+				+ "       AND b.item_estrutura = a.item_estrutura "
+				+ "       AND e.nivel_estrutura = a.nivel_estrutura "
+				+ "       AND e.referencia = a.grupo_estrutura "
+				+ "       AND a.nivel_estrutura IN ('2', '4', '7', '9') "
+				+ "       AND a.periodo_producao BETWEEN  " + periodoAReceberInicio + " AND " + periodoAReceberFim + " "
+				+ "       GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.narrativa, e.unidade_medida, a.nivel_estrutura, "
+				+ "       a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.narrativa, b.complemento, e.conta_estoque, a.nr_pedido_ordem, a.periodo_producao, a.seq_pedido_ordem "
+				+ "   UNION   "
+				+ "   SELECT a.nivel_estrutura nivel, "
+				+ "          a.grupo_estrutura grupo, "
+				+ "          a.subgru_estrutura subgrupo, "
+				+ "          a.item_estrutura item, "
+				+ "          b.narrativa descricao, "
+				+ "          b.complemento complemento, "
+				+ "          e.conta_estoque contaEstoque, "
+				+ "          a.nr_pedido_ordem ordemProducao, "
+				+ "          e.unidade_medida undMedida, "
+				+ "         a.periodo_producao periodoProd, "
+				+ "         a.seq_pedido_ordem ordemConfeccao, "
+				+ "          (SELECT NVL(SUM(c.qtde_estoque_atu), 0) FROM estq_040 c WHERE c.cditem_nivel99 = a.nivel_estrutura "
+				+ "       AND c.cditem_grupo = a.grupo_estrutura "
+				+ "       AND c.cditem_subgrupo = a.subgru_estrutura "
+				+ "       AND c.cditem_item = a.item_estrutura "
+				+ "       AND c.deposito <> 200) estoque, "
+				+ "       0 reservas, "
+				+ "       NVL(SUM(a.qtde_areceber), 0) receber "
+				+ "       FROM tmrp_041 a, basi_010 b, basi_030 e "
+				+ "       WHERE b.nivel_estrutura = a.nivel_estrutura "
+				+ "       AND b.grupo_estrutura = a.grupo_estrutura "
+				+ "       AND b.subgru_estrutura = a.subgru_estrutura "
+				+ "       AND b.item_estrutura = a.item_estrutura "
+				+ "       AND e.nivel_estrutura = a.nivel_estrutura "
+				+ "       AND e.referencia = a.grupo_estrutura "
+				+ "       AND a.nivel_estrutura IN ('2', '4', '7', '9') "
+				+ "       AND a.periodo_producao BETWEEN " + periodoReservaInicio + " AND " + periodoReservaFim + " "
+				+ "       GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.narrativa, e.unidade_medida, a.nivel_estrutura, "
+				+ "       a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.narrativa, b.complemento, e.conta_estoque, a.nr_pedido_ordem, a.periodo_producao, a.seq_pedido_ordem "
+				+ "     ) DADOS "
+				+ "       WHERE DADOS.NIVEL IN (" + listNivel + ") ";				
+
 		
+		if (!listReferencia.equals("")) {
+			query += " AND DADOS.GRUPO IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND DADOS.SUBGRUPO IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND DADOS.ITEM IN (" + listCor + ")";
+		}
 		
 		if (!listComplemento.equals("")) {
-			query += " AND b.complemento IN (" + listComplemento + ")";
+			query += " AND DADOS.COMPLEMENTO IN (" + listComplemento + ")";
 		}
 		
 		if (!listContaEstoq.equals("")) {
-			query += " AND e.conta_estoque IN (" + listContaEstoq + ")";
+			query += " AND DADOS.CONTAESTOQUE IN (" + listContaEstoq + ")";
 		}
 		
 		if (!listDeposito.equals("")) {
 			query += " AND EXISTS (SELECT 1 FROM estq_040 g "
-					+ "     WHERE g.cditem_nivel99 = a.nivel_estrutura "
-					+ "		AND g.cditem_grupo = a.grupo_estrutura "
-					+ "		AND g.cditem_subgrupo = a.subgru_estrutura "
-					+ "		AND g.cditem_item = a.item_estrutura "
+					+ "     WHERE g.cditem_nivel99 = DADOS.NIVEL "
+					+ "		AND g.cditem_grupo = DADOS.GRUPO "
+					+ "		AND g.cditem_subgrupo = DADOS.SUBGRUPO "
+					+ "		AND g.cditem_item = DADOS.ITEM "
 					+ "		AND g.deposito IN (" + listDeposito + ")) ";
 		}
 		
-		if (!listPerAReceber.equals("")) {
-			query += " AND a.periodo_producao IN (" + listPerAReceber + ") ";
-		}
-		
-		if (!listPerReserva.equals("")) {
-			query += " AND a.periodo_producao IN (" + listPerReserva + ") ";
-		}
-		
-		if (!listPerAReceber.equals("") && !listPerReserva.equals("")) {
-			query += " AND (a.periodo_producao IN (" + listPerAReceber + ") OR a.periodo_producao IN (" + listPerReserva + "))";
-		}
-		
 		if (!listOrdemProducao.equals("")) {
-			query += " AND a.nr_pedido_ordem IN (" + listOrdemProducao + ") ";
+			query += " AND  DADOS.ORDEMPRODUCAO IN (" + listOrdemProducao + ") ";
 		}
 		
 		if (!listEstagio.equals("")) {
 			query += " AND EXISTS (SELECT 1 FROM pcpc_040 z"
-					+ "  WHERE  z.periodo_producao = a.periodo_producao "
-					+ "  AND z.ordem_producao = a.nr_pedido_ordem "
-					+ "  AND z.ordem_confeccao = a.seq_pedido_ordem"
+					+ "  WHERE  z.periodo_producao = DADOS.PERIODOPROD "
+					+ "  AND z.ordem_producao = DADOS.ORDEMPRODUCAO "
+					+ "  AND z.ordem_confeccao = DADOS.ORDEMCONFECCAO "
 					+ "  AND z.qtde_a_produzir_pacote > 0 "
 					+ "  AND z.codigo_estagio IN (" + listEstagio + ")) ";
 		}
 
-		query += "  GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, b.narrativa, e.unidade_medida ";
+		query += "   GROUP BY DADOS.NIVEL, DADOS.GRUPO, DADOS.SUBGRUPO, DADOS.ITEM, DADOS.DESCRICAO, DADOS.UNDMEDIDA, DADOS.ESTOQUE ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findMateriaisDetalharEstoque(String listComplemento, String listContaEstoq, String listPerEmbarque, String listDeposito, 
-			String listPerAReceber, String listPerReserva, String listOrdemProducao, String listEstagio){
+	public List<ConsultaPainelPlanejamento> findMateriaisDetalharEstoque(String listNivel, String listReferencia, String listTamanho, String listCor,String listComplemento, 
+			String listContaEstoq, String listDeposito, String periodoAReceberInicio, String periodoAReceberFim, String periodoReservaInicio, 
+			String periodoReservaFim, String listOrdemProducao, String listEstagio){
 		
 		String query = " SELECT a.cditem_nivel99 || '.' || a.cditem_grupo || '.' || a.cditem_subgrupo || '.' || a.cditem_item produto, "
 				+ "		b.narrativa descricao, "
@@ -910,9 +980,31 @@ public class PainelPlanejamentoCustom {
 				+ "   AND c.nivel_estrutura = a.cditem_nivel99 "
 				+ "   AND c.referencia = a.cditem_grupo "
 				+ "   AND d.codigo_deposito = a.deposito "
-				+ "   AND a.cditem_nivel99 IN ('2', '9') "
+				+ "   AND a.cditem_nivel99 IN ('2', '4', '7', '9') "
 				+ "   AND a.deposito <> 200 "
-				+ "   AND d.descricao NOT LIKE ('%(IN)%') ";
+				+ "   AND d.descricao NOT LIKE ('%(IN)%') "
+				+ "   AND EXISTS (SELECT 1 FROM tmrp_041 g "
+				+ "					WHERE g.nivel_estrutura = a.cditem_nivel99 "
+				+ "					AND g.grupo_estrutura = a.cditem_grupo "
+				+ "					AND g.subgru_estrutura = a.cditem_subgrupo "
+				+ "					AND g.item_estrutura = a.cditem_item "
+				+ "					AND g.periodo_producao BETWEEN  " + periodoAReceberInicio + " AND " + periodoAReceberFim + " ) ";
+		
+		if (!listNivel.equals("")) {
+			query += " AND a.cditem_nivel99 IN (" + listNivel + ")";
+		}
+		
+		if (!listReferencia.equals("")) {
+			query += " AND a.cditem_grupo IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND a.cditem_subgrupo IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND a.cditem_item IN (" + listCor + ")";
+		}
 		
 		if (!listComplemento.equals("")) {
 			query += " AND b.complemento IN (" + listComplemento + ")";
@@ -924,33 +1016,6 @@ public class PainelPlanejamentoCustom {
 		
 		if (!listDeposito.equals("")) {
 			query += " AND a.deposito IN (" + listDeposito + ") ";
-		}
-		
-		if (!listPerAReceber.equals("")) {
-			query += " AND EXISTS (SELECT 1 FROM tmrp_041 g "
-					+ "     WHERE g.nivel_estrutura = a.cditem_nivel99 "
-					+ "		AND g.grupo_estrutura = a.cditem_grupo "
-					+ "		AND g.subgru_estrutura = a.cditem_subgrupo "
-					+ "		AND g.item_estrutura = a.cditem_item "
-					+ "		AND g.periodo_producao IN (" + listPerAReceber + ")) ";
-		}
-		
-		if (!listPerReserva.equals("")) {
-			query += " AND EXISTS (SELECT 1 FROM tmrp_041 h "
-					+ "     WHERE h.nivel_estrutura = a.cditem_nivel99 "
-					+ "		AND h.grupo_estrutura = a.cditem_grupo "
-					+ "		AND h.subgru_estrutura = a.cditem_subgrupo "
-					+ "		AND h.item_estrutura = a.cditem_item "
-					+ "		AND h.periodo_producao IN (" + listPerReserva + ")) ";
-		}
-		
-		if (!listPerAReceber.equals("") && !listPerReserva.equals("")) {
-			query += " AND EXISTS (SELECT 1 FROM tmrp_041 i "
-					+ "     WHERE i.nivel_estrutura = a.cditem_nivel99 "
-					+ "		AND i.grupo_estrutura = a.cditem_grupo "
-					+ "		AND i.subgru_estrutura = a.cditem_subgrupo "
-					+ "		AND i.item_estrutura = a.cditem_item "
-					+ "		AND (i.periodo_producao IN (" + listPerAReceber + ") OR i.periodo_producao IN (" + listPerReserva + "))) ";
 		}
 		
 		if (!listOrdemProducao.equals("")) {
@@ -978,18 +1043,35 @@ public class PainelPlanejamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findMateriaisDetalharOrdens(String listComplemento, String listContaEstoq, String listPerEmbarque, String listDeposito, 
-			String listPerAReceber, String listPerReserva, String listOrdemProducao, String listEstagio){
+	public List<ConsultaPainelPlanejamento> findMateriaisDetalharOrdens(String listNivel, String listReferencia, String listTamanho, String listCor, String listComplemento, 
+			String listContaEstoq, String listDeposito, String periodoAReceberInicio, String periodoAReceberFim, String periodoReservaInicio, 
+			String periodoReservaFim, String listOrdemProducao, String listEstagio){
 		
-		String query = " SELECT a.nivel_estrutura || '.' || a.grupo_estrutura || '.' || a.subgru_estrutura || '.' || a.item_estrutura produto, "
+		String query = " SELECT DADOS.NIVEL || '.' || DADOS.GRUPO || '.' || DADOS.SUBGRUPO || '.' || DADOS.ITEM PRODUTO, "
+				+ "			DADOS.DESCRICAO, "
+				+ "			DADOS.UNDMEDIDA, "
+				+ "         DADOS.PERIODO, "
+				+ "         DADOS.ORDEMPROD, "
+				+ "         DADOS.ORDEMCONF, "
+				+ "         DADOS.QTDEORDEM, "
+				+ "         SUM(DADOS.RESERVAS) RESERVAS, "
+				+ "			SUM(DADOS.RECEBER) RECEBER "
+				+ "  FROM ( "
+				+ "  SELECT "
+				+ "     a.nivel_estrutura nivel,"
+				+ "     a.grupo_estrutura grupo,"
+				+ "     a.subgru_estrutura subgrupo, "
+				+ "     a.item_estrutura item, "
 				+ "		c.narrativa descricao, "
+				+ "     c.complemento complemento, "
 				+ "		d.unidade_medida undMedida, "
+				+ "     d.conta_estoque contaEstoque, "
 				+ "		a.periodo_producao periodo, "
 				+ "		a.nr_pedido_ordem ordemProd, "
 				+ "		a.seq_pedido_ordem ordemConf, "
 				+ "		MIN(b.qtde_pecas_prog) qtdeOrdem, "
 				+ "		a.qtde_reservada reservas, "
-				+ "		a.qtde_areceber receber "
+				+ "		0 receber "
 				+ "	 FROM tmrp_041 a, pcpc_040 b, basi_010 c, basi_030 d, estq_040 e "
 				+ "	 WHERE b.periodo_producao = a.periodo_producao "
 				+ "  AND b.ordem_confeccao = a.seq_pedido_ordem "
@@ -1003,58 +1085,97 @@ public class PainelPlanejamentoCustom {
 				+ "  AND e.cditem_grupo = a.grupo_estrutura "
 				+ "  AND e.cditem_subgrupo = a.subgru_estrutura "
 				+ "  AND e.cditem_item = a.item_estrutura "
-				+ "  AND a.nivel_estrutura <> '1' "
-				+ "  AND a.nr_pedido_ordem IN (" + listOrdemProducao + ") ";
-				
+				+ "  AND a.nivel_estrutura IN ('1', '4', '7', '9') "
+				+ "  AND a.periodo_producao BETWEEN " + periodoAReceberInicio + " AND " + periodoAReceberFim + " "
+		        + "  GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, c.narrativa, c.complemento, d.conta_estoque, "
+	 	        + "  a.periodo_producao, a.nr_pedido_ordem, a.seq_pedido_ordem, a.qtde_reservada, a.qtde_areceber, d.unidade_medida "
+	 	        + "  UNION "
+	 	        + "  SELECT  "
+	 	        + "		a.nivel_estrutura nivel, "
+	 	        + "		a.grupo_estrutura grupo, "
+	 	        + "		a.subgru_estrutura subgrupo, "
+	 	        + "		a.item_estrutura item, "
+	 	        + "		c.narrativa descricao, "
+	 	        + "     c.complemento complemento, "
+	 	        + "		d.unidade_medida undMedida, "
+	 	        + "     d.conta_estoque contaEstoque, "
+	 	        + "		a.periodo_producao periodo, "
+	 	        + "		a.nr_pedido_ordem ordemProd, "
+	 	        + "		a.seq_pedido_ordem ordemConf, "
+	 	        + "		MIN(b.qtde_pecas_prog) qtdeOrdem, "
+	 	        + "		0 reservas, "
+	 	        + "		a.qtde_areceber receber  "
+	 	        + "		FROM tmrp_041 a, pcpc_040 b, basi_010 c, basi_030 d, estq_040 e "
+	 	        + "		WHERE b.periodo_producao = a.periodo_producao "
+	 	        + "		AND b.ordem_confeccao = a.seq_pedido_ordem "
+	 	        + "		AND c.nivel_estrutura = a.nivel_estrutura "
+	 	        + "		AND c.grupo_estrutura = a.grupo_estrutura "
+	 	        + "		AND c.subgru_estrutura = a.subgru_estrutura "
+	 	        + "		AND c.item_estrutura = a.item_estrutura "
+	 	        + "		AND d.nivel_estrutura = a.nivel_estrutura "
+	 	        + "		AND d.referencia = a.grupo_estrutura "
+	 	        + "		AND e.cditem_nivel99 = a.nivel_estrutura "
+	 	        + "		AND e.cditem_grupo = a.grupo_estrutura "
+	 	        + "		AND e.cditem_subgrupo = a.subgru_estrutura "
+	 	        + "		AND e.cditem_item = a.item_estrutura "
+	 	        + "		AND a.nivel_estrutura IN ('1', '4', '7', '9') "
+	 	        + "		AND a.periodo_producao BETWEEN " + periodoAReceberInicio + " AND " + periodoAReceberFim + " "
+	 	        + "		GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, c.narrativa, c.complemento, d.conta_estoque, "
+	 	        + "	 	a.periodo_producao, a.nr_pedido_ordem, a.seq_pedido_ordem, a.qtde_reservada, a.qtde_areceber, d.unidade_medida "
+	 	        + "    ) DADOS "
+	 	        + "    WHERE DADOS.NIVEL IN (" + listNivel + ")";
+	
+		
+		if (!listReferencia.equals("")) {
+			query += " AND DADOS.GRUPO IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND DADOS.SUBGRUPO IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND DADOS.ITEM IN (" + listCor + ")";
+		}
 		
 		if (!listComplemento.equals("")) {
-			query += " AND c.complemento IN (" + listComplemento + ")";
+			query += " AND DADOS.COMPLEMENTO IN (" + listComplemento + ")";
 		}
 		
 		if (!listContaEstoq.equals("")) {
-			query += " AND d.conta_estoque IN (" + listContaEstoq + ")";
+			query += " AND DADOS.CONTAESTOQUE IN (" + listContaEstoq + ")";
 		}
 		
 		if (!listDeposito.equals("")) {
+			
 			query += " AND EXISTS (SELECT 1 FROM estq_040 g "
-					+ "     WHERE g.cditem_nivel99 = a.nivel_estrutura "
-					+ "		AND g.cditem_grupo = a.grupo_estrutura "
-					+ "		AND g.cditem_subgrupo = a.subgru_estrutura "
-					+ "		AND g.cditem_item = a.item_estrutura "
-					+ "		AND g.deposito IN (" + listDeposito + ")) ";
-		}
-		
-		if (!listPerAReceber.equals("")) {
-			query += " AND a.periodo_producao IN (" + listPerAReceber + ") ";
-		}
-		
-		if (!listPerReserva.equals("")) {
-			query += " AND a.periodo_producao IN (" + listPerReserva + ") ";
-		}
-		
-		if (!listPerAReceber.equals("") && !listPerReserva.equals("")) {
-			query += " AND (a.periodo_producao IN (" + listPerAReceber + ") OR a.periodo_producao IN (" + listPerReserva + "))";
+					+ "	 	 WHERE g.cditem_nivel99 = DADOS.NIVEL "
+					+ "	 	 AND g.cditem_grupo = DADOS.GRUPO "
+					+ "	 	 AND g.cditem_subgrupo = DADOS.SUBGRUPO "
+					+ "	 	 AND g.cditem_item = DADOS.ITEM "
+					+ "	 	 AND g.deposito IN (" + listDeposito + ") )";
 		}
 		
 		if (!listEstagio.equals("")) {
 			query += " AND EXISTS (SELECT 1 FROM pcpc_040 z"
-					+ "  WHERE  z.periodo_producao = a.periodo_producao "
-					+ "  AND z.ordem_producao = a.nr_pedido_ordem "
-					+ "  AND z.ordem_confeccao = a.seq_pedido_ordem"
+					+ "  WHERE  z.periodo_producao = DADOS.PERIODO "
+					+ "  AND z.ordem_producao = DADOS.ORDEMPROD "
+					+ "  AND z.ordem_confeccao = DADOS.ORDEMCONF "
 					+ "  AND z.qtde_a_produzir_pacote > 0 "
 					+ "  AND z.codigo_estagio IN (" + listEstagio + ")) ";
 		}
 		
-		query +=  "  GROUP BY a.nivel_estrutura, a.grupo_estrutura, a.subgru_estrutura, a.item_estrutura, c.narrativa, "
-		 	  +   "  a.periodo_producao, a.nr_pedido_ordem, a.seq_pedido_ordem, a.qtde_reservada, a.qtde_areceber, d.unidade_medida ";
+		query += "   GROUP BY DADOS.NIVEL, DADOS.GRUPO, DADOS.SUBGRUPO, DADOS.ITEM, DADOS.DESCRICAO, DADOS.UNDMEDIDA, DADOS.PERIODO, DADOS.ORDEMPROD, "
+				+ "		DADOS.ORDEMCONF, DADOS.QTDEORDEM, DADOS.RESERVAS, DADOS.RECEBER";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
 	
-	public List<ConsultaPainelPlanejamento> findMateriaisDetalharCompras(String listComplemento, String listContaEstoq, String listPerEmbarque, String listDeposito, 
-			String listOrdemProducao, String listEstagio){
+	public List<ConsultaPainelPlanejamento> findMateriaisDetalharCompras(String listNivel, String listReferencia, String listTamanho, String listCor, String listComplemento, 
+			String listContaEstoq, String listDeposito, String listOrdemProducao, String listEstagio){
 		
-		String query = " SELECT a.item_100_nivel99 || '.' || a.item_100_grupo || '.' || a.item_100_subgrupo || '.' || a.item_100_item produto, "
+		String query = " SELECT rownum id, "
+				+ "     a.item_100_nivel99 || '.' || a.item_100_grupo || '.' || a.item_100_subgrupo || '.' || a.item_100_item produto, "
 				+ "		a.descricao_item descricao, "
 				+ "		a.unidade_medida undMedida, "
 				+ "		a.num_ped_compra pedido, "
@@ -1077,9 +1198,25 @@ public class PainelPlanejamentoCustom {
 				+ "  AND e.nivel_estrutura = a.item_100_nivel99 "
 				+ "  AND e.referencia = a.item_100_grupo "
 				+ "  AND a.cod_cancelamento = 0 "
-				+ "  AND a.item_100_nivel99 <> '1' "
+				+ "  AND a.item_100_nivel99 IN ('1', '4', '7', '9') "
 				+ "  AND b.situacao_pedido NOT IN (4,8,9,7) "
 				+ "  AND a.situacao_item <> 3 ";
+		
+		if (!listNivel.equals("")) {
+			query += " AND a.item_100_nivel99 IN (" + listNivel + ")";
+		}
+		
+		if (!listReferencia.equals("")) {
+			query += " AND a.item_100_grupo IN (" + listReferencia + ")";
+		}
+		
+		if (!listTamanho.equals("")) {
+			query += " AND a.item_100_subgrupo IN (" + listTamanho + ")";
+		}
+		
+		if (!listCor.equals("")) {
+			query += " AND a.item_100_item IN (" + listCor + ")";
+		}
 		
 		if (!listComplemento.equals("")) {
 			query += " AND d.complemento IN (" + listComplemento + ")";
@@ -1114,7 +1251,7 @@ public class PainelPlanejamentoCustom {
 		}
 		
 		query += "  GROUP BY a.item_100_nivel99, a.item_100_grupo, a.item_100_subgrupo, a.item_100_item, a.descricao_item, a.unidade_medida, "
-			  + "  a.num_ped_compra, b.dt_emis_ped_comp, b.forn_ped_forne9, b.forn_ped_forne4, b.forn_ped_forne2, c.nome_fornecedor, a.data_prev_entr, a.periodo_compras ";
+			  + "  a.num_ped_compra, b.dt_emis_ped_comp, b.forn_ped_forne9, b.forn_ped_forne4, b.forn_ped_forne2, c.nome_fornecedor, a.data_prev_entr, a.periodo_compras, rownum ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaPainelPlanejamento.class));
 	}
