@@ -1,21 +1,26 @@
 package br.com.live.producao.model;
 
+import java.util.Date;
+
 public class PainelListaPrioridadesOrdensEmProducao {
-	private int id;
+	private String id;
 	private String referencia;
 	private String descReferencia;
 	private String tamanho;
 	private String cor;
 	private String descCor;
-	private String ordemProducao;
-	private String ordemConfeccao;
+	private int ordemProducao;
+	private int ordemConfeccao;
 	private String periodo;
 	private int seqFilaEstagio;
 	private int seqEstagio;
 	private int seqOperacao;
 	private int codEstagio;
 	private String descEstagio;
+	private String descEstagiosDecoracoes;
+	private Date dataEntradaEstagio;
 	private int pedidoVenda;
+	private int emConserto;
 	private int qtdeEmProducaoPacote;
 	private int qtdeEmProducaoOrdem;
 	private int qtdeNecessaria;
@@ -31,9 +36,9 @@ public class PainelListaPrioridadesOrdensEmProducao {
 		super();	
 	}
 
-	public PainelListaPrioridadesOrdensEmProducao(int id, String referencia, String descReferencia, String tamanho, String cor, String descCor,
-			String ordemProducao, String ordemConfeccao, String periodo, int seqFilaEstagio, int seqEstagio, int seqOperacao,
-			int codEstagio, String descEstagio, int pedidoVenda, int qtdeEmProducaoPacote, int qtdeEmProducaoOrdem,
+	public PainelListaPrioridadesOrdensEmProducao(String id, String referencia, String descReferencia, String tamanho, String cor, String descCor,
+			int ordemProducao, int ordemConfeccao, String periodo, int seqFilaEstagio, int seqEstagio, int seqOperacao,
+			int codEstagio, String descEstagio, Date dataEntradaEstagio, int pedidoVenda, int emConserto, int qtdeEmProducaoPacote, int qtdeEmProducaoOrdem,
 			int qtdeNecessaria, int codFamilia, String descFaccao) {
 		super();
 		this.id = id;
@@ -50,7 +55,9 @@ public class PainelListaPrioridadesOrdensEmProducao {
 		this.seqOperacao = seqOperacao;
 		this.codEstagio = codEstagio;
 		this.descEstagio = descEstagio;
+		this.dataEntradaEstagio = dataEntradaEstagio;
 		this.pedidoVenda = pedidoVenda;
+		this.emConserto = emConserto;
 		this.qtdeEmProducaoPacote = qtdeEmProducaoPacote;
 		this.qtdeEmProducaoOrdem = qtdeEmProducaoOrdem;
 		this.qtdeNecessaria = qtdeNecessaria;
@@ -58,11 +65,11 @@ public class PainelListaPrioridadesOrdensEmProducao {
 		this.descFaccao = descFaccao;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -106,19 +113,19 @@ public class PainelListaPrioridadesOrdensEmProducao {
 		this.descCor = descCor;
 	}
 
-	public String getOrdemProducao() {
+	public int getOrdemProducao() {
 		return ordemProducao;
 	}
 	
-	public void setOrdemProducao(String ordemProducao) {
+	public void setOrdemProducao(int ordemProducao) {
 		this.ordemProducao = ordemProducao;
 	}
 
-	public String getOrdemConfeccao() {
+	public int getOrdemConfeccao() {
 		return ordemConfeccao;
 	}
 
-	public void setOrdemConfeccao(String ordemConfeccao) {
+	public void setOrdemConfeccao(int ordemConfeccao) {
 		this.ordemConfeccao = ordemConfeccao;
 	}
 
@@ -168,6 +175,14 @@ public class PainelListaPrioridadesOrdensEmProducao {
 
 	public void setDescEstagio(String descEstagio) {
 		this.descEstagio = descEstagio;
+	}
+
+	public Date getDataEntradaEstagio() {
+		return dataEntradaEstagio;
+	}
+
+	public void setDataEntradaEstagio(Date dataEntradaEstagio) {
+		this.dataEntradaEstagio = dataEntradaEstagio;
 	}
 
 	public int getPedidoVenda() {
@@ -256,5 +271,21 @@ public class PainelListaPrioridadesOrdensEmProducao {
 
 	public void setQtdeSobraFalta(int qtdeSobraFalta) {
 		this.qtdeSobraFalta = qtdeSobraFalta;
+	}
+
+	public String getDescEstagiosDecoracoes() {
+		return descEstagiosDecoracoes;
+	}
+
+	public void setDescEstagiosDecoracoes(String descEstagiosDecoracoes) {
+		this.descEstagiosDecoracoes = descEstagiosDecoracoes;
+	}
+
+	public int getEmConserto() {
+		return emConserto;
+	}
+
+	public void setEmConserto(int emConserto) {
+		this.emConserto = emConserto;
 	}
 }

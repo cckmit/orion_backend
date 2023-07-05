@@ -18,7 +18,6 @@ import br.com.live.producao.custom.PainelPlanejamentoCustom;
 import br.com.live.producao.custom.PeriodoProducaoCustom;
 import br.com.live.producao.model.PainelListaPrioridades;
 import br.com.live.producao.service.PainelListaPrioridadesService;
-import br.com.live.producao.service.PainelPlanejamentoService;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
@@ -55,6 +54,11 @@ public class PainelListaPrioridadesController {
         return painelPlanejamentoCustom.findAllDepositos();
     }
 
+	@GetMapping("/estagios")
+    public List<ConteudoChaveNumerica> findEstagios(){
+        return painelPlanejamentoCustom.findAllEstagios();
+    }
+	
 	@GetMapping("/colecoes")
     public List<ConteudoChaveNumerica> findColecoes(){
         return painelPlanejamentoCustom.findAllColecaoWithPermanentes();
@@ -127,8 +131,7 @@ public class PainelListaPrioridadesController {
     }
 	
 	@PostMapping("/find-lista-prioridades") 
-	public PainelListaPrioridades findListaPrioridadesAtendimento(@RequestBody BodyPainelListaPrioridades body) {
-		System.out.println("PainelListaPrioridadesController");
+	public PainelListaPrioridades findListaPrioridadesAtendimento(@RequestBody BodyPainelListaPrioridades body) {		
 		return painelListaPrioridadesService.findListaPrioridadesAtendimento(body);
 	}
 }

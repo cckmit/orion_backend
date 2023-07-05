@@ -20,7 +20,7 @@ public class PainelListaPrioridadesCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
-	public List<PainelListaPrioridadesCarteiraPedidos> findCarteiraPedidos(Date dtInicio, Date dtFim, String listaPedidos, String listaPedidosOrdens, String listaSituacoes, String listaNumerosControle, int periodoInicial, int periodoFinal, String listaDepositosEstoques, String listaDepositosPedidos, String listaColecoes, String listaLinhasProduto, String listaArtigos, String listaReferencias, String listaTamanhos, String listaCores, String listaSegmentos, String listaFamilias, String listaFaccoes, String listaNaturezas) {
+	public List<PainelListaPrioridadesCarteiraPedidos> findCarteiraPedidos(Date dtInicio, Date dtFim, String listaPedidos, String listaPedidosOrdens, String listaSituacoes, String listaNumerosControle, int periodoInicial, int periodoFinal, String listaDepositosEstoques, String listaDepositosPedidos, String listaEstagios, String listaColecoes, String listaLinhasProduto, String listaArtigos, String listaReferencias, String listaTamanhos, String listaCores, String listaSegmentos, String listaFamilias, String listaFaccoes, String listaNaturezas) {
 		List<PainelListaPrioridadesCarteiraPedidos> resultado;
 		
 		if (listaPedidos.isEmpty()) listaPedidos = listaPedidosOrdens;
@@ -106,7 +106,16 @@ public class PainelListaPrioridadesCustom {
             + " and m.grupo = b.cd_it_pe_grupo "
 	        + " and m.tipo_informacao = 10 "
 	        + " and m.codigo_informacao in (" + listaSegmentos + "))";
-	    
+
+	    if (!listaEstagios.isEmpty())
+	        query += " and exists (select 1 from pcpc_040 n "
+            + " where n.proconf_nivel99 = '1' "
+            + " and n.proconf_grupo = b.cd_it_pe_grupo "
+	        + " and n.proconf_subgrupo = b.cd_it_pe_subgrupo "
+	        + " and n.proconf_item = b.cd_it_pe_item "
+	        + " and n.codigo_estagio in (" + listaEstagios + ") "
+	        + " and n.qtde_em_producao_pacote > 0)";
+				
 	    if (!listaFamilias.isEmpty())
 	        query += " and exists (select 1 from pcpc_040 n "
             + " where n.proconf_nivel99 = '1' "
@@ -145,7 +154,7 @@ public class PainelListaPrioridadesCustom {
             + " and pb.proconf_item = b.cd_it_pe_item) ";
 	  
 	    query += " group by a.pedido_venda, a.data_entr_venda, b.cd_it_pe_grupo, b.cd_it_pe_subgrupo, b.cd_it_pe_item, f.descr_referencia, w.descricao_15 "
-	    + " order by b.cd_it_pe_grupo, b.cd_it_pe_subgrupo, b.cd_it_pe_item, f.descr_referencia, w.descricao_15 "
+	    + " order by a.pedido_venda, b.cd_it_pe_grupo, b.cd_it_pe_subgrupo, b.cd_it_pe_item, f.descr_referencia, w.descricao_15 "
 	    + " ) analise ";
 	    
 	    try {
@@ -158,7 +167,7 @@ public class PainelListaPrioridadesCustom {
 	    return resultado;
 	}	
 	
-	public List<PainelListaPrioridadesOrdensEmProducao> findOrdensEmProducao(String grupo, String sub, String item, int periodoInicial, int periodoFinal, String listaPedidosOrdens, String listaFamilias, String listaFaccoes) {
+	public List<PainelListaPrioridadesOrdensEmProducao> findOrdensEmProducao(String grupo, String sub, String item, int periodoInicial, int periodoFinal, String listaPedidosOrdens, String listaFamilias, String listaFaccoes, String listaEstagios) {
 		List<PainelListaPrioridadesOrdensEmProducao> resultado;		
 		
 		String query = " select rownum id, a.proconf_grupo referencia, " 
@@ -176,7 +185,8 @@ public class PainelListaPrioridadesCustom {
         + " d.descricao descEstagio, "
         + " b.pedido_venda pedidoVenda, "
         + " a.qtde_em_producao_pacote qtdeEmProducaoPacote, "
-        + " 0 qtdeNecessidade, "       
+        + " 0 qtdeNecessidade, "               
+		+ " decode(a.qtde_conserto,0,0,1) emConserto, "        
         + " a.codigo_familia codFamilia, "
         + " nvl((select sum(pc.qtde_em_producao_pacote) " 
         + " from pcpc_040 pc "
@@ -187,13 +197,30 @@ public class PainelListaPrioridadesCustom {
         + " where k.numero_ordem = a.numero_ordem "
         + " and s.fornecedor9 = k.cgcterc_forne9 "
         + " and s.fornecedor4 = k.cgcterc_forne4 "
-        + " and s.fornecedor2 = k.cgcterc_forne2),'') descFaccao "               
+        + " and s.fornecedor2 = k.cgcterc_forne2),'') descFaccao, "         
+		+ " (select nvl(max(f.data_producao),trunc(sysdate)) "
+		+ " from pcpc_045 f "
+		+ " where f.pcpc040_perconf = a.periodo_producao "
+		+ " and f.pcpc040_ordconf = a.ordem_confeccao "
+		+ " and f.pcpc040_estconf =  (select max(g.codigo_estagio) "
+		+ " from pcpc_040 g "
+		+ " where g.periodo_producao = a.periodo_producao "
+		+ " and g.ordem_confeccao = a.ordem_confeccao "
+		+ " and g.seq_operacao = (select max(h.seq_operacao) "
+		+ " from pcpc_040 h "
+		+ " where h.periodo_producao = a.periodo_producao "
+		+ " and h.ordem_confeccao = a.ordem_confeccao "
+		+ " and h.seq_operacao < a.seq_operacao))) dataEntradaEstagio "         
         + " from pcpc_040 a, pcpc_020 b, basi_030 c, mqop_005 d, basi_010 e "
         + " where a.proconf_nivel99 = '1' "
         + " and a.proconf_grupo = '" + grupo + "' "
         + " and a.proconf_subgrupo in ('" + sub + "') "
-        + " and a.proconf_item = '" + item + "' "        
-	    + " and a.qtde_em_producao_pacote > 0 "
+        + " and a.proconf_item = '" + item + "' ";
+        
+        if (!listaEstagios.isEmpty())
+        	query += " and a.codigo_estagio in (" + listaEstagios + ") ";
+        	        
+	    query += " and a.qtde_em_producao_pacote > 0 "
 	    + " and b.ordem_producao = a.ordem_producao "
 	    + " and b.cod_cancelamento = 0 "
 	    + " and c.nivel_estrutura = '1' "
@@ -229,13 +256,4 @@ public class PainelListaPrioridadesCustom {
 		}
 	    return resultado;
 	}	
-	
-	public Integer findQtdeEmProducaoNoEstagio(int codEstagio) {
-		
-        String query = " select nvl(sum(pc.qtde_em_producao_pacote),0) " 
-        + " from pcpc_040 pc "
-        + " where pc.codigo_estagio = ? ";       
-        
-        return jdbcTemplate.queryForObject(query, Integer.class, codEstagio);
-	}
 }

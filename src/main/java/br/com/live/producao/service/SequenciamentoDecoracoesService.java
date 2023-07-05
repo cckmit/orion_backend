@@ -18,7 +18,6 @@ import br.com.live.producao.model.EstagioProducao;
 import br.com.live.producao.model.OrdemConfeccao;
 import br.com.live.producao.model.OrdemProducao;
 import br.com.live.producao.model.OrdemProducaoEstagios;
-import br.com.live.producao.model.SugestaoReservaPorOrdemMaterial;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.util.ErrorMessageException;
 

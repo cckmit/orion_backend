@@ -12,6 +12,7 @@ public class BodyPainelListaPrioridades {
     public int periodoProdFim;
     public List<ConteudoChaveNumerica> listDepositosPedidos;
     public List<ConteudoChaveNumerica> listDepositosEstoques;
+    public List<ConteudoChaveNumerica> listEstagios;
     public List<ConteudoChaveNumerica> listColecoes;
     public List<ConteudoChaveNumerica> listLinhasProdutos;
     public List<ConteudoChaveAlfaNum> listReferencias;

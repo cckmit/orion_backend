@@ -155,6 +155,33 @@ public class SequenciamentoDecoracoesCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DadosSequenciamentoDecoracoes.class), codEstagio);
 	}
 	
+	public String findDescEstagiosDecoracoesConcatenadosAProduzir(int ordemProducao, int ordemConfeccao) {
+		String concatEstagios = "";
+		List<String> listDescEstagios;
+		
+		String query = " select b.descricao from pcpc_040 a, mqop_005 b " 
+		+ " and where a.ordem_producao = ? "
+		+ " and a.ordem_confeccao = ? "
+		+ " and a.qtde_a_produzir_pacote > 0 "    
+		+ " and a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = ?) "
+		+ " and b.codigo_estagio = a.codigo_estagio "
+		+ " group by a.sequencia_estagio, a.seq_operacao, a.codigo_estagio, b.descricao "
+		+ " order by a.sequencia_estagio, a.seq_operacao, a.codigo_estagio, b.descricao ";
+		
+		try {
+			listDescEstagios = jdbcTemplate.queryForList(query, String.class, ordemProducao, ordemConfeccao, ESTAGIO_AGRUPADOR_DECORACOES);
+		} catch (Exception e) {
+			listDescEstagios = new ArrayList<String>();
+		}
+		
+		for (String estagio : listDescEstagios) {
+			if (concatEstagios.isEmpty()) concatEstagios = estagio;
+			else concatEstagios += estagio + " + "; 
+		}
+		
+		return concatEstagios; 
+	}
+
 	public int findNextId() {
 		String query="select nvl(max(id),0) + 1 from orion_cfc_300";
 		return jdbcTemplate.queryForObject(query, Integer.class);
