@@ -222,9 +222,10 @@ public class ConfeccaoCustom {
 	}
 
 	public List<EtiquetasDecoracao> consultaEtiquetasDecoracao(int ordemProducao, List<ConteudoChaveNumerica> pacotes) {
-		String query = " SELECT p.ORDEM_PRODUCAO ordemProducao, p.ORDEM_CONFECCAO ordemConfeccao, p.PERIODO_PRODUCAO periodo, p.PROCONF_NIVEL99 nivel, p.PROCONF_GRUPO referencia, p.PROCONF_SUBGRUPO tamanho, p.PROCONF_ITEM cor, " +
+		String query = " SELECT p.ORDEM_PRODUCAO ordemProducao, p.ORDEM_CONFECCAO ordemConfeccao, p.PERIODO_PRODUCAO periodo, p.PROCONF_NIVEL99 nivel, p.PROCONF_GRUPO referencia, "
+				+ " p.PROCONF_SUBGRUPO tamanho, p.PROCONF_ITEM cor, " +
 				" p.QTDE_PECAS_PROG quantidade, c.roteiro_peca roteiro, c.alternativa_peca  alternativa " +
-				" FROM PCPC_040 p, BASI_010 b, pcpc_020 c " +
+				" FROM PCPC_040 p, BASI_010 b, pcpc_020 c, basi_220 d " +
 				" WHERE p.ORDEM_PRODUCAO = " + ordemProducao;
 
 				if (pacotes.size() > 0) {
@@ -236,9 +237,11 @@ public class ConfeccaoCustom {
 				" AND b.SUBGRU_ESTRUTURA = p.PROCONF_SUBGRUPO " +
 				" AND b.ITEM_ESTRUTURA = p.PROCONF_ITEM " +
 				" AND c.ORDEM_PRODUCAO = p.ORDEM_PRODUCAO " +
-				" GROUP BY p.ORDEM_PRODUCAO, p.ORDEM_CONFECCAO , p.PERIODO_PRODUCAO ,p.PROCONF_NIVEL99 , p.PROCONF_GRUPO , p.PROCONF_SUBGRUPO , p.PROCONF_ITEM, p.QTDE_PECAS_PROG, c.roteiro_peca, c.alternativa_peca " +
-				" ORDER BY p.ORDEM_PRODUCAO, p.ORDEM_CONFECCAO ";
-
+				" AND d.tamanho_ref = p.PROCONF_SUBGRUPO " +
+				" GROUP BY p.ORDEM_PRODUCAO, p.ORDEM_CONFECCAO , p.PERIODO_PRODUCAO ,p.PROCONF_NIVEL99 , p.PROCONF_GRUPO , p.PROCONF_SUBGRUPO , p.PROCONF_ITEM, p.QTDE_PECAS_PROG, " +
+				"          c.roteiro_peca, c.alternativa_peca, d.ordem_tamanho " +
+				" ORDER BY p.ORDEM_PRODUCAO, d.ordem_tamanho, p.ORDEM_CONFECCAO ";
+				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EtiquetasDecoracao.class));
 	}
 	

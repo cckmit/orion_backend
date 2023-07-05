@@ -223,7 +223,6 @@ public class ContabilidadeService {
 						contabilidadeCustom.inserirLanctoContabilSystextil(lancamento.codEmpresa, dados.filialLancto, dados.exercicio, dados.origem, contaContabil, dados.contaReduzida, 
 								dados.debitoCredito, dados.valorLancto, dados.centroCusto, dados.histContabil, FormataData.parseStringToDate(dados.dataLancto), dados.complHistor1, 
 								FormataData.parseStringToDate(dados.datainsercao), programa, dados.usuario, lote, numLancto, dados.seqLanc, dados.periodo, dados.status);
-						System.out.println(numLancto);
 					}
 				}
 			}

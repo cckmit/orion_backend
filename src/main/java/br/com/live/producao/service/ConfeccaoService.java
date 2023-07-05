@@ -2,9 +2,10 @@ package br.com.live.producao.service;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Comparator;
 import br.com.live.producao.custom.CalendarioCustom;
 import br.com.live.producao.custom.ConfeccaoCustom;
 import br.com.live.producao.custom.OrdemProducaoCustom;
@@ -243,15 +244,18 @@ public class ConfeccaoService {
 		EtiquetasDecoracao dadosEditados = null;
 		String fileName = "";
 		String reportTittle = "ETIQ_" + ordemProducao;
+		
+		// Antes do loop, ordene a lista estagios pelo valor (value)
+		estagios.sort(Comparator.comparingInt(ConteudoChaveNumerica::getValue));
 
 		listOrdens = confeccaoCustom.consultaEtiquetasDecoracao(ordemProducao, pacotes);
-
-		for (EtiquetasDecoracao ordemSelect : listOrdens) {
-			for (ConteudoChaveNumerica estagioSelect : estagios) {
-				dadosEditados = new EtiquetasDecoracao(ordemSelect.ordemProducao, ordemSelect.ordemConfeccao, ordemSelect.alternativa, ordemSelect.roteiro, ordemSelect.nivel, ordemSelect.referencia,
-						ordemSelect.tamanho, ordemSelect.cor, ordemSelect.quantidade, ordemSelect.periodo, estagioSelect.label);
-				etiquetasEditGeracao.add(dadosEditados);
-			}
+		
+		for (ConteudoChaveNumerica estagioSelect : estagios) {
+			for (EtiquetasDecoracao ordemSelect : listOrdens) {
+			dadosEditados = new EtiquetasDecoracao(ordemSelect.ordemProducao, ordemSelect.ordemConfeccao, ordemSelect.alternativa, ordemSelect.roteiro, ordemSelect.nivel, 
+					ordemSelect.referencia,	ordemSelect.tamanho, ordemSelect.cor, ordemSelect.quantidade, ordemSelect.periodo, estagioSelect.label);
+			etiquetasEditGeracao.add(dadosEditados);
+		}
 		}
 
 		JRBeanCollectionDataSource dataSourceEtiquetas = new JRBeanCollectionDataSource(etiquetasEditGeracao);
