@@ -108,9 +108,14 @@ public class PainelPlanejamentoController {
 		return painelPlanejamentoService.findAllPeriodosCarteira();
 	}
 	
-	@RequestMapping(value = "/find-all-periodo-a-receber-reserva", method = RequestMethod.GET)
-    public List<ConteudoChaveNumerica> findAllPeriodoAReceber() {
-		return painelPlanejamentoService.findAllPeriodoAReceber();
+	@RequestMapping(value = "/find-all-periodo-a-receber/{periodo}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllPeriodoAReceber(@PathVariable("periodo") int periodo) {
+		return painelPlanejamentoService.findAllPeriodoAReceber(periodo);
+	}
+	
+	@RequestMapping(value = "/find-all-periodo-a-reserva/{periodo}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllPeriodoReserva(@PathVariable("periodo") int periodo) {
+		return painelPlanejamentoService.findAllPeriodoReserva(periodo);
 	}
 	
 	@RequestMapping(value = "/find-all-numero-interno", method = RequestMethod.GET)
@@ -162,8 +167,8 @@ public class PainelPlanejamentoController {
 	
 	@RequestMapping(value = "/find-materiais", method = RequestMethod.POST)
     public ConsultaPainelPlanejamentoListas findMateriais(@RequestBody BodyPainelPlanejamento body) { 
-		return painelPlanejamentoService.findMateriais(body.listComplemento, body.listContaEstoq, body.listPerEmbarque, body.listDeposito, body.listPerAReceber, body.listPerReserva, 
-				body.listOrdemProducao,	body.listEstagio);
+		return painelPlanejamentoService.findMateriais(body.listNivel, body.listReferencia, body.listTamanho, body.listCor, body.listComplemento, body.listContaEstoq, 
+				body.listDeposito, body.periodoAReceberInicio, body.periodoAReceberFim, body.periodoReservaInicio, body.periodoReservaFim,	body.listOrdemProducao,	body.listEstagio);
     }
 
 }
