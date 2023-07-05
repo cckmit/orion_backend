@@ -23,7 +23,8 @@ public class AtividadeProjetoEntity {
     @Column(name = "id_tipo_atividade")
     private Long idTipoAtividade;
 
-    private String responsavel;
+    @Column(name = "id_responsavel")
+    private Long idResponsavel;
 
     @Column(name = "data_prev_inicio")
     private Date dataPrevInicio;
@@ -34,13 +35,13 @@ public class AtividadeProjetoEntity {
     @Column(name = "tempo_previsto")
     private int tempoPrevisto;
 
-    public AtividadeProjetoEntity(Long id, String descricao, Long idProjeto, Long idFase, Long idTipoAtividade, String responsavel, Date dataPrevInicio, Date dataPrevFim, int tempoPrevisto) {
+    public AtividadeProjetoEntity(Long id, String descricao, Long idProjeto, Long idFase, Long idTipoAtividade, Long idResponsavel, Date dataPrevInicio, Date dataPrevFim, int tempoPrevisto) {
         this.id = id;
         this.descricao = descricao;
         this.idProjeto = idProjeto;
         this.idFase = idFase;
         this.idTipoAtividade = idTipoAtividade;
-        this.responsavel = responsavel;
+        this.idResponsavel = idResponsavel;
         this.dataPrevInicio = dataPrevInicio;
         this.dataPrevFim = dataPrevFim;
         this.tempoPrevisto = tempoPrevisto;
@@ -90,12 +91,12 @@ public class AtividadeProjetoEntity {
         this.idTipoAtividade = idTipoAtividade;
     }
 
-    public String getResponsavel() {
-        return responsavel;
+    public long getIdResponsavel() {
+        return idResponsavel;
     }
 
-    public void setResponsavel(String responsavel) {
-        this.responsavel = responsavel;
+    public void setIdResponsavel(long idResponsavel) {
+        this.idResponsavel = idResponsavel;
     }
 
     public Date getDataPrevInicio() {

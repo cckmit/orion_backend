@@ -7,7 +7,7 @@ public class BodyAtividadeProjeto {
     public long idProjeto;
     public long idFase;
     public long idTipoAtividade;
-    public String responsavel;
+    public long idResponsavel;
     public String dataPrevInicio;
     public String dataPrevFim;
     public int tempoPrevisto;

@@ -9,18 +9,18 @@ public class AtividadeProjeto {
     private long idProjeto;
     private long idFase;
     private long idTipoAtividade;
-    private String responsavel;
+    private long idResponsavel;
     private Date dataPrevInicio;
     private Date dataPrevFim;
     private int tempoPrevisto;
 
-    public AtividadeProjeto(long id, String descricao, long idProjeto, long idFase, long idTipoAtividade, String responsavel, Date dataPrevInicio, Date dataPrevFim, int tempoPrevisto) {
+    public AtividadeProjeto(long id, String descricao, long idProjeto, long idFase, long idTipoAtividade, long idResponsavel, Date dataPrevInicio, Date dataPrevFim, int tempoPrevisto) {
         this.id = id;
         this.descricao = descricao;
         this.idProjeto = idProjeto;
         this.idFase = idFase;
         this.idTipoAtividade = idTipoAtividade;
-        this.responsavel = responsavel;
+        this.idResponsavel = idResponsavel;
         this.dataPrevInicio = dataPrevInicio;
         this.dataPrevFim = dataPrevFim;
         this.tempoPrevisto = tempoPrevisto;
@@ -70,12 +70,12 @@ public class AtividadeProjeto {
         this.idTipoAtividade = idTipoAtividade;
     }
 
-    public String getResponsavel() {
-        return responsavel;
+    public long getIdResponsavel() {
+        return idResponsavel;
     }
 
-    public void setResponsavel(String responsavel) {
-        this.responsavel = responsavel;
+    public void setIdResponsavel(long idResponsavel) {
+        this.idResponsavel = idResponsavel;
     }
 
     public Date getDataPrevInicio() {

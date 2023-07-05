@@ -2,6 +2,7 @@ package br.com.live.sistema.controller;
 
 import br.com.live.sistema.entity.TipoAtividadeProjetoEntity;
 import br.com.live.sistema.repository.TipoAtividadeProjetoRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +31,13 @@ public class TipoAtividadeProjetoController {
 
     @GetMapping("/delete-by-id/{id}")
     public List<TipoAtividadeProjetoEntity> deleteByIdTipoAtividadeProjeto(@PathVariable("id") Long id){
-        tipoAtividadeProjetoRepository.deleteById(id);
+
+        try {
+            tipoAtividadeProjetoRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("Não é possível excluir a entidade devido a restrições de chave estrangeira.");
+        }
+
         return tipoAtividadeProjetoRepository.findAll();
     }
 

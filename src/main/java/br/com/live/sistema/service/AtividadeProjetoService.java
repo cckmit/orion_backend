@@ -28,7 +28,7 @@ public class AtividadeProjetoService {
         atividadeProjetoEntity.setIdProjeto(atividadeProjeto.idProjeto);
         atividadeProjetoEntity.setIdFase(atividadeProjeto.idFase);
         atividadeProjetoEntity.setIdTipoAtividade(atividadeProjeto.idTipoAtividade);
-        atividadeProjetoEntity.setResponsavel(atividadeProjeto.responsavel);
+        atividadeProjetoEntity.setIdResponsavel(atividadeProjeto.idResponsavel);
         atividadeProjetoEntity.setDataPrevInicio(FormataData.parseStringToDate(atividadeProjeto.dataPrevInicio));
         atividadeProjetoEntity.setDataPrevFim(FormataData.parseStringToDate(atividadeProjeto.dataPrevFim));
         atividadeProjetoEntity.setTempoPrevisto(atividadeProjeto.tempoPrevisto);

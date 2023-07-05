@@ -4,24 +4,27 @@ import java.util.Date;
 
 public class Projeto {
 
+    // Projeto
     private Long id;
     private int codProjeto;
     private String descricao;
     private Date dataCriacao;
-    private String area;
-    private String departamento;
-    private String setor;
+    private int area;
+    private int departamento;
+    private int setor;
     private String origemProjeto;
     private String subOrigemProjeto;
     private String status;
+
+    // Briefing
     private String objetivoProjeto;
     private String contextualizacao;
-    private String descricaoproblema;
+    private String descricaoProblema;
     private String perguntasAberta;
     private String riscos;
 
 
-    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, String area, String departamento, String setor, String origemProjeto, String subOrigemProjeto, String status) {
+    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status) {
         this.id = id;
         this.codProjeto = codProjeto;
         this.descricao = descricao;
@@ -34,7 +37,7 @@ public class Projeto {
         this.status = status;
     }
 
-    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, String area, String departamento, String setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoproblema, String perguntasAberta, String riscos) {
+    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscos) {
         this.id = id;
         this.codProjeto = codProjeto;
         this.descricao = descricao;
@@ -47,7 +50,7 @@ public class Projeto {
         this.status = status;
         this.objetivoProjeto = objetivoProjeto;
         this.contextualizacao = contextualizacao;
-        this.descricaoproblema = descricaoproblema;
+        this.descricaoProblema = descricaoProblema;
         this.perguntasAberta = perguntasAberta;
         this.riscos = riscos;
     }
@@ -88,27 +91,27 @@ public class Projeto {
         this.dataCriacao = dataCriacao;
     }
 
-    public String getArea() {
+    public int getArea() {
         return area;
     }
 
-    public void setArea(String area) {
+    public void setArea(int area) {
         this.area = area;
     }
 
-    public String getDepartamento() {
+    public int getDepartamento() {
         return departamento;
     }
 
-    public void setDepartamento(String departamento) {
+    public void setDepartamento(int departamento) {
         this.departamento = departamento;
     }
 
-    public String getSetor() {
+    public int getSetor() {
         return setor;
     }
 
-    public void setSetor(String setor) {
+    public void setSetor(int setor) {
         this.setor = setor;
     }
 
@@ -134,5 +137,45 @@ public class Projeto {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getObjetivoProjeto() {
+        return objetivoProjeto;
+    }
+
+    public void setObjetivoProjeto(String objetivoProjeto) {
+        this.objetivoProjeto = objetivoProjeto;
+    }
+
+    public String getContextualizacao() {
+        return contextualizacao;
+    }
+
+    public void setContextualizacao(String contextualizacao) {
+        this.contextualizacao = contextualizacao;
+    }
+
+    public String getDescricaoProblema() {
+        return descricaoProblema;
+    }
+
+    public void setDescricaoProblema(String descricaoProblema) {
+        this.descricaoProblema = descricaoProblema;
+    }
+
+    public String getPerguntasAberta() {
+        return perguntasAberta;
+    }
+
+    public void setPerguntasAberta(String perguntasAberta) {
+        this.perguntasAberta = perguntasAberta;
+    }
+
+    public String getRiscos() {
+        return riscos;
+    }
+
+    public void setRiscos(String riscos) {
+        this.riscos = riscos;
     }
 }
