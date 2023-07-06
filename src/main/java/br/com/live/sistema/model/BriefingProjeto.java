@@ -6,15 +6,15 @@ public class BriefingProjeto {
     private String contextualizacao;
     private String descricaoProblema;
     private String perguntasAberta;
-    private String riscos;
+    private String riscosBriefing;
 
-    public BriefingProjeto(long idProjeto, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscos) {
+    public BriefingProjeto(long idProjeto, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing) {
         this.idProjeto = idProjeto;
         this.objetivoProjeto = objetivoProjeto;
         this.contextualizacao = contextualizacao;
         this.descricaoProblema = descricaoProblema;
         this.perguntasAberta = perguntasAberta;
-        this.riscos = riscos;
+        this.riscosBriefing = riscosBriefing;
     }
 
     public BriefingProjeto(){};
@@ -59,11 +59,11 @@ public class BriefingProjeto {
         this.perguntasAberta = perguntasAberta;
     }
 
-    public String getRiscos() {
-        return riscos;
+    public String getRiscosBriefing() {
+        return riscosBriefing;
     }
 
-    public void setRiscos(String riscos) {
-        this.riscos = riscos;
+    public void setRiscosBriefing(String riscosBriefing) {
+        this.riscosBriefing = riscosBriefing;
     }
 }

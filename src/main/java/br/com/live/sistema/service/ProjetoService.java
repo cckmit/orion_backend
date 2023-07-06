@@ -3,10 +3,10 @@ package br.com.live.sistema.service;
 import br.com.live.sistema.body.BodyProjeto;
 import br.com.live.sistema.entity.ProjetoEntity;
 import br.com.live.sistema.model.BriefingProjeto;
+import br.com.live.sistema.model.TermoAberturaProjeto;
 import br.com.live.sistema.repository.ProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -53,7 +53,7 @@ public class ProjetoService {
         briefingProjeto.setContextualizacao(projeto.getContextualizacao());
         briefingProjeto.setDescricaoProblema(projeto.getDescricaoProblema());
         briefingProjeto.setPerguntasAberta(projeto.getPerguntasAberta());
-        briefingProjeto.setRiscos(projeto.getRiscos());
+        briefingProjeto.setRiscosBriefing(projeto.getRiscosBriefing());
 
         return briefingProjeto;
     }
@@ -67,7 +67,41 @@ public class ProjetoService {
         projeto.setContextualizacao(briefingProjeto.getContextualizacao());
         projeto.setDescricaoProblema(briefingProjeto.getDescricaoProblema());
         projeto.setPerguntasAberta(briefingProjeto.getPerguntasAberta());
-        projeto.setRiscos(briefingProjeto.getRiscos());
+        projeto.setRiscosBriefing(briefingProjeto.getRiscosBriefing());
+
+        projetoRepository.save(projeto);
+    }
+
+    public TermoAberturaProjeto findTermoAberturaProjeto(Long id){
+
+        Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(id);
+        ProjetoEntity projeto = projetoOptional.get();
+
+        TermoAberturaProjeto termoAberturaProjeto = new TermoAberturaProjeto();
+        termoAberturaProjeto.setIdProjeto(projeto.getId());
+        termoAberturaProjeto.setJustificativaProjeto(projeto.getJustificativaProjeto());
+        termoAberturaProjeto.setObjetivoSmart(projeto.getObjetivoSmart());
+        termoAberturaProjeto.setBeneficio(projeto.getBeneficio());
+        termoAberturaProjeto.setRestricao(projeto.getRestricao());
+        termoAberturaProjeto.setRequisito(projeto.getRequisito());
+        termoAberturaProjeto.setEntregavel(projeto.getEntregavel());
+        termoAberturaProjeto.setRiscoAbertura(projeto.getRiscoAbertura());
+
+        return termoAberturaProjeto;
+    }
+
+    public void saveTermoAberturaProjeto(TermoAberturaProjeto termoAberturaProjeto){
+
+        Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(termoAberturaProjeto.getIdProjeto());
+
+        ProjetoEntity projeto = projetoOptional.get();
+        projeto.setJustificativaProjeto(termoAberturaProjeto.getJustificativaProjeto());
+        projeto.setObjetivoSmart(termoAberturaProjeto.getObjetivoSmart());
+        projeto.setBeneficio(termoAberturaProjeto.getBeneficio());
+        projeto.setRestricao(termoAberturaProjeto.getRestricao());
+        projeto.setRequisito(termoAberturaProjeto.getRequisito());
+        projeto.setEntregavel(termoAberturaProjeto.getEntregavel());
+        projeto.setRiscoAbertura(termoAberturaProjeto.getRiscoAbertura());
 
         projetoRepository.save(projeto);
     }

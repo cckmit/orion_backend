@@ -21,7 +21,7 @@ public class Projeto {
     private String contextualizacao;
     private String descricaoProblema;
     private String perguntasAberta;
-    private String riscos;
+    private String riscosBriefing;
 
 
     public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status) {
@@ -37,7 +37,7 @@ public class Projeto {
         this.status = status;
     }
 
-    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscos) {
+    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing) {
         this.id = id;
         this.codProjeto = codProjeto;
         this.descricao = descricao;
@@ -52,7 +52,7 @@ public class Projeto {
         this.contextualizacao = contextualizacao;
         this.descricaoProblema = descricaoProblema;
         this.perguntasAberta = perguntasAberta;
-        this.riscos = riscos;
+        this.riscosBriefing = riscosBriefing;
     }
 
     public Projeto(){
@@ -171,11 +171,11 @@ public class Projeto {
         this.perguntasAberta = perguntasAberta;
     }
 
-    public String getRiscos() {
-        return riscos;
+    public String getRiscosBriefing() {
+        return riscosBriefing;
     }
 
-    public void setRiscos(String riscos) {
-        this.riscos = riscos;
+    public void setRiscosBriefing(String riscosBriefing) {
+        this.riscosBriefing = riscosBriefing;
     }
 }

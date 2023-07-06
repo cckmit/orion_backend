@@ -43,21 +43,32 @@ CREATE TABLE orion_ti_036 (
 
 -- Cadastro de Projetos
 CREATE TABLE orion_ti_040 (
-    ID NUMBER(9) PRIMARY KEY,
-    COD_PROJETO NUMBER(9),
-    DESCRICAO VARCHAR2(400),
-    DATA_CRIACAO DATE,
-    AREA NUMBER(9),
-    DEPARTAMENTO NUMBER(9),
-    SETOR NUMBER(9),
-    ORIGEM_PROJETO VARCHAR2(50),
-    SUB_ORIGEM_PROJETO VARCHAR2(50),
-    STATUS VARCHAR2(100),
-    OBJETIVO_PROJETO VARCHAR2(4000),
-    CONTEXTUALIZACAO VARCHAR2(4000),
-    DESCRICAO_PROBLEMA VARCHAR2(4000),
-    PERGUNTAS_ABERTA VARCHAR2(4000),
-    RISCOS VARCHAR2(4000)
+    ID NUMBER(9) PRIMARY KEY,                   -- Projeto
+    COD_PROJETO NUMBER(9),                      -- Projeto
+    DESCRICAO VARCHAR2(400),                    -- Projeto
+    DATA_CRIACAO DATE,                          -- Projeto
+    AREA NUMBER(9),                             -- Projeto
+    DEPARTAMENTO NUMBER(9),                     -- Projeto
+    SETOR NUMBER(9),                            -- Projeto
+    ORIGEM_PROJETO VARCHAR2(50),                -- Projeto
+    SUB_ORIGEM_PROJETO VARCHAR2(50),            -- Projeto
+    STATUS VARCHAR2(100),                       -- Projeto
+    OBJETIVO_PROJETO VARCHAR2(4000),            -- Briefing
+    CONTEXTUALIZACAO VARCHAR2(4000),            -- Briefing
+    DESCRICAO_PROBLEMA VARCHAR2(4000),          -- Briefing
+    PERGUNTAS_ABERTA VARCHAR2(4000),            -- Briefing
+    RISCOS_BRIEFING VARCHAR2(4000),             -- Briefing
+    JUSTIFICATIVA_PROJETO VARCHAR2(4000),       -- Termo Abertura
+    OBJETIVO_SMART VARCHAR2(4000),              -- Termo Abertura
+    BENEFICIO VARCHAR2(4000),                   -- Termo Abertura
+    RESTRICAO VARCHAR2(4000),                   -- Termo Abertura
+    REQUISITO VARCHAR2(4000),                   -- Termo Abertura
+    ENTREGAVEL VARCHAR2(4000),                  -- Termo Abertura
+    RISCO_ABERTURA VARCHAR2(4000),              -- Termo Abertura
+    MVPS VARCHAR2(4000),                        -- Escopo
+    PARTES_AFETADAS VARCHAR2(4000),             -- Escopo
+    SISTEMA_PROCESSO_AFETADO VARCHAR2(4000),    -- Escopo
+    EXCLUSAO_ESCOPO VARCHAR2(4000)              -- Escopo
 );
 
 -- Tabela Atividades
@@ -91,3 +102,6 @@ CREATE TABLE orion_ti_055 (
   CONSTRAINT fk_orion_ti_055_usuario FOREIGN KEY (ID_USUARIO) REFERENCES orion_001(ID),
   CONSTRAINT fk_orion_ti_055_funcao FOREIGN KEY (ID_FUNCAO_PESSOA) REFERENCES orion_ti_050(ID)
 )
+
+
+CRIAR NOVA TABELA PARA APROVADORES
