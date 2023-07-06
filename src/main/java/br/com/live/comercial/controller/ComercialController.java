@@ -101,8 +101,14 @@ public class ComercialController {
 		@RequestMapping(value = "/find-all-tipo-cliente", method = RequestMethod.GET)
 	    public List<ConteudoChaveNumerica> findAllTipoCliente() {
 	        return comercialCustom.findTipoCliente();
-	    }
-	
+	}
+
+	// Carregar todos Tipos de Cliente
+		@RequestMapping(value = "/find-all-tipo-cliente-live", method = RequestMethod.GET)
+	    public List<ConteudoChaveAlfaNum> findAllTipoClienteLive() {
+	        return comercialService.findTipoClienteLive();
+	}
+		
 	@RequestMapping(value = "/find-fornecedor-bloq/{idForn}", method = RequestMethod.GET)
     public BloqueioTitulosForn findAllFornBloq(@PathVariable("idForn") String idForn) {
 		return comercialService.findForncedorBloq(idForn);

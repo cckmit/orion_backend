@@ -315,3 +315,6 @@ values (107, 'Painel de Lista de Prioridades', 'Confecção', '/painel-lista-pri
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (108, 'Gestor de Projetos', 'TI', '/gestor-projetos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (109, 'Canais de Distribuição', 'Comercial', '/canais-de-distribuicao');

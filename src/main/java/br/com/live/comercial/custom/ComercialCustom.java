@@ -45,6 +45,15 @@ public class ComercialCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
+	public List<ConteudoChaveAlfaNum> findTipoClienteLive() {
+		String query = " SELECT a.live_agrup_tipo_cliente AS value, a.live_agrup_tipo_cliente AS label "
+				+ "    FROM PEDI_085 a "
+				+ "    WHERE a.live_agrup_tipo_cliente IS NOT NULL "
+				+ "    GROUP BY a.live_agrup_tipo_cliente ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
+	}
+	
 	public List<ConteudoChaveNumerica> findAllCatalogo(){
 		String query = "SELECT a.cod_catalogo value, a.cod_catalogo || ' - ' || a.des_catalogo label FROM pedi_063 a "
 				+ " ORDER BY a.cod_catalogo ";

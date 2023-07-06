@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import br.com.live.comercial.model.*;
+import br.com.live.util.ConteudoChaveAlfaNum;
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.FormataData;
 import br.com.live.util.FormataString;
 import br.com.live.util.service.EmailService;
@@ -235,8 +237,12 @@ public class ComercialService {
 	public void deleteFatLiveClothing(int idFaturamento) {
 		faturamentoLiveClothingRepository.deleteById(idFaturamento);
 	}
+	
+	public List<ConteudoChaveAlfaNum> findTipoClienteLive(){
+		return comercialCustom.findTipoClienteLive();
+	}
   
-  public StatusGravacao saveDescontosClientesImportados(List<DescontoClientesImportados> listClientes, String usuario) {
+	public StatusGravacao saveDescontosClientesImportados(List<DescontoClientesImportados> listClientes, String usuario) {
 		StatusGravacao status = new StatusGravacao(true, "Planilha importada com sucesso! <br />");
 		String errosImportacao = "";
 
