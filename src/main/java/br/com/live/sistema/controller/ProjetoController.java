@@ -2,6 +2,7 @@ package br.com.live.sistema.controller;
 import br.com.live.sistema.body.BodyProjeto;
 import br.com.live.sistema.entity.ProjetoEntity;
 import br.com.live.sistema.model.BriefingProjeto;
+import br.com.live.sistema.model.TermoAberturaProjeto;
 import br.com.live.sistema.repository.ProjetoRepository;
 import br.com.live.sistema.service.ProjetoService;
 import org.springframework.web.bind.annotation.*;
@@ -50,5 +51,15 @@ public class ProjetoController {
     @PostMapping("/save-briefing")
     public void saveBriefing(@RequestBody BriefingProjeto briefingProjeto){
         projetoService.saveBriefing(briefingProjeto);
+    }
+
+    @GetMapping("/find-termo-abertura-id/{id}")
+    public TermoAberturaProjeto findTermoAberturaProjeto(@PathVariable("id") Long id){
+        return projetoService.findTermoAberturaProjeto(id);
+    }
+
+    @PostMapping("/save-termo-abertura")
+    public void saveTermoAbertura(@RequestBody TermoAberturaProjeto termoAberturaProjeto){
+        projetoService.saveTermoAberturaProjeto(termoAberturaProjeto);
     }
 }

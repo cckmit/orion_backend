@@ -39,22 +39,25 @@ public class ProjetoEntity {
     @Column(name = "perguntas_aberta")
     private String perguntasAberta;
 
-    private String riscos;
+    @Column(name = "riscos_briefing")
+    private String riscosBriefing;
 
-    public ProjetoEntity(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status) {
-        this.id = id;
-        this.codProjeto = codProjeto;
-        this.descricao = descricao;
-        this.dataCriacao = dataCriacao;
-        this.area = area;
-        this.departamento = departamento;
-        this.setor = setor;
-        this.origemProjeto = origemProjeto;
-        this.subOrigemProjeto = subOrigemProjeto;
-        this.status = status;
-    }
+    @Column(name = "justificativa_projeto")
+    private String justificativaProjeto;
 
-    public ProjetoEntity(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscos) {
+    @Column(name = "objetivo_smart")
+    private String objetivoSmart;
+
+    private String beneficio;
+    private String restricao;
+    private String requisito;
+    private String entregavel;
+
+    @Column(name = "risco_abertura")
+    private String riscoAbertura;
+
+
+    public ProjetoEntity(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing, String justificativaProjeto, String objetivoSmart, String beneficio, String restricao, String requisito, String entregavel, String riscoAbertura) {
         this.id = id;
         this.codProjeto = codProjeto;
         this.descricao = descricao;
@@ -69,11 +72,17 @@ public class ProjetoEntity {
         this.contextualizacao = contextualizacao;
         this.descricaoProblema = descricaoProblema;
         this.perguntasAberta = perguntasAberta;
-        this.riscos = riscos;
+        this.riscosBriefing = riscosBriefing;
+        this.justificativaProjeto = justificativaProjeto;
+        this.objetivoSmart = objetivoSmart;
+        this.beneficio = beneficio;
+        this.restricao = restricao;
+        this.requisito = requisito;
+        this.entregavel = entregavel;
+        this.riscoAbertura = riscoAbertura;
     }
 
     public ProjetoEntity(){
-
     }
 
     public Long getId() {
@@ -188,11 +197,67 @@ public class ProjetoEntity {
         this.perguntasAberta = perguntasAberta;
     }
 
-    public String getRiscos() {
-        return riscos;
+    public String getRiscosBriefing() {
+        return riscosBriefing;
     }
 
-    public void setRiscos(String riscos) {
-        this.riscos = riscos;
+    public void setRiscosBriefing(String riscosBriefing) {
+        this.riscosBriefing = riscosBriefing;
+    }
+
+    public String getJustificativaProjeto() {
+        return justificativaProjeto;
+    }
+
+    public void setJustificativaProjeto(String justificativaProjeto) {
+        this.justificativaProjeto = justificativaProjeto;
+    }
+
+    public String getObjetivoSmart() {
+        return objetivoSmart;
+    }
+
+    public void setObjetivoSmart(String objetivoSmart) {
+        this.objetivoSmart = objetivoSmart;
+    }
+
+    public String getBeneficio() {
+        return beneficio;
+    }
+
+    public void setBeneficio(String beneficio) {
+        this.beneficio = beneficio;
+    }
+
+    public String getRestricao() {
+        return restricao;
+    }
+
+    public void setRestricao(String restricao) {
+        this.restricao = restricao;
+    }
+
+    public String getRequisito() {
+        return requisito;
+    }
+
+    public void setRequisito(String requisito) {
+        this.requisito = requisito;
+    }
+
+    public String getEntregavel() {
+        return entregavel;
+    }
+
+    public void setEntregavel(String entregavel) {
+        this.entregavel = entregavel;
+    }
+
+    public String getRiscoAbertura() {
+        return riscoAbertura;
+    }
+
+    public void setRiscoAbertura(String riscoAbertura) {
+        this.riscoAbertura = riscoAbertura;
     }
 }
