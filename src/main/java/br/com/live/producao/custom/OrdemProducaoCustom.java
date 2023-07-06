@@ -1159,13 +1159,13 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
-	public List<ConteudoChaveNumerica> findFaccoes() {
-		String query = " select a.divisao_producao value, a.divisao_producao || ' - ' || a.descricao label from basi_180 a "
+	public List<ConteudoChaveAlfaNum> findFaccoes() {
+		String query = " select lpad(a.faccionista9,8,0) || lpad(a.faccionista4,4,0) || lpad(a.faccionista2,2,0) value, a.divisao_producao || ' - ' || a.descricao label from basi_180 a "
 		+ " where a.tipo_linha = ? "
 		+ " and a.faccionista9 > 0 "
 		+ " order by a.divisao_producao ";
 		
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), LINHA_FACCAO);
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class), LINHA_FACCAO);
 	}
 
 	public List<ConteudoChaveNumerica> findPedidosOrdens() {		

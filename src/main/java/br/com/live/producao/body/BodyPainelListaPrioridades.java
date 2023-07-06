@@ -21,7 +21,7 @@ public class BodyPainelListaPrioridades {
     public List<ConteudoChaveNumerica> listArtigos;
     public List<ConteudoChaveNumerica> listSegmentos;
     public List<ConteudoChaveNumerica> listFamilias;
-    public List<ConteudoChaveNumerica> listFaccoes;
+    public List<ConteudoChaveAlfaNum> listFaccoes;
     public List<ConteudoChaveAlfaNum> listNaturezas;
     public List<ConteudoChaveNumerica> listSituacoesPedidos;
     public List<ConteudoChaveNumerica> listPedidosOrdens;

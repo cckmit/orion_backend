@@ -51,7 +51,7 @@ public class PainelListaPrioridadesCustom {
 		+ " and t.area_producao = 1 "	               	               
 		+ " and t.periodo_producao between " + periodoInicial + " and " + periodoFinal                
 		+ " ),0) em_producao "	              
-		+ " from pedi_100 a, pedi_110 b, basi_030 f, basi_010 w "//		
+		+ " from pedi_100 a, pedi_110 b, basi_030 f, basi_010 w "		
 		+ " where a.situacao_venda <> 10 "
 		+ " and a.cod_cancelamento = 0 "
 		+ " and a.data_entr_venda between ? and ? ";
@@ -66,9 +66,12 @@ public class PainelListaPrioridadesCustom {
 			query += " and a.numero_controle in (" + listaNumerosControle + ")";
 		
 		query += " and b.pedido_venda = a.pedido_venda "
-		+ " and b.cod_cancelamento = 0 "
-		+ " and b.codigo_deposito in (" + listaDepositosPedidos + ")"
-		+ " and (b.qtde_pedida - b.qtde_faturada) > 0 "
+		+ " and b.cod_cancelamento = 0 ";
+		
+		if (!listaDepositosPedidos.isEmpty())
+			query += " and b.codigo_deposito in (" + listaDepositosPedidos + ")";
+		
+		query += " and (b.qtde_pedida - b.qtde_faturada) > 0 "
 		+ " and f.nivel_estrutura = b.cd_it_pe_nivel99 "
 		+ " and f.referencia = b.cd_it_pe_grupo "
 		+ " and w.nivel_estrutura = b.cd_it_pe_nivel99 "

@@ -74,7 +74,7 @@ public class PainelListaPrioridadesService {
 		return new PainelListaPrioridades(listCarteiraPedidos, listAnaliseCarteira, listOrdensEmProducao, listOrdensPorEstagio);
 	}
 
-	private void analisarCarteiraEmAberto(BodyPainelListaPrioridades parametros) {		
+	private void analisarCarteiraEmAberto(BodyPainelListaPrioridades parametros) {				
 		listCarteiraPedidos = painelListaPrioridadesCustom.findCarteiraPedidos(FormataData.parseStringToDate(parametros.dtEmbarqueInicio), FormataData.parseStringToDate(parametros.dtEmbarqueFim), ConteudoChaveNumerica.parseValueToString(parametros.listPedidosComerciais), ConteudoChaveNumerica.parseValueToString(parametros.listPedidosOrdens), ConteudoChaveNumerica.parseValueToString(parametros.listSituacoesPedidos), ConteudoChaveNumerica.parseValueToString(parametros.listNumerosInterno),
 				parametros.periodoProdInicio, parametros.periodoProdFim, 
 				ConteudoChaveNumerica.parseValueToString(parametros.listDepositosEstoques), 
@@ -88,7 +88,7 @@ public class PainelListaPrioridadesService {
 				ConteudoChaveAlfaNum.parseValueToString(parametros.listCores), 
 				ConteudoChaveNumerica.parseValueToString(parametros.listSegmentos), 
 				ConteudoChaveNumerica.parseValueToString(parametros.listFamilias), 
-				ConteudoChaveNumerica.parseValueToString(parametros.listFaccoes), 
+				ConteudoChaveAlfaNum.parseValueToString(parametros.listFaccoes), 
 				ConteudoChaveAlfaNum.parseValueToString(parametros.listNaturezas));							
 		for (PainelListaPrioridadesCarteiraPedidos item : listCarteiraPedidos) {
 			// cria um mapa de dados, para acumular os dados por produto					
@@ -98,7 +98,7 @@ public class PainelListaPrioridadesService {
 	
 	private void acumularPorProduto(PainelListaPrioridadesCarteiraPedidos item) {
 		PainelListaPrioridadesAnaliseCarteira itemAnaliseCarteira;
-		String produto = new CodigoProduto("1", item.getReferencia(), item.getTamanho(), item.getCor()).getCodigo(); 
+		String produto = new CodigoProduto("1", String.format("%5s", item.getReferencia()).replace(' ', '0'), String.format("%3s", item.getTamanho()).replace(' ', '0'), String.format("%6s", item.getCor()).replace(' ', '0')).getCodigo(); 
 		if (mapAnaliseCarteira.containsKey(produto)) {
 			itemAnaliseCarteira = mapAnaliseCarteira.get(produto); 
 			itemAnaliseCarteira.setQtdeCarteira(itemAnaliseCarteira.getQtdeCarteira() + item.getQtdeCarteira());
@@ -130,7 +130,7 @@ public class PainelListaPrioridadesService {
 			int qtdeAtualizar = 0;
 			int qtdeNecessaria = itemCarteira.getQtdeSobraFalta() * -1;
 			
-			List<PainelListaPrioridadesOrdensEmProducao> ordens = painelListaPrioridadesCustom.findOrdensEmProducao(itemCarteira.getReferencia(), itemCarteira.getTamanho(), itemCarteira.getCor(), parametros.periodoProdInicio, parametros.periodoProdFim, ConteudoChaveNumerica.parseValueToString(parametros.listPedidosOrdens), ConteudoChaveNumerica.parseValueToString(parametros.listFamilias), ConteudoChaveNumerica.parseValueToString(parametros.listFaccoes), ConteudoChaveNumerica.parseValueToString(parametros.listEstagios));			
+			List<PainelListaPrioridadesOrdensEmProducao> ordens = painelListaPrioridadesCustom.findOrdensEmProducao(itemCarteira.getReferencia(), itemCarteira.getTamanho(), itemCarteira.getCor(), parametros.periodoProdInicio, parametros.periodoProdFim, ConteudoChaveNumerica.parseValueToString(parametros.listPedidosOrdens), ConteudoChaveNumerica.parseValueToString(parametros.listFamilias), ConteudoChaveAlfaNum.parseValueToString(parametros.listFaccoes), ConteudoChaveNumerica.parseValueToString(parametros.listEstagios));			
 			
 			for (PainelListaPrioridadesOrdensEmProducao ordem : ordens) {				
 				idRegOrdem++;								

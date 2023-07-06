@@ -106,7 +106,7 @@ public class PainelListaPrioridadesController {
     }
 
 	@GetMapping("/faccoes")
-    public List<ConteudoChaveNumerica> findFaccoes(){
+    public List<ConteudoChaveAlfaNum> findFaccoes(){
         return ordemProducaoCustom.findFaccoes();
     }
 
