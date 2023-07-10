@@ -328,8 +328,7 @@ public class TituloPagamentoCustom {
         }
 
         if ((maiorTitulo < valorDuplicata) && (atualizaInformFin == 1)) {
-
-            String query3 = "UPDATE pedi_010 SET maior_titulo = ?, data_maior_tit = TO_DATE('?','YYYY-MM-DD') " +
+            String query3 = "UPDATE pedi_010 SET maior_titulo = ?, data_maior_tit = TO_DATE(?, 'YYYY-MM-DD') " +
                     "WHERE cgc_9 = ? AND cgc_4 = ? AND cgc_2 = ?";
             try {
                 jdbcTemplate.update(query3, valorDuplicata, dataEmissao, cgc9, cgc4, cgc2);
