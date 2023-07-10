@@ -1,12 +1,12 @@
 package br.com.live.sistema.controller;
 
 import br.com.live.sistema.entity.TipoAtividadeProjetoEntity;
+import br.com.live.sistema.model.TipoAtividadeProjetoConsulta;
 import br.com.live.sistema.repository.TipoAtividadeProjetoRepository;
+import br.com.live.sistema.service.TipoAtividadeProjetoService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -14,37 +14,42 @@ import java.util.Optional;
 public class TipoAtividadeProjetoController {
 
     TipoAtividadeProjetoRepository tipoAtividadeProjetoRepository;
+    TipoAtividadeProjetoService tipoAtividadeProjetoService;
 
-    public TipoAtividadeProjetoController(TipoAtividadeProjetoRepository tipoAtividadeProjetoRepository) {
+    public TipoAtividadeProjetoController(TipoAtividadeProjetoRepository tipoAtividadeProjetoRepository, TipoAtividadeProjetoService tipoAtividadeProjetoService) {
         this.tipoAtividadeProjetoRepository = tipoAtividadeProjetoRepository;
+        this.tipoAtividadeProjetoService = tipoAtividadeProjetoService;
     }
 
     @GetMapping("/find-all")
-    public List<TipoAtividadeProjetoEntity> findAllTipoAtividadeProjeto(){
-        return tipoAtividadeProjetoRepository.findAll();
+    public List<TipoAtividadeProjetoConsulta> findAllTipoAtividadeProjeto(){
+        return tipoAtividadeProjetoService.findAllTipoAtividadeProjeto();
     }
 
     @GetMapping("/find-by-id/{id}")
-    public Optional<TipoAtividadeProjetoEntity> findByIdTipoAtividadeProjeto(@PathVariable("id") Long id){
-        return tipoAtividadeProjetoRepository.findById(id);
+    public TipoAtividadeProjetoConsulta findByIdTipoAtividadeProjeto(@PathVariable("id") Long id){
+        return tipoAtividadeProjetoService.findByIdTipoAtividadeProjeto(id);
+    }
+
+    @GetMapping("/find-tempo-estimado-by-id/{id}")
+    public double findTempoEstimadoById(@PathVariable("id") Long id){
+        return tipoAtividadeProjetoService.findTempoEstimadoById(id);
     }
 
     @GetMapping("/delete-by-id/{id}")
-    public List<TipoAtividadeProjetoEntity> deleteByIdTipoAtividadeProjeto(@PathVariable("id") Long id){
-
+    public List<TipoAtividadeProjetoConsulta> deleteByIdTipoAtividadeProjeto(@PathVariable("id") Long id){
         try {
             tipoAtividadeProjetoRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             System.out.println("Não é possível excluir a entidade devido a restrições de chave estrangeira.");
         }
-
-        return tipoAtividadeProjetoRepository.findAll();
+        return tipoAtividadeProjetoService.findAllTipoAtividadeProjeto();
     }
 
     @PostMapping("/save")
-    public List<TipoAtividadeProjetoEntity> saveTipoAtividadeProjeto(@RequestBody TipoAtividadeProjetoEntity tipoAtividadeProjeto){
+    public List<TipoAtividadeProjetoConsulta> saveTipoAtividadeProjeto(@RequestBody TipoAtividadeProjetoEntity tipoAtividadeProjeto){
         if (tipoAtividadeProjeto.getId() == 0) tipoAtividadeProjeto.setId(tipoAtividadeProjetoRepository.findNextId());
         tipoAtividadeProjetoRepository.save(tipoAtividadeProjeto);
-        return tipoAtividadeProjetoRepository.findAll();
+        return tipoAtividadeProjetoService.findAllTipoAtividadeProjeto();
     }
 }

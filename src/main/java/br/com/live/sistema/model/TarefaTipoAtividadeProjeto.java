@@ -6,12 +6,14 @@ public class TarefaTipoAtividadeProjeto {
     private Long idTipoAtividade;
     private String descricao;
     private int ordenacao;
+    private double tempoEstimado;
 
-    public TarefaTipoAtividadeProjeto(Long id, Long idTipoAtividade, String descricao, int ordenacao) {
+    public TarefaTipoAtividadeProjeto(Long id, Long idTipoAtividade, String descricao, int ordenacao, double tempoEstimado) {
         this.id = id;
         this.idTipoAtividade = idTipoAtividade;
         this.descricao = descricao;
         this.ordenacao = ordenacao;
+        this.tempoEstimado = tempoEstimado;
     }
 
     public TarefaTipoAtividadeProjeto(){
@@ -47,5 +49,13 @@ public class TarefaTipoAtividadeProjeto {
 
     public void setOrdenacao(int ordenacao) {
         this.ordenacao = ordenacao;
+    }
+
+    public double getTempoEstimado() {
+        return tempoEstimado;
+    }
+
+    public void setTempoEstimado(double tempoEstimado) {
+        this.tempoEstimado = tempoEstimado;
     }
 }

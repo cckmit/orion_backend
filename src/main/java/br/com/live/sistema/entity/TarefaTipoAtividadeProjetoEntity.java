@@ -18,11 +18,15 @@ public class TarefaTipoAtividadeProjetoEntity {
     private String descricao;
     private int ordenacao;
 
-    public TarefaTipoAtividadeProjetoEntity(Long id, Long idTipoAtividade, String descricao, int ordenacao) {
+    @Column(name="tempo_estimado")
+    private double tempoEstimado;
+
+    public TarefaTipoAtividadeProjetoEntity(Long id, Long idTipoAtividade, String descricao, int ordenacao, double tempoEstimado) {
         this.id = id;
         this.idTipoAtividade = idTipoAtividade;
         this.descricao = descricao;
         this.ordenacao = ordenacao;
+        this.tempoEstimado = tempoEstimado;
     }
 
     public TarefaTipoAtividadeProjetoEntity(){
@@ -59,5 +63,13 @@ public class TarefaTipoAtividadeProjetoEntity {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public double getTempoEstimado() {
+        return tempoEstimado;
+    }
+
+    public void setTempoEstimado(double tempoEstimado) {
+        this.tempoEstimado = tempoEstimado;
     }
 }
