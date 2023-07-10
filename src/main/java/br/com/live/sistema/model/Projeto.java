@@ -1,5 +1,6 @@
 package br.com.live.sistema.model;
 
+import javax.persistence.Column;
 import java.util.Date;
 
 public class Projeto {
@@ -23,6 +24,22 @@ public class Projeto {
     private String perguntasAberta;
     private String riscosBriefing;
 
+    // Termo Abertura
+    private String justificativaProjeto;
+    private String objetivoSmart;
+    private String beneficio;
+    private String restricao;
+    private String requisito;
+    private String entregavel;
+    private String riscoAbertura;
+
+    // Escopo
+    private String mvps;
+    private String parteAfetada;
+    private String sistemaProcessoAfetado;
+    private String exclusaoEscopo;
+
+    public Projeto(){}
 
     public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status) {
         this.id = id;
@@ -37,7 +54,7 @@ public class Projeto {
         this.status = status;
     }
 
-    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing) {
+    public Projeto(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing, String justificativaProjeto, String objetivoSmart, String beneficio, String restricao, String requisito, String entregavel, String riscoAbertura, String mvps, String parteAfetada, String sistemaProcessoAfetado, String exclusaoEscopo) {
         this.id = id;
         this.codProjeto = codProjeto;
         this.descricao = descricao;
@@ -53,10 +70,17 @@ public class Projeto {
         this.descricaoProblema = descricaoProblema;
         this.perguntasAberta = perguntasAberta;
         this.riscosBriefing = riscosBriefing;
-    }
-
-    public Projeto(){
-
+        this.justificativaProjeto = justificativaProjeto;
+        this.objetivoSmart = objetivoSmart;
+        this.beneficio = beneficio;
+        this.restricao = restricao;
+        this.requisito = requisito;
+        this.entregavel = entregavel;
+        this.riscoAbertura = riscoAbertura;
+        this.mvps = mvps;
+        this.parteAfetada = parteAfetada;
+        this.sistemaProcessoAfetado = sistemaProcessoAfetado;
+        this.exclusaoEscopo = exclusaoEscopo;
     }
 
     public Long getId() {
@@ -177,5 +201,93 @@ public class Projeto {
 
     public void setRiscosBriefing(String riscosBriefing) {
         this.riscosBriefing = riscosBriefing;
+    }
+
+    public String getJustificativaProjeto() {
+        return justificativaProjeto;
+    }
+
+    public void setJustificativaProjeto(String justificativaProjeto) {
+        this.justificativaProjeto = justificativaProjeto;
+    }
+
+    public String getObjetivoSmart() {
+        return objetivoSmart;
+    }
+
+    public void setObjetivoSmart(String objetivoSmart) {
+        this.objetivoSmart = objetivoSmart;
+    }
+
+    public String getBeneficio() {
+        return beneficio;
+    }
+
+    public void setBeneficio(String beneficio) {
+        this.beneficio = beneficio;
+    }
+
+    public String getRestricao() {
+        return restricao;
+    }
+
+    public void setRestricao(String restricao) {
+        this.restricao = restricao;
+    }
+
+    public String getRequisito() {
+        return requisito;
+    }
+
+    public void setRequisito(String requisito) {
+        this.requisito = requisito;
+    }
+
+    public String getEntregavel() {
+        return entregavel;
+    }
+
+    public void setEntregavel(String entregavel) {
+        this.entregavel = entregavel;
+    }
+
+    public String getRiscoAbertura() {
+        return riscoAbertura;
+    }
+
+    public void setRiscoAbertura(String riscoAbertura) {
+        this.riscoAbertura = riscoAbertura;
+    }
+
+    public String getMvps() {
+        return mvps;
+    }
+
+    public void setMvps(String mvps) {
+        this.mvps = mvps;
+    }
+
+    public String getParteAfetada() {
+        return parteAfetada;
+    }
+
+    public void setParteAfetada(String parteAfetada) {
+        this.parteAfetada = parteAfetada;
+    }
+
+    public String getSistemaProcessoAfetado() {
+        return sistemaProcessoAfetado;
+    }
+
+    public void setSistemaProcessoAfetado(String sistemaProcessoAfetado) {
+        this.sistemaProcessoAfetado = sistemaProcessoAfetado;
+    }
+
+    public String getExclusaoEscopo() {
+        return exclusaoEscopo;
+    }
+
+    public void setExclusaoEscopo(String exclusaoEscopo) {
+        this.exclusaoEscopo = exclusaoEscopo;
     }
 }

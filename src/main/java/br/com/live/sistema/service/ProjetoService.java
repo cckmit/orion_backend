@@ -1,14 +1,19 @@
 package br.com.live.sistema.service;
 
 import br.com.live.sistema.body.BodyProjeto;
+import br.com.live.sistema.entity.AprovadorProjetoEntity;
 import br.com.live.sistema.entity.ProjetoEntity;
+import br.com.live.sistema.model.AprovadorProjeto;
 import br.com.live.sistema.model.BriefingProjeto;
+import br.com.live.sistema.model.EscopoProjeto;
 import br.com.live.sistema.model.TermoAberturaProjeto;
+import br.com.live.sistema.repository.AprovadorProjetoRepository;
 import br.com.live.sistema.repository.ProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +22,12 @@ import java.util.Optional;
 public class ProjetoService {
 
     ProjetoRepository projetoRepository;
+    AprovadorProjetoRepository aprovadorProjetoRepository;
 
-    public ProjetoService(ProjetoRepository projetoRepository) {
+
+    public ProjetoService(ProjetoRepository projetoRepository, AprovadorProjetoRepository aprovadorProjetoRepository) {
         this.projetoRepository = projetoRepository;
+        this.aprovadorProjetoRepository = aprovadorProjetoRepository;
     }
 
     public List<ProjetoEntity> saveProjeto(BodyProjeto projeto){
@@ -104,5 +112,50 @@ public class ProjetoService {
         projeto.setRiscoAbertura(termoAberturaProjeto.getRiscoAbertura());
 
         projetoRepository.save(projeto);
+    }
+
+    public EscopoProjeto findEscopoProjeto(Long id){
+
+        Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(id);
+        ProjetoEntity projeto = projetoOptional.get();
+        EscopoProjeto escopoProjeto = new EscopoProjeto();
+        escopoProjeto.setIdProjeto(projeto.getId());
+        escopoProjeto.setMvps(projeto.getMvps());
+        escopoProjeto.setParteAfetada(projeto.getParteAfetada());
+        escopoProjeto.setSistemaProcessoAfetado(projeto.getSistemaProcessoAfetado());
+        escopoProjeto.setExclusaoEscopo(projeto.getExclusaoEscopo());
+
+        List<AprovadorProjetoEntity> listAprovadores = aprovadorProjetoRepository.findAprovadorByIdProjeto(id);
+        List<AprovadorProjeto> listAprovadorFormat = new ArrayList<>();
+        for (AprovadorProjetoEntity aprovadorEntity : listAprovadores){
+            AprovadorProjeto aprovador = new AprovadorProjeto(aprovadorEntity.getId(), aprovadorEntity.getIdProjeto(), aprovadorEntity.getIdUsuario());
+            listAprovadorFormat.add(aprovador);
+        }
+
+        escopoProjeto.setAprovadorProjetoList(listAprovadorFormat);
+
+        return escopoProjeto;
+    }
+
+    public void saveEscopo(EscopoProjeto escopoProjeto){
+
+        Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(escopoProjeto.getIdProjeto());
+        ProjetoEntity projeto = projetoOptional.get();
+        projeto.setMvps(escopoProjeto.getMvps());
+        projeto.setParteAfetada(escopoProjeto.getParteAfetada());
+        projeto.setSistemaProcessoAfetado(escopoProjeto.getSistemaProcessoAfetado());
+        projeto.setExclusaoEscopo(escopoProjeto.getExclusaoEscopo());
+        projetoRepository.save(projeto);
+
+        List<AprovadorProjetoEntity> listAprovadoresOld = aprovadorProjetoRepository.findAprovadorByIdProjeto(escopoProjeto.getIdProjeto());
+        for (AprovadorProjetoEntity aprovadorOld : listAprovadoresOld) {
+            aprovadorProjetoRepository.deleteById(aprovadorOld.getId());
+        }
+
+        List<AprovadorProjeto> listAprovadoresNew = escopoProjeto.getAprovadorProjetoList();
+        for (AprovadorProjeto aprovador : listAprovadoresNew) {
+            AprovadorProjetoEntity aprovadorEntity = new AprovadorProjetoEntity(aprovador.getId(), aprovador.getIdUsuario(), aprovador.getIdProjeto());
+            aprovadorProjetoRepository.save(aprovadorEntity);
+        }
     }
 }

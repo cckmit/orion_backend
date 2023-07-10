@@ -2,6 +2,7 @@ package br.com.live.sistema.controller;
 import br.com.live.sistema.body.BodyProjeto;
 import br.com.live.sistema.entity.ProjetoEntity;
 import br.com.live.sistema.model.BriefingProjeto;
+import br.com.live.sistema.model.EscopoProjeto;
 import br.com.live.sistema.model.TermoAberturaProjeto;
 import br.com.live.sistema.repository.ProjetoRepository;
 import br.com.live.sistema.service.ProjetoService;
@@ -61,5 +62,15 @@ public class ProjetoController {
     @PostMapping("/save-termo-abertura")
     public void saveTermoAbertura(@RequestBody TermoAberturaProjeto termoAberturaProjeto){
         projetoService.saveTermoAberturaProjeto(termoAberturaProjeto);
+    }
+
+    @GetMapping("/find-escopo-id/{id}")
+    public EscopoProjeto findEscopoProjeto(@PathVariable("id") Long id){
+        return projetoService.findEscopoProjeto(id);
+    }
+
+    @PostMapping("/save-escopo")
+    public void saveEscopo(@RequestBody EscopoProjeto escopoProjeto){
+        projetoService.saveEscopo(escopoProjeto);
     }
 }

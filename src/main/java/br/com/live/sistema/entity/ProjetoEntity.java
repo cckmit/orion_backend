@@ -56,8 +56,22 @@ public class ProjetoEntity {
     @Column(name = "risco_abertura")
     private String riscoAbertura;
 
+    private String mvps;
 
-    public ProjetoEntity(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing, String justificativaProjeto, String objetivoSmart, String beneficio, String restricao, String requisito, String entregavel, String riscoAbertura) {
+    @Column(name = "parte_afetada")
+    private String parteAfetada;
+
+    @Column(name = "sistema_processo_afetado")
+    private String sistemaProcessoAfetado;
+
+    @Column(name = "exclusao_escopo")
+    private String exclusaoEscopo;
+
+
+    public ProjetoEntity(){
+    }
+
+    public ProjetoEntity(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing, String justificativaProjeto, String objetivoSmart, String beneficio, String restricao, String requisito, String entregavel, String riscoAbertura, String mvps, String parteAfetada, String sistemaProcessoAfetado, String exclusaoEscopo) {
         this.id = id;
         this.codProjeto = codProjeto;
         this.descricao = descricao;
@@ -80,9 +94,10 @@ public class ProjetoEntity {
         this.requisito = requisito;
         this.entregavel = entregavel;
         this.riscoAbertura = riscoAbertura;
-    }
-
-    public ProjetoEntity(){
+        this.mvps = mvps;
+        this.parteAfetada = parteAfetada;
+        this.sistemaProcessoAfetado = sistemaProcessoAfetado;
+        this.exclusaoEscopo = exclusaoEscopo;
     }
 
     public Long getId() {
@@ -259,5 +274,37 @@ public class ProjetoEntity {
 
     public void setRiscoAbertura(String riscoAbertura) {
         this.riscoAbertura = riscoAbertura;
+    }
+
+    public String getMvps() {
+        return mvps;
+    }
+
+    public void setMvps(String mvps) {
+        this.mvps = mvps;
+    }
+
+    public String getParteAfetada() {
+        return parteAfetada;
+    }
+
+    public void setParteAfetada(String parteAfetada) {
+        this.parteAfetada = parteAfetada;
+    }
+
+    public String getSistemaProcessoAfetado() {
+        return sistemaProcessoAfetado;
+    }
+
+    public void setSistemaProcessoAfetado(String sistemaProcessoAfetado) {
+        this.sistemaProcessoAfetado = sistemaProcessoAfetado;
+    }
+
+    public String getExclusaoEscopo() {
+        return exclusaoEscopo;
+    }
+
+    public void setExclusaoEscopo(String exclusaoEscopo) {
+        this.exclusaoEscopo = exclusaoEscopo;
     }
 }

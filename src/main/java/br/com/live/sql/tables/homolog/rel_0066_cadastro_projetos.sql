@@ -13,6 +13,13 @@
 --ALTER TABLE orion_ti_055 DROP CONSTRAINT fk_orion_ti_055_funcao
 --DROP TABLE orion_ti_055
 
+--ALTER TABLE orion_ti_060 DROP CONSTRAINT fk_orion_ti_060_usuario
+--ALTER TABLE orion_ti_060 DROP CONSTRAINT fk_orion_ti_060_projeto
+--DROP TABLE orion_ti_060
+
+--ALTER TABLE orion_ti_065 DROP CONSTRAINT fk_orion_ti_065_projeto
+--DROP TABLE orion_ti_065
+
 -- Tabela Fases
 CREATE TABLE orion_ti_030 (
     ID NUMBER(9) PRIMARY KEY,
@@ -66,7 +73,7 @@ CREATE TABLE orion_ti_040 (
     ENTREGAVEL VARCHAR2(4000),                  -- Termo Abertura
     RISCO_ABERTURA VARCHAR2(4000),              -- Termo Abertura
     MVPS VARCHAR2(4000),                        -- Escopo
-    PARTES_AFETADAS VARCHAR2(4000),             -- Escopo
+    PARTE_AFETADA VARCHAR2(4000),             -- Escopo
     SISTEMA_PROCESSO_AFETADO VARCHAR2(4000),    -- Escopo
     EXCLUSAO_ESCOPO VARCHAR2(4000)              -- Escopo
 );
@@ -90,7 +97,7 @@ CREATE TABLE orion_ti_045 (
 
 -- Tabela de envolvidos do projeto
 CREATE TABLE orion_ti_055 (
-  ID NUMBER PRIMARY KEY,
+  ID NUMBER(9) PRIMARY KEY,
   ID_PROJETO NUMBER(9),
   ID_USUARIO NUMBER(9),
   SOLICITANTE_STAKEHOLDER VARCHAR2(255),
@@ -103,5 +110,22 @@ CREATE TABLE orion_ti_055 (
   CONSTRAINT fk_orion_ti_055_funcao FOREIGN KEY (ID_FUNCAO_PESSOA) REFERENCES orion_ti_050(ID)
 )
 
+-- Tabela de envolvidos do projeto
+CREATE TABLE orion_ti_060 (
+  ID VARCHAR2(100),
+  ID_USUARIO NUMBER(9),
+  ID_PROJETO NUMBER(9),
+  CONSTRAINT fk_orion_ti_060_projeto FOREIGN KEY (ID_PROJETO) REFERENCES orion_ti_040(ID) ON DELETE CASCADE,
+  CONSTRAINT fk_orion_ti_060_usuario FOREIGN KEY (ID_USUARIO) REFERENCES orion_001(ID)
+)
 
-CRIAR NOVA TABELA PARA APROVADORES
+-- Tabela de custos e orçamentos
+CREATE TABLE orion_ti_065 (
+  ID NUMBER(9) PRIMARY KEY,
+  ID_PROJETO NUMBER(9),
+  ITEM VARCHAR(400),
+  QUANTIDADE NUMBER(9),
+  VALOR_UNITARIO NUMBER(12,3),
+  PAGAR_PARA VARCHAR(400),
+  CONSTRAINT fk_orion_ti_065_projeto FOREIGN KEY (ID_PROJETO) REFERENCES orion_ti_040(ID) ON DELETE CASCADE
+);
