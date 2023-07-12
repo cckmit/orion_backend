@@ -10,9 +10,11 @@ import br.com.live.comercial.model.DescontoClientesImportados;
 
 public class BodyComercial {
 	
+	public int idTpCli;
 	public String id;
 	public long idItem;
 	public String idCapa;
+	public int idCanal;
 	public String produto;
 	public String fornecedor;
 	public String motivo;
@@ -24,6 +26,7 @@ public class BodyComercial {
 	public int tipoMeta;
 	public int catalogo;
 	public int tipoCliente;
+	public String tipoClienteLive;
 	public int colTabEntr;
 	public int mesTabEntr;
 	public int seqTabEntr;
@@ -40,6 +43,8 @@ public class BodyComercial {
 	public float conversao;
 	public float valorDolar;
 	public float valorReal;
+	public String descricao;
+	public String modalidade;
 	
 	public List<MetasCategoria> tabImportar;
 	

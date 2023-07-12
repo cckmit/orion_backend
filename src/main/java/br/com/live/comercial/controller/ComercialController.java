@@ -13,15 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.live.comercial.body.BodyComercial;
 import br.com.live.comercial.custom.ComercialCustom;
 import br.com.live.comercial.entity.BloqueioTitulosForn;
+import br.com.live.comercial.entity.CanaisDeDistribuicao;
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
+import br.com.live.comercial.entity.TipoClientePorCanal;
 import br.com.live.comercial.entity.TpClienteXTabPreco;
 import br.com.live.comercial.entity.TpClienteXTabPrecoItem;
 import br.com.live.comercial.model.ConsultaMetasCategoria;
 import br.com.live.comercial.model.ConsultaPedidosPorCliente;
+import br.com.live.comercial.model.ConsultaTipoClientePorCanal;
 import br.com.live.comercial.model.ConsultaTitulosBloqForn;
 import br.com.live.comercial.model.ConsultaTpClienteXTabPreco;
 import br.com.live.comercial.model.DescontoClientesImportados;
 import br.com.live.comercial.model.PedidosComDescontoAConfirmar;
+import br.com.live.comercial.repository.CanaisDeDistribuicaoRepository;
+import br.com.live.comercial.repository.TipoClientePorCanalRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoItemRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoRepository;
 import br.com.live.comercial.service.ComercialService;
@@ -40,15 +45,20 @@ public class ComercialController {
 	private ComercialCustom comercialCustom;
 	private TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
 	private TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
+	private CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository;
+	private TipoClientePorCanalRepository tipoClientePorCanalRepository;
 	
 	@Autowired
 	public ComercialController(ComercialService comercialService, EstacaoService estacaoService, ComercialCustom comercialCustom,
-			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository) {
+			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository,
+			CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository) {
 		this.comercialService = comercialService;
 		this.estacaoService = estacaoService;
 		this.comercialCustom = comercialCustom;
 		this.tpClienteXTabPrecoRepository = tpClienteXTabPrecoRepository;
 		this.tpClienteXTabPrecoItemRepository = tpClienteXTabPrecoItemRepository;
+		this.canaisDeDistribuicaoRepository = canaisDeDistribuicaoRepository;
+		this.tipoClientePorCanalRepository = tipoClientePorCanalRepository;
 	}
 	
 	@RequestMapping(value = "/save-envio-produtos-e-commerce", method = RequestMethod.POST)
@@ -98,15 +108,21 @@ public class ComercialController {
     }
 		
 	// Carregar todos Tipos de Cliente
-		@RequestMapping(value = "/find-all-tipo-cliente", method = RequestMethod.GET)
-	    public List<ConteudoChaveNumerica> findAllTipoCliente() {
-	        return comercialCustom.findTipoCliente();
+	@RequestMapping(value = "/find-all-tipo-cliente", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllTipoCliente() {
+        return comercialCustom.findTipoCliente();
 	}
-
+		
 	// Carregar todos Tipos de Cliente
-		@RequestMapping(value = "/find-all-tipo-cliente-live", method = RequestMethod.GET)
-	    public List<ConteudoChaveAlfaNum> findAllTipoClienteLive() {
-	        return comercialService.findTipoClienteLive();
+	@RequestMapping(value = "/find-tipo-cliente-sem-canal", method = RequestMethod.GET)
+    public List<ConsultaTipoClientePorCanal> findAllTipoClienteSemCanal() {
+        return comercialService.findTipoClienteSemCanal();
+	}
+		
+	// Carregar todos os Canais de Distribuição
+	@RequestMapping(value = "/find-all-canais-distribuicao", method = RequestMethod.GET)
+    public List<CanaisDeDistribuicao> findAllCanaisDistribuicao() {
+        return comercialService.findAllCanaisDistribuicao();
 	}
 		
 	@RequestMapping(value = "/find-fornecedor-bloq/{idForn}", method = RequestMethod.GET)
@@ -126,11 +142,34 @@ public class ComercialController {
     public FaturamentoLiveClothing findFatLiveClothingById(@PathVariable("idfaturamento") int idfaturamento) {
         return comercialService.findFatLiveClothingById(idfaturamento);
     }
+	// Encontrar Canal de Distribuição por ID
+    //
+	@RequestMapping(value = "/find-canal-distribuicao-by-id/{id}", method = RequestMethod.GET)
+    public CanaisDeDistribuicao findCanalById(@PathVariable("id") int id) {
+        return comercialService.findCanalgById(id);
+    }
+	// Encontrar Tipo de Cliente por Canal
+    //
+	@RequestMapping(value = "/find-tipo-cliente-by-canal/{id}", method = RequestMethod.GET)
+    public List<ConsultaTipoClientePorCanal> findTipoClienteByCanal(@PathVariable("id") int id) {
+        return comercialService.findTipoClienteByCanal(id);
+    }
 	// Salvar Faturamento LIVE Clothing
     //
     @RequestMapping(value = "/save-faturamento-live-clothing", method = RequestMethod.POST)
     public void saveFatLiveClothing(@RequestBody BodyComercial body) {                  
     	comercialService.saveFatLiveClothing(body.idFaturamento, body.loja, body.data, body.quantidade, body.tickets, body.conversao, body.valorDolar, body.valorReal);
+    }
+    // Salvar Tipo cliente no Canal
+    @RequestMapping(value = "/save-tipo-cliente-canal", method = RequestMethod.POST)
+    public void saveTipoClientePorCanal(@RequestBody BodyComercial body) {                  
+    	comercialService.saveTipoClientePorCanal(body.idTpCli, body.idCanal, body.tipoCliente);
+    }
+    // Salvar Novo Canal de Distribuição
+    //
+    @RequestMapping(value = "/save-canal-de-distribuicao", method = RequestMethod.POST)
+    public void saveCanaisDistribuicao(@RequestBody BodyComercial body) {                  
+    	comercialService.saveCanaisDistribuicao(body.idCanal, body.descricao, body.modalidade);
     }
 	//
     // Importar Metas Categorias de Coleções
@@ -223,5 +262,18 @@ public class ComercialController {
 
 		comercialService.aplicarSaldosDescontoPedidos(body.listPedidosSel, cnpj9, cnpj4, cnpj2, body.usuario, body.observacao);
 	}
+	
+	@RequestMapping(value = "/delete-canais-distribuicao/{idCanal}", method = RequestMethod.DELETE)
+    public List<CanaisDeDistribuicao> deleteCanaisDistribuicao(@PathVariable("idCanal") int idCanal) {                  
+    	comercialService.deleteCanaisDistribuicao(idCanal);
+        return canaisDeDistribuicaoRepository.findAll();
+    }
+	
+	@RequestMapping(value = "/delete-tipo-cliente-canal/{id}", method = RequestMethod.DELETE)
+    public List<TipoClientePorCanal> deleteTipoClienteCanal(@PathVariable("id") int id) {                  
+    	comercialService.deleteTipoClienteCanal(id);
+        return tipoClientePorCanalRepository.findAll();
+    }
+
 
 }

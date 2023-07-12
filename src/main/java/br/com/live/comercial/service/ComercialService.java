@@ -7,7 +7,6 @@ import java.util.List;
 
 import br.com.live.comercial.model.*;
 import br.com.live.util.ConteudoChaveAlfaNum;
-import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.FormataData;
 import br.com.live.util.FormataString;
 import br.com.live.util.service.EmailService;
@@ -16,18 +15,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.comercial.custom.ComercialCustom;
 import br.com.live.comercial.entity.BloqueioTitulosForn;
+import br.com.live.comercial.entity.CanaisDeDistribuicao;
 import br.com.live.comercial.entity.ControleDescontoCliente;
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
 import br.com.live.comercial.entity.MetasCategoria;
 import br.com.live.comercial.entity.PedidosGravadosComDesconto;
+import br.com.live.comercial.entity.TipoClientePorCanal;
 import br.com.live.comercial.entity.TpClienteXTabPreco;
 import br.com.live.comercial.entity.TpClienteXTabPrecoItem;
 import br.com.live.comercial.entity.ValorDescontoClientesImportados;
 import br.com.live.comercial.repository.BloqueioTitulosFornRepository;
+import br.com.live.comercial.repository.CanaisDeDistribuicaoRepository;
 import br.com.live.comercial.repository.ControleDescontoClienteRepository;
 import br.com.live.comercial.repository.FaturamentoLiveClothingRepository;
 import br.com.live.comercial.repository.MetasCategoriaRepository;
 import br.com.live.comercial.repository.PedidosGravadosComDescontoRepository;
+import br.com.live.comercial.repository.TipoClientePorCanalRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoItemRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoRepository;
 import br.com.live.comercial.repository.ValorDescontoClientesImpRepository;
@@ -51,12 +54,15 @@ public class ComercialService {
 	private final PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository;
 	private final ControleDescontoClienteRepository controleDescontoClienteRepository;
 	private final FaturamentoLiveClothingRepository faturamentoLiveClothingRepository;
+	private final CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository;
+	private final TipoClientePorCanalRepository tipoClientePorCanalRepository;
 	private final EmailService emailService;
   
-	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, MetasCategoriaRepository metasCategoriaRepository,
-			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, ValorDescontoClientesImpRepository valorDescontoClientesImpRepository,
-							PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, ControleDescontoClienteRepository controleDescontoClienteRepository,
-							FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, EmailService emailService) {
+	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, 
+			MetasCategoriaRepository metasCategoriaRepository, TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, 
+			ValorDescontoClientesImpRepository valorDescontoClientesImpRepository, PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, 
+			ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, 
+			CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	EmailService emailService) {
 
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
@@ -68,6 +74,8 @@ public class ComercialService {
 		this.pedidosGravadosComDescontoRepository = pedidosGravadosComDescontoRepository;
 		this.controleDescontoClienteRepository = controleDescontoClienteRepository;
     	this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
+    	this.canaisDeDistribuicaoRepository = canaisDeDistribuicaoRepository;
+    	this.tipoClientePorCanalRepository = tipoClientePorCanalRepository;
 		this.emailService = emailService;
 	}
 	
@@ -121,6 +129,22 @@ public class ComercialService {
 	
 	public void deleteRelacCapa(String idCapa) {
 		tpClienteXTabPrecoRepository.deleteById(idCapa);
+	}
+	
+	public List<CanaisDeDistribuicao> findAllCanaisDistribuicao(){
+		return canaisDeDistribuicaoRepository.findAll();
+	}
+	
+	public List<ConsultaTipoClientePorCanal> findTipoClienteSemCanal(){
+		return comercialCustom.findTipoClienteSemCanal();
+	}
+	
+	public void deleteCanaisDistribuicao(int idCanal) {
+		canaisDeDistribuicaoRepository.deleteById(idCanal);
+	}
+	
+	public void deleteTipoClienteCanal(int id) {
+		tipoClientePorCanalRepository.deleteById(id);
 	}
 	
 	public void liberarBloqueio(String fornecedor) {
@@ -216,6 +240,14 @@ public class ComercialService {
 		return faturamentoLiveClothingRepository.findByIdFaturamento(idfaturamento);
 	}
 	
+	public CanaisDeDistribuicao findCanalgById(int id) {
+		return canaisDeDistribuicaoRepository.findByIdCanal(id);
+	}
+	
+	public List<ConsultaTipoClientePorCanal> findTipoClienteByCanal(int id) {
+		return comercialCustom.findTipoClienteByCanal(id);
+	}
+	
 	public void saveFatLiveClothing(int idFaturamento, String loja, String data, int quantidade, int tickets, float conversao, float valorDolar, float valorReal) {
 		
 		FaturamentoLiveClothing dadosFat = faturamentoLiveClothingRepository.findById(idFaturamento);
@@ -232,6 +264,32 @@ public class ComercialService {
 			 dadosFat.valorReal = valorReal;
 		}
 		faturamentoLiveClothingRepository.save(dadosFat);
+	}
+
+	public void saveTipoClientePorCanal(int idTpCli, int idCanal, int tipoCliente) {
+		
+		TipoClientePorCanal dados = tipoClientePorCanalRepository.findById(idTpCli);
+		
+		if (dados == null) {
+			int id = tipoClientePorCanalRepository.findNextID(); 
+			dados = new TipoClientePorCanal(id, idCanal, tipoCliente);	
+		}
+		tipoClientePorCanalRepository.save(dados);
+	}
+
+	public void saveCanaisDistribuicao(int id, String descricao, String modalidade) {
+		
+		CanaisDeDistribuicao dadosCanais = canaisDeDistribuicaoRepository.findByIdCanal(id);
+		
+		if (dadosCanais == null) {
+			int newId = canaisDeDistribuicaoRepository.findNextID(); 
+			dadosCanais = new CanaisDeDistribuicao(newId, descricao, modalidade);	
+		} else {
+			dadosCanais.descricao = descricao;
+			dadosCanais.modalidade = modalidade;
+			
+		}
+		canaisDeDistribuicaoRepository.save(dadosCanais);
 	}
 	
 	public void deleteFatLiveClothing(int idFaturamento) {

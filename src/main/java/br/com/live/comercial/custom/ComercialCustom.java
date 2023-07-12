@@ -40,6 +40,8 @@ public class ComercialCustom {
 	
 	public List<ConteudoChaveNumerica> findTipoCliente() {
 		String query = "select a.tipo_cliente value, a.tipo_cliente || ' - ' || a.descr_tipo_clien label from PEDI_085 a "
+				+ "     WHERE NOT EXISTS (SELECT 1 FROM orion_com_210 b "
+				+ "		                    WHERE b.tipo_cliente = a.tipo_cliente) "
 				+ "     ORDER BY a.tipo_cliente ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
@@ -96,6 +98,24 @@ public class ComercialCustom {
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaTpClienteXTabPreco.class), idCapa, id);
 	}
 	
+	public List<ConsultaTipoClientePorCanal> findTipoClienteByCanal(int id) {
+		
+		String query = " SELECT a.id id, a.tipo_cliente codigo, b.descr_tipo_clien descricao FROM orion_com_210 a, pedi_085 b"
+				+ "   WHERE b.tipo_cliente = a.tipo_cliente"
+				+ "   AND a.id_canal = " + id + " ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTipoClientePorCanal.class));
+	}
+	
+	public List<ConsultaTipoClientePorCanal> findTipoClienteSemCanal() {
+		
+		String query = " SELECT a.tipo_cliente tipoCliente, a.descr_tipo_clien descTipoCliente FROM pedi_085 a "
+				+ "		WHERE NOT EXISTS (SELECT 1 FROM orion_com_210 b "
+				+ "                   WHERE b.tipo_cliente = a.tipo_cliente) ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTipoClientePorCanal.class));
+	}
+	
 	public List<FaturamentoLiveClothing> findAllFatLiveClothing(){
 		
 		String query = "SELECT a.id id, "
@@ -112,7 +132,7 @@ public class ComercialCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(FaturamentoLiveClothing.class));
 	}
 	
-  public long findNextIdImpDescClientes() {
+	public long findNextIdImpDescClientes() {
 		long nextId = 0;
 
 		String query = " select nvl((max(b.id)),0)+1 from orion_com_290 b ";
