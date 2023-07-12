@@ -33,9 +33,9 @@ public class AtividadeProjetoEntity {
     private Date dataPrevFim;
 
     @Column(name = "tempo_previsto")
-    private int tempoPrevisto;
+    private double tempoPrevisto;
 
-    public AtividadeProjetoEntity(Long id, String descricao, Long idProjeto, Long idFase, Long idTipoAtividade, Long idResponsavel, Date dataPrevInicio, Date dataPrevFim, int tempoPrevisto) {
+    public AtividadeProjetoEntity(Long id, String descricao, Long idProjeto, Long idFase, Long idTipoAtividade, Long idResponsavel, Date dataPrevInicio, Date dataPrevFim, double tempoPrevisto) {
         this.id = id;
         this.descricao = descricao;
         this.idProjeto = idProjeto;
@@ -115,11 +115,11 @@ public class AtividadeProjetoEntity {
         this.dataPrevFim = dataPrevFim;
     }
 
-    public int getTempoPrevisto() {
+    public double getTempoPrevisto() {
         return tempoPrevisto;
     }
 
-    public void setTempoPrevisto(int tempoPrevisto) {
+    public void setTempoPrevisto(double tempoPrevisto) {
         this.tempoPrevisto = tempoPrevisto;
     }
 }

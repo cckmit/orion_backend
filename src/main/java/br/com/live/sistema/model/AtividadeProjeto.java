@@ -12,9 +12,9 @@ public class AtividadeProjeto {
     private long idResponsavel;
     private Date dataPrevInicio;
     private Date dataPrevFim;
-    private int tempoPrevisto;
+    private double tempoPrevisto;
 
-    public AtividadeProjeto(long id, String descricao, long idProjeto, long idFase, long idTipoAtividade, long idResponsavel, Date dataPrevInicio, Date dataPrevFim, int tempoPrevisto) {
+    public AtividadeProjeto(long id, String descricao, long idProjeto, long idFase, long idTipoAtividade, long idResponsavel, Date dataPrevInicio, Date dataPrevFim, double tempoPrevisto) {
         this.id = id;
         this.descricao = descricao;
         this.idProjeto = idProjeto;
@@ -94,11 +94,11 @@ public class AtividadeProjeto {
         this.dataPrevFim = dataPrevFim;
     }
 
-    public int getTempoPrevisto() {
+    public double getTempoPrevisto() {
         return tempoPrevisto;
     }
 
-    public void setTempoPrevisto(int tempoPrevisto) {
+    public void setTempoPrevisto(double tempoPrevisto) {
         this.tempoPrevisto = tempoPrevisto;
     }
 }

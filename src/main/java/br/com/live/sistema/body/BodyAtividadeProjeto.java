@@ -10,6 +10,6 @@ public class BodyAtividadeProjeto {
     public long idResponsavel;
     public String dataPrevInicio;
     public String dataPrevFim;
-    public int tempoPrevisto;
+    public double tempoPrevisto;
 
 }
