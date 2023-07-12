@@ -6,6 +6,7 @@ import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
 import br.com.live.sistema.service.RegistroTarefaAtividadeProjetoService;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public class RegistroTarefaAtividadeProjetoController {
     }
 
     @PostMapping("/save")
-    public List<BodyRegistroTarefaAtividadeProjeto> saveRegistroTarefaAtividadeProjeto(@RequestBody BodyRegistroTarefaAtividadeProjeto registroTarefaAtividadeProjeto){
+    public List<BodyRegistroTarefaAtividadeProjeto> saveRegistroTarefaAtividadeProjeto(@RequestBody BodyRegistroTarefaAtividadeProjeto registroTarefaAtividadeProjeto) throws ParseException {
         return registroTarefaAtividadeProjetoService.saveRegistroTarefaAtividadeProjeto(registroTarefaAtividadeProjeto);
     }
 }

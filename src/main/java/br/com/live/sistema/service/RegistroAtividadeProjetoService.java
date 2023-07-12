@@ -38,10 +38,10 @@ public class RegistroAtividadeProjetoService {
         registroAtividadeProjetoEntity.setDocumentoAssociado(registroAtividadeProjeto.documentoAssociado);
         registroAtividadeProjetoEntity.setCusto(registroAtividadeProjeto.custo);
 
-        if (registroAtividadeProjeto.dataInicio != null) registroAtividadeProjetoEntity.setDataInicio(FormataData.parseStringToDate(registroAtividadeProjeto.dataInicio));
-        if (registroAtividadeProjeto.horaInicio != null) registroAtividadeProjetoEntity.setHoraInicio(formatoHora.parse(registroAtividadeProjeto.horaInicio));
-        if (registroAtividadeProjeto.dataFim != null) registroAtividadeProjetoEntity.setDataFim(FormataData.parseStringToDate(registroAtividadeProjeto.dataFim));
-        if (registroAtividadeProjeto.horaFim != null) registroAtividadeProjetoEntity.setHoraFim(formatoHora.parse(registroAtividadeProjeto.horaFim));
+        if (registroAtividadeProjeto.dataInicio != null && !registroAtividadeProjeto.dataInicio.isEmpty()) registroAtividadeProjetoEntity.setDataInicio(FormataData.parseStringToDate(registroAtividadeProjeto.dataInicio));
+        if (registroAtividadeProjeto.horaInicio != null && !registroAtividadeProjeto.horaInicio.isEmpty()) registroAtividadeProjetoEntity.setHoraInicio(formatoHora.parse(registroAtividadeProjeto.horaInicio));
+        if (registroAtividadeProjeto.dataFim != null && !registroAtividadeProjeto.dataFim.isEmpty()) registroAtividadeProjetoEntity.setDataFim(FormataData.parseStringToDate(registroAtividadeProjeto.dataFim));
+        if (registroAtividadeProjeto.horaFim != null && !registroAtividadeProjeto.horaFim.isEmpty()) registroAtividadeProjetoEntity.setHoraFim(formatoHora.parse(registroAtividadeProjeto.horaFim));
 
         registroAtividadeProjetoRepository.save(registroAtividadeProjetoEntity);
 

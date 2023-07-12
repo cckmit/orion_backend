@@ -6,6 +6,8 @@ import br.com.live.sistema.repository.AtividadeProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,7 +20,7 @@ public class AtividadeProjetoService {
         this.atividadeProjetoRepository = atividadeProjetoRepository;
     }
 
-    public List<AtividadeProjetoEntity> saveAtividadeProjeto(BodyAtividadeProjeto atividadeProjeto){
+    public List<BodyAtividadeProjeto> saveAtividadeProjeto(BodyAtividadeProjeto atividadeProjeto){
 
         if (atividadeProjeto.id == 0) atividadeProjeto.id = atividadeProjetoRepository.findNextId();
 
@@ -27,13 +29,49 @@ public class AtividadeProjetoService {
         atividadeProjetoEntity.setDescricao(atividadeProjeto.descricao);
         atividadeProjetoEntity.setIdProjeto(atividadeProjeto.idProjeto);
         atividadeProjetoEntity.setIdFase(atividadeProjeto.idFase);
-        if (atividadeProjeto.idTipoAtividade != 0) atividadeProjetoEntity.setIdTipoAtividade(atividadeProjeto.idTipoAtividade);
         atividadeProjetoEntity.setIdResponsavel(atividadeProjeto.idResponsavel);
-        atividadeProjetoEntity.setDataPrevInicio(FormataData.parseStringToDate(atividadeProjeto.dataPrevInicio));
-        atividadeProjetoEntity.setDataPrevFim(FormataData.parseStringToDate(atividadeProjeto.dataPrevFim));
         atividadeProjetoEntity.setTempoPrevisto(atividadeProjeto.tempoPrevisto);
+
+        if (atividadeProjeto.idTipoAtividade != 0) atividadeProjetoEntity.setIdTipoAtividade(atividadeProjeto.idTipoAtividade);
+        if (atividadeProjeto.dataPrevInicio != null) atividadeProjetoEntity.setDataPrevInicio(FormataData.parseStringToDate(atividadeProjeto.dataPrevInicio));
+        if (atividadeProjeto.dataPrevFim != null) atividadeProjetoEntity.setDataPrevFim(FormataData.parseStringToDate(atividadeProjeto.dataPrevFim));
+
         atividadeProjetoRepository.save(atividadeProjetoEntity);
 
-        return atividadeProjetoRepository.findAllByIdProjeto(atividadeProjeto.idProjeto);
+        return findAll(atividadeProjeto.idProjeto);
     }
+
+    public List<BodyAtividadeProjeto> findAll(Long idProjeto){
+
+        List<AtividadeProjetoEntity> atividadeProjetoEntityList;
+
+        if (idProjeto == 0) {
+            atividadeProjetoEntityList = atividadeProjetoRepository.findAll();
+        } else {
+            atividadeProjetoEntityList = atividadeProjetoRepository.findAllByIdProjeto(idProjeto);
+        }
+
+        List<BodyAtividadeProjeto> atividadeProjetoBodyList = new ArrayList<>();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (AtividadeProjetoEntity atividadeProjetoEntity : atividadeProjetoEntityList){
+
+            BodyAtividadeProjeto atividadeProjeto = new BodyAtividadeProjeto();
+            atividadeProjeto.id = atividadeProjetoEntity.getId();
+            atividadeProjeto.descricao = atividadeProjetoEntity.getDescricao();
+            atividadeProjeto.idProjeto = atividadeProjetoEntity.getIdProjeto();
+            atividadeProjeto.idFase = atividadeProjetoEntity.getIdFase();
+            atividadeProjeto.idResponsavel = atividadeProjetoEntity.getIdResponsavel();
+            atividadeProjeto.tempoPrevisto = atividadeProjetoEntity.getTempoPrevisto();
+
+            if (atividadeProjetoEntity.getIdTipoAtividade() != null && atividadeProjetoEntity.getIdTipoAtividade() != 0) atividadeProjeto.idTipoAtividade = atividadeProjetoEntity.getIdTipoAtividade();
+            if (atividadeProjetoEntity.getDataPrevInicio() != null) atividadeProjeto.dataPrevInicio = dateFormat.format(atividadeProjetoEntity.getDataPrevInicio());
+            if (atividadeProjetoEntity.getDataPrevFim() != null) atividadeProjeto.dataPrevFim = dateFormat.format(atividadeProjetoEntity.getDataPrevFim());
+
+            atividadeProjetoBodyList.add(atividadeProjeto);
+        }
+        return atividadeProjetoBodyList;
+    }
+
 }

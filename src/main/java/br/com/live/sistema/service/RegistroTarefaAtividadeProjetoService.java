@@ -38,10 +38,10 @@ public class RegistroTarefaAtividadeProjetoService {
         registroTarefaAtividadeProjetoEntity.setDocumentoAssociado(registroTarefaAtividadeProjeto.documentoAssociado);
         registroTarefaAtividadeProjetoEntity.setCusto(registroTarefaAtividadeProjeto.custo);
 
-        if (registroTarefaAtividadeProjeto.dataInicio != null) registroTarefaAtividadeProjetoEntity.setDataInicio(FormataData.parseStringToDate(registroTarefaAtividadeProjeto.dataInicio));
-        if (registroTarefaAtividadeProjeto.horaInicio != null) registroTarefaAtividadeProjetoEntity.setHoraInicio(formatoHora.parse(registroTarefaAtividadeProjeto.horaInicio));
-        if (registroTarefaAtividadeProjeto.dataFim != null) registroTarefaAtividadeProjetoEntity.setDataFim(FormataData.parseStringToDate(registroTarefaAtividadeProjeto.dataFim));
-        if (registroTarefaAtividadeProjeto.horaFim != null) registroTarefaAtividadeProjetoEntity.setHoraFim(formatoHora.parse(registroTarefaAtividadeProjeto.horaFim));
+        if (registroTarefaAtividadeProjeto.dataInicio != null && !registroTarefaAtividadeProjeto.dataInicio.isEmpty()) registroTarefaAtividadeProjetoEntity.setDataInicio(FormataData.parseStringToDate(registroTarefaAtividadeProjeto.dataInicio));
+        if (registroTarefaAtividadeProjeto.horaInicio != null && !registroTarefaAtividadeProjeto.horaInicio.isEmpty()) registroTarefaAtividadeProjetoEntity.setHoraInicio(formatoHora.parse(registroTarefaAtividadeProjeto.horaInicio));
+        if (registroTarefaAtividadeProjeto.dataFim != null && !registroTarefaAtividadeProjeto.dataFim.isEmpty()) registroTarefaAtividadeProjetoEntity.setDataFim(FormataData.parseStringToDate(registroTarefaAtividadeProjeto.dataFim));
+        if (registroTarefaAtividadeProjeto.horaFim != null && !registroTarefaAtividadeProjeto.horaFim.isEmpty()) registroTarefaAtividadeProjetoEntity.setHoraFim(formatoHora.parse(registroTarefaAtividadeProjeto.horaFim));
 
         registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjetoEntity);
 

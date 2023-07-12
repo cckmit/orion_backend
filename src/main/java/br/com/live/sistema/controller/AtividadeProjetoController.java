@@ -23,8 +23,8 @@ public class AtividadeProjetoController {
     }
 
     @GetMapping("/find-all")
-    public List<AtividadeProjetoEntity> findAllAtividadeProjeto(){
-        return atividadeProjetoRepository.findAll();
+    public List<BodyAtividadeProjeto> findAllAtividadeProjeto(){
+        return atividadeProjetoService.findAll(0l);
     }
 
     @GetMapping("/find-by-id/{id}")
@@ -33,18 +33,18 @@ public class AtividadeProjetoController {
     }
 
     @GetMapping("/find-all-by-projeto/{idProjeto}")
-    public List<AtividadeProjetoEntity> findByIProjeto(@PathVariable("idProjeto") Long idProjeto){
-        return atividadeProjetoRepository.findAllByIdProjeto(idProjeto);
+    public List<BodyAtividadeProjeto> findByIProjeto(@PathVariable("idProjeto") Long idProjeto){
+        return atividadeProjetoService.findAll(idProjeto);
     }
 
     @GetMapping("/delete-by-id/{id}/{idProjeto}")
-    public List<AtividadeProjetoEntity> deleteByIdAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto){
+    public List<BodyAtividadeProjeto> deleteByIdAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto){
         atividadeProjetoRepository.deleteById(id);
-        return atividadeProjetoRepository.findAllByIdProjeto(idProjeto);
+        return atividadeProjetoService.findAll(idProjeto);
     }
 
     @PostMapping("/save")
-    public List<AtividadeProjetoEntity> saveAtividadeProjeto(@RequestBody BodyAtividadeProjeto atividadeProjeto){
+    public List<BodyAtividadeProjeto> saveAtividadeProjeto(@RequestBody BodyAtividadeProjeto atividadeProjeto){
         return atividadeProjetoService.saveAtividadeProjeto(atividadeProjeto);
     }
 }
