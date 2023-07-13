@@ -11,6 +11,7 @@ import br.com.live.comercial.model.DescontoClientesImportados;
 public class BodyComercial {
 	
 	public int idTpCli;
+	public int idRelac;
 	public String id;
 	public long idItem;
 	public String idCapa;
@@ -45,6 +46,8 @@ public class BodyComercial {
 	public float valorReal;
 	public String descricao;
 	public String modalidade;
+	public int represAntigo;
+	public int represNovo;
 	
 	public List<MetasCategoria> tabImportar;
 	

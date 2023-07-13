@@ -318,3 +318,6 @@ values (108, 'Gestor de Projetos', 'TI', '/gestor-projetos');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (109, 'Canais de Distribuição', 'Comercial', '/canais-de-distribuicao');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (110, 'Relacionamento Representantes Antigos x Novos', 'Comercial', '/relacionamento-representantes-antigos-novos');

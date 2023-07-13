@@ -15,11 +15,13 @@ import br.com.live.comercial.custom.ComercialCustom;
 import br.com.live.comercial.entity.BloqueioTitulosForn;
 import br.com.live.comercial.entity.CanaisDeDistribuicao;
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
+import br.com.live.comercial.entity.RepresentanteAntigoXNovo;
 import br.com.live.comercial.entity.TipoClientePorCanal;
 import br.com.live.comercial.entity.TpClienteXTabPreco;
 import br.com.live.comercial.entity.TpClienteXTabPrecoItem;
 import br.com.live.comercial.model.ConsultaMetasCategoria;
 import br.com.live.comercial.model.ConsultaPedidosPorCliente;
+import br.com.live.comercial.model.ConsultaRelacionamRepAntigoNovo;
 import br.com.live.comercial.model.ConsultaTipoClientePorCanal;
 import br.com.live.comercial.model.ConsultaTitulosBloqForn;
 import br.com.live.comercial.model.ConsultaTpClienteXTabPreco;
@@ -81,6 +83,16 @@ public class ComercialController {
     public List<ConsultaTitulosBloqForn> findAllFornBloq() {
 		return comercialService.findAllFornBloq();
 	}
+	
+	@RequestMapping(value = "/find-all-relacionamento-representante-antigo-novo", method = RequestMethod.GET)
+    public List<ConsultaRelacionamRepAntigoNovo> findAllRelacionamentoRepAntNovo() {
+		return comercialService.findAllRelacionamentoRepAntNovo();
+	}
+	
+	@RequestMapping(value = "/find-relacionamento-representante-antigo-novo/{id}", method = RequestMethod.GET)
+    public RepresentanteAntigoXNovo findAllRelacoRepAntNovoById(@PathVariable("id") int id) {
+    	return comercialService.findAllRelacoRepAntNovoById(id);
+    }
 	
 	@RequestMapping(value = "/find-all-catalogo", method = RequestMethod.GET)
     public List<ConteudoChaveNumerica> findAllCatalogo() {
@@ -195,6 +207,20 @@ public class ComercialController {
     }
     
     
+    
+    
+    
+    // Salvar Relacionamentos Representante Antigo X Novo
+    @RequestMapping(value = "/save-relacionamento-representante-antigo-novo", method = RequestMethod.POST)
+    public void saveRelacionamentoRepAntXNovo(@RequestBody BodyComercial body) {                  
+    	comercialService.saveRelacionamentoRepAntXNovo(body.idRelac, body.represAntigo, body.represNovo);
+    }
+    
+    
+    
+    
+    
+    
     @RequestMapping(value = "/delete-relacionamento-item/{idItem}", method = RequestMethod.DELETE)
     public List<TpClienteXTabPrecoItem> deleteItemRelac(@PathVariable("idItem") int idItem) {                  
     	comercialService.deleteItemRelacionamento(idItem);
@@ -274,6 +300,11 @@ public class ComercialController {
     	comercialService.deleteTipoClienteCanal(id);
         return tipoClientePorCanalRepository.findAll();
     }
-
+	
+	@RequestMapping(value = "/delete-realacionamento-repres-antigo-novo/{id}", method = RequestMethod.DELETE)
+    public List<ConsultaRelacionamRepAntigoNovo> deleteRelacRepAntigoXNovo(@PathVariable("id") int id) {                  
+    	comercialService.deleteRelacRepAntigoXNovo(id);
+    	return comercialService.findAllRelacionamentoRepAntNovo();
+    }
 
 }

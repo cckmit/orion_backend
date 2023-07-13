@@ -20,6 +20,7 @@ import br.com.live.comercial.entity.ControleDescontoCliente;
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
 import br.com.live.comercial.entity.MetasCategoria;
 import br.com.live.comercial.entity.PedidosGravadosComDesconto;
+import br.com.live.comercial.entity.RepresentanteAntigoXNovo;
 import br.com.live.comercial.entity.TipoClientePorCanal;
 import br.com.live.comercial.entity.TpClienteXTabPreco;
 import br.com.live.comercial.entity.TpClienteXTabPrecoItem;
@@ -30,6 +31,7 @@ import br.com.live.comercial.repository.ControleDescontoClienteRepository;
 import br.com.live.comercial.repository.FaturamentoLiveClothingRepository;
 import br.com.live.comercial.repository.MetasCategoriaRepository;
 import br.com.live.comercial.repository.PedidosGravadosComDescontoRepository;
+import br.com.live.comercial.repository.RepresentanteAntigoXNovoRepository;
 import br.com.live.comercial.repository.TipoClientePorCanalRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoItemRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoRepository;
@@ -56,13 +58,15 @@ public class ComercialService {
 	private final FaturamentoLiveClothingRepository faturamentoLiveClothingRepository;
 	private final CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository;
 	private final TipoClientePorCanalRepository tipoClientePorCanalRepository;
+	private final RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository;
 	private final EmailService emailService;
   
 	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, 
 			MetasCategoriaRepository metasCategoriaRepository, TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, 
 			ValorDescontoClientesImpRepository valorDescontoClientesImpRepository, PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, 
 			ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, 
-			CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	EmailService emailService) {
+			CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	
+			RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository, EmailService emailService) {
 
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
@@ -76,11 +80,16 @@ public class ComercialService {
     	this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
     	this.canaisDeDistribuicaoRepository = canaisDeDistribuicaoRepository;
     	this.tipoClientePorCanalRepository = tipoClientePorCanalRepository;
+    	this.representanteAntigoXNovoRepository = representanteAntigoXNovoRepository;
 		this.emailService = emailService;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
 		return comercialCustom.findAllTitulosBloqForn();
+	}
+	
+	public List<ConsultaRelacionamRepAntigoNovo> findAllRelacionamentoRepAntNovo() {
+		return comercialCustom.findAllRelacionamentoRepAntNovo();
 	}
 	
 	public BloqueioTitulosForn findForncedorBloq(String idForn) {
@@ -145,6 +154,10 @@ public class ComercialService {
 	
 	public void deleteTipoClienteCanal(int id) {
 		tipoClientePorCanalRepository.deleteById(id);
+	}
+	
+	public void deleteRelacRepAntigoXNovo(int id) {
+		representanteAntigoXNovoRepository.deleteById(id);
 	}
 	
 	public void liberarBloqueio(String fornecedor) {
@@ -244,6 +257,10 @@ public class ComercialService {
 		return canaisDeDistribuicaoRepository.findByIdCanal(id);
 	}
 	
+	public RepresentanteAntigoXNovo findAllRelacoRepAntNovoById(int id) {
+		return representanteAntigoXNovoRepository.findById(id);
+	}
+	
 	public List<ConsultaTipoClientePorCanal> findTipoClienteByCanal(int id) {
 		return comercialCustom.findTipoClienteByCanal(id);
 	}
@@ -264,6 +281,20 @@ public class ComercialService {
 			 dadosFat.valorReal = valorReal;
 		}
 		faturamentoLiveClothingRepository.save(dadosFat);
+	}
+	
+	public void saveRelacionamentoRepAntXNovo(int idRelac, int represAntigo, int represNovo) {
+		
+		RepresentanteAntigoXNovo dados = representanteAntigoXNovoRepository.findById(idRelac);
+		
+		if (dados == null) {
+			int id = representanteAntigoXNovoRepository.findNextID(); 
+			dados = new RepresentanteAntigoXNovo(id, represAntigo, represNovo);	
+		} else {
+			dados.represAntigo = represAntigo;
+			dados.represNovo = represNovo;
+		}
+		representanteAntigoXNovoRepository.save(dados);
 	}
 
 	public void saveTipoClientePorCanal(int idTpCli, int idCanal, int tipoCliente) {

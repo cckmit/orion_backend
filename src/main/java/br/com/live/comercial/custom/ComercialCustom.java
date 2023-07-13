@@ -258,4 +258,15 @@ public class ComercialCustom {
 				" AND b.CGC_2 = a.CLI_PED_CGC_CLI2 ";
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(ConsultaEmailClienteCashback.class));
 	}
+	
+	public List<ConsultaRelacionamRepAntigoNovo> findAllRelacionamentoRepAntNovo() {
+		
+		String query = " SELECT a.id id, a.repres_antigo || ' - ' || b.nome_rep_cliente represAntigo, "
+				+ "       a.repres_novo || ' - ' || c.nome_rep_cliente represNovo "
+				+ "   FROM orion_com_220 a, pedi_020 b, pedi_020 c "
+				+ "   WHERE b.cod_rep_cliente = a.repres_antigo "
+				+ "   AND c.cod_rep_cliente = a.repres_novo ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaRelacionamRepAntigoNovo.class));
+	}
 }
