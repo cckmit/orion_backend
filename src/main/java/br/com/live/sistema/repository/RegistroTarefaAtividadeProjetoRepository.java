@@ -19,4 +19,14 @@ public interface RegistroTarefaAtividadeProjetoRepository extends JpaRepository<
 
     @Query("SELECT a FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade ORDER BY a.dataInicio, a.horaInicio, a.id")
     List<RegistroTarefaAtividadeProjetoEntity> findAllByRegistroAtividade(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
+
+    @Query(value = "SELECT a FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade and a.dataInicio <> null and a.horaInicio <> null ORDER BY a.dataInicio ASC, a.horaInicio ASC")
+    List<RegistroTarefaAtividadeProjetoEntity> findTarefaAtividadeMenorData(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
+
+    @Query(value = "SELECT a FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade and a.dataFim <> null and a.horaFim <> null ORDER BY a.dataFim DESC, a.horaFim DESC")
+    List<RegistroTarefaAtividadeProjetoEntity> findTarefaAtividadeMaiorData(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
+
+    @Query("SELECT SUM(a.custo) FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade")
+    Double calcularCustoTotalTarefaAtividade(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
+
 }

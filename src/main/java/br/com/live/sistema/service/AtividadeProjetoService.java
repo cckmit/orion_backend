@@ -85,7 +85,7 @@ public class AtividadeProjetoService {
     }
 
     @Transactional
-    public List<BodyAtividadeProjeto> saveAtividade(BodyAtividadeProjeto atividadeProjeto){
+    public void saveAtividade(BodyAtividadeProjeto atividadeProjeto){
 
         if (atividadeProjeto.id == 0) atividadeProjeto.id = atividadeProjetoRepository.findNextId();
 
@@ -102,8 +102,6 @@ public class AtividadeProjetoService {
         if (atividadeProjeto.dataPrevFim != null) atividadeProjetoEntity.setDataPrevFim(FormataData.parseStringToDate(atividadeProjeto.dataPrevFim));
 
         atividadeProjetoRepository.save(atividadeProjetoEntity);
-
-        return findAll(atividadeProjeto.idProjeto);
     }
 
     @Transactional

@@ -43,10 +43,9 @@ public class RegistroTarefaAtividadeProjetoController {
         return registroTarefaAtividadeProjetoService.findAll(idProjeto);
     }
 
-    @GetMapping("/delete-by-id/{id}/{idProjeto}")
-    public List<BodyRegistroTarefaAtividadeProjeto> deleteByIdRegistroTarefaAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto){
-        registroTarefaAtividadeProjetoRepository.deleteById(id);
-        return registroTarefaAtividadeProjetoService.findAll(idProjeto);
+    @GetMapping("/delete-by-id/{id}/{idProjeto}/{idRegistroAtividade}")
+    public List<BodyRegistroTarefaAtividadeProjeto> deleteByIdRegistroTarefaAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto,@PathVariable("idRegistroAtividade") Long idRegistroAtividade){
+        return registroTarefaAtividadeProjetoService.deleteByIdRegistroTarefaAtividadeProjeto(id, idProjeto, idRegistroAtividade);
     }
 
     @PostMapping("/save")

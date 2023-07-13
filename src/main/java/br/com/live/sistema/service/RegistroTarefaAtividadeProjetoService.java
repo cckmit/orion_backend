@@ -1,7 +1,9 @@
 package br.com.live.sistema.service;
 
 import br.com.live.sistema.body.BodyRegistroTarefaAtividadeProjeto;
+import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
+import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
@@ -11,18 +13,38 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@Transactional
 public class RegistroTarefaAtividadeProjetoService {
 
     RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
+    RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
 
-    public RegistroTarefaAtividadeProjetoService(RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository) {
+    public RegistroTarefaAtividadeProjetoService(RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository) {
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
+        this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
     }
 
     public List<BodyRegistroTarefaAtividadeProjeto> saveRegistroTarefaAtividadeProjeto(BodyRegistroTarefaAtividadeProjeto registroTarefaAtividadeProjeto) throws ParseException {
+        saveRegistroTarefaAtividade(registroTarefaAtividadeProjeto);
+        atualizarDadosRegistroAtividade(registroTarefaAtividadeProjeto.idProjeto, registroTarefaAtividadeProjeto.idRegistroAtividade);
+        return findAll(registroTarefaAtividadeProjeto.idProjeto);
+    }
+
+    public List<BodyRegistroTarefaAtividadeProjeto> deleteByIdRegistroTarefaAtividadeProjeto(long id, long idProjeto, long idRegistroAtividade){
+        deleteById(id);
+        atualizarDadosRegistroAtividade(idProjeto, idRegistroAtividade);
+        return findAll(idProjeto);
+    }
+
+    @Transactional
+    public void deleteById(long id) {
+        registroTarefaAtividadeProjetoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void saveRegistroTarefaAtividade(BodyRegistroTarefaAtividadeProjeto registroTarefaAtividadeProjeto) throws ParseException {
 
         if (registroTarefaAtividadeProjeto.id == 0) registroTarefaAtividadeProjeto.id = registroTarefaAtividadeProjetoRepository.findNextId();
 
@@ -44,8 +66,29 @@ public class RegistroTarefaAtividadeProjetoService {
         if (registroTarefaAtividadeProjeto.horaFim != null && !registroTarefaAtividadeProjeto.horaFim.isEmpty()) registroTarefaAtividadeProjetoEntity.setHoraFim(formatoHora.parse(registroTarefaAtividadeProjeto.horaFim));
 
         registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjetoEntity);
+    }
 
-        return findAll(registroTarefaAtividadeProjeto.idProjeto);
+    @Transactional
+    public void atualizarDadosRegistroAtividade(long idProjeto, long idRegistroAtividade){
+
+        List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoMaiorDataList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeMaiorData(idProjeto, idRegistroAtividade);
+        List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoMenorDataList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeMenorData(idProjeto, idRegistroAtividade);
+
+        if (!registroTarefaAtividadeProjetoMaiorDataList.isEmpty() && !registroTarefaAtividadeProjetoMenorDataList.isEmpty()) {
+
+            double custoTotal = registroTarefaAtividadeProjetoRepository.calcularCustoTotalTarefaAtividade(idProjeto, idRegistroAtividade);
+
+            Optional<RegistroAtividadeProjetoEntity> registroAtividadeProjeto = registroAtividadeProjetoRepository.findById(idRegistroAtividade);
+            RegistroAtividadeProjetoEntity registroAtividadeProjetoEntity = registroAtividadeProjeto.get();
+
+            registroAtividadeProjetoEntity.setDataInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getDataInicio());
+            registroAtividadeProjetoEntity.setHoraInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getHoraInicio());
+            registroAtividadeProjetoEntity.setDataFim(registroTarefaAtividadeProjetoMaiorDataList.get(0).getDataFim());
+            registroAtividadeProjetoEntity.setHoraFim(registroTarefaAtividadeProjetoMaiorDataList.get(0).getHoraFim());
+            registroAtividadeProjetoEntity.setCusto(custoTotal);
+
+            registroAtividadeProjetoRepository.save(registroAtividadeProjetoEntity);
+        }
     }
 
     public List<BodyRegistroTarefaAtividadeProjeto> findAll(Long idProjeto){

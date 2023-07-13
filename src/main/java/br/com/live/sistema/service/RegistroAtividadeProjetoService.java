@@ -1,6 +1,5 @@
 package br.com.live.sistema.service;
 
-import br.com.live.sistema.body.BodyAtividadeProjeto;
 import br.com.live.sistema.body.BodyRegistroAtividadeProjeto;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
