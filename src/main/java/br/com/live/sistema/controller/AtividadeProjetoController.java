@@ -39,7 +39,7 @@ public class AtividadeProjetoController {
 
     @GetMapping("/delete-by-id/{id}/{idProjeto}")
     public List<BodyAtividadeProjeto> deleteByIdAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto){
-        atividadeProjetoRepository.deleteById(id);
+        atividadeProjetoService.deleteByIdAtividadeProjeto(id, idProjeto);
         return atividadeProjetoService.findAll(idProjeto);
     }
 

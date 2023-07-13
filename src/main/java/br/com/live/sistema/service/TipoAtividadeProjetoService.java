@@ -7,7 +7,6 @@ import br.com.live.sistema.repository.TarefaTipoAtividadeProjetoRepository;
 import br.com.live.sistema.repository.TipoAtividadeProjetoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;

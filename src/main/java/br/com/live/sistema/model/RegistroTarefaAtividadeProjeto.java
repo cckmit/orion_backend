@@ -17,7 +17,7 @@ public class RegistroTarefaAtividadeProjeto {
     private String documentoAssociado;
     private double custo;
 
-    RegistroTarefaAtividadeProjeto(){}
+    public RegistroTarefaAtividadeProjeto(){}
 
     public RegistroTarefaAtividadeProjeto(Long id, Long idProjeto, Long idRegistroAtividade, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo) {
         this.id = id;

@@ -25,7 +25,7 @@ public class RegistroTarefaAtividadeProjetoController {
 
     @GetMapping("/find-all")
     public List<BodyRegistroTarefaAtividadeProjeto> findAllRegistroTarefaAtividadeProjeto(){
-        return registroTarefaAtividadeProjetoService.findAll(0L,0L);
+        return registroTarefaAtividadeProjetoService.findAll(0L);
     }
 
     @GetMapping("/find-by-id/{id}")
@@ -33,20 +33,20 @@ public class RegistroTarefaAtividadeProjetoController {
         return registroTarefaAtividadeProjetoRepository.findById(id);
     }
 
-    @GetMapping("/find-all-by-projeto-atividade/{idProjeto}/{idRegistroAtividade}")
+    @GetMapping("/find-all-by-projeto-atividade/{idProjeto}")
     public List<BodyRegistroTarefaAtividadeProjeto> findByIProjetoAtividade(@PathVariable("idProjeto") Long idProjeto, @PathVariable("idRegistroAtividade") Long idRegistroAtividade){
-        return registroTarefaAtividadeProjetoService.findAll(idProjeto, idRegistroAtividade);
+        return registroTarefaAtividadeProjetoService.findAll(idProjeto);
     }
 
     @GetMapping("/find-all-by-projeto/{idProjeto}")
     public List<BodyRegistroTarefaAtividadeProjeto> findByIProjeto(@PathVariable("idProjeto") Long idProjeto){
-        return registroTarefaAtividadeProjetoService.findAll(idProjeto, 0L);
+        return registroTarefaAtividadeProjetoService.findAll(idProjeto);
     }
 
-    @GetMapping("/delete-by-id/{id}/{idProjeto}/{idRegistroAtividade}")
-    public List<BodyRegistroTarefaAtividadeProjeto> deleteByIdRegistroTarefaAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto, @PathVariable("idRegistroAtividade") Long idRegistroAtividade){
+    @GetMapping("/delete-by-id/{id}/{idProjeto}")
+    public List<BodyRegistroTarefaAtividadeProjeto> deleteByIdRegistroTarefaAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto){
         registroTarefaAtividadeProjetoRepository.deleteById(id);
-        return registroTarefaAtividadeProjetoService.findAll(idProjeto, idRegistroAtividade);
+        return registroTarefaAtividadeProjetoService.findAll(idProjeto);
     }
 
     @PostMapping("/save")

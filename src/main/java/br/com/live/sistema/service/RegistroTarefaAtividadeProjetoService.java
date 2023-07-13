@@ -45,19 +45,17 @@ public class RegistroTarefaAtividadeProjetoService {
 
         registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjetoEntity);
 
-        return findAll(registroTarefaAtividadeProjeto.idProjeto, registroTarefaAtividadeProjeto.idRegistroAtividade);
+        return findAll(registroTarefaAtividadeProjeto.idProjeto);
     }
 
-    public List<BodyRegistroTarefaAtividadeProjeto> findAll(Long idProjeto, Long idRegistroAtividadeProjeto){
+    public List<BodyRegistroTarefaAtividadeProjeto> findAll(Long idProjeto){
 
-        List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoEntityList;
+        List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoEntityList = null;
 
-        if (idProjeto == 0 && idRegistroAtividadeProjeto == 0){
+        if (idProjeto == 0){
             registroTarefaAtividadeProjetoEntityList = registroTarefaAtividadeProjetoRepository.findAll();
-        } else if (idProjeto != 0 && idRegistroAtividadeProjeto == 0) {
+        } else if (idProjeto != 0) {
             registroTarefaAtividadeProjetoEntityList = registroTarefaAtividadeProjetoRepository.findAllByIdProjeto(idProjeto);
-        } else {
-            registroTarefaAtividadeProjetoEntityList = registroTarefaAtividadeProjetoRepository.findAllByRegistroAtividade(idProjeto, idRegistroAtividadeProjeto);
         }
 
         List<BodyRegistroTarefaAtividadeProjeto> registroTarefaAtividadeProjetoBodyList = new ArrayList<>();

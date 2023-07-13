@@ -24,8 +24,8 @@
 --ALTER TABLE orion_ti_070 DROP CONSTRAINT fk_orion_ti_070_usuario
 --DROP TABLE orion_ti_070
 
---ALTER TABLE orion_ti_071 DROP CONSTRAINT fk_orion_ti_070_projeto
---ALTER TABLE orion_ti_071 DROP CONSTRAINT fk_orion_ti_070_usuario
+--ALTER TABLE orion_ti_071 DROP CONSTRAINT fk_orion_ti_071_projeto
+--ALTER TABLE orion_ti_071 DROP CONSTRAINT fk_orion_ti_071_usuario
 --ALTER TABLE orion_ti_071 DROP CONSTRAINT fk_orion_ti_071_registro_atividade
 --DROP TABLE orion_ti_071
 
@@ -96,7 +96,7 @@ CREATE TABLE orion_ti_045 (
     CONSTRAINT fk_orion_ti_045_projeto FOREIGN KEY (ID_PROJETO) REFERENCES orion_ti_040(ID) ON DELETE CASCADE,
     CONSTRAINT fk_orion_ti_045_fase FOREIGN KEY (ID_FASE) REFERENCES orion_ti_030(ID),
     CONSTRAINT fk_orion_ti_045_tipo_atividade FOREIGN KEY (ID_TIPO_ATIVIDADE) REFERENCES orion_ti_035(ID),
-    CONSTRAINT fk_orion_ti_045_responsavel FOREIGN KEY (ID_RESPONSAVEL) REFERENCES orion_001(ID)
+    CONSTRAINT fk_orion_ti_045_usuario FOREIGN KEY (ID_RESPONSAVEL) REFERENCES orion_001(ID)
 );
 
 -- Tabela Funcao de Pessoas
@@ -120,7 +120,7 @@ CREATE TABLE orion_ti_055 (
   CONSTRAINT fk_orion_ti_055_funcao FOREIGN KEY (ID_FUNCAO_PESSOA) REFERENCES orion_ti_050(ID)
 )
 
--- Tabela de envolvidos do projeto
+-- Tabela de aprovadores do escopo
 CREATE TABLE orion_ti_060 (
   ID VARCHAR2(100),
   ID_USUARIO NUMBER(9),

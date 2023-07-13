@@ -1,8 +1,11 @@
 package br.com.live.sistema.service;
 
+import br.com.live.sistema.body.BodyAtividadeProjeto;
 import br.com.live.sistema.body.BodyRegistroAtividadeProjeto;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
+import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
 import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
+import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +13,6 @@ import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -18,9 +20,11 @@ import java.util.List;
 public class RegistroAtividadeProjetoService {
 
     RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
+    RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
 
-    public RegistroAtividadeProjetoService(RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository) {
+    public RegistroAtividadeProjetoService(RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository) {
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
+        this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
     }
 
     public List<BodyRegistroAtividadeProjeto> saveRegistroAtividadeProjeto(BodyRegistroAtividadeProjeto registroAtividadeProjeto) throws ParseException {
@@ -82,5 +86,24 @@ public class RegistroAtividadeProjetoService {
             registroAtividadeProjetoBodyList.add(registroAtividadeProjeto);
         }
         return registroAtividadeProjetoBodyList;
+    }
+
+    public int validaRegistroAtividadeProjetoApontado(Long idProjeto){
+
+        int exist = 0;
+
+        List<RegistroAtividadeProjetoEntity> registroAtividadeProjetoEntityList = registroAtividadeProjetoRepository.findAllByIdProjeto(idProjeto);
+
+        for (RegistroAtividadeProjetoEntity registroAtividadeProjeto : registroAtividadeProjetoEntityList){
+            if ((registroAtividadeProjeto.getDataInicio() != null) || (registroAtividadeProjeto.getDataFim() != null)) exist = 1;
+
+            List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoList = registroTarefaAtividadeProjetoRepository.findAllByRegistroAtividade(idProjeto, registroAtividadeProjeto.getId());
+
+            for (RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto : registroTarefaAtividadeProjetoList){
+                if ((registroTarefaAtividadeProjeto.getDataInicio() != null) || (registroTarefaAtividadeProjeto.getDataFim() != null)) exist = 1;
+            }
+        }
+
+        return exist;
     }
 }

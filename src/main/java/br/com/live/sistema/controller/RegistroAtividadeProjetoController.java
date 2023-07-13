@@ -48,4 +48,9 @@ public class RegistroAtividadeProjetoController {
     public List<BodyRegistroAtividadeProjeto> saveRegistroAtividadeProjeto(@RequestBody BodyRegistroAtividadeProjeto registroAtividadeProjeto) throws ParseException {
         return registroAtividadeProjetoService.saveRegistroAtividadeProjeto(registroAtividadeProjeto);
     }
+
+    @GetMapping("/valida-registro-apontado/{idProjeto}")
+    public int validaRegistroAtividadeProjetoApontado(@PathVariable("idProjeto") Long idProjeto){
+        return registroAtividadeProjetoService.validaRegistroAtividadeProjetoApontado(idProjeto);
+    }
 }
