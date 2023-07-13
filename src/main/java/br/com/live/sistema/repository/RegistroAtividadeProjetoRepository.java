@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface RegistroAtividadeProjetoRepository extends JpaRepository<RegistroAtividadeProjetoEntity, Long> {
 
-    @Query(" SELECT nvl(max(a.id),0) + 1 FROM RegistroAtividadeProjetoEntity")
+    @Query(" SELECT nvl(max(a.id),0) + 1 FROM RegistroAtividadeProjetoEntity a")
     long findNextId();
 
     @Query("SELECT a FROM RegistroAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto ORDER BY a.dataInicio, a.horaInicio, a.id")
