@@ -74,12 +74,12 @@ public class RegistroTarefaAtividadeProjetoService {
         List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoMaiorDataList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeMaiorData(idProjeto, idRegistroAtividade);
         List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoMenorDataList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeMenorData(idProjeto, idRegistroAtividade);
 
+        Optional<RegistroAtividadeProjetoEntity> registroAtividadeProjeto = registroAtividadeProjetoRepository.findById(idRegistroAtividade);
+        RegistroAtividadeProjetoEntity registroAtividadeProjetoEntity = registroAtividadeProjeto.get();
+
         if (!registroTarefaAtividadeProjetoMaiorDataList.isEmpty() && !registroTarefaAtividadeProjetoMenorDataList.isEmpty()) {
 
             double custoTotal = registroTarefaAtividadeProjetoRepository.calcularCustoTotalTarefaAtividade(idProjeto, idRegistroAtividade);
-
-            Optional<RegistroAtividadeProjetoEntity> registroAtividadeProjeto = registroAtividadeProjetoRepository.findById(idRegistroAtividade);
-            RegistroAtividadeProjetoEntity registroAtividadeProjetoEntity = registroAtividadeProjeto.get();
 
             registroAtividadeProjetoEntity.setDataInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getDataInicio());
             registroAtividadeProjetoEntity.setHoraInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getHoraInicio());
@@ -87,8 +87,16 @@ public class RegistroTarefaAtividadeProjetoService {
             registroAtividadeProjetoEntity.setHoraFim(registroTarefaAtividadeProjetoMaiorDataList.get(0).getHoraFim());
             registroAtividadeProjetoEntity.setCusto(custoTotal);
 
-            registroAtividadeProjetoRepository.save(registroAtividadeProjetoEntity);
+        } else {
+
+            registroAtividadeProjetoEntity.setDataInicio(null);
+            registroAtividadeProjetoEntity.setHoraInicio(null);
+            registroAtividadeProjetoEntity.setDataFim(null);
+            registroAtividadeProjetoEntity.setHoraFim(null);
+            registroAtividadeProjetoEntity.setCusto(0);
         }
+
+        registroAtividadeProjetoRepository.save(registroAtividadeProjetoEntity);
     }
 
     public List<BodyRegistroTarefaAtividadeProjeto> findAll(Long idProjeto){

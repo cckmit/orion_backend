@@ -13,5 +13,6 @@ public class BodyRegistroAtividadeProjeto {
     public String horaFim;
     public String documentoAssociado;
     public double custo;
+    public Long idFase;
 
 }

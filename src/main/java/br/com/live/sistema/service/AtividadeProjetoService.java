@@ -5,8 +5,6 @@ import br.com.live.sistema.entity.AtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
 import br.com.live.sistema.entity.TarefaTipoAtividadeProjetoEntity;
-import br.com.live.sistema.model.RegistroAtividadeProjeto;
-import br.com.live.sistema.model.RegistroTarefaAtividadeProjeto;
 import br.com.live.sistema.repository.AtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
@@ -133,6 +131,7 @@ public class AtividadeProjetoService {
             registroAtividadeProjeto.setAcaoRealizada("");
             registroAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
             registroAtividadeProjeto.setCusto(0);
+            registroAtividadeProjeto.setIdFase(atividadeProjeto.getIdFase());
 
             registroAtividadeProjetoRepository.save(registroAtividadeProjeto);
 

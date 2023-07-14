@@ -41,9 +41,12 @@ public class RegistroAtividadeProjetoEntity {
 
     private double custo;
 
+    @Column(name="id_fase")
+    private Long idFase;
+
     public RegistroAtividadeProjetoEntity(){}
 
-    public RegistroAtividadeProjetoEntity(Long id, Long idProjeto, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo) {
+    public RegistroAtividadeProjetoEntity(Long id, Long idProjeto, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo, Long idFase) {
         this.id = id;
         this.idProjeto = idProjeto;
         this.descricao = descricao;
@@ -55,6 +58,7 @@ public class RegistroAtividadeProjetoEntity {
         this.horaFim = horaFim;
         this.documentoAssociado = documentoAssociado;
         this.custo = custo;
+        this.idFase = idFase;
     }
 
     public Long getId() {
@@ -143,5 +147,13 @@ public class RegistroAtividadeProjetoEntity {
 
     public void setCusto(double custo) {
         this.custo = custo;
+    }
+
+    public Long getIdFase() {
+        return idFase;
+    }
+
+    public void setIdFase(Long idFase) {
+        this.idFase = idFase;
     }
 }

@@ -40,6 +40,7 @@ public class RegistroAtividadeProjetoService {
         registroAtividadeProjetoEntity.setIdResponsavel(registroAtividadeProjeto.idResponsavel);
         registroAtividadeProjetoEntity.setDocumentoAssociado(registroAtividadeProjeto.documentoAssociado);
         registroAtividadeProjetoEntity.setCusto(registroAtividadeProjeto.custo);
+        registroAtividadeProjetoEntity.setIdFase(registroAtividadeProjeto.idFase);
 
         if (registroAtividadeProjeto.dataInicio != null && !registroAtividadeProjeto.dataInicio.isEmpty()) registroAtividadeProjetoEntity.setDataInicio(FormataData.parseStringToDate(registroAtividadeProjeto.dataInicio));
         if (registroAtividadeProjeto.horaInicio != null && !registroAtividadeProjeto.horaInicio.isEmpty()) registroAtividadeProjetoEntity.setHoraInicio(formatoHora.parse(registroAtividadeProjeto.horaInicio));
@@ -76,6 +77,7 @@ public class RegistroAtividadeProjetoService {
             registroAtividadeProjeto.idResponsavel = registroAtividadeProjetoEntity.getIdResponsavel();
             registroAtividadeProjeto.documentoAssociado = registroAtividadeProjetoEntity.getDocumentoAssociado();
             registroAtividadeProjeto.custo = registroAtividadeProjetoEntity.getCusto();
+            registroAtividadeProjeto.idFase = registroAtividadeProjetoEntity.getIdFase();
 
             if (registroAtividadeProjetoEntity.getDataInicio() != null) registroAtividadeProjeto.dataInicio = dateFormat.format(registroAtividadeProjetoEntity.getDataInicio());
             if (registroAtividadeProjetoEntity.getHoraInicio() != null) registroAtividadeProjeto.horaInicio = timeFormat.format(registroAtividadeProjetoEntity.getHoraInicio());

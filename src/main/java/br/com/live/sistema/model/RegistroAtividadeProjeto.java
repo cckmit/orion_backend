@@ -15,10 +15,11 @@ public class RegistroAtividadeProjeto {
     private Date horaFim;
     private String documentoAssociado;
     private double custo;
+    private Long idFase;
 
     public RegistroAtividadeProjeto(){}
 
-    public RegistroAtividadeProjeto(Long id, Long idProjeto, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo) {
+    public RegistroAtividadeProjeto(Long id, Long idProjeto, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo, Long idFase) {
         this.id = id;
         this.idProjeto = idProjeto;
         this.descricao = descricao;
@@ -30,6 +31,7 @@ public class RegistroAtividadeProjeto {
         this.horaFim = horaFim;
         this.documentoAssociado = documentoAssociado;
         this.custo = custo;
+        this.idFase = idFase;
     }
 
     public Long getId() {
@@ -118,5 +120,13 @@ public class RegistroAtividadeProjeto {
 
     public void setCusto(double custo) {
         this.custo = custo;
+    }
+
+    public Long getIdFase() {
+        return idFase;
+    }
+
+    public void setIdFase(Long idFase) {
+        this.idFase = idFase;
     }
 }
