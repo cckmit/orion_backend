@@ -1,6 +1,7 @@
 package br.com.live.producao.custom;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -232,4 +233,33 @@ public class SuprimentoCustom {
 	    return registro;
 	}
 	
+	public List<Integer> findPedidosCompraParaGeracaoReqAlmoxarifado(Date dataEmissaoInicial, int codLocalEntrega) {
+		List<Integer> listaPedidosCompras;
+		
+		String query = " select a.pedido_compra, min(a.dt_emis_ped_comp) from supr_090 a, supr_100 b, basi_185 c "
+		+ " where a.dt_emis_ped_comp >= ? "
+		+ " and a.cod_end_entrega   = ? "
+		+ " and b.num_ped_compra = a.pedido_compra "
+		+ " and c.centro_custo = b.centro_custo "
+		+ " and c.local_entrega = ? "		
+		+ " and not exists (select 1 from orion_sup_005 o where o.pedido_compra = a.pedido_compra) "		
+		+ " group by a.pedido_compra ";  
+		
+		try {
+			listaPedidosCompras = jdbcTemplate.queryForList(query, Integer.class, dataEmissaoInicial, codLocalEntrega, codLocalEntrega);	
+		} catch (Exception e) {
+			listaPedidosCompras = new ArrayList<Integer>();
+		}
+		return listaPedidosCompras;		
+	}	
+	
+	public void gravarRequisicaoAlmoxGeradoParaPedidoCompra(int pedidoCompra, int numRequisicaoAlmox) {		
+		String query = " insert into orion_sup_005 (pedido_compra, num_requisicao, email_enviado) values (?, ?, 0) ";				
+		jdbcTemplate.update(query, pedidoCompra, numRequisicaoAlmox); 
+	}
+	
+	public void atualizarEmailEnviadoNaRequisicaoAlmoxGeradoParaPedidoCompra(int pedidoCompra, int numRequisicaoAlmox, int emailEviado) {
+		String query = " update orion_sup_005 set email_enviado = ? where pedido_compra = ? and num_requisicao = ? ";
+		jdbcTemplate.update(query, emailEviado, pedidoCompra, numRequisicaoAlmox);
+	}
 }

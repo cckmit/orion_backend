@@ -66,5 +66,4 @@ public class RequisicaoAlmoxarifado {
 	public void setRequisitante(String requisitante) {
 		this.requisitante = requisitante;
 	}	
-	
 }

@@ -24,3 +24,6 @@ insert into orion_parametros (id, valor_str) values ('INTEGRACAO_MOVIMENTOS_PAGS
 insert into orion_parametros (id, valor_str) values ('INTEGRACAO_MOVIMENTOS_PAGSEGURO_PASSWORD', 'fe4f5db3111c44b6b806d6fd789bed5e');
 insert into orion_parametros (id, valor_int) values ('INTEGRACAO_TITULO_PAGAMENTO_ATIVO', 1);
 insert into orion_parametros (id, valor_int) values ('INTEGRACAO_SELECAO_PAGAMENTO_ATIVO', 1);
+insert into orion_parametros (id, valor_int) values ('REQ-ALMOX-AUTOMATICO-ATIVO', 0);
+insert into orion_parametros (id, valor_date) values ('REQ-ALMOX-AUTOMATICO-DATA-INICIAL', '01-JAN-2024');
+insert into orion_parametros (id, valor_int) values ('REQ-ALMOX-AUTOMATICO-LOCAL_ENTREGA', 100);

@@ -1,5 +1,6 @@
 package br.com.live.producao.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import br.com.live.producao.model.RequisicaoAlmoxarifado;
 import br.com.live.producao.model.RequisicaoAlmoxarifadoItem;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.util.StatusGravacao;
+import br.com.live.util.repository.ParametrosRepository;
 
 @Service
 @Transactional
@@ -18,10 +20,12 @@ public class SuprimentoService {
 
 	private final SuprimentoCustom suprimentoCustom; 
 	private final ProdutoCustom produtoCustom; 
+	private final ParametrosRepository parametrosRepository;
 	
-	public SuprimentoService(SuprimentoCustom suprimentoCustom, ProdutoCustom produtoCustom) {
+	public SuprimentoService(SuprimentoCustom suprimentoCustom, ProdutoCustom produtoCustom, ParametrosRepository parametrosRepository) {
 		this.suprimentoCustom = suprimentoCustom;
 		this.produtoCustom = produtoCustom;
+		this.parametrosRepository = parametrosRepository;
 	}
 	
 	private String validarRequisicaoAlmox(RequisicaoAlmoxarifado requisicao) {		
@@ -38,6 +42,18 @@ public class SuprimentoService {
 		return msgErro;
 	}
 	
+	public int gravarCapaRequisicao(int centroCusto, String observacao, String requisitante, int codEmpresa, int numDivisaoProducao) {
+		int novaRequisicao = suprimentoCustom.findNextNumeroRequisicao();
+		suprimentoCustom.gravarCapaRequisicao(novaRequisicao, centroCusto, observacao, requisitante, codEmpresa, numDivisaoProducao);
+		return novaRequisicao;
+	}
+	
+	public void gravarItemRequisicao(int novaRequisicao, String nivel, String grupo, String sub, String item, double quantidade, int codTransacaoAlmox, int deposito, int centroCusto) {
+		int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);
+		String descricaoProduto = produtoCustom.findNarrativaProduto(nivel, grupo, sub, item);
+		suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, nivel, grupo, sub, item, quantidade, codTransacaoAlmox, deposito, centroCusto, descricaoProduto);
+	}
+	
 	public StatusGravacao efetuarCopiaRequisicaoAlmox(RequisicaoAlmoxarifado requisicao) {
 		StatusGravacao status;
 		String msg = validarRequisicaoAlmox(requisicao);
@@ -47,23 +63,13 @@ public class SuprimentoService {
 		try {				
 			int depositoPadrao = suprimentoCustom.getDepositoPadraoReqComercial(requisicao.getEmpresa());
 			int codTransacaoAlmox = suprimentoCustom.findTransacaoAlmoxarifado(requisicao.getEmpresa());
-			int novaRequisicao = suprimentoCustom.findNextNumeroRequisicao();		
-			suprimentoCustom.gravarCapaRequisicao(novaRequisicao, requisicao.getCentroCusto(), requisicao.getObservacao(), requisicao.getRequisitante(), requisicao.getEmpresa(), requisicao.getDivisaoProducao());
+			int novaRequisicao = gravarCapaRequisicao(requisicao.getCentroCusto(), requisicao.getObservacao(), requisicao.getRequisitante(), requisicao.getEmpresa(), requisicao.getDivisaoProducao());
 			
 			for (RequisicaoAlmoxarifadoItem item : requisicao.getListaItens()) {
-				if (item.getQuantidade() > 0) { 
-					int novaSequencia = suprimentoCustom.findNextSequenciaItemRequisicao(novaRequisicao);												
+				if (item.getQuantidade() > 0) { 																
 					int deposito = item.getDeposito();
-					if (deposito == 0) deposito = depositoPadrao;
-					
-					String descricaoProduto = produtoCustom.findNarrativaProduto(item.getNivel(), item.getGrupo(), item.getSub(), item.getItem());
-					
-					if (descricaoProduto.equals("")) {
-						descricaoProduto = item.getNarrativa();
-					}
-					
-					suprimentoCustom.gravarItemRequisicao(novaRequisicao, novaSequencia, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, deposito, requisicao.getCentroCusto(), 
-							descricaoProduto);					
+					if (deposito == 0) deposito = depositoPadrao;					
+					gravarItemRequisicao(novaRequisicao, item.getNivel(), item.getGrupo(), item.getSub(), item.getItem(), item.getQuantidade(), codTransacaoAlmox, deposito, requisicao.getCentroCusto()); 					
 				} else {
 					msgComplementar = " (Atenção! Alguns itens não foram gravados na requisição por estarem com quantidades zeradas.)";
 				}
@@ -75,4 +81,32 @@ public class SuprimentoService {
 
 		return status; 
 	}		
+	
+	public void geracaoRequisicoesAlmoxParaPedidosComprasIntegrados() {
+		int reqAlmoxarifadoAtiva = parametrosRepository.findByIdParametro("REQ-ALMOX-AUTOMATICO-ATIVO").getValorInt();
+		int codLocalEntrega = parametrosRepository.findByIdParametro("REQ-ALMOX-AUTOMATICO-LOCAL_ENTREGA").getValorInt();
+		Date dataInicial = parametrosRepository.findByIdParametro("REQ-ALMOX-AUTOMATICO-DATA-INICIAL").getValorDate();		
+		
+		if (reqAlmoxarifadoAtiva == 1) {
+			List<Integer> listaPedidosCompras = suprimentoCustom.findPedidosCompraParaGeracaoReqAlmoxarifado(dataInicial, codLocalEntrega);
+			gerarRequisicoesAlmoxarifadoParaPedidosCompras(listaPedidosCompras);
+		}
+	}		
+	
+	private void gerarRequisicoesAlmoxarifadoParaPedidosCompras(List<Integer> listaPedidosCompras) {
+		for (Integer pedido : listaPedidosCompras) {
+			
+			String observacao = "REQUISIÇÃO GERADA AUTOMATICA";
+			int centroCusto = 0; // vem dos itens do pedido compra			
+			int codEmpresa = 100 ; // deve vir do parametro
+			int numDivisaoProducao = 0;
+			String requisitante = ""; // HDOC_030.E_MAIL
+			
+			int codTransacaoAlmox = 234; // criar parametro
+			int deposito = 491; // criar parametro
+						
+			//gravarCapaRequisicao(int centroCusto, String observacao, String requisitante, int codEmpresa, int numDivisaoProducao);
+			//gravarItemRequisicao(int novaRequisicao, String nivel, String grupo, String sub, String item, double quantidade, int codTransacaoAlmox, int deposito, int centroCusto) {
+		}		
+	}
 }
