@@ -321,3 +321,6 @@ values (109, 'Canais de Distribuição', 'Comercial', '/canais-de-distribuicao')
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (110, 'Relacionamento Representantes Antigos x Novos', 'Comercial', '/relacionamento-representantes-antigos-novos');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (111, 'Atributos De Naturezas De Operação', 'Comercial', '/atributos-de-naturezas-de-operacao');
