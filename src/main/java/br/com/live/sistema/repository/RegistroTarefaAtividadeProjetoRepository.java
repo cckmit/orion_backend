@@ -29,4 +29,12 @@ public interface RegistroTarefaAtividadeProjetoRepository extends JpaRepository<
     @Query("SELECT SUM(a.custo) FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade")
     Double calcularCustoTotalTarefaAtividade(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
 
+    @Query("SELECT SUM(a.tempoGasto) FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade")
+    Double calcularTempoGastoTarefaAtividade(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
+
+    @Query(value = "SELECT a FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade and a.dataFim IS NOT NULL")
+    List<RegistroTarefaAtividadeProjetoEntity> findTarefaAtividadeConcluida(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
+
+    @Query(value = "SELECT a FROM RegistroTarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idRegistroAtividade = :idRegistroAtividade and a.dataFim IS NULL")
+    List<RegistroTarefaAtividadeProjetoEntity> findTarefaAtividadePendente(@Param("idProjeto") Long idProjeto, @Param("idRegistroAtividade") Long idRegistroAtividade);
 }

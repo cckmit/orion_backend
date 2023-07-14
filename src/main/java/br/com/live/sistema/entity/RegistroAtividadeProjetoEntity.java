@@ -44,9 +44,15 @@ public class RegistroAtividadeProjetoEntity {
     @Column(name="id_fase")
     private Long idFase;
 
+    @Column(name="id_atividade")
+    private Long idAtividade;
+
+    @Column(name="tempo_gasto")
+    private double tempoGasto;
+
     public RegistroAtividadeProjetoEntity(){}
 
-    public RegistroAtividadeProjetoEntity(Long id, Long idProjeto, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo, Long idFase) {
+    public RegistroAtividadeProjetoEntity(Long id, Long idProjeto, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo, Long idFase, Long idAtividade, double tempoGasto) {
         this.id = id;
         this.idProjeto = idProjeto;
         this.descricao = descricao;
@@ -59,6 +65,8 @@ public class RegistroAtividadeProjetoEntity {
         this.documentoAssociado = documentoAssociado;
         this.custo = custo;
         this.idFase = idFase;
+        this.idAtividade = idAtividade;
+        this.tempoGasto = tempoGasto;
     }
 
     public Long getId() {
@@ -155,5 +163,21 @@ public class RegistroAtividadeProjetoEntity {
 
     public void setIdFase(Long idFase) {
         this.idFase = idFase;
+    }
+
+    public Long getIdAtividade() {
+        return idAtividade;
+    }
+
+    public void setIdAtividade(Long idAtividade) {
+        this.idAtividade = idAtividade;
+    }
+
+    public double getTempoGasto() {
+        return tempoGasto;
+    }
+
+    public void setTempoGasto(double tempoGasto) {
+        this.tempoGasto = tempoGasto;
     }
 }

@@ -59,6 +59,7 @@ public class RegistroTarefaAtividadeProjetoService {
         registroTarefaAtividadeProjetoEntity.setIdResponsavel(registroTarefaAtividadeProjeto.idResponsavel);
         registroTarefaAtividadeProjetoEntity.setDocumentoAssociado(registroTarefaAtividadeProjeto.documentoAssociado);
         registroTarefaAtividadeProjetoEntity.setCusto(registroTarefaAtividadeProjeto.custo);
+        registroTarefaAtividadeProjetoEntity.setTempoGasto(registroTarefaAtividadeProjeto.tempoGasto);
 
         if (registroTarefaAtividadeProjeto.dataInicio != null && !registroTarefaAtividadeProjeto.dataInicio.isEmpty()) registroTarefaAtividadeProjetoEntity.setDataInicio(FormataData.parseStringToDate(registroTarefaAtividadeProjeto.dataInicio));
         if (registroTarefaAtividadeProjeto.horaInicio != null && !registroTarefaAtividadeProjeto.horaInicio.isEmpty()) registroTarefaAtividadeProjetoEntity.setHoraInicio(formatoHora.parse(registroTarefaAtividadeProjeto.horaInicio));
@@ -71,29 +72,37 @@ public class RegistroTarefaAtividadeProjetoService {
     @Transactional
     public void atualizarDadosRegistroAtividade(long idProjeto, long idRegistroAtividade){
 
+        List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoList = registroTarefaAtividadeProjetoRepository.findAllByRegistroAtividade(idProjeto, idRegistroAtividade);
         List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoMaiorDataList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeMaiorData(idProjeto, idRegistroAtividade);
         List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoMenorDataList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeMenorData(idProjeto, idRegistroAtividade);
 
         Optional<RegistroAtividadeProjetoEntity> registroAtividadeProjeto = registroAtividadeProjetoRepository.findById(idRegistroAtividade);
         RegistroAtividadeProjetoEntity registroAtividadeProjetoEntity = registroAtividadeProjeto.get();
 
-        if (!registroTarefaAtividadeProjetoMaiorDataList.isEmpty() && !registroTarefaAtividadeProjetoMenorDataList.isEmpty()) {
+        registroAtividadeProjetoEntity.setDataInicio(null);
+        registroAtividadeProjetoEntity.setHoraInicio(null);
+        registroAtividadeProjetoEntity.setDataFim(null);
+        registroAtividadeProjetoEntity.setHoraFim(null);
+        registroAtividadeProjetoEntity.setCusto(0);
+        registroAtividadeProjetoEntity.setTempoGasto(0);
+
+        if (!registroTarefaAtividadeProjetoList.isEmpty()){
 
             double custoTotal = registroTarefaAtividadeProjetoRepository.calcularCustoTotalTarefaAtividade(idProjeto, idRegistroAtividade);
+            double tempoGasto = registroTarefaAtividadeProjetoRepository.calcularTempoGastoTarefaAtividade(idProjeto, idRegistroAtividade);
 
-            registroAtividadeProjetoEntity.setDataInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getDataInicio());
-            registroAtividadeProjetoEntity.setHoraInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getHoraInicio());
+            registroAtividadeProjetoEntity.setCusto(custoTotal);
+            registroAtividadeProjetoEntity.setTempoGasto(tempoGasto);
+        }
+
+        if (!registroTarefaAtividadeProjetoMaiorDataList.isEmpty()) {
             registroAtividadeProjetoEntity.setDataFim(registroTarefaAtividadeProjetoMaiorDataList.get(0).getDataFim());
             registroAtividadeProjetoEntity.setHoraFim(registroTarefaAtividadeProjetoMaiorDataList.get(0).getHoraFim());
-            registroAtividadeProjetoEntity.setCusto(custoTotal);
+        }
 
-        } else {
-
-            registroAtividadeProjetoEntity.setDataInicio(null);
-            registroAtividadeProjetoEntity.setHoraInicio(null);
-            registroAtividadeProjetoEntity.setDataFim(null);
-            registroAtividadeProjetoEntity.setHoraFim(null);
-            registroAtividadeProjetoEntity.setCusto(0);
+        if (!registroTarefaAtividadeProjetoMenorDataList.isEmpty()) {
+            registroAtividadeProjetoEntity.setDataInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getDataInicio());
+            registroAtividadeProjetoEntity.setHoraInicio(registroTarefaAtividadeProjetoMenorDataList.get(0).getHoraInicio());
         }
 
         registroAtividadeProjetoRepository.save(registroAtividadeProjetoEntity);
@@ -105,7 +114,7 @@ public class RegistroTarefaAtividadeProjetoService {
 
         if (idProjeto == 0){
             registroTarefaAtividadeProjetoEntityList = registroTarefaAtividadeProjetoRepository.findAll();
-        } else if (idProjeto != 0) {
+        } else {
             registroTarefaAtividadeProjetoEntityList = registroTarefaAtividadeProjetoRepository.findAllByIdProjeto(idProjeto);
         }
 
@@ -125,6 +134,7 @@ public class RegistroTarefaAtividadeProjetoService {
             registroTarefaAtividadeProjeto.idResponsavel = registroTarefaAtividadeProjetoEntity.getIdResponsavel();
             registroTarefaAtividadeProjeto.documentoAssociado = registroTarefaAtividadeProjetoEntity.getDocumentoAssociado();
             registroTarefaAtividadeProjeto.custo = registroTarefaAtividadeProjetoEntity.getCusto();
+            registroTarefaAtividadeProjeto.tempoGasto = registroTarefaAtividadeProjetoEntity.getTempoGasto();
 
             if (registroTarefaAtividadeProjetoEntity.getDataInicio() != null) registroTarefaAtividadeProjeto.dataInicio = dateFormat.format(registroTarefaAtividadeProjetoEntity.getDataInicio());
             if (registroTarefaAtividadeProjetoEntity.getHoraInicio() != null) registroTarefaAtividadeProjeto.horaInicio = timeFormat.format(registroTarefaAtividadeProjetoEntity.getHoraInicio());

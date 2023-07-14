@@ -125,13 +125,14 @@ public class AtividadeProjetoService {
 
         for (AtividadeProjetoEntity atividadeProjeto : atividadeProjetoList) {
             RegistroAtividadeProjetoEntity registroAtividadeProjeto = new RegistroAtividadeProjetoEntity();
-            registroAtividadeProjeto.setId(registroAtividadeProjetoRepository.findNextId());
+            registroAtividadeProjeto.setId(atividadeProjeto.getId());
             registroAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
             registroAtividadeProjeto.setDescricao(atividadeProjeto.getDescricao());
             registroAtividadeProjeto.setAcaoRealizada("");
             registroAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
             registroAtividadeProjeto.setCusto(0);
             registroAtividadeProjeto.setIdFase(atividadeProjeto.getIdFase());
+            registroAtividadeProjeto.setIdAtividade(atividadeProjeto.getId());
 
             registroAtividadeProjetoRepository.save(registroAtividadeProjeto);
 

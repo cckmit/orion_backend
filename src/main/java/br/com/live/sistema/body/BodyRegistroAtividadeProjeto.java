@@ -14,5 +14,6 @@ public class BodyRegistroAtividadeProjeto {
     public String documentoAssociado;
     public double custo;
     public Long idFase;
+    public double tempoGasto;
 
 }
