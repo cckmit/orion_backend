@@ -91,7 +91,7 @@ public class CronogramaRealizadoProjetoService {
         if (existTarefaPendente && !existTarefaConcluida){
             status = "A FAZER";
         } else if (existTarefaConcluida && !existTarefaPendente){
-            status = "CONCLUIDA";
+            status = "CONCLUÍDO";
         } else {
             status = "EM ANDAMENTO";
         }
