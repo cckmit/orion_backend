@@ -5,8 +5,6 @@ import br.com.live.sistema.entity.AtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
 import br.com.live.sistema.entity.TarefaTipoAtividadeProjetoEntity;
-import br.com.live.sistema.model.RegistroAtividadeProjeto;
-import br.com.live.sistema.model.RegistroTarefaAtividadeProjeto;
 import br.com.live.sistema.repository.AtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
@@ -85,7 +83,7 @@ public class AtividadeProjetoService {
     }
 
     @Transactional
-    public List<BodyAtividadeProjeto> saveAtividade(BodyAtividadeProjeto atividadeProjeto){
+    public void saveAtividade(BodyAtividadeProjeto atividadeProjeto){
 
         if (atividadeProjeto.id == 0) atividadeProjeto.id = atividadeProjetoRepository.findNextId();
 
@@ -102,8 +100,6 @@ public class AtividadeProjetoService {
         if (atividadeProjeto.dataPrevFim != null) atividadeProjetoEntity.setDataPrevFim(FormataData.parseStringToDate(atividadeProjeto.dataPrevFim));
 
         atividadeProjetoRepository.save(atividadeProjetoEntity);
-
-        return findAll(atividadeProjeto.idProjeto);
     }
 
     @Transactional
@@ -129,12 +125,14 @@ public class AtividadeProjetoService {
 
         for (AtividadeProjetoEntity atividadeProjeto : atividadeProjetoList) {
             RegistroAtividadeProjetoEntity registroAtividadeProjeto = new RegistroAtividadeProjetoEntity();
-            registroAtividadeProjeto.setId(registroAtividadeProjetoRepository.findNextId());
+            registroAtividadeProjeto.setId(atividadeProjeto.getId());
             registroAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
             registroAtividadeProjeto.setDescricao(atividadeProjeto.getDescricao());
             registroAtividadeProjeto.setAcaoRealizada("");
             registroAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
             registroAtividadeProjeto.setCusto(0);
+            registroAtividadeProjeto.setIdFase(atividadeProjeto.getIdFase());
+            registroAtividadeProjeto.setIdAtividade(atividadeProjeto.getId());
 
             registroAtividadeProjetoRepository.save(registroAtividadeProjeto);
 

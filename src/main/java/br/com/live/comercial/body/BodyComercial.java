@@ -12,6 +12,7 @@ public class BodyComercial {
 	
 	public int idTpCli;
 	public int idRelac;
+	public int idAtrib;
 	public String id;
 	public long idItem;
 	public String idCapa;
@@ -48,6 +49,10 @@ public class BodyComercial {
 	public String modalidade;
 	public int represAntigo;
 	public int represNovo;
+	public int venda;
+	public int devolucao;
+	public int ranking;
+	
 	
 	public List<MetasCategoria> tabImportar;
 	

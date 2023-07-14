@@ -44,9 +44,12 @@ public class RegistroTarefaAtividadeProjetoEntity {
 
     private double custo;
 
+    @Column(name="tempo_gasto")
+    private double tempoGasto;
+
     public RegistroTarefaAtividadeProjetoEntity(){}
 
-    public RegistroTarefaAtividadeProjetoEntity(Long id, Long idProjeto, Long idRegistroAtividade, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo) {
+    public RegistroTarefaAtividadeProjetoEntity(Long id, Long idProjeto, Long idRegistroAtividade, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo, double tempoGasto) {
         this.id = id;
         this.idProjeto = idProjeto;
         this.idRegistroAtividade = idRegistroAtividade;
@@ -59,6 +62,7 @@ public class RegistroTarefaAtividadeProjetoEntity {
         this.horaFim = horaFim;
         this.documentoAssociado = documentoAssociado;
         this.custo = custo;
+        this.tempoGasto = tempoGasto;
     }
 
     public Long getId() {
@@ -155,5 +159,13 @@ public class RegistroTarefaAtividadeProjetoEntity {
 
     public void setCusto(double custo) {
         this.custo = custo;
+    }
+
+    public double getTempoGasto() {
+        return tempoGasto;
+    }
+
+    public void setTempoGasto(double tempoGasto) {
+        this.tempoGasto = tempoGasto;
     }
 }

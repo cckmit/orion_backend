@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.live.comercial.body.BodyComercial;
 import br.com.live.comercial.custom.ComercialCustom;
+import br.com.live.comercial.entity.AtributosNaturezasDeOperacao;
 import br.com.live.comercial.entity.BloqueioTitulosForn;
 import br.com.live.comercial.entity.CanaisDeDistribuicao;
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
@@ -84,6 +85,11 @@ public class ComercialController {
 		return comercialService.findAllFornBloq();
 	}
 	
+	@RequestMapping(value = "/find-all-atributos-naturezas-operacao", method = RequestMethod.GET)
+    public List<AtributosNaturezasDeOperacao> findAllAtribNatDeOperacao() {
+		return comercialService.findAllAtribNatDeOperacao();
+	}
+	
 	@RequestMapping(value = "/find-all-relacionamento-representante-antigo-novo", method = RequestMethod.GET)
     public List<ConsultaRelacionamRepAntigoNovo> findAllRelacionamentoRepAntNovo() {
 		return comercialService.findAllRelacionamentoRepAntNovo();
@@ -92,6 +98,11 @@ public class ComercialController {
 	@RequestMapping(value = "/find-relacionamento-representante-antigo-novo/{id}", method = RequestMethod.GET)
     public RepresentanteAntigoXNovo findAllRelacoRepAntNovoById(@PathVariable("id") int id) {
     	return comercialService.findAllRelacoRepAntNovoById(id);
+    }
+	
+	@RequestMapping(value = "/find-atributos-nat-oper-by-id/{id}", method = RequestMethod.GET)
+    public AtributosNaturezasDeOperacao findAtributosNatOpById(@PathVariable("id") int id) {
+    	return comercialService.findAtributosNatOpById(id);
     }
 	
 	@RequestMapping(value = "/find-all-catalogo", method = RequestMethod.GET)
@@ -206,21 +217,17 @@ public class ComercialController {
     	return comercialService.saveRelacionamentoItem(body.idItem, body.idCapa, body.catalogo, body.tipoCliente, body.tabela, body.periodoIni, body.periodoFim);
     }
     
-    
-    
-    
-    
     // Salvar Relacionamentos Representante Antigo X Novo
     @RequestMapping(value = "/save-relacionamento-representante-antigo-novo", method = RequestMethod.POST)
     public void saveRelacionamentoRepAntXNovo(@RequestBody BodyComercial body) {                  
     	comercialService.saveRelacionamentoRepAntXNovo(body.idRelac, body.represAntigo, body.represNovo);
     }
     
-    
-    
-    
-    
-    
+    @RequestMapping(value = "/save-atributos-de-natureza-operacao", method = RequestMethod.POST)
+    public void saveAtributosNatOperacao(@RequestBody BodyComercial body) {
+		comercialService.saveAtributosNatOperacao(body.idAtrib, body.venda, body.devolucao, body.ranking);
+	}
+ 
     @RequestMapping(value = "/delete-relacionamento-item/{idItem}", method = RequestMethod.DELETE)
     public List<TpClienteXTabPrecoItem> deleteItemRelac(@PathVariable("idItem") int idItem) {                  
     	comercialService.deleteItemRelacionamento(idItem);

@@ -22,6 +22,7 @@
 
 --ALTER TABLE orion_ti_070 DROP CONSTRAINT fk_orion_ti_070_projeto
 --ALTER TABLE orion_ti_070 DROP CONSTRAINT fk_orion_ti_070_usuario
+--ALTER TABLE orion_ti_070 DROP CONSTRAINT fk_orion_ti_070_fase
 --DROP TABLE orion_ti_070
 
 --ALTER TABLE orion_ti_071 DROP CONSTRAINT fk_orion_ti_071_projeto
@@ -148,14 +149,18 @@ CREATE TABLE orion_ti_070 (
   DESCRICAO VARCHAR2(500),
   ACAO_REALIZADA VARCHAR2(4000),
   ID_RESPONSAVEL NUMBER(9),
+  ID_FASE NUMBER(9),
   DATA_INICIO DATE,
   HORA_INICIO DATE,
   DATA_FIM DATE,
   HORA_FIM DATE,
   DOCUMENTO_ASSOCIADO VARCHAR2(4000),
   CUSTO NUMBER(12,3),
+  ID_ATIVIDADE NUMBER(9),
+  TEMPO_GASTO NUMBER(8,2),
   CONSTRAINT fk_orion_ti_070_projeto FOREIGN KEY (id_projeto) REFERENCES orion_ti_040(ID) ON DELETE CASCADE,
-  CONSTRAINT fk_orion_ti_070_usuario FOREIGN KEY (id_responsavel) REFERENCES orion_001(ID)
+  CONSTRAINT fk_orion_ti_070_usuario FOREIGN KEY (id_responsavel) REFERENCES orion_001(ID),
+  CONSTRAINT fk_orion_ti_070_fase FOREIGN KEY (id_fase) REFERENCES orion_ti_030(ID)
 );
 
 -- Tabela: Tarefas Atividades Realizadas acompanhamento projeto (orion_ti_071)
@@ -172,6 +177,7 @@ CREATE TABLE orion_ti_071 (
   HORA_FIM DATE,
   DOCUMENTO_ASSOCIADO VARCHAR2(4000),
   CUSTO NUMBER(12,3),
+  TEMPO_GASTO NUMBER(8,2),
   CONSTRAINT fk_orion_ti_071_projeto FOREIGN KEY (id_projeto) REFERENCES orion_ti_040(ID) ON DELETE CASCADE,
   CONSTRAINT fk_orion_ti_071_registro_atividade FOREIGN KEY (ID_REGISTRO_ATIVIDADE ) REFERENCES orion_ti_070(ID) ON DELETE CASCADE,
   CONSTRAINT fk_orion_ti_071_usuario FOREIGN KEY (id_responsavel) REFERENCES orion_001(ID)

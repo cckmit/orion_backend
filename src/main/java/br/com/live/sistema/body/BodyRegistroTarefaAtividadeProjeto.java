@@ -14,5 +14,6 @@ public class BodyRegistroTarefaAtividadeProjeto {
     public String horaFim;
     public String documentoAssociado;
     public double custo;
+    public double tempoGasto;
 
 }

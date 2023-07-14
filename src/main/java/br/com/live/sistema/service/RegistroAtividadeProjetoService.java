@@ -1,6 +1,5 @@
 package br.com.live.sistema.service;
 
-import br.com.live.sistema.body.BodyAtividadeProjeto;
 import br.com.live.sistema.body.BodyRegistroAtividadeProjeto;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
@@ -41,6 +40,8 @@ public class RegistroAtividadeProjetoService {
         registroAtividadeProjetoEntity.setIdResponsavel(registroAtividadeProjeto.idResponsavel);
         registroAtividadeProjetoEntity.setDocumentoAssociado(registroAtividadeProjeto.documentoAssociado);
         registroAtividadeProjetoEntity.setCusto(registroAtividadeProjeto.custo);
+        registroAtividadeProjetoEntity.setIdFase(registroAtividadeProjeto.idFase);
+        registroAtividadeProjetoEntity.setTempoGasto(registroAtividadeProjeto.tempoGasto);
 
         if (registroAtividadeProjeto.dataInicio != null && !registroAtividadeProjeto.dataInicio.isEmpty()) registroAtividadeProjetoEntity.setDataInicio(FormataData.parseStringToDate(registroAtividadeProjeto.dataInicio));
         if (registroAtividadeProjeto.horaInicio != null && !registroAtividadeProjeto.horaInicio.isEmpty()) registroAtividadeProjetoEntity.setHoraInicio(formatoHora.parse(registroAtividadeProjeto.horaInicio));
@@ -77,6 +78,8 @@ public class RegistroAtividadeProjetoService {
             registroAtividadeProjeto.idResponsavel = registroAtividadeProjetoEntity.getIdResponsavel();
             registroAtividadeProjeto.documentoAssociado = registroAtividadeProjetoEntity.getDocumentoAssociado();
             registroAtividadeProjeto.custo = registroAtividadeProjetoEntity.getCusto();
+            registroAtividadeProjeto.idFase = registroAtividadeProjetoEntity.getIdFase();
+            registroAtividadeProjeto.tempoGasto = registroAtividadeProjetoEntity.getTempoGasto();
 
             if (registroAtividadeProjetoEntity.getDataInicio() != null) registroAtividadeProjeto.dataInicio = dateFormat.format(registroAtividadeProjetoEntity.getDataInicio());
             if (registroAtividadeProjetoEntity.getHoraInicio() != null) registroAtividadeProjeto.horaInicio = timeFormat.format(registroAtividadeProjetoEntity.getHoraInicio());
@@ -95,12 +98,12 @@ public class RegistroAtividadeProjetoService {
         List<RegistroAtividadeProjetoEntity> registroAtividadeProjetoEntityList = registroAtividadeProjetoRepository.findAllByIdProjeto(idProjeto);
 
         for (RegistroAtividadeProjetoEntity registroAtividadeProjeto : registroAtividadeProjetoEntityList){
-            if ((registroAtividadeProjeto.getDataInicio() != null) || (registroAtividadeProjeto.getDataFim() != null)) exist = 1;
+            if ((registroAtividadeProjeto.getDataInicio() != null) || (registroAtividadeProjeto.getDataFim() != null) || registroAtividadeProjeto.getTempoGasto() != 0) exist = 1;
 
             List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoList = registroTarefaAtividadeProjetoRepository.findAllByRegistroAtividade(idProjeto, registroAtividadeProjeto.getId());
 
             for (RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto : registroTarefaAtividadeProjetoList){
-                if ((registroTarefaAtividadeProjeto.getDataInicio() != null) || (registroTarefaAtividadeProjeto.getDataFim() != null)) exist = 1;
+                if ((registroTarefaAtividadeProjeto.getDataInicio() != null) || (registroTarefaAtividadeProjeto.getDataFim() != null) || registroAtividadeProjeto.getTempoGasto() != 0) exist = 1;
             }
         }
 

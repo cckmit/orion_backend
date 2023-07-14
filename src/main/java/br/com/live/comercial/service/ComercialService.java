@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.comercial.custom.ComercialCustom;
+import br.com.live.comercial.entity.AtributosNaturezasDeOperacao;
 import br.com.live.comercial.entity.BloqueioTitulosForn;
 import br.com.live.comercial.entity.CanaisDeDistribuicao;
 import br.com.live.comercial.entity.ControleDescontoCliente;
@@ -25,6 +26,7 @@ import br.com.live.comercial.entity.TipoClientePorCanal;
 import br.com.live.comercial.entity.TpClienteXTabPreco;
 import br.com.live.comercial.entity.TpClienteXTabPrecoItem;
 import br.com.live.comercial.entity.ValorDescontoClientesImportados;
+import br.com.live.comercial.repository.AtributosNaturezaDeOperacaoRepository;
 import br.com.live.comercial.repository.BloqueioTitulosFornRepository;
 import br.com.live.comercial.repository.CanaisDeDistribuicaoRepository;
 import br.com.live.comercial.repository.ControleDescontoClienteRepository;
@@ -59,6 +61,7 @@ public class ComercialService {
 	private final CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository;
 	private final TipoClientePorCanalRepository tipoClientePorCanalRepository;
 	private final RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository;
+	private final AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository;
 	private final EmailService emailService;
   
 	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, 
@@ -66,7 +69,8 @@ public class ComercialService {
 			ValorDescontoClientesImpRepository valorDescontoClientesImpRepository, PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, 
 			ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, 
 			CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	
-			RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository, EmailService emailService) {
+			RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository, AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository, 
+			EmailService emailService) {
 
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
@@ -81,11 +85,16 @@ public class ComercialService {
     	this.canaisDeDistribuicaoRepository = canaisDeDistribuicaoRepository;
     	this.tipoClientePorCanalRepository = tipoClientePorCanalRepository;
     	this.representanteAntigoXNovoRepository = representanteAntigoXNovoRepository;
+    	this.atributosNaturezaDeOperacaoRepository = atributosNaturezaDeOperacaoRepository;
 		this.emailService = emailService;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
 		return comercialCustom.findAllTitulosBloqForn();
+	}
+	
+	public List<AtributosNaturezasDeOperacao> findAllAtribNatDeOperacao() {
+		return atributosNaturezaDeOperacaoRepository.findAll();
 	}
 	
 	public List<ConsultaRelacionamRepAntigoNovo> findAllRelacionamentoRepAntNovo() {
@@ -261,6 +270,10 @@ public class ComercialService {
 		return representanteAntigoXNovoRepository.findById(id);
 	}
 	
+	public AtributosNaturezasDeOperacao findAtributosNatOpById(int id) {
+		return atributosNaturezaDeOperacaoRepository.findById(id);
+	}
+	
 	public List<ConsultaTipoClientePorCanal> findTipoClienteByCanal(int id) {
 		return comercialCustom.findTipoClienteByCanal(id);
 	}
@@ -296,7 +309,19 @@ public class ComercialService {
 		}
 		representanteAntigoXNovoRepository.save(dados);
 	}
-
+	
+	public void saveAtributosNatOperacao(int idAtrib, int venda, int devolucao, int ranking) {
+		
+		AtributosNaturezasDeOperacao dados = atributosNaturezaDeOperacaoRepository.findById(idAtrib);
+		
+		if (dados != null) {
+			dados.venda = venda;
+			dados.devolucao = devolucao;
+			dados.ranking = ranking;
+		}
+		atributosNaturezaDeOperacaoRepository.save(dados);
+	}
+	
 	public void saveTipoClientePorCanal(int idTpCli, int idCanal, int tipoCliente) {
 		
 		TipoClientePorCanal dados = tipoClientePorCanalRepository.findById(idTpCli);
