@@ -22,6 +22,11 @@ public class ComercialCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
+	public void atualizarCanalDoTipoDeCliente(int codTipoCliente, String descCanalDistribuicao) {
+		String query = "update pedi_085 set live_agrup_tipo_cliente = ? where tipo_cliente = ?";
+		jdbcTemplate.update(query, descCanalDistribuicao, codTipoCliente); 
+	}
+	
 	public void gravaEnvioProdEcommerce(String produto) {
 		String query = "insert into ecom_005 (sku, disponivel, preco, controle, data) values (?, 0, 0, 3, sysdate)";		
 		jdbcTemplate.update(query, produto);		

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.live.comercial.custom.ComercialCustom;
 import br.com.live.comercial.entity.AtributosNaturezasDeOperacao;
 import br.com.live.comercial.entity.BloqueioTitulosForn;
-import br.com.live.comercial.entity.CanaisDeDistribuicao;
+import br.com.live.comercial.entity.CanalDistribuicao;
 import br.com.live.comercial.entity.ControleDescontoCliente;
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
 import br.com.live.comercial.entity.MetasCategoria;
@@ -28,7 +28,7 @@ import br.com.live.comercial.entity.TpClienteXTabPrecoItem;
 import br.com.live.comercial.entity.ValorDescontoClientesImportados;
 import br.com.live.comercial.repository.AtributosNaturezaDeOperacaoRepository;
 import br.com.live.comercial.repository.BloqueioTitulosFornRepository;
-import br.com.live.comercial.repository.CanaisDeDistribuicaoRepository;
+import br.com.live.comercial.repository.CanalDistribuicaoRepository;
 import br.com.live.comercial.repository.ControleDescontoClienteRepository;
 import br.com.live.comercial.repository.FaturamentoLiveClothingRepository;
 import br.com.live.comercial.repository.MetasCategoriaRepository;
@@ -58,7 +58,7 @@ public class ComercialService {
 	private final PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository;
 	private final ControleDescontoClienteRepository controleDescontoClienteRepository;
 	private final FaturamentoLiveClothingRepository faturamentoLiveClothingRepository;
-	private final CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository;
+	private final CanalDistribuicaoRepository canalDistribuicaoRepository;
 	private final TipoClientePorCanalRepository tipoClientePorCanalRepository;
 	private final RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository;
 	private final AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository;
@@ -68,7 +68,7 @@ public class ComercialService {
 			MetasCategoriaRepository metasCategoriaRepository, TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, 
 			ValorDescontoClientesImpRepository valorDescontoClientesImpRepository, PedidosGravadosComDescontoRepository pedidosGravadosComDescontoRepository, 
 			ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, 
-			CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	
+			CanalDistribuicaoRepository canalDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	
 			RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository, AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository, 
 			EmailService emailService) {
 
@@ -82,7 +82,7 @@ public class ComercialService {
 		this.pedidosGravadosComDescontoRepository = pedidosGravadosComDescontoRepository;
 		this.controleDescontoClienteRepository = controleDescontoClienteRepository;
     	this.faturamentoLiveClothingRepository = faturamentoLiveClothingRepository;
-    	this.canaisDeDistribuicaoRepository = canaisDeDistribuicaoRepository;
+    	this.canalDistribuicaoRepository = canalDistribuicaoRepository;
     	this.tipoClientePorCanalRepository = tipoClientePorCanalRepository;
     	this.representanteAntigoXNovoRepository = representanteAntigoXNovoRepository;
     	this.atributosNaturezaDeOperacaoRepository = atributosNaturezaDeOperacaoRepository;
@@ -149,8 +149,8 @@ public class ComercialService {
 		tpClienteXTabPrecoRepository.deleteById(idCapa);
 	}
 	
-	public List<CanaisDeDistribuicao> findAllCanaisDistribuicao(){
-		return canaisDeDistribuicaoRepository.findAll();
+	public List<CanalDistribuicao> findAllCanaisDistribuicao(){
+		return canalDistribuicaoRepository.findAll();
 	}
 	
 	public List<ConsultaTipoClientePorCanal> findTipoClienteSemCanal(){
@@ -158,7 +158,7 @@ public class ComercialService {
 	}
 	
 	public void deleteCanaisDistribuicao(int idCanal) {
-		canaisDeDistribuicaoRepository.deleteById(idCanal);
+		canalDistribuicaoRepository.deleteById(idCanal);
 	}
 	
 	public void deleteTipoClienteCanal(int id) {
@@ -262,8 +262,8 @@ public class ComercialService {
 		return faturamentoLiveClothingRepository.findByIdFaturamento(idfaturamento);
 	}
 	
-	public CanaisDeDistribuicao findCanalgById(int id) {
-		return canaisDeDistribuicaoRepository.findByIdCanal(id);
+	public CanalDistribuicao findCanalgById(int id) {
+		return canalDistribuicaoRepository.findByIdCanal(id);
 	}
 	
 	public RepresentanteAntigoXNovo findAllRelacoRepAntNovoById(int id) {
@@ -322,30 +322,30 @@ public class ComercialService {
 		atributosNaturezaDeOperacaoRepository.save(dados);
 	}
 	
-	public void saveTipoClientePorCanal(int idTpCli, int idCanal, int tipoCliente) {
+	public void saveTipoClientePorCanal(int idCanal, int tipoCliente) {
+		CanalDistribuicao canal = canalDistribuicaoRepository.findByIdCanal(idCanal);		
+		TipoClientePorCanal tipoClientePorCanal = tipoClientePorCanalRepository.findByIdCanalAndTipoCliente(idCanal, tipoCliente);
 		
-		TipoClientePorCanal dados = tipoClientePorCanalRepository.findById(idTpCli);
-		
-		if (dados == null) {
+		if (tipoClientePorCanal == null) {
 			int id = tipoClientePorCanalRepository.findNextID(); 
-			dados = new TipoClientePorCanal(id, idCanal, tipoCliente);	
-		}
-		tipoClientePorCanalRepository.save(dados);
+			tipoClientePorCanal = new TipoClientePorCanal(id, idCanal, tipoCliente);
+			comercialCustom.atualizarCanalDoTipoDeCliente(tipoCliente, canal.descricao);
+			tipoClientePorCanalRepository.save(tipoClientePorCanal);
+		}				
 	}
 
 	public void saveCanaisDistribuicao(int id, String descricao, String modalidade) {
 		
-		CanaisDeDistribuicao dadosCanais = canaisDeDistribuicaoRepository.findByIdCanal(id);
+		CanalDistribuicao dadosCanal = canalDistribuicaoRepository.findByIdCanal(id);
 		
-		if (dadosCanais == null) {
-			int newId = canaisDeDistribuicaoRepository.findNextID(); 
-			dadosCanais = new CanaisDeDistribuicao(newId, descricao, modalidade);	
+		if (dadosCanal == null) {
+			int newId = canalDistribuicaoRepository.findNextID(); 
+			dadosCanal = new CanalDistribuicao(newId, descricao, modalidade);	
 		} else {
-			dadosCanais.descricao = descricao;
-			dadosCanais.modalidade = modalidade;
-			
+			dadosCanal.descricao = descricao;
+			dadosCanal.modalidade = modalidade;			
 		}
-		canaisDeDistribuicaoRepository.save(dadosCanais);
+		canalDistribuicaoRepository.save(dadosCanal);
 	}
 	
 	public void deleteFatLiveClothing(int idFaturamento) {

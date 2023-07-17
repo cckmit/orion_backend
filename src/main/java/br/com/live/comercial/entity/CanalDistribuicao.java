@@ -6,7 +6,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "orion_com_200")
-public class CanaisDeDistribuicao {
+public class CanalDistribuicao {
 	
 	@Id
 	public int id;
@@ -32,10 +32,10 @@ public class CanaisDeDistribuicao {
 		this.modalidade = modalidade;
 	}
 	
-	public CanaisDeDistribuicao() {
+	public CanalDistribuicao() {
 		
 	}
-	public CanaisDeDistribuicao(int id, String descricao, String modalidade) {
+	public CanalDistribuicao(int id, String descricao, String modalidade) {
 		
 		this.id = id;
 		this.descricao = descricao;

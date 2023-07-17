@@ -14,7 +14,7 @@ import br.com.live.comercial.body.BodyComercial;
 import br.com.live.comercial.custom.ComercialCustom;
 import br.com.live.comercial.entity.AtributosNaturezasDeOperacao;
 import br.com.live.comercial.entity.BloqueioTitulosForn;
-import br.com.live.comercial.entity.CanaisDeDistribuicao;
+import br.com.live.comercial.entity.CanalDistribuicao;
 import br.com.live.comercial.entity.FaturamentoLiveClothing;
 import br.com.live.comercial.entity.RepresentanteAntigoXNovo;
 import br.com.live.comercial.entity.TipoClientePorCanal;
@@ -28,7 +28,7 @@ import br.com.live.comercial.model.ConsultaTitulosBloqForn;
 import br.com.live.comercial.model.ConsultaTpClienteXTabPreco;
 import br.com.live.comercial.model.DescontoClientesImportados;
 import br.com.live.comercial.model.PedidosComDescontoAConfirmar;
-import br.com.live.comercial.repository.CanaisDeDistribuicaoRepository;
+import br.com.live.comercial.repository.CanalDistribuicaoRepository;
 import br.com.live.comercial.repository.TipoClientePorCanalRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoItemRepository;
 import br.com.live.comercial.repository.TpClienteXTabPrecoRepository;
@@ -48,13 +48,13 @@ public class ComercialController {
 	private ComercialCustom comercialCustom;
 	private TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository;
 	private TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository;
-	private CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository;
+	private CanalDistribuicaoRepository canaisDeDistribuicaoRepository;
 	private TipoClientePorCanalRepository tipoClientePorCanalRepository;
 	
 	@Autowired
 	public ComercialController(ComercialService comercialService, EstacaoService estacaoService, ComercialCustom comercialCustom,
 			TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository,
-			CanaisDeDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository) {
+			CanalDistribuicaoRepository canaisDeDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository) {
 		this.comercialService = comercialService;
 		this.estacaoService = estacaoService;
 		this.comercialCustom = comercialCustom;
@@ -144,7 +144,7 @@ public class ComercialController {
 		
 	// Carregar todos os Canais de Distribuição
 	@RequestMapping(value = "/find-all-canais-distribuicao", method = RequestMethod.GET)
-    public List<CanaisDeDistribuicao> findAllCanaisDistribuicao() {
+    public List<CanalDistribuicao> findAllCanaisDistribuicao() {
         return comercialService.findAllCanaisDistribuicao();
 	}
 		
@@ -168,7 +168,7 @@ public class ComercialController {
 	// Encontrar Canal de Distribuição por ID
     //
 	@RequestMapping(value = "/find-canal-distribuicao-by-id/{id}", method = RequestMethod.GET)
-    public CanaisDeDistribuicao findCanalById(@PathVariable("id") int id) {
+    public CanalDistribuicao findCanalById(@PathVariable("id") int id) {
         return comercialService.findCanalgById(id);
     }
 	// Encontrar Tipo de Cliente por Canal
@@ -186,7 +186,7 @@ public class ComercialController {
     // Salvar Tipo cliente no Canal
     @RequestMapping(value = "/save-tipo-cliente-canal", method = RequestMethod.POST)
     public void saveTipoClientePorCanal(@RequestBody BodyComercial body) {                  
-    	comercialService.saveTipoClientePorCanal(body.idTpCli, body.idCanal, body.tipoCliente);
+    	comercialService.saveTipoClientePorCanal(body.idCanal, body.tipoCliente);
     }
     // Salvar Novo Canal de Distribuição
     //
@@ -297,7 +297,7 @@ public class ComercialController {
 	}
 	
 	@RequestMapping(value = "/delete-canais-distribuicao/{idCanal}", method = RequestMethod.DELETE)
-    public List<CanaisDeDistribuicao> deleteCanaisDistribuicao(@PathVariable("idCanal") int idCanal) {                  
+    public List<CanalDistribuicao> deleteCanaisDistribuicao(@PathVariable("idCanal") int idCanal) {                  
     	comercialService.deleteCanaisDistribuicao(idCanal);
         return canaisDeDistribuicaoRepository.findAll();
     }

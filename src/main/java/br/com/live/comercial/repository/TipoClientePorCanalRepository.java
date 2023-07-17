@@ -2,6 +2,8 @@ package br.com.live.comercial.repository;
 
 import java.util.List;
 
+import javax.persistence.Column;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,6 +21,8 @@ public interface TipoClientePorCanalRepository extends JpaRepository<TipoCliente
 	@Query("SELECT a FROM TipoClientePorCanal a where a.id = :id")
 	TipoClientePorCanal findById(int id);
 	
+	@Query("SELECT a FROM TipoClientePorCanal a where a.idCanal = :idCanal and a.tipoCliente = :tipoCliente")
+	TipoClientePorCanal findByIdCanalAndTipoCliente(int idCanal, int tipoCliente);
+	
 	void deleteById(int id);
-
 }
