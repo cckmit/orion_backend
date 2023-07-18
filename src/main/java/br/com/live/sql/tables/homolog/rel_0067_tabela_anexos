@@ -1,0 +1,10 @@
+CREATE TABLE orion_anexos (
+    id NUMBER(9) PRIMARY KEY,
+    chave VARCHAR2(400),
+    nome_arquivo VARCHAR2(400),
+    tipo_arquivo VARCHAR2(100),
+    programa_gerador VARCHAR2(100),
+    tamanho NUMBER,
+    data_registro DATE,
+    dados_arquivo BLOB
+);
