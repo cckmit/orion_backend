@@ -269,12 +269,37 @@ public class ConfeccaoCustom {
 				+ "		AND b.grupo_estrutura = a.grupo "
 				+ "		AND b.subgru_estrutura = a.subgrupo "
 				+ "		AND b.item_estrutura = a.item "
-				+ "		AND c.id = a.usuario ";
+				+ "		AND c.id = a.usuario"
+				+ "     AND a.tipo = 1 ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaEncolhimentoCad.class));
 	}
 	
-	public List<ConsultaEncolhimentoCad> consultaMediaPorGrupoSubGrupo(String nivel, String grupo, String subgrupo){
+	public List<ConsultaEncolhimentoCad> carregarEncolhimentoCadPrototipo(){
+		
+		String query = " SELECT a.id, "
+				+ "       a.usuario || ' - ' || c.nome usuario, "
+				+ "       a.data_registro dataRegistro, "
+				+ "       a.nivel || '.' || a.grupo || '.' || a.subgrupo || '.' || a.item || ' - ' || b.narrativa tecido, "
+				+ "       a.larg_acomodacao largAcomodacao, "
+				+ "       a.comp_acomodacao compAcomodacao, "
+				+ "       a.larg_termo largTermo, "
+				+ "       a.comp_termo compTermo, "
+				+ "       a.larg_estampa largEstampa, "
+				+ "       a.comp_estampa compEstampa, "
+				+ "       a.observacao "
+				+ "      FROM orion_cfc_290 a, basi_010 b, orion_001 c "
+				+ "		WHERE b.nivel_estrutura = a.nivel "
+				+ "		AND b.grupo_estrutura = a.grupo "
+				+ "		AND b.subgru_estrutura = a.subgrupo "
+				+ "		AND b.item_estrutura = a.item "
+				+ "		AND c.id = a.usuario "
+				+ "     AND a.tipo = 2 ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaEncolhimentoCad.class));
+	}
+	
+	public List<ConsultaEncolhimentoCad> consultaMediaPorGrupoSubGrupo(String nivel, String grupo, String subgrupo, int tipo){
 		
 		String query = " SELECT CUSTOS.TIPO, CUSTOS.LARGURA, CUSTOS.COMPRIMENTO FROM ( "
 				+ "SELECT 'Acomodação' tipo, AVG(a.larg_acomodacao) largura, AVG(a.comp_acomodacao) comprimento "
@@ -282,36 +307,42 @@ public class ConfeccaoCustom {
 				+ "       WHERE a.nivel = '" + nivel + "'"
 				+ "       AND a.grupo = '" + grupo + "'"
 				+ "       AND a.subgrupo = '" + subgrupo + "'"
+				+ "       AND a.tipo = " + tipo + " "
 				+ "UNION "
 				+ "SELECT 'Termo' tipo, AVG(a.larg_termo) largura, AVG(a.comp_termo) comprimento "
 				+ "       FROM orion_cfc_290 a "
 				+ "       WHERE a.nivel = '" + nivel + "'"
 				+ "       AND a.grupo = '" + grupo + "'"
 				+ "       AND a.subgrupo = '" + subgrupo + "'"
+				+ "       AND a.tipo = " + tipo + " "
 				+ "UNION "
 				+ "SELECT 'Estampa' tipo, AVG(a.larg_estampa) largura, AVG(a.comp_estampa) comprimento "
 				+ "       FROM orion_cfc_290 a "
 				+ "       WHERE a.nivel = '" + nivel + "'"
 				+ "       AND a.grupo = '" + grupo + "'"
 				+ "       AND a.subgrupo = '" + subgrupo + "'"
+				+ "       AND a.tipo = " + tipo + " "
 				+ "UNION "
 				+ "SELECT 'Estampa + Poli' tipo, AVG(a.larg_estampa) largura, AVG(a.comp_estampa) comprimento\r\n"
 				+ "       FROM orion_cfc_290 a "
 				+ "       WHERE a.nivel = '" + nivel + "'"
 				+ "       AND a.grupo = '" + grupo + "'"
 				+ "       AND a.subgrupo = '" + subgrupo + "'"
+				+ "       AND a.tipo = " + tipo + " "
 				+ "UNION "
 				+ "SELECT 'Polimerizadeira' tipo, AVG(a.larg_estampa) largura, AVG(a.comp_estampa) comprimento "
 				+ "       FROM orion_cfc_290 a "
 				+ "       WHERE a.nivel = '" + nivel + "'"
 				+ "       AND a.grupo = '" + grupo + "'"
 				+ "       AND a.subgrupo = '" + subgrupo + "'"
+				+ "       AND a.tipo = " + tipo + " "
 				+ "UNION "
 				+ "SELECT 'Estampa + Prensa' tipo, AVG(a.larg_estampa) largura, AVG(a.comp_estampa) comprimento "
 				+ "       FROM orion_cfc_290 a "
 				+ "       WHERE a.nivel = '" + nivel + "'"
 				+ "       AND a.grupo = '" + grupo + "'"
-				+ "       AND a.subgrupo = '" + subgrupo + "') CUSTOS";
+				+ "       AND a.subgrupo = '" + subgrupo + "'"
+			    + "       AND a.tipo = " + tipo + " ) CUSTOS ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaEncolhimentoCad.class));
 	}

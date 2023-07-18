@@ -266,7 +266,7 @@ public class ConfeccaoService {
 	
 	public void saveEncolhimentoCad(int id, int usuario, Date dataRegistro, String tecido, float largAcomodacao, 
 			float compAcomodacao, float largTermo, float compTermo, float largEstampa, float compEstampa, float largEstampaPoli, float compEstampaPoli,
-			float largPolimerizadeira, float compPolimerizadeira, float largEstampaPrensa, float compEstampaPrensa, String observacao) {
+			float largPolimerizadeira, float compPolimerizadeira, float largEstampaPrensa, float compEstampaPrensa, String observacao, int tipo) {
 		
 		String[] prodConcat = tecido.split("[.]");
 		String nivel = prodConcat[0];
@@ -279,7 +279,7 @@ public class ConfeccaoService {
 		if (dados == null) {
 			int idNew = encolhimentoCadRepository.findNextID();
 			dados = new EncolhimentoCad(idNew, usuario, dataRegistro, nivel, grupo, subgrupo, item, largAcomodacao, compAcomodacao, largTermo, compTermo, largEstampa, compEstampa, 
-										largEstampaPoli, compEstampaPoli, largPolimerizadeira, compPolimerizadeira, largEstampaPrensa, compEstampaPrensa, observacao);
+										largEstampaPoli, compEstampaPoli, largPolimerizadeira, compPolimerizadeira, largEstampaPrensa, compEstampaPrensa, observacao, tipo);
 		} else {
 			dados.usuario = usuario; 
 			dados.dataRegistro = dataRegistro;
@@ -304,13 +304,13 @@ public class ConfeccaoService {
 		encolhimentoCadRepository.save(dados);		
 	}
 	
-	public List<ConsultaEncolhimentoCad> calcularMediaPorProduto(String produto){
+	public List<ConsultaEncolhimentoCad> calcularMediaPorProduto(String produto, int tipo){
 		
 		String[] prodConcat = produto.split("[.]");
 		String nivel = prodConcat[0];
 		String grupo = prodConcat[1];
 		String subgrupo = prodConcat[2];
 		
-		return confeccaoCustom.consultaMediaPorGrupoSubGrupo(nivel, grupo, subgrupo);
+		return confeccaoCustom.consultaMediaPorGrupoSubGrupo(nivel, grupo, subgrupo, tipo);
 	}
 }

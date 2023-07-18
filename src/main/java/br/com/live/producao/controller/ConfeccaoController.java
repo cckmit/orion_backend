@@ -280,6 +280,11 @@ public class ConfeccaoController {
 		return confeccaoCustom.carregarEncolhimentoCad();
 	}
 	
+	@RequestMapping(value = "/carregar-encolhimento-cad-prototipo", method = RequestMethod.GET)
+	public List<ConsultaEncolhimentoCad> carregarEncolhimentoCadPrototipo() {
+		return confeccaoCustom.carregarEncolhimentoCadPrototipo();
+	}
+	
 	@RequestMapping(value = "/find-all-tecido/{produto}", method = RequestMethod.GET)
 	public List<ConteudoChaveAlfaNum> findAllTecido(@PathVariable("produto") String produto) {
 		return produtoCustom.findTecidos(produto);
@@ -294,12 +299,12 @@ public class ConfeccaoController {
 	public void saveEncolhimentoCad(@RequestBody BodyConfeccao body) {
 		confeccaoService.saveEncolhimentoCad(body.idCadastro, body.usuario, body.dataRegistro, body.tecido, body.largAcomodacao, body.compAcomodacao,
 				body.largTermo, body.compTermo, body.largEstampa, body.compEstampa, body.largEstampaPoli, body.compEstampaPoli, body.largPolimerizadeira,
-				body.compPolimerizadeira, body.largEstampaPrensa, body.compEstampaPrensa, body.observacao);
+				body.compPolimerizadeira, body.largEstampaPrensa, body.compEstampaPrensa, body.observacao, body.tipo);
 	}
 	
-	@RequestMapping(value = "/calcula-media-por-produto/{produto}", method = RequestMethod.GET)
-	public List<ConsultaEncolhimentoCad> findAllById(@PathVariable("produto") String produto) {
-		return confeccaoService.calcularMediaPorProduto(produto);
+	@RequestMapping(value = "/calcula-media-por-produto/{produto}/{tipo}", method = RequestMethod.GET)
+	public List<ConsultaEncolhimentoCad> findAllById(@PathVariable("produto") String produto, @PathVariable("tipo") int tipo) {
+		return confeccaoService.calcularMediaPorProduto(produto, tipo);
 	}
 
 }

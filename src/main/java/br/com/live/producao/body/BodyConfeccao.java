@@ -51,6 +51,7 @@ public class BodyConfeccao {
 	public float largEstampaPrensa;
 	public float compEstampaPrensa;
 	public String observacao;
+	public int tipo;
 
 	public int ordemProducao;
 	public List<ConteudoChaveNumerica> pacotes;

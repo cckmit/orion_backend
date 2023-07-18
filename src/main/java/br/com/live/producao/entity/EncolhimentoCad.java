@@ -60,6 +60,8 @@ public class EncolhimentoCad {
 	public float compEstampaPrensa;
     
     public String observacao;
+    
+    public int tipo;
 
 	public int getId() {
 		return id;
@@ -180,8 +182,13 @@ public class EncolhimentoCad {
 	}
 	public void setObservacao(String observacao) {
 		this.observacao = observacao;
+	}	
+	public int getTipo() {
+		return tipo;
 	}
-    
+	public void setTipo(int tipo) {
+		this.tipo = tipo;
+	}
 	public EncolhimentoCad() {
 		
 	}
@@ -189,7 +196,7 @@ public class EncolhimentoCad {
 			String item, float largAcomodacao, float compAcomodacao, float largTermo, float compTermo,
 			float largEstampa, float compEstampa, float largEstampaPoli, float compEstampaPoli,
 			float largPolimerizadeira, float compPolimerizadeira, float largEstampaPrensa, float compEstampaPrensa,
-			String observacao) {
+			String observacao, int tipo) {
 		this.id = id;
 		this.usuario = usuario;
 		this.dataRegistro = dataRegistro;
@@ -210,6 +217,7 @@ public class EncolhimentoCad {
 		this.largEstampaPrensa = largEstampaPrensa;
 		this.compEstampaPrensa = compEstampaPrensa;
 		this.observacao = observacao;
+		this.tipo = tipo;
 	}
     
 	

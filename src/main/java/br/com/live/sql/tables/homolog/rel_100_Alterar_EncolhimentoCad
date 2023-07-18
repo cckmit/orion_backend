@@ -1,0 +1,6 @@
+-- Alterar a table para receber o tipo
+ALTER TABLE orion_cfc_290
+ADD TIPO NUMBER(1);
+
+-- Setar o campo Tipo pra 1 para o grid da Aba Geral
+UPDATE orion_cfc_290 a SET a.tipo = 1
