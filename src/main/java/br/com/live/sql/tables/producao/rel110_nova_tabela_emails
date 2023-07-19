@@ -1,0 +1,6 @@
+CREATE TABLE orion_bi_150 (
+	id varchar2(200),
+	id_programa varchar2(10),
+	email varchar2(50),
+	constraint orion_bi_150_pk primary key (id)
+);

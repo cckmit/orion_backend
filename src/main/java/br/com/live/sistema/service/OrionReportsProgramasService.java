@@ -2,6 +2,8 @@ package br.com.live.sistema.service;
 
 import java.util.List;
 
+import br.com.live.sistema.entity.RelacEmailsProgramasOrionReports;
+import br.com.live.sistema.repository.RelacEmailsProgramasOrionReportsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +19,14 @@ public class OrionReportsProgramasService {
 	
 	private final OrionReportsProgramasCustom orionReportsProgramasCustom;
 	private final OrionReportsProgramasRepository orionReportsProgramasRepository;
+	private final RelacEmailsProgramasOrionReportsRepository relacEmailsProgramasOrionReportsRepository;
 	
 	
-	public OrionReportsProgramasService(OrionReportsProgramasCustom orionReportsProgramasCustom, OrionReportsProgramasRepository orionReportsProgramasRepository) {
+	public OrionReportsProgramasService(OrionReportsProgramasCustom orionReportsProgramasCustom, OrionReportsProgramasRepository orionReportsProgramasRepository,
+										RelacEmailsProgramasOrionReportsRepository relacEmailsProgramasOrionReportsRepository) {
 		this.orionReportsProgramasCustom = orionReportsProgramasCustom;
 		this.orionReportsProgramasRepository = orionReportsProgramasRepository;
+		this.relacEmailsProgramasOrionReportsRepository = relacEmailsProgramasOrionReportsRepository;
 				
 	}
 	
@@ -76,5 +81,12 @@ public class OrionReportsProgramasService {
 		return orionReportsProgramasCustom.findAllProgramas();
 	}
 	
+	public List<RelacEmailsProgramasOrionReports> salvarEmailsPrograma(String email, String programa) {
+		System.out.println("EMAIL: " + email);
+		System.out.println("programa: " + programa);
 
+		RelacEmailsProgramasOrionReports dadosEmail = new RelacEmailsProgramasOrionReports(programa, email.toLowerCase());
+		relacEmailsProgramasOrionReportsRepository.saveAndFlush(dadosEmail);
+		return relacEmailsProgramasOrionReportsRepository.findEmailsByPrograma(programa);
+	}
 }
