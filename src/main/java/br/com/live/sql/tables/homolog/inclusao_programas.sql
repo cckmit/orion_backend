@@ -324,3 +324,9 @@ values (110, 'Relacionamento Representantes Antigos x Novos', 'Comercial', '/rel
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (111, 'Atributos De Naturezas De Operação', 'Comercial', '/atributos-de-naturezas-de-operacao');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (112, 'Apontamento Devolução', 'Expedição', '/apontamento-devolucao');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (113, 'Consulta de Devolução', 'Expedição', '/consulta-devolucao');
