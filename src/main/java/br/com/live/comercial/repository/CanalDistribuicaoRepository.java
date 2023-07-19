@@ -12,6 +12,9 @@ import br.com.live.comercial.entity.CanalDistribuicao;
 public interface CanalDistribuicaoRepository extends JpaRepository<CanalDistribuicao, Integer>{
 	
 	List<CanalDistribuicao> findAll();
+
+	@Query("SELECT a FROM CanalDistribuicao a where a.modalidade = :modalidade order by descricao")
+	List<CanalDistribuicao> findByModalidade(String modalidade);
 	
 	@Query("SELECT a FROM CanalDistribuicao a where a.id = :id")
 	CanalDistribuicao findByIdCanal(int id);

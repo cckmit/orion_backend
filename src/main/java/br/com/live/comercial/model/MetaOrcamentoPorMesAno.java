@@ -6,7 +6,23 @@ public class MetaOrcamentoPorMesAno {
 	private int mes;
 	private int ano;
 	private double valor;
+	
+	public MetaOrcamentoPorMesAno(String canal, int mes, int ano, double valor) {
+		super();
+		this.canal = canal;
+		this.mes = mes;
+		this.ano = ano;
+		this.valor = valor;
+	}
 
+	public MetaOrcamentoPorMesAno() {
+		super();
+		this.canal = "";
+		this.mes = 0;
+		this.ano = 0;
+		this.valor = 0;		
+	}
+	
 	public String getCanal() {
 		return canal;
 	}

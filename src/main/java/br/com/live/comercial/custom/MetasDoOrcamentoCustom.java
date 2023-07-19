@@ -74,5 +74,26 @@ public class MetasDoOrcamentoCustom {
 	    + " and modalidade = '" + tipoModalidade + "'";
 				
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MetaOrcamentoPorMesAno.class));
+	}
+	
+	public MetaOrcamentoPorMesAno findMetasOrcamentoByTipoMetaMesAno(String descCanal, int tipoMeta, int mes, int ano, String tipoModalidade) {
+		
+		MetaOrcamentoPorMesAno retorno = null;
+		
+		String query = " select descricao canal, " + mes + " mes, "
+	    + " ano, " + parseColunaValorByMes(mes) + " valor "
+	    + " from orion_150 " 
+	    + " where tipo_meta = " + tipoMeta
+	    + " and ano = " + ano
+	    + " and modalidade = '" + tipoModalidade + "'"
+	    + " and descricao = '" + descCanal + "'";
+			
+		try {
+			retorno = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(MetaOrcamentoPorMesAno.class));
+		} catch (Exception e) {
+			retorno = new MetaOrcamentoPorMesAno(descCanal, mes, ano, 0);
+		}
+		
+		return retorno;
 	}	
 }

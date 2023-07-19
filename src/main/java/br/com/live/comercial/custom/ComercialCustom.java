@@ -22,6 +22,12 @@ public class ComercialCustom {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 	
+	public void atualizarCanalDosTiposCliente(int codCanalDistribuicao, String descCanalDistribuicao) {
+		String query = " update pedi_085 set live_agrup_tipo_cliente = ? "
+		+ " where tipo_cliente in (select a.tipo_cliente from orion_com_210 a where a.id_canal = ?)" ;
+		jdbcTemplate.update(query, descCanalDistribuicao, codCanalDistribuicao);
+	}
+	
 	public void atualizarCanalDoTipoDeCliente(int codTipoCliente, String descCanalDistribuicao) {
 		String query = "update pedi_085 set live_agrup_tipo_cliente = ? where tipo_cliente = ?";
 		jdbcTemplate.update(query, descCanalDistribuicao, codTipoCliente); 

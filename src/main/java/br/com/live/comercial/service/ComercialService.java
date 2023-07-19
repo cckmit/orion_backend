@@ -40,8 +40,6 @@ import br.com.live.comercial.repository.TpClienteXTabPrecoRepository;
 import br.com.live.comercial.repository.ValorDescontoClientesImpRepository;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.produto.model.Produto;
-import br.com.live.util.FormataData;
-
 import br.com.live.util.StatusGravacao;
 
 @Service
@@ -162,6 +160,11 @@ public class ComercialService {
 	}
 	
 	public void deleteTipoClienteCanal(int id) {
+		TipoClientePorCanal tipoClientePorCanal = tipoClientePorCanalRepository.findById(id);
+		if (tipoClientePorCanal != null) {
+			// mantem o conceito antigo para manter as funcionalidades em relatórios e BIs.
+			comercialCustom.atualizarCanalDoTipoDeCliente(tipoClientePorCanal.getTipoCliente(), "");
+		}				
 		tipoClientePorCanalRepository.deleteById(id);
 	}
 	
@@ -329,6 +332,7 @@ public class ComercialService {
 		if (tipoClientePorCanal == null) {
 			int id = tipoClientePorCanalRepository.findNextID(); 
 			tipoClientePorCanal = new TipoClientePorCanal(id, idCanal, tipoCliente);
+			// mantem o conceito antigo para manter as funcionalidades em relatórios e BIs.
 			comercialCustom.atualizarCanalDoTipoDeCliente(tipoCliente, canal.descricao);
 			tipoClientePorCanalRepository.save(tipoClientePorCanal);
 		}				
@@ -346,6 +350,8 @@ public class ComercialService {
 			dadosCanal.modalidade = modalidade;			
 		}
 		canalDistribuicaoRepository.save(dadosCanal);
+		// mantem o conceito antigo para manter as funcionalidades em relatórios e BIs.
+		comercialCustom.atualizarCanalDosTiposCliente(dadosCanal.id, dadosCanal.descricao);
 	}
 	
 	public void deleteFatLiveClothing(int idFaturamento) {
