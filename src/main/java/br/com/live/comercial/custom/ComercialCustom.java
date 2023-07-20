@@ -243,7 +243,8 @@ public class ComercialCustom {
 		String query = " select g.cnpj_9 || g.cnpj_4 || g.cnpj_2 id, lpad(g.cnpj_9,8, '0') || lpad(g.cnpj_4,4,'0') || lpad(g.cnpj_2,2,'0') || ' - ' || b.nome_cliente cnpjCliente, g.valor_desconto valor from orion_com_292 g, pedi_010 b" +
 				" where b.cgc_9 = g.cnpj_9 " +
 				" and b.cgc_4 = g.cnpj_4 " +
-				" and b.cgc_2 = g.cnpj_2 ";
+				" and b.cgc_2 = g.cnpj_2 " +
+				" and g.valor_desconto > 0 ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(DescontoClientesImportados.class));
 	}
 	
@@ -262,7 +263,8 @@ public class ComercialCustom {
 	}
 
 	public ConsultaEmailClienteCashback findEmailPedidoCliente(int pedido) {
-		String query = " SELECT a.COD_PED_CLIENTE pedidoCliente, b.E_MAIL emailCliente  FROM pedi_100 a, pedi_010 b " +
+		String query = " SELECT SUBSTR(a.COD_PED_CLIENTE,0,7) pedidoCliente, b.E_MAIL emailCliente, " +
+				" lpad(b.CGC_9,8,0) || '/' || lpad(b.CGC_4,4,0) || '-' || lpad(b.CGC_2,2,0) || ' - ' || b.NOME_CLIENTE loja FROM pedi_100 a, pedi_010 b " +
 				" WHERE a.pedido_venda = " + pedido +
 				" AND b.CGC_9 = a.CLI_PED_CGC_CLI9 " +
 				" AND b.CGC_4 = a.CLI_PED_CGC_CLI4 " +

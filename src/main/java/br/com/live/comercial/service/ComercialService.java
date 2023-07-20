@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import br.com.live.comercial.model.*;
+import br.com.live.sistema.entity.Usuario;
+import br.com.live.sistema.repository.UsuarioRepository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.FormataData;
 import br.com.live.util.FormataString;
@@ -61,6 +63,7 @@ public class ComercialService {
 	private final RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository;
 	private final AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository;
 	private final EmailService emailService;
+	private final UsuarioRepository usuarioRepository;
   
 	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, 
 			MetasCategoriaRepository metasCategoriaRepository, TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, 
@@ -68,7 +71,7 @@ public class ComercialService {
 			ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, 
 			CanalDistribuicaoRepository canalDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	
 			RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository, AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository, 
-			EmailService emailService) {
+			EmailService emailService, UsuarioRepository usuarioRepository) {
 
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
@@ -85,6 +88,7 @@ public class ComercialService {
     	this.representanteAntigoXNovoRepository = representanteAntigoXNovoRepository;
     	this.atributosNaturezaDeOperacaoRepository = atributosNaturezaDeOperacaoRepository;
 		this.emailService = emailService;
+		this.usuarioRepository = usuarioRepository;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
@@ -481,7 +485,7 @@ public class ComercialService {
 		return valorCalculado;
 	}
 
-	public StatusGravacao aplicarDescontoEspecialPedidos(List<DescontoClientesImportados> listPedidosConfirmados, String usuario, String observacao) {
+	public StatusGravacao aplicarDescontoEspecialPedidos(List<DescontoClientesImportados> listPedidosConfirmados, String usuario, String observacao, int idUsuario) {
 		PedidosGravadosComDesconto pedidosGravados = null;
 		StatusGravacao status = new StatusGravacao(true, "Processo Conluído com Sucesso!");
 
@@ -517,21 +521,25 @@ public class ComercialService {
 				atualizarControleDesconto(cnpj9, cnpj4, cnpj2, dadosPedido.valor);
 
 				pedidosGravadosComDescontoRepository.save(pedidosGravados);
-				enviarEmailDescontoPedido(dadosPedido.pedido, dadosPedido.valor);
+				enviarEmailDescontoPedido(dadosPedido.pedido, dadosPedido.valor, idUsuario);
 			}
 		}
 		return status;
 	}
 
-	public void enviarEmailDescontoPedido(int pedido, float valorDesconto) {
+	public void enviarEmailDescontoPedido(int pedido, float valorDesconto, int idUsuario) {
+		Usuario dadosUsuario = usuarioRepository.findByIdUsuario(idUsuario);
+
 		ConsultaEmailClienteCashback dadosCliente = comercialCustom.findEmailPedidoCliente(pedido);
 
 		DecimalFormat formato = new DecimalFormat("0.00");
 		String valorFormatado = formato.format(valorDesconto);
 
-		String corpoEmail = FormataString.convertUtf8(" Crédito concedido no pedido ") + dadosCliente.pedidoCliente + FormataString.convertUtf8(" no valor de R$") + valorFormatado + " " + FormataString.convertUtf8("referente ao Cashback + URL.") + " <br/> " + FormataString.convertUtf8("Att, Comercial LIVE!");
+		String corpoEmail = "<b> " +FormataString.convertUtf8(dadosCliente.loja) + " </b> <br/> " + FormataString.convertUtf8(" Crédito concedido no pedido ") + dadosCliente.pedidoCliente + FormataString.convertUtf8(" no valor de R$") + valorFormatado + " " + FormataString.convertUtf8(" referente ao Cashback + URL.") + " <br/> " + FormataString.convertUtf8("Att, Comercial LIVE!");
 
 		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosCliente.emailCliente);
+		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosUsuario.email);
+		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, "comercial.franquias@liveoficial.com.br");
 	}
 
 	public void atualizarControleDesconto(int cnpj9, int cnpj4, int cnpj2, float valorAtual) {
@@ -554,7 +562,7 @@ public class ComercialService {
 		return comercialCustom.buscarSaldosClientes();
 	}
 
-	public void aplicarSaldosDescontoPedidos(List<ConsultaPedidosPorCliente> pedidosSelect, int cnpj9, int cnpj4, int cnpj2, String usuario, String observacao) {
+	public void aplicarSaldosDescontoPedidos(List<ConsultaPedidosPorCliente> pedidosSelect, int cnpj9, int cnpj4, int cnpj2, String usuario, String observacao, int idUsuario) {
 		ControleDescontoCliente dadosDesconto;
 		List<DescontoClientesImportados> listPedidosComDesconto = new ArrayList<>();
 
@@ -582,6 +590,6 @@ public class ComercialService {
 			listPedidosComDesconto.add(pedidos);
 		}
 
-		aplicarDescontoEspecialPedidos(listPedidosComDesconto, usuario, observacao);
+		aplicarDescontoEspecialPedidos(listPedidosComDesconto, usuario, observacao, idUsuario);
 	}
 }

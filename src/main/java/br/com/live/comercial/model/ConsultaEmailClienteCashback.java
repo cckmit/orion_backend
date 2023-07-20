@@ -4,6 +4,8 @@ public class ConsultaEmailClienteCashback {
     public int pedidoCliente;
     public String emailCliente;
 
+    public String loja;
+
     public int getPedidoCliente() {
         return pedidoCliente;
     }
@@ -20,10 +22,19 @@ public class ConsultaEmailClienteCashback {
         this.emailCliente = emailCliente;
     }
 
+    public String getLoja() {
+        return loja;
+    }
+
+    public void setLoja(String loja) {
+        this.loja = loja;
+    }
+
     public ConsultaEmailClienteCashback() {}
 
-    public ConsultaEmailClienteCashback(int pedidoCliente, String emailCliente) {
+    public ConsultaEmailClienteCashback(int pedidoCliente, String emailCliente, String loja) {
         this.pedidoCliente = pedidoCliente;
         this.emailCliente = emailCliente;
+        this.loja = loja;
     }
 }
