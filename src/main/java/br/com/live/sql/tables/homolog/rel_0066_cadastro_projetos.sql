@@ -1,3 +1,16 @@
+-- orion_ti_030 -- Fases
+-- orion_ti_035 -- Tipo de Atividade
+-- orion_ti_036 -- Tarefas do Tipo de Atividade
+-- orion_ti_040 -- Projetos
+-- orion_ti_045 -- Atividades Previstas (Cronograma Previsto)
+-- orion_ti_050 -- Função de Pessoas
+-- orion_ti_055 -- Envolvidos do Projeto
+-- orion_ti_060 -- Aprovadores do Escopo
+-- orion_ti_065 -- Custos e Orçamentos
+-- orion_ti_070 -- Atividades Realizadas (Acompanhamento do Projeto)
+-- orion_ti_071 -- Tarefas das Atividades Realizadas (Acompanhamento do Projeto)
+-- orion_anexos -- Imagens/Documentos relacionados ao Projeto
+
 --DROP
 --ALTER TABLE orion_ti_036 DROP CONSTRAINT fk_orion_ti_036_tipo_atividade
 --DROP TABLE orion_ti_036
@@ -141,8 +154,7 @@ CREATE TABLE orion_ti_065 (
   CONSTRAINT fk_orion_ti_065_projeto FOREIGN KEY (ID_PROJETO) REFERENCES orion_ti_040(ID) ON DELETE CASCADE
 );
 
-
--- Tabela: Atividades Realizadas acompanhamento projeto (orion_ti_070)
+-- Tabela: Atividades Realizadas acompanhamento projeto
 CREATE TABLE orion_ti_070 (
   ID NUMBER(9) PRIMARY KEY,
   ID_PROJETO NUMBER(9),
@@ -163,7 +175,7 @@ CREATE TABLE orion_ti_070 (
   CONSTRAINT fk_orion_ti_070_fase FOREIGN KEY (id_fase) REFERENCES orion_ti_030(ID)
 );
 
--- Tabela: Tarefas Atividades Realizadas acompanhamento projeto (orion_ti_071)
+-- Tabela: Tarefas Atividades Realizadas acompanhamento projeto
 CREATE TABLE orion_ti_071 (
   ID NUMBER(9) PRIMARY KEY,
   ID_PROJETO NUMBER(9),
@@ -182,3 +194,27 @@ CREATE TABLE orion_ti_071 (
   CONSTRAINT fk_orion_ti_071_registro_atividade FOREIGN KEY (ID_REGISTRO_ATIVIDADE ) REFERENCES orion_ti_070(ID) ON DELETE CASCADE,
   CONSTRAINT fk_orion_ti_071_usuario FOREIGN KEY (id_responsavel) REFERENCES orion_001(ID)
 );
+
+
+-- Ajustes após oficialização
+------------------------------
+
+UPDATE ORION_002
+SET DESCRICAO = 'Gerenciador de Projetos',
+    "PATH"  = '/gerenciador-projetos'
+WHERE id = 108;
+
+ALTER TABLE ORION_TI_055
+DROP COLUMN SOLICITANTE_STAKEHOLDER;
+
+ALTER TABLE orion_ti_045
+ADD MARCO NUMBER(1);
+
+UPDATE orion_ti_045
+SET MARCO = 0
+
+ALTER TABLE orion_ti_070
+ADD MARCO NUMBER(1);
+
+UPDATE orion_ti_070
+SET MARCO = 0

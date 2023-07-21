@@ -5,17 +5,15 @@ public class PessoaEnvolvidaProjeto {
     private long id;
     private long idProjeto;
     private long idUsuario;
-    private String solicitanteStakeholder;
     private long idFuncaoPessoa;
     private int area;
     private int departamento;
     private int setor;
 
-    public PessoaEnvolvidaProjeto(long id, long idProjeto, long idUsuario, String solicitanteStakeholder, long idFuncaoPessoa, int area, int departamento, int setor) {
+    public PessoaEnvolvidaProjeto(long id, long idProjeto, long idUsuario, long idFuncaoPessoa, int area, int departamento, int setor) {
         this.id = id;
         this.idProjeto = idProjeto;
         this.idUsuario = idUsuario;
-        this.solicitanteStakeholder = solicitanteStakeholder;
         this.idFuncaoPessoa = idFuncaoPessoa;
         this.area = area;
         this.departamento = departamento;
@@ -46,14 +44,6 @@ public class PessoaEnvolvidaProjeto {
 
     public void setIdUsuario(long idUsuario) {
         this.idUsuario = idUsuario;
-    }
-
-    public String getSolicitanteStakeholder() {
-        return solicitanteStakeholder;
-    }
-
-    public void setSolicitanteStakeholder(String solicitanteStakeholder) {
-        this.solicitanteStakeholder = solicitanteStakeholder;
     }
 
     public long getIdFuncaoPessoa() {

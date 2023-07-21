@@ -3,12 +3,16 @@ package br.com.live.sistema.service;
 import br.com.live.sistema.body.BodyProjeto;
 import br.com.live.sistema.entity.AprovadorProjetoEntity;
 import br.com.live.sistema.entity.ProjetoEntity;
+import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
+import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
 import br.com.live.sistema.model.AprovadorProjeto;
 import br.com.live.sistema.model.BriefingProjeto;
 import br.com.live.sistema.model.EscopoProjeto;
 import br.com.live.sistema.model.TermoAberturaProjeto;
 import br.com.live.sistema.repository.AprovadorProjetoRepository;
 import br.com.live.sistema.repository.ProjetoRepository;
+import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
+import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
 
@@ -18,18 +22,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class ProjetoService {
 
     ProjetoRepository projetoRepository;
     AprovadorProjetoRepository aprovadorProjetoRepository;
+    RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
+    RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
 
-
-    public ProjetoService(ProjetoRepository projetoRepository, AprovadorProjetoRepository aprovadorProjetoRepository) {
+    public ProjetoService(ProjetoRepository projetoRepository, AprovadorProjetoRepository aprovadorProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository) {
         this.projetoRepository = projetoRepository;
         this.aprovadorProjetoRepository = aprovadorProjetoRepository;
+        this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
+        this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
     }
 
+    @Transactional
     public List<ProjetoEntity> saveProjeto(BodyProjeto projeto){
 
         if (projeto.id == 0) projeto.id = projetoRepository.findNextId();
@@ -47,7 +54,7 @@ public class ProjetoService {
         projetoEntity.setStatus(projeto.status);
         projetoRepository.save(projetoEntity);
 
-        return projetoRepository.findAll();
+        return projetoRepository.findAllOrderByProjeto();
     }
 
     public BriefingProjeto findBriefingProjeto(Long id){
@@ -66,6 +73,7 @@ public class ProjetoService {
         return briefingProjeto;
     }
 
+    @Transactional
     public void saveBriefing(BriefingProjeto briefingProjeto){
 
         Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(briefingProjeto.getIdProjeto());
@@ -98,6 +106,7 @@ public class ProjetoService {
         return termoAberturaProjeto;
     }
 
+    @Transactional
     public void saveTermoAberturaProjeto(TermoAberturaProjeto termoAberturaProjeto){
 
         Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(termoAberturaProjeto.getIdProjeto());
@@ -137,6 +146,7 @@ public class ProjetoService {
         return escopoProjeto;
     }
 
+    @Transactional
     public void saveEscopo(EscopoProjeto escopoProjeto){
 
         Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(escopoProjeto.getIdProjeto());
@@ -156,6 +166,56 @@ public class ProjetoService {
         for (AprovadorProjeto aprovador : listAprovadoresNew) {
             AprovadorProjetoEntity aprovadorEntity = new AprovadorProjetoEntity(aprovador.getId(), aprovador.getIdUsuario(), aprovador.getIdProjeto());
             aprovadorProjetoRepository.save(aprovadorEntity);
+        }
+    }
+
+    @Transactional
+    public void atualizarStatusProjeto(Long idProjeto){
+
+        String status = "";
+
+        Optional<ProjetoEntity> projetoOptional = projetoRepository.findById(idProjeto);
+
+        if(projetoOptional.isPresent()) {
+
+            ProjetoEntity projeto = projetoOptional.get();
+            boolean existTarefaConcluidaProjeto = false;
+            boolean existTarefaPendenteProjeto = false;
+
+            List<RegistroAtividadeProjetoEntity> registroAtividadeProjetoList = registroAtividadeProjetoRepository.findAllByIdProjeto(idProjeto);
+
+            for (RegistroAtividadeProjetoEntity registroAtividadeProjeto : registroAtividadeProjetoList) {
+
+                long idAtividadeProjeto = registroAtividadeProjeto.getId();
+
+                List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoConcluidaList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeConcluida(idProjeto, idAtividadeProjeto);
+                List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoPendenteList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadePendente(idProjeto, idAtividadeProjeto);
+
+                if (!existTarefaPendenteProjeto && (registroAtividadeProjeto.getDataInicio() == null || registroAtividadeProjeto.getDataFim() == null)) {
+                    existTarefaPendenteProjeto = true;
+                }
+                if (!existTarefaConcluidaProjeto) {
+                    existTarefaConcluidaProjeto = !registroTarefaAtividadeProjetoConcluidaList.isEmpty();
+                }
+                if (!existTarefaPendenteProjeto) {
+                    existTarefaPendenteProjeto = !registroTarefaAtividadeProjetoPendenteList.isEmpty();
+                }
+            }
+
+            if (!existTarefaConcluidaProjeto && !existTarefaPendenteProjeto) {
+                status = "NOVO";
+            } else if (existTarefaPendenteProjeto && !existTarefaConcluidaProjeto) {
+                status = "INICIANDO";
+            } else if (existTarefaPendenteProjeto && existTarefaConcluidaProjeto) {
+                status = "EM ANDAMENTO";
+            } else {
+                status = "ENCERRADO";
+            }
+
+            if (!projeto.getStatus().equals(status)){
+                projeto.setStatus(status);
+                projetoRepository.save(projeto);
+            }
         }
     }
 }

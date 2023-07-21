@@ -25,7 +25,7 @@ public class ProjetoController {
 
     @GetMapping("/find-all")
     public List<ProjetoEntity> findAllProjetos(){
-        return projetoRepository.findAll();
+        return projetoRepository.findAllOrderByProjeto();
     }
 
     @GetMapping("/find-by-id/{id}")
@@ -36,7 +36,7 @@ public class ProjetoController {
     @GetMapping("/delete-by-id/{id}")
     public List<ProjetoEntity> deleteByIdProjeto(@PathVariable("id") Long id){
         projetoRepository.deleteById(id);
-        return projetoRepository.findAll();
+        return projetoRepository.findAllOrderByProjeto();
     }
 
     @PostMapping("/save")

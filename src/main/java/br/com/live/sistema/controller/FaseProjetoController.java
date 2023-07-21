@@ -21,7 +21,7 @@ public class FaseProjetoController {
 
     @GetMapping("/find-all")
     public List<FaseProjetoEntity> findAllFaseProjeto(){
-        return faseProjetoRepository.findAll();
+        return faseProjetoRepository.findAllOrderByDescricao();
     }
 
     @GetMapping("/find-by-id/{id}")
@@ -38,13 +38,13 @@ public class FaseProjetoController {
             System.out.println("Não é possível excluir a entidade devido a restrições de chave estrangeira.");
         }
 
-        return faseProjetoRepository.findAll();
+        return faseProjetoRepository.findAllOrderByDescricao();
     }
 
     @PostMapping("/save")
     public List<FaseProjetoEntity> saveFaseProjeto(@RequestBody FaseProjetoEntity faseProjeto){
         if (faseProjeto.getId() == 0) faseProjeto.setId(faseProjetoRepository.findNextId());
         faseProjetoRepository.save(faseProjeto);
-        return faseProjetoRepository.findAll();
+        return faseProjetoRepository.findAllOrderByDescricao();
     }
 }

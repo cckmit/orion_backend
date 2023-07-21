@@ -11,5 +11,5 @@ public class BodyAtividadeProjeto {
     public String dataPrevInicio;
     public String dataPrevFim;
     public double tempoPrevisto;
-
+    public int marco;
 }

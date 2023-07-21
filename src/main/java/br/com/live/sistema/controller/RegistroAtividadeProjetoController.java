@@ -40,8 +40,7 @@ public class RegistroAtividadeProjetoController {
 
     @GetMapping("/delete-by-id/{id}/{idProjeto}")
     public List<BodyRegistroAtividadeProjeto> deleteByIdRegistroAtividadeProjeto(@PathVariable("id") Long id, @PathVariable("idProjeto") Long idProjeto){
-        registroAtividadeProjetoRepository.deleteById(id);
-        return registroAtividadeProjetoService.findAll(idProjeto);
+        return registroAtividadeProjetoService.deleteByIdRegistroAtividadeProjeto(id, idProjeto);
     }
 
     @PostMapping("/save")

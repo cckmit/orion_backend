@@ -20,21 +20,25 @@ public class RegistroTarefaAtividadeProjetoService {
 
     RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
     RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
+    ProjetoService projetoService;
 
-    public RegistroTarefaAtividadeProjetoService(RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository) {
+    public RegistroTarefaAtividadeProjetoService(RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, ProjetoService projetoService) {
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
+        this.projetoService = projetoService;
     }
 
     public List<BodyRegistroTarefaAtividadeProjeto> saveRegistroTarefaAtividadeProjeto(BodyRegistroTarefaAtividadeProjeto registroTarefaAtividadeProjeto) throws ParseException {
         saveRegistroTarefaAtividade(registroTarefaAtividadeProjeto);
         atualizarDadosRegistroAtividade(registroTarefaAtividadeProjeto.idProjeto, registroTarefaAtividadeProjeto.idRegistroAtividade);
+        projetoService.atualizarStatusProjeto(registroTarefaAtividadeProjeto.idProjeto);
         return findAll(registroTarefaAtividadeProjeto.idProjeto);
     }
 
     public List<BodyRegistroTarefaAtividadeProjeto> deleteByIdRegistroTarefaAtividadeProjeto(long id, long idProjeto, long idRegistroAtividade){
         deleteById(id);
         atualizarDadosRegistroAtividade(idProjeto, idRegistroAtividade);
+        projetoService.atualizarStatusProjeto(idProjeto);
         return findAll(idProjeto);
     }
 

@@ -15,5 +15,5 @@ public class BodyRegistroAtividadeProjeto {
     public double custo;
     public Long idFase;
     public double tempoGasto;
-
+    public int marco;
 }

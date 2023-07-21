@@ -18,9 +18,6 @@ public class PessoaEnvolvidaProjetoEntity {
     @Column(name="id_usuario")
     private long idUsuario;
 
-    @Column(name="solicitante_stakeholder")
-    private String solicitanteStakeholder;
-
     @Column(name="id_funcao_pessoa")
     private long idFuncaoPessoa;
 
@@ -28,11 +25,10 @@ public class PessoaEnvolvidaProjetoEntity {
     private int departamento;
     private int setor;
 
-    public PessoaEnvolvidaProjetoEntity(long id, long idProjeto, long idUsuario, String solicitanteStakeholder, long idFuncaoPessoa, int area, int departamento, int setor) {
+    public PessoaEnvolvidaProjetoEntity(long id, long idProjeto, long idUsuario, long idFuncaoPessoa, int area, int departamento, int setor) {
         this.id = id;
         this.idProjeto = idProjeto;
         this.idUsuario = idUsuario;
-        this.solicitanteStakeholder = solicitanteStakeholder;
         this.idFuncaoPessoa = idFuncaoPessoa;
         this.area = area;
         this.departamento = departamento;
@@ -63,14 +59,6 @@ public class PessoaEnvolvidaProjetoEntity {
 
     public void setIdUsuario(long idUsuario) {
         this.idUsuario = idUsuario;
-    }
-
-    public String getSolicitanteStakeholder() {
-        return solicitanteStakeholder;
-    }
-
-    public void setSolicitanteStakeholder(String solicitanteStakeholder) {
-        this.solicitanteStakeholder = solicitanteStakeholder;
     }
 
     public long getIdFuncaoPessoa() {

@@ -23,12 +23,14 @@ public class AtividadeProjetoService {
     TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository;
     RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
     RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
+    ProjetoService projetoService;
 
-    public AtividadeProjetoService(AtividadeProjetoRepository atividadeProjetoRepository, TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository) {
+    public AtividadeProjetoService(AtividadeProjetoRepository atividadeProjetoRepository, TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, ProjetoService projetoService) {
         this.atividadeProjetoRepository = atividadeProjetoRepository;
         this.tarefaTipoAtividadeProjetoRepository = tarefaTipoAtividadeProjetoRepository;
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
+        this.projetoService = projetoService;
     }
 
     public List<BodyAtividadeProjeto> deleteByIdAtividadeProjeto(Long id, Long idProjeto){
@@ -36,6 +38,7 @@ public class AtividadeProjetoService {
         atividadeProjetoRepository.deleteById(id);
         removerRegistrosAtividadesProjeto(idProjeto);
         gerarRegistrosAtividadesProjeto(idProjeto);
+        projetoService.atualizarStatusProjeto(idProjeto);
 
         return findAll(idProjeto);
     }
@@ -63,6 +66,7 @@ public class AtividadeProjetoService {
             atividadeProjeto.idFase = atividadeProjetoEntity.getIdFase();
             atividadeProjeto.idResponsavel = atividadeProjetoEntity.getIdResponsavel();
             atividadeProjeto.tempoPrevisto = atividadeProjetoEntity.getTempoPrevisto();
+            atividadeProjeto.marco = atividadeProjetoEntity.getMarco();
 
             if (atividadeProjetoEntity.getIdTipoAtividade() != null && atividadeProjetoEntity.getIdTipoAtividade() != 0) atividadeProjeto.idTipoAtividade = atividadeProjetoEntity.getIdTipoAtividade();
             if (atividadeProjetoEntity.getDataPrevInicio() != null) atividadeProjeto.dataPrevInicio = dateFormat.format(atividadeProjetoEntity.getDataPrevInicio());
@@ -78,6 +82,7 @@ public class AtividadeProjetoService {
         saveAtividade(atividadeProjeto);
         removerRegistrosAtividadesProjeto(atividadeProjeto.idProjeto);
         gerarRegistrosAtividadesProjeto(atividadeProjeto.idProjeto);
+        projetoService.atualizarStatusProjeto(atividadeProjeto.idProjeto);
 
         return findAll(atividadeProjeto.idProjeto);
     }
@@ -94,6 +99,7 @@ public class AtividadeProjetoService {
         atividadeProjetoEntity.setIdFase(atividadeProjeto.idFase);
         atividadeProjetoEntity.setIdResponsavel(atividadeProjeto.idResponsavel);
         atividadeProjetoEntity.setTempoPrevisto(atividadeProjeto.tempoPrevisto);
+        atividadeProjetoEntity.setMarco(atividadeProjeto.marco);
 
         if (atividadeProjeto.idTipoAtividade != 0) atividadeProjetoEntity.setIdTipoAtividade(atividadeProjeto.idTipoAtividade);
         if (atividadeProjeto.dataPrevInicio != null) atividadeProjetoEntity.setDataPrevInicio(FormataData.parseStringToDate(atividadeProjeto.dataPrevInicio));
@@ -133,6 +139,7 @@ public class AtividadeProjetoService {
             registroAtividadeProjeto.setCusto(0);
             registroAtividadeProjeto.setIdFase(atividadeProjeto.getIdFase());
             registroAtividadeProjeto.setIdAtividade(atividadeProjeto.getId());
+            registroAtividadeProjeto.setMarco(atividadeProjeto.getMarco());
 
             registroAtividadeProjetoRepository.save(registroAtividadeProjeto);
 
