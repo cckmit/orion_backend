@@ -25,6 +25,7 @@ import br.com.live.comercial.model.ConsultaCaixasNoEndereco;
 import br.com.live.comercial.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.comercial.model.ConsultaHistAuditoria;
 import br.com.live.comercial.model.ConsultaMinutaTransporte;
+import br.com.live.comercial.model.ConsultaNotasTagsDevolucao;
 import br.com.live.comercial.model.ConsultaRegraPrioridadeTipoCliente;
 import br.com.live.comercial.model.ConsultaTag;
 import br.com.live.comercial.model.ConsultaTransportadora;
@@ -982,7 +983,7 @@ public class ExpedicaoService {
 		return expedicaoCustom.findQtdePecasLidasByUsuarioNf(usuario, notaFiscal);
 	}
 	
-	public boolean saveTagDevolucao(int usuario, int nfDevolucao, int tipoDevolucao, int motivo, int transacao, int codCaixa, 
+	public boolean saveTagDevolucao(String usuario, int nfDevolucao, int tipoDevolucao, int motivo, int transacao, int codCaixa, 
 			String codBarrasTag) {
 		
 		boolean resultado = false;
@@ -1002,6 +1003,14 @@ public class ExpedicaoService {
 		}
 		
 		return resultado;
+	}
+	
+	public List<ConsultaNotasTagsDevolucao> findDadosDevolucao(){
+		return expedicaoCustom.findAllDevolucao();
+	}
+	
+	public List<ConsultaNotasTagsDevolucao> findDadosFiltrados(String dataInicial, String dataFinal){
+		return expedicaoCustom.findDadosFiltrados(dataInicial, dataFinal);
 	}
 	
 	

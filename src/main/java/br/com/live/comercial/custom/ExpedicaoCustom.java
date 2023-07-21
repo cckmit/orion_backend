@@ -10,6 +10,7 @@ import br.com.live.comercial.model.ConsultaCaixasNoEndereco;
 import br.com.live.comercial.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.comercial.model.ConsultaHistAuditoria;
 import br.com.live.comercial.model.ConsultaMinutaTransporte;
+import br.com.live.comercial.model.ConsultaNotasTagsDevolucao;
 import br.com.live.comercial.model.ConsultaRegraPrioridadeTipoCliente;
 import br.com.live.comercial.model.ConsultaTag;
 import br.com.live.comercial.model.ConsultaTransportadora;
@@ -1913,5 +1914,72 @@ public class ExpedicaoCustom {
 			data = "";
 		}
 		return data;
+	}
+	
+	public List<ConsultaNotasTagsDevolucao> findAllDevolucao() {
+		
+		String query = " SELECT a.id id, "
+				+ "       TO_CHAR(a.data, 'DD/MM/YYYY') data, "
+				+ "       a.hora hora, "
+				+ "       b.nome usuario, "
+				+ "       a.nf_devolucao nfDevolucao, "
+				+ "       DECODE(a.tipo_devolucao, 1, 'Conserto', "
+				+ "       DECODE(a.tipo_devolucao, 2, '1º Qualidade', "
+				+ "       DECODE(a.tipo_devolucao, 3, '2º Qualidade'))) tipoDevolucao, "
+				+ "       c.descricao motivo, "
+				+ "       d.descricao transacao, "
+				+ "       a.cod_caixa caixa, "
+				+ "       a.cod_barras_tag codBarrasTag, "
+				+ "  (SELECT f.nivel_estrutura || '.' || f.grupo_estrutura || '.' || f.subgru_estrutura || '.' || f.item_estrutura || ' - ' || f.narrativa  "
+				+ "                       FROM pcpc_330 e, basi_010 f "
+				+ "                       WHERE f.nivel_estrutura = e.nivel "
+				+ "                       AND f.grupo_estrutura = e.grupo "
+				+ "                       AND f.subgru_estrutura = e.subgrupo "
+				+ "                       AND f.item_estrutura = e.item "
+				+ "                       AND e.periodo_producao = LPAD(SUBSTR(cod_barras_tag, 1, 4),  4, 0) "
+				+ "                       AND e.ordem_producao = LPAD(SUBSTR(cod_barras_tag, 5, 9),  9, 0) "
+				+ "                       AND e.ordem_confeccao = LPAD(SUBSTR(cod_barras_tag, 14, 5), 5, 0) "
+				+ "                       AND e.sequencia = LPAD(SUBSTR(cod_barras_tag, 19, 4), 4, 0) "
+				+ "                       ) produto "
+				+ "     FROM orion_exp_200 a, efic_050 b, efic_040 c, estq_005 d "
+				+ "     WHERE b.cracha_funcionario = a.usuario "
+				+ "     AND c.codigo_motivo = a.cod_motivo "
+				+ "     AND d.codigo_transacao = a.cod_transacao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaNotasTagsDevolucao.class));
+	}
+	
+	public List<ConsultaNotasTagsDevolucao> findDadosFiltrados(String dataInicial, String dataFinal) {
+		
+		String query = " SELECT a.id id, "
+				+ "       TO_CHAR(a.data, 'DD/MM/YYYY') data, "
+				+ "       a.hora hora, "
+				+ "       b.nome usuario, "
+				+ "       a.nf_devolucao nfDevolucao, "
+				+ "       DECODE(a.tipo_devolucao, 1, 'Conserto', "
+				+ "       DECODE(a.tipo_devolucao, 2, '1º Qualidade', "
+				+ "       DECODE(a.tipo_devolucao, 3, '2º Qualidade'))) tipoDevolucao, "
+				+ "       c.descricao motivo, "
+				+ "       d.descricao transacao, "
+				+ "       a.cod_caixa caixa, "
+				+ "       a.cod_barras_tag codBarrasTag, "
+				+ "  (SELECT f.nivel_estrutura || '.' || f.grupo_estrutura || '.' || f.subgru_estrutura || '.' || f.item_estrutura || ' - ' || f.narrativa  "
+				+ "                       FROM pcpc_330 e, basi_010 f "
+				+ "                       WHERE f.nivel_estrutura = e.nivel "
+				+ "                       AND f.grupo_estrutura = e.grupo "
+				+ "                       AND f.subgru_estrutura = e.subgrupo "
+				+ "                       AND f.item_estrutura = e.item "
+				+ "                       AND e.periodo_producao = LPAD(SUBSTR(cod_barras_tag, 1, 4),  4, 0) "
+				+ "                       AND e.ordem_producao = LPAD(SUBSTR(cod_barras_tag, 5, 9),  9, 0) "
+				+ "                       AND e.ordem_confeccao = LPAD(SUBSTR(cod_barras_tag, 14, 5), 5, 0) "
+				+ "                       AND e.sequencia = LPAD(SUBSTR(cod_barras_tag, 19, 4), 4, 0) "
+				+ "                       ) produto "
+				+ "     FROM orion_exp_200 a, efic_050 b, efic_040 c, estq_005 d "
+				+ "     WHERE b.cracha_funcionario = a.usuario "
+				+ "     AND c.codigo_motivo = a.cod_motivo "
+				+ "     AND d.codigo_transacao = a.cod_transacao"
+				+ "     AND TO_CHAR(a.data, 'DD/MM/YYYY') BETWEEN '" + dataInicial + "' AND '" + dataFinal + "' ";
+		System.out.println(query);
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaNotasTagsDevolucao.class));
 	}
 }

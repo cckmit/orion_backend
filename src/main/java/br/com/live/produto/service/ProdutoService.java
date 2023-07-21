@@ -113,6 +113,10 @@ public class ProdutoService {
 		int ordem = Integer.parseInt(numeroTag.substring(4, 13));
 		int pacote = Integer.parseInt(numeroTag.substring(13, 18));
 		int sequencia = Integer.parseInt(numeroTag.substring(18, 22));
+		System.out.println(periodo);
+		System.out.println(ordem);
+		System.out.println(pacote);
+		System.out.println(sequencia);
 
 		ConsultaTag dadosTag = produtoRepository.findDadosTagByTagAndDeposito(periodo, ordem, pacote, sequencia);
 		

@@ -19,6 +19,7 @@ import br.com.live.comercial.model.ConsultaCaixasNoEndereco;
 import br.com.live.comercial.model.ConsultaCapacidadeArtigosEnderecos;
 import br.com.live.comercial.model.ConsultaHistAuditoria;
 import br.com.live.comercial.model.ConsultaMinutaTransporte;
+import br.com.live.comercial.model.ConsultaNotasTagsDevolucao;
 import br.com.live.comercial.model.ConsultaRegraPrioridadeTipoCliente;
 import br.com.live.comercial.model.ConsultaTag;
 import br.com.live.comercial.model.ConsultaVariacaoArtigo;
@@ -483,7 +484,18 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/save-tag-devolucao", method = RequestMethod.POST)
     public boolean saveTagDevolucao(@RequestBody BodyExpedicao body) {
-        return expedicaoService.saveTagDevolucao(body.usuario, body.nfDevolucao, body.tipoDevolucao, body.motivo, body.transacao, 
+        return expedicaoService.saveTagDevolucao(body.crachaUsuario, body.nfDevolucao, body.tipoDevolucao, body.motivo, body.transacao, 
         		body.codCaixa, body.codBarrasTag);
     }
+    
+    @RequestMapping(value = "/find-dados-devolucao", method = RequestMethod.GET)
+    public List<ConsultaNotasTagsDevolucao> findDadosDevolucao() {
+        return expedicaoService.findDadosDevolucao();
+    }
+    
+    @RequestMapping(value = "/find-filtro-data-devolucao", method = RequestMethod.POST)
+    public List<ConsultaNotasTagsDevolucao> findDadosFiltrados(@RequestBody BodyExpedicao body) {
+        return expedicaoService.findDadosFiltrados(body.dtInicial, body.dtFinal);
+    }
 }
+

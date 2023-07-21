@@ -15,7 +15,7 @@ public class ApontamentoDevolucao {
 	public int id;
 	public Date data;
 	public String hora;
-	public int usuario;
+	public String usuario;
 	
 	@Column(name = "nf_devolucao")
 	public int nfDevolucao;
@@ -54,10 +54,10 @@ public class ApontamentoDevolucao {
 	public void setHora(String hora) {
 		this.hora = hora;
 	}
-	public int getUsuario() {
+	public String getUsuario() {
 		return usuario;
 	}
-	public void setUsuario(int usuario) {
+	public void setUsuario(String usuario) {
 		this.usuario = usuario;
 	}
 	public int getNfDevolucao() {
@@ -100,7 +100,7 @@ public class ApontamentoDevolucao {
 	public ApontamentoDevolucao() {
 		
 	}
-	public ApontamentoDevolucao(int id, Date data, String hora, int usuario, int nfDevolucao, int tipoDevolucao,
+	public ApontamentoDevolucao(int id, Date data, String hora, String usuario, int nfDevolucao, int tipoDevolucao,
 			int codMotivo, int codTransacao, int codCaixa, String codBarrasTag) {
 		
 		this.id = id;
