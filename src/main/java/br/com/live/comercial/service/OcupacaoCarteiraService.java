@@ -12,11 +12,13 @@ import br.com.live.comercial.body.BodyOcupacaoCarteira;
 import br.com.live.comercial.custom.MetasDoOrcamentoCustom;
 import br.com.live.comercial.custom.OcupacaoCarteiraCustom;
 import br.com.live.comercial.custom.PedidoVendaCustom;
+import br.com.live.comercial.entity.CanalDistribuicao;
 import br.com.live.comercial.model.MetaOrcamentoPorMesAno;
 import br.com.live.comercial.model.PedidoVenda;
 import br.com.live.comercial.model.ResumoOcupacaoCarteiraPorCanalVenda;
 import br.com.live.comercial.model.ResumoOcupacaoCarteiraPorModalidade;
 import br.com.live.comercial.model.ResumoOcupacaoCarteiraPorPedido;
+import br.com.live.comercial.repository.CanalDistribuicaoRepository;
 import br.com.live.producao.custom.CapacidadeProducaoCustom;
 import br.com.live.producao.model.CapacidadeEmMinutosMes;
 
@@ -27,13 +29,15 @@ public class OcupacaoCarteiraService {
 	private final OcupacaoCarteiraCustom ocupacaoCarteiraCustom;
 	private final MetasDoOrcamentoCustom metasDoOrcamentoCustom;
 	private final CapacidadeProducaoCustom capacidadeProducaoCustom;
-	private final PedidoVendaCustom pedidoVendaCustom; 
+	private final PedidoVendaCustom pedidoVendaCustom;
+	private final CanalDistribuicaoRepository canalDistribuicaoRepository;
 	
-	public OcupacaoCarteiraService(OcupacaoCarteiraCustom ocupacaoCarteiraCustom, MetasDoOrcamentoCustom metasDoOrcamentoCustom, CapacidadeProducaoCustom capacidadeProducaoCustom, PedidoVendaCustom pedidoVendaCustom) {
+	public OcupacaoCarteiraService(OcupacaoCarteiraCustom ocupacaoCarteiraCustom, MetasDoOrcamentoCustom metasDoOrcamentoCustom, CapacidadeProducaoCustom capacidadeProducaoCustom, PedidoVendaCustom pedidoVendaCustom, CanalDistribuicaoRepository canalDistribuicaoRepository) {
 		this.ocupacaoCarteiraCustom = ocupacaoCarteiraCustom;
 		this.metasDoOrcamentoCustom = metasDoOrcamentoCustom;
 		this.capacidadeProducaoCustom = capacidadeProducaoCustom;
 		this.pedidoVendaCustom = pedidoVendaCustom;
+		this.canalDistribuicaoRepository = canalDistribuicaoRepository;
 	}
 	
 	public BodyOcupacaoCarteira consultar(String valorResumir, int mes, int ano, String tipoOrcamento, boolean pedidosDisponibilidade, boolean pedidosProgramados, boolean pedidosProntaEntrega) {				                                                																				
@@ -65,7 +69,6 @@ public class OcupacaoCarteiraService {
 				// Aqui faz uma troca da classe ResumoOcupacaoCarteiraPorPedido pela PedidoVenda (pois essa tem os campos necessários para mostrar em tela, tais como cliente, data embarque, etc).  
 				PedidoVenda pedidoVenda = pedidoVendaCustom.findPedidoVenda(resumoPorPedido.getPedidoVenda());
 				// Seta o valor do pedido, conforme valor objeto por esse processo (que pode ser valor, quantidade ou minutos).
-				
 				pedidoVenda.setValorTotal(resumoPorPedido.getValorTotal());
 				listaAgrupar.add(pedidoVenda);
 			}
@@ -179,15 +182,17 @@ public class OcupacaoCarteiraService {
 	private List<ResumoOcupacaoCarteiraPorCanalVenda> atualizarDadosOrcadoVersusRealizado(int mes, int ano, int tipoMeta, String tipoModalidade,  List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacao, List<ResumoOcupacaoCarteiraPorCanalVenda> listOcupacaoConfirmar, boolean isMinutos) {
 		Map<String, ResumoOcupacaoCarteiraPorCanalVenda> mapOcupacao = new HashMap<String, ResumoOcupacaoCarteiraPorCanalVenda>();
 	    List<ResumoOcupacaoCarteiraPorCanalVenda> listResumoPorCanal = new ArrayList<ResumoOcupacaoCarteiraPorCanalVenda>();
-		List<MetaOrcamentoPorMesAno> metasCadastradas = metasDoOrcamentoCustom.findMetasOrcamentoByTipoMetaMesAno(tipoMeta, mes, ano, tipoModalidade);		
+	    List<CanalDistribuicao> canaisCadastrados = canalDistribuicaoRepository.findByModalidade(tipoModalidade);
 		
-	    for (MetaOrcamentoPorMesAno orcado : metasCadastradas) {
+	    for (CanalDistribuicao canal : canaisCadastrados) {	    		    	
+	    	MetaOrcamentoPorMesAno orcado = metasDoOrcamentoCustom.findMetasOrcamentoByTipoMetaMesAno(canal.descricao, tipoMeta, mes, ano, tipoModalidade);
 	    	ResumoOcupacaoCarteiraPorCanalVenda resumo = new ResumoOcupacaoCarteiraPorCanalVenda();
 	    	resumo.setCanal(orcado.getCanal());
 	    	if (isMinutos) resumo.setValorOrcado(0);
-	    	else resumo.setValorOrcado(orcado.getValor());
+	    	else resumo.setValorOrcado(orcado.getValor());	    	
 	    	mapOcupacao.put(resumo.getCanal(), resumo);	    	
 	    }
+	    	    
 		if (listOcupacao != null) {
 			for (ResumoOcupacaoCarteiraPorCanalVenda ocupacao : listOcupacao) {
 				ResumoOcupacaoCarteiraPorCanalVenda resumo = mapOcupacao.get(ocupacao.getCanal()); 	
@@ -195,7 +200,7 @@ public class OcupacaoCarteiraService {
 			}		
  		}
 		if (listOcupacaoConfirmar != null) {
-			for (ResumoOcupacaoCarteiraPorCanalVenda ocupacaoConfirmar : listOcupacaoConfirmar) {
+			for (ResumoOcupacaoCarteiraPorCanalVenda ocupacaoConfirmar : listOcupacaoConfirmar) {				
 				ResumoOcupacaoCarteiraPorCanalVenda resumo = mapOcupacao.get(ocupacaoConfirmar.getCanal()); 	
 				resumo.setValorConfirmar(ocupacaoConfirmar.getValorConfirmar());
 			}		

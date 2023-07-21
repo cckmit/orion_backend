@@ -249,7 +249,7 @@ public class PainelListaPrioridadesCustom {
             + " and s.fornecedor2 = k.cgcterc_forne2 "
             + " and lpad(s.fornecedor9,8,0) || lpad(s.fornecedor4,4,0) || lpad(s.fornecedor2,2,0) in (" + listaFaccoes + "))";
 	    
-	    query += " order by a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, a.sequencia_estagio desc, a.seq_operacao, a.codigo_estagio, b.periodo_producao, a.ordem_producao, a.ordem_confeccao ";
+	    query += " order by a.proconf_grupo, a.proconf_subgrupo, a.proconf_item, a.sequencia_estagio desc, a.seq_operacao desc, a.codigo_estagio, b.periodo_producao, a.ordem_producao, a.ordem_confeccao ";
 	
 	    try {
 	    	resultado = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PainelListaPrioridadesOrdensEmProducao.class));

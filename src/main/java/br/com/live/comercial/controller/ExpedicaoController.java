@@ -9,6 +9,7 @@ import br.com.live.comercial.body.BodyMinutaTransporte;
 import br.com.live.comercial.body.BodyVariacaoPesoArtigo;
 import br.com.live.comercial.body.BodyVolumeMinuta;
 import br.com.live.comercial.custom.ExpedicaoCustom;
+import br.com.live.comercial.entity.ApontamentoDevolucao;
 import br.com.live.comercial.entity.CaixasParaEnderecar;
 import br.com.live.comercial.entity.ParametrosMapaEndereco;
 import br.com.live.comercial.entity.ParametrosMapaEnderecoCaixa;
@@ -468,5 +469,21 @@ public class ExpedicaoController {
     public List<DadosTagProd> limparTagCaixa (@PathVariable("codCaixa") int codCaixa) {
         expedicaoService.limparCaixa(codCaixa);
         return expedicaoCustom.findDadosTagCaixas(codCaixa);
+    }
+    
+    @RequestMapping(value = "/find-motivo-devolucao", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findMotivosDevolucao() {
+        return expedicaoService.findMotivosDevolucao();
+    }
+    
+    @RequestMapping(value = "/qtde-pecas-lidas/{usuario}/{notaFiscal}", method = RequestMethod.GET)
+    public int findQtdePecasLidasByUsuarioNf(@PathVariable("usuario") int usuario, @PathVariable("notaFiscal") int notaFiscal) {
+        return expedicaoService.findQtdePecasLidasByUsuarioNf(usuario, notaFiscal);
+    }
+    
+    @RequestMapping(value = "/save-tag-devolucao", method = RequestMethod.POST)
+    public boolean saveTagDevolucao(@RequestBody BodyExpedicao body) {
+        return expedicaoService.saveTagDevolucao(body.usuario, body.nfDevolucao, body.tipoDevolucao, body.motivo, body.transacao, 
+        		body.codCaixa, body.codBarrasTag);
     }
 }

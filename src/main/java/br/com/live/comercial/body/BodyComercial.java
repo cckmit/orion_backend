@@ -63,5 +63,6 @@ public class BodyComercial {
 	public String usuario;
 	public String cnpjCliente;
 	public String observacao;
+	public int idUsuario;
 }
 	

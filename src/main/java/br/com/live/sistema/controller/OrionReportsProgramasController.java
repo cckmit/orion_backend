@@ -2,6 +2,8 @@ package br.com.live.sistema.controller;
 
 import java.util.List;
 
+import br.com.live.sistema.entity.RelacEmailsProgramasOrionReports;
+import br.com.live.sistema.repository.RelacEmailsProgramasOrionReportsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +27,14 @@ public class OrionReportsProgramasController {
 	
 	private OrionReportsProgramasRepository orionReportsProgramasRepository;
 	private OrionReportsProgramasService orionReportsProgramasService;
+	private RelacEmailsProgramasOrionReportsRepository relacEmailsProgramasOrionReportsRepository;
 	
 	@Autowired 
-	public OrionReportsProgramasController(OrionReportsProgramasRepository orionReportsProgramasRepository, OrionReportsProgramasService orionReportsProgramasService){
+	public OrionReportsProgramasController(OrionReportsProgramasRepository orionReportsProgramasRepository, OrionReportsProgramasService orionReportsProgramasService,
+										   RelacEmailsProgramasOrionReportsRepository relacEmailsProgramasOrionReportsRepository){
 		this.orionReportsProgramasRepository = orionReportsProgramasRepository;
-		this.orionReportsProgramasService = orionReportsProgramasService;				
+		this.orionReportsProgramasService = orionReportsProgramasService;
+		this.relacEmailsProgramasOrionReportsRepository = relacEmailsProgramasOrionReportsRepository;
 	}
 	
 	@RequestMapping(value = "/find-all-programas", method = RequestMethod.GET)
@@ -70,6 +75,22 @@ public class OrionReportsProgramasController {
 	@RequestMapping(value = "/delete-programa/{id}", method = RequestMethod.DELETE)
 	public List<ConsultaProgramasOrionReport> deletePrograma(@PathVariable("id") String id) {                  
 		 return orionReportsProgramasService.deletePrograma(id);
+	}
+
+	@RequestMapping(value = "/find-emails-by-programa/{idPrograma}", method = RequestMethod.GET)
+	public List<RelacEmailsProgramasOrionReports> findEmailsByPrograma(@PathVariable("idPrograma") String idPrograma) {
+		return relacEmailsProgramasOrionReportsRepository.findEmailsByPrograma(idPrograma);
+	}
+
+	@RequestMapping(value = "/delete-email-programa/{id}/{idPrograma}", method = RequestMethod.DELETE)
+	public List<RelacEmailsProgramasOrionReports> deleteEmailPrograma(@PathVariable("id") String id, @PathVariable("idPrograma") String idPrograma) {
+		relacEmailsProgramasOrionReportsRepository.deleteById(id);
+		return relacEmailsProgramasOrionReportsRepository.findEmailsByPrograma(idPrograma);
+	}
+
+	@RequestMapping(value = "/salvar-email-programa", method = RequestMethod.POST)
+	public List<RelacEmailsProgramasOrionReports> salvarEmailsPrograma(@RequestBody BodyOrionReports body) {
+		return orionReportsProgramasService.salvarEmailsPrograma(body.email, body.idPrograma);
 	}
 
 }

@@ -39,7 +39,7 @@ public class PedidoVendaCustom {
 		
 		String query = "select a.pedido_venda id, "
         + " a.pedido_venda pedidoVenda, "
-        + " a.num_periodo_prod periodo, "
+        + " nvl(a.num_periodo_prod,0) periodo, "
         + " a.valor_total_pedi valor, "
         + " lpad(a.cli_ped_cgc_cli9,9,0) || lpad(a.cli_ped_cgc_cli4,4,0) || lpad(a.cli_ped_cgc_cli2,2,0) cnpjCpfCliente, "
         + " b.nome_cliente descCliente, "

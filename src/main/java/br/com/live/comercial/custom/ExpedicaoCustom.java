@@ -1877,4 +1877,41 @@ public class ExpedicaoCustom {
 				" and v.nivel_estrutura = '1' ";
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(CapacidadesArtigoEndereco.class));
 	}
+	
+	public List<ConteudoChaveNumerica> findMotivosDevolucao() {
+		
+		String query = " SELECT a.codigo_motivo value, a.descricao label FROM efic_040 a WHERE a.cod_iso = 'D' ORDER BY a.descricao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
+	public int findQtdePecasLidasByUsuarioNf(int usuario, int notaFiscal) {
+		
+		int qtde = 0;
+
+		String query = " SELECT COUNT(a.id) FROM orion_exp_200 a "
+				+ "    WHERE a.usuario = " + usuario + " "
+				+ "    AND a.nf_devolucao =  " + notaFiscal + " ";
+		System.out.println(query);
+		try {
+			qtde = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			qtde = 0;
+		}
+		return qtde;
+	}
+	
+	public String findDataHora() {
+		
+		String data = "";
+
+		String query = " SELECT TO_CHAR(sysdate, 'DD/MM/YYYY-HH:MM:SS') FROM dual ";
+		
+		try {
+			data = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			data = "";
+		}
+		return data;
+	}
 }

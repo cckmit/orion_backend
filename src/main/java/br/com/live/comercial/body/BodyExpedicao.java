@@ -27,6 +27,11 @@ public class BodyExpedicao {
 	public String ruaFim;
 	public int volume;
 	public String notaFiscal;
+	public int nfDevolucao;
+	public int tipoDevolucao;
+	public int motivo;
+	public int transacao;
+	public String codBarrasTag;
 	
 	public List<ConsultaCapacidadeArtigosEnderecos> itens;
 	public List<Produto> referencias;

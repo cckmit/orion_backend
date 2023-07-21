@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import br.com.live.comercial.custom.ExpedicaoCustom;
+import br.com.live.comercial.entity.ApontamentoDevolucao;
+import br.com.live.comercial.entity.BloqueioTitulosForn;
 import br.com.live.comercial.entity.CaixasParaEnderecar;
 import br.com.live.comercial.entity.CapacidadeArtigoEndereco;
 import br.com.live.comercial.entity.ParametrosMapaEndereco;
@@ -33,6 +35,7 @@ import br.com.live.comercial.model.EnderecoCount;
 import br.com.live.comercial.model.ProdutoEnderecar;
 import br.com.live.comercial.model.VolumeMinuta;
 import br.com.live.comercial.repository.AberturaCaixasRepository;
+import br.com.live.comercial.repository.ApontamentoDevolucaoRepository;
 import br.com.live.comercial.repository.CapacidadeArtigoEnderecoRepository;
 import br.com.live.comercial.repository.ParametrosEnderecoCaixaRepository;
 import br.com.live.comercial.repository.ParametrosMapaEndRepository;
@@ -48,7 +51,9 @@ import br.com.live.sistema.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.ConverteLista;
+import br.com.live.util.FormataData;
 import br.com.live.util.StatusGravacao;
 import br.com.live.util.service.ReportService;
 import net.sf.jasperreports.engine.JRException;
@@ -67,6 +72,7 @@ public class ExpedicaoService {
 	private final ReportService reportService;
 	private final VolumesMinutaRepository volumesMinutaRepository;
 	private final RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository;
+	private final ApontamentoDevolucaoRepository apontamentoDevolucaoRepository;
 
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
@@ -78,7 +84,8 @@ public class ExpedicaoService {
 			AberturaCaixasRepository aberturaCaixasRepository, UsuarioRepository usuarioRepository,
 			ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
 			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService,
-							VolumesMinutaRepository volumesMinutaRepository, RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository) {
+			VolumesMinutaRepository volumesMinutaRepository, RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository,
+			ApontamentoDevolucaoRepository apontamentoDevolucaoRepository) {
 		this.expedicaoCustom = expedicaoCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
@@ -89,6 +96,7 @@ public class ExpedicaoService {
 		this.reportService = reportService;
 		this.volumesMinutaRepository = volumesMinutaRepository;
 		this.regrasPrioridadePedidoRepository = regrasPrioridadePedidoRepository;
+		this.apontamentoDevolucaoRepository = apontamentoDevolucaoRepository;
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -965,4 +973,36 @@ public class ExpedicaoService {
 
 		return listMinutasGrid;
 	}
+	
+	public List<ConteudoChaveNumerica> findMotivosDevolucao(){
+		return expedicaoCustom.findMotivosDevolucao();
+	}
+	
+	public int findQtdePecasLidasByUsuarioNf(int usuario, int notaFiscal){
+		return expedicaoCustom.findQtdePecasLidasByUsuarioNf(usuario, notaFiscal);
+	}
+	
+	public boolean saveTagDevolucao(int usuario, int nfDevolucao, int tipoDevolucao, int motivo, int transacao, int codCaixa, 
+			String codBarrasTag) {
+		
+		boolean resultado = false;
+		ApontamentoDevolucao dados = null;
+		String sysdate = expedicaoCustom.findDataHora();
+		String[] dataConcat = sysdate.split("[-]");
+		String data = dataConcat[0];
+		String hora = dataConcat[1];
+		
+		try {
+			dados = new ApontamentoDevolucao(apontamentoDevolucaoRepository.findNextID(), FormataData.parseStringToDate(data), hora, usuario, nfDevolucao, tipoDevolucao,
+					motivo, transacao, codCaixa, codBarrasTag);
+			apontamentoDevolucaoRepository.save(dados);
+			resultado = true;
+		} catch (Exception e) {
+			resultado = false;
+		}
+		
+		return resultado;
+	}
+	
+	
 }

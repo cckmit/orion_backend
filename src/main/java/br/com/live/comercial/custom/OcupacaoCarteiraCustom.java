@@ -70,10 +70,11 @@ public class OcupacaoCarteiraCustom {
 		+ " and b.cgc_2 = a.cli_ped_cgc_cli2 "
 		+ " and c.tipo_cliente = b.tipo_cliente "
 		+ " and pedi110.pedido_venda = a.pedido_venda "  
-		+ " and upper(c.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
-		+ " where orion_150.tipo_meta = " + tipoMeta   
-		+ " and orion_150.ano = " + ano
-		+ " and orion_150.modalidade = '" + OcupacaoCarteiraCustom.MODALIDADE_ATACADO + "') " // CONSIDERAR APENAS VALORES DE ATACADO 
+		
+		+ " and c.tipo_cliente in (select o210.tipo_cliente from orion_com_200 o200, orion_com_210 o210 "
+        + " where o200.modalidade = '" + OcupacaoCarteiraCustom.MODALIDADE_ATACADO + "' " // CONSIDERAR APENAS VALORES DE ATACADO
+        + " and o210.id_canal = o200.id) "
+		
 		+ " group by c.live_agrup_tipo_cliente, a.pedido_venda, a.desconto1, a.desconto2, a.desconto3, a.codigo_moeda "
 		+ " ) canais_valores "
 		+ " group by canais_valores.canal, canais_valores.pedido_venda ";
@@ -123,10 +124,11 @@ public class OcupacaoCarteiraCustom {
 		+ " and b.cgc_2 = a.cliente2 " 
 		+ " and c.tipo_cliente = b.tipo_cliente " 
 		+ " and inte110.pedido_venda = a.pedido_venda "
-		+ " and upper(c.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
-		+ " where orion_150.tipo_meta = " + tipoMeta   
-		+ " and orion_150.ano = " + ano
-		+ " and orion_150.modalidade = '" + OcupacaoCarteiraCustom.MODALIDADE_ATACADO + "') " // CONSIDERAR APENAS VALORES DE ATACADO
+		
+		+ " and c.tipo_cliente in (select o210.tipo_cliente from orion_com_200 o200, orion_com_210 o210 "
+        + " where o200.modalidade = '" + OcupacaoCarteiraCustom.MODALIDADE_ATACADO + "' " // CONSIDERAR APENAS VALORES DE ATACADO
+        + " and o210.id_canal = o200.id) "
+		
 		+ " group by c.live_agrup_tipo_cliente, a.pedido_venda, a.desconto1, a.desconto2, a.desconto3, a.codigo_moeda "
 		+ " ) canais_valores_integ group by canais_valores_integ.canal, canais_valores_integ.pedido_venda ";
 
@@ -144,7 +146,9 @@ public class OcupacaoCarteiraCustom {
 		Date dataFim = FormataData.getFinalDay(mes, ano);
 		
 		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
-				
+
+		// TODO - RODRIGO - MUDAR O AGRUPAMENTO -> PEGAR DA NOVA TABELA
+		
 		String query = " select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_pedida) valorReal "
 		+ " from pedi_100 a, pedi_110 b, pedi_010 c, pedi_085 d "
 		+ " where a.data_entr_venda between ? and ? "
@@ -160,10 +164,11 @@ public class OcupacaoCarteiraCustom {
 		+ " and c.cgc_4 = a.cli_ped_cgc_cli4 "
 		+ " and c.cgc_2 = a.cli_ped_cgc_cli2 "
 		+ " and d.tipo_cliente = c.tipo_cliente "
-		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
-		+ " where orion_150.tipo_meta = " + tipoMeta   
-		+ " and orion_150.ano = " + ano
-		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+		
+		+ " and d.tipo_cliente in (select o210.tipo_cliente from orion_com_200 o200, orion_com_210 o210 "
+        + " where o200.modalidade = '" + tipoModalidade + "' " // CONSIDERAR APENAS VALORES DE ATACADO
+        + " and o210.id_canal = o200.id) "
+		
 		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";
 
 		try {
@@ -195,10 +200,11 @@ public class OcupacaoCarteiraCustom {
 		+ " and c.cgc_4 = a.cliente4 "
 		+ " and c.cgc_2 = a.cliente2 "
 		+ " and d.tipo_cliente = c.tipo_cliente "
-		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
-		+ " where orion_150.tipo_meta = " + tipoMeta   
-		+ " and orion_150.ano = " + ano
-		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+		
+		+ " and d.tipo_cliente in (select o210.tipo_cliente from orion_com_200 o200, orion_com_210 o210 "
+        + " where o200.modalidade = '" + tipoModalidade + "' " // CONSIDERAR APENAS VALORES DE ATACADO
+        + " and o210.id_canal = o200.id) "
+		
 		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";
 
 		try {
@@ -237,10 +243,11 @@ public class OcupacaoCarteiraCustom {
 		+ " and c.cgc_4 = a.cli_ped_cgc_cli4 "
 		+ " and c.cgc_2 = a.cli_ped_cgc_cli2 "
 		+ " and d.tipo_cliente = c.tipo_cliente "
-		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
-		+ " where orion_150.tipo_meta = " + tipoMeta   
-		+ " and orion_150.ano = " + ano
-		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+
+		+ " and d.tipo_cliente in (select o210.tipo_cliente from orion_com_200 o200, orion_com_210 o210 "
+        + " where o200.modalidade = '" + tipoModalidade + "' " // CONSIDERAR APENAS VALORES DE ATACADO
+        + " and o210.id_canal = o200.id) "
+				
 		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";                                               
 
 		try {
@@ -277,10 +284,11 @@ public class OcupacaoCarteiraCustom {
 		+ " and c.cgc_4 = a.cliente4 "
 		+ " and c.cgc_2 = a.cliente2 "
 		+ " and d.tipo_cliente = c.tipo_cliente "
-		+ " and upper(d.live_agrup_tipo_cliente) in (select upper(orion_150.descricao) from orion_150 "
-		+ " where orion_150.tipo_meta = " + tipoMeta   
-		+ " and orion_150.ano = " + ano
-		+ " and orion_150.modalidade = '" + tipoModalidade + "') "  		
+		
+		+ " and d.tipo_cliente in (select o210.tipo_cliente from orion_com_200 o200, orion_com_210 o210 "
+        + " where o200.modalidade = '" + tipoModalidade + "' " // CONSIDERAR APENAS VALORES DE ATACADO
+        + " and o210.id_canal = o200.id) "
+		
 		+ " group by d.live_agrup_tipo_cliente, a.pedido_venda ";                                               
 
 		try {
