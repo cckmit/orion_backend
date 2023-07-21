@@ -65,14 +65,14 @@ public class TipoAtividadeProjetoService {
 
     public double findTempoEstimadoById(long idTipoAtividade){
 
-        double totalHorasEstimada = 0;
+        double totalMinutosEstimados = 0;
 
         List<TarefaTipoAtividadeProjetoEntity> tarefaTipoAtividadeProjetoEntityList = tarefaTipoAtividadeProjetoRepository.findByTipoAtividadeId(idTipoAtividade);
 
         for (TarefaTipoAtividadeProjetoEntity tarefaTipoAtividadeProjetoEntity : tarefaTipoAtividadeProjetoEntityList){
-            totalHorasEstimada += tarefaTipoAtividadeProjetoEntity.getTempoEstimado();
+            totalMinutosEstimados += tarefaTipoAtividadeProjetoEntity.getTempoEstimado();
         }
 
-        return totalHorasEstimada;
+        return totalMinutosEstimados;
     }
 }
