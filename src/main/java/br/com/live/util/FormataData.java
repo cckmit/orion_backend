@@ -200,4 +200,17 @@ public class FormataData {
 			return null;
 		}
 	}
+
+	// Recebe data yyyy-MM-dd'T'HH:mm:ss e retorna dd/mm/yyyy
+	public static String formatarData(String dataSemFormato) throws ParseException {
+		if (dataSemFormato == null) {
+			return "";
+		}
+
+		DateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
+
+		Date data = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(dataSemFormato);
+
+		return formatoData.format(data);
+	}
 }

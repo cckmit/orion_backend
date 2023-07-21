@@ -27,3 +27,4 @@ insert into orion_parametros (id, valor_int) values ('INTEGRACAO_SELECAO_PAGAMEN
 insert into orion_parametros (id, valor_int) values ('REQ-ALMOX-AUTOMATICO-ATIVO', 0);
 insert into orion_parametros (id, valor_date) values ('REQ-ALMOX-AUTOMATICO-DATA-INICIAL', '01-JAN-2024');
 insert into orion_parametros (id, valor_int) values ('REQ-ALMOX-AUTOMATICO-LOCAL_ENTREGA', 100);
+insert into orion_parametros (id, valor_int) values ('INTEGRACAO_CIGAM_ATIVO', 1);
