@@ -91,6 +91,7 @@ public class RetornoMovimentosCigamService {
         String dataFim = dataFimLocal.format(dateFormat);
         String dataInicio = dataInicioLocal.format(dateFormat);
 
+        System.out.println("RETROATIVO");
         gravarDadosRetornoMovimentos(dataInicio, dataFim);
     }
 
