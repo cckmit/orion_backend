@@ -67,8 +67,6 @@ public class RetornoEstoqueCigamService {
 
                 String responseBody = response.toString();
 
-                System.out.println(responseBody);
-
                 RetornoApiEstoque retornoEstoques = objectMapper.readValue(responseBody,
                         new TypeReference<RetornoApiEstoque>() {
                         });
