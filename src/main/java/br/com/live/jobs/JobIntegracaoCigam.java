@@ -36,7 +36,7 @@ public class JobIntegracaoCigam {
     }
 
     // XML NOTAS
-    @Scheduled(fixedRate = MINUTO * 30)
+    @Scheduled(fixedRate = MINUTO * 10)
     public void enviarXmlNotasCigam() throws IOException {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
@@ -48,7 +48,7 @@ public class JobIntegracaoCigam {
     }
 
     // MOVIMENTOS
-    @Scheduled(fixedRate = MINUTO * 30)
+    @Scheduled(fixedRate = MINUTO * 10)
     public void retornoMovimentosCigam() throws IOException {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
@@ -60,7 +60,7 @@ public class JobIntegracaoCigam {
     }
 
     // DUPLICATAS
-    @Scheduled(fixedRate = MINUTO * 30)
+    @Scheduled(fixedRate = MINUTO * 10)
     public void retornoDuplicatasCigam() throws IOException {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
@@ -72,7 +72,7 @@ public class JobIntegracaoCigam {
     }
 
     // CLIENTE / FORNECEDOR
-    @Scheduled(fixedRate = MINUTO * 30)
+    @Scheduled(fixedRate = MINUTO * 10)
     public void retornoCliForCigam() throws IOException {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
@@ -84,7 +84,7 @@ public class JobIntegracaoCigam {
     }
 
     // FUNCIONÁRIOS
-    @Scheduled(fixedRate = MINUTO * 30)
+    @Scheduled(fixedRate = MINUTO * 10)
     public void retornoFuncionariosCigam() throws IOException {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
