@@ -44,6 +44,10 @@ public class OrdemProducaoService {
 		return ordemProducaoCustom.findAllEstagiosDecoracaoOrdemProducao(ordemProducao);
 	}
 	
+	public List<EstagioProducao> findEstagiosCriticos(int ordemProducao) {
+		return ordemProducaoCustom.findEstagiosCriticos(ordemProducao);
+	}
+	
 	public List<OrdemProducao> findAllTagsExportacaoChina() {
 		return ordemProducaoCustom.findAllTagsExportacaoChina();
 	}

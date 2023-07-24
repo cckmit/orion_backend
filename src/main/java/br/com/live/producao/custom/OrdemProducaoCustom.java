@@ -24,6 +24,7 @@ public class OrdemProducaoCustom {
 	private final ProdutoService produtoService;  
 	public final static int ESTAGIO_COSTURA = 20;  
 	public final static int LINHA_FACCAO = 1001;
+	public final static String ESTAGIOS_DIRETO_COSTURA = "07,24,25,61,10,15,18,53,52,79";
 	
 	public OrdemProducaoCustom(JdbcTemplate jdbcTemplate, ProdutoService produtoService) {
 		this.jdbcTemplate = jdbcTemplate;
@@ -358,21 +359,18 @@ public class OrdemProducaoCustom {
 		return estagios;
 	}
 
-	public List<EstagioProducao> findAllEstagiosDecoracaoOrdemProducao(int ordemProducao) {
+	public List<EstagioProducao> findEstagiosCriticos(int ordemProducao) {
 
 		List<EstagioProducao> estagios;
 
-		final int ESTAGIO_DEGORACAO = 1;
-
-		String query = " select DISTINCT m.codigo_estagio estagio, m.descricao from mqop_005 m, pcpc_040 p " +
-				"where m.codigo_estagio = p.codigo_estagio " +
-				"and p.ordem_producao = " + ordemProducao +
-				"and m.codigo_estagio > 0 " +
-				"and m.live_estagio_decoracao = " + ESTAGIO_DEGORACAO +
-				"order by m.codigo_estagio ";
+		String query = " select DISTINCT m.codigo_estagio estagio, m.descricao, m.est_agrup_est estagioAgrupador from mqop_005 m, pcpc_040 p " +
+		"where m.codigo_estagio = p.codigo_estagio " +
+		"and p.ordem_producao = " + ordemProducao +
+		"and m.codigo_estagio > 0 " +
+		"and m.live_estagio_critico = 1 " +
+		"order by m.codigo_estagio ";
 		try {
 			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
-
 		} catch (Exception e) {
 			estagios = new ArrayList<EstagioProducao> ();
 		}
@@ -380,6 +378,27 @@ public class OrdemProducaoCustom {
 		return estagios;
 	}
 
+	public List<EstagioProducao> findAllEstagiosDecoracaoOrdemProducao(int ordemProducao) {
+
+		List<EstagioProducao> estagios;
+
+		final int ESTAGIO_DEGORACAO = 1;
+
+		String query = " select DISTINCT m.codigo_estagio estagio, m.descricao,  m.est_agrup_est estagioAgrupador from mqop_005 m, pcpc_040 p " +
+				"where m.codigo_estagio = p.codigo_estagio " +
+				"and p.ordem_producao = " + ordemProducao +
+				"and m.codigo_estagio > 0 " +
+				"and m.live_estagio_decoracao = " + ESTAGIO_DEGORACAO +
+				"order by m.codigo_estagio ";
+		try {
+			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class));
+		} catch (Exception e) {
+			estagios = new ArrayList<EstagioProducao> ();
+		}
+
+		return estagios;
+	}
+		
 	public EstagioProducao getEstagio(int codEstagio) {
 		String query = " select m.codigo_estagio estagio, m.descricao, m.est_agrup_est estagioAgrupador from mqop_005 m  where m.codigo_estagio = ? order by m.codigo_estagio ";
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class), codEstagio);				
@@ -739,17 +758,11 @@ public class OrdemProducaoCustom {
         + " a.sub, "
         + " a.item, "      
         + " max(a.quantidade) quantidade, " 
-        + " (select count(*) from mqop_005 t "  
-        + " where t.live_estagio_critico = 1 "
-        + " and exists (select 1 from mqop_050 m "  
-		+ " where m.nivel_estrutura = '1' "
-        + " and m.grupo_estrutura = a.referencia "  
-		+ " and (m.subgru_estrutura = a.sub or m.subgru_estrutura = '000') "  
-		+ " and (m.item_estrutura = a.item or m.item_estrutura = '000000') "
-		+ " and m.numero_alternati = a.alternativa "
-		+ " and m.numero_roteiro = a.roteiro "
-		+ " and m.codigo_estagio = t.codigo_estagio) " 
-	    + " ) qtde_estagio_critico,  "
+		+ " (select count(*) from mqop_005 m "
+		+ " where m.live_estagio_critico = 1 "
+		+ " and exists (select 1 from pcpc_040 p "
+		+ " where p.ordem_producao = a.ordem_producao "
+		+ " and p.codigo_estagio = m.codigo_estagio)) qtde_estagio_critico, "
 	    + " (select nvl(sum(m.minutos_homem),0) from mqop_050 m "  
 	    + " where m.nivel_estrutura = '1' "  
 	    + " and m.grupo_estrutura = a.referencia "  
@@ -835,7 +848,7 @@ public class OrdemProducaoCustom {
 		if (isDiretoCostura) 
 			query += " and not exists ( select 1 from pcpc_040 pp "		 
 			      + " where pp.ordem_producao = aa.ordem_producao "
-		          + " and pp.codigo_estagio in (07,24,25,61,10,15,18,53,52,79)) "; 		 
+		          + " and pp.codigo_estagio in (" + ESTAGIOS_DIRETO_COSTURA + ")) "; 		 
 		 
  		 query += " group by aa.ordem_producao, aa.periodo_producao, aa.referencia_peca, aa.alternativa_peca, " 
          + " aa.roteiro_peca, cc.descr_referencia, bb.proconf_subgrupo, bb.proconf_item, aa.qtde_programada, aa.observacao ) a, basi_590 c "

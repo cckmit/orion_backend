@@ -48,6 +48,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 	private final SuprimentoCustom suprimentoCustom; 
 
 	private int periodoMostruario;
+	private int periodoMostruarioCompras;
 	private int regraReserva;
 	private String depositosTecidos;
 	private String depositosAviamentos;
@@ -85,6 +86,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 		iniciarListasAuxiliares();
 		
 		this.periodoMostruario=parsePeriodoToPeriodoMostruario(periodoFinal); // A análise de mostruário sempre vai se basear pelo periodo inicial informado na tela.
+		this.periodoMostruarioCompras=parsePeriodoToPeriodoMostruarioCompras();
 		this.regraReserva = regraReserva;		
 		this.depositosTecidos = depositosTecidos;
 		this.depositosAviamentos = depositosAviamentos;
@@ -682,7 +684,7 @@ public class SugestaoReservaMaterialPorOrdensService {
 	private Map<String, Object> obterDadosComplementares(String nivelMaterial, String grupoMaterial, String subMaterial, String itemMaterial, String depositos) {
 		
 		Map<String, Object> mapQtdeEstoqueQtdeEmpenhada = ObterQtdeEstoqueQtdeEmpenhada(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, depositos);
-		Map<String, Object> mapPedidoAndDataEntrega = suprimentoCustom.findDadosPedidoCompraMaisProximoByItem(nivelMaterial, grupoMaterial, subMaterial, itemMaterial);
+		Map<String, Object> mapPedidoAndDataEntrega = suprimentoCustom.findDadosPedidoCompraMaisProximoByItem(nivelMaterial, grupoMaterial, subMaterial, itemMaterial, this.isMostruario, this.periodoMostruarioCompras);
 		Map<String, Object> mapRetorno = new HashMap<String, Object> ();
 		
 		double qtdeEstoque = mapQtdeEstoqueQtdeEmpenhada.containsKey("qtdeEstoque") ? (double) mapQtdeEstoqueQtdeEmpenhada.get("qtdeEstoque") : 0;					
@@ -913,7 +915,13 @@ public class SugestaoReservaMaterialPorOrdensService {
 	}	
 	
 	private int parsePeriodoToPeriodoMostruario(int periodo) {
+		// Exemplo: se periodo for 5350 irá retornar 5300
 		int valor = periodo / 100;
 		return valor = valor * 100;
+	}
+	
+	private int parsePeriodoToPeriodoMostruarioCompras() {		
+		// O período de mostruário para compras é o 2200
+		return 2200;
 	}
 }	

@@ -43,7 +43,12 @@ public class OrdemProducaoController {
 	public List<EstagioProducao> findAllEstagiosDecoracaoOrdemProducao(@PathVariable("ordemProducao") int ordemProducao) {
 		return ordemProducaoService.findAllEstagiosDecoracaoOrdemProducao(ordemProducao);
 	}
-    
+	
+	@RequestMapping(value = "/estagios-producao-crititos/{ordemProducao}", method = RequestMethod.GET)
+	public List<EstagioProducao> findEstagiosCriticos(@PathVariable("ordemProducao") int ordemProducao) {
+		return ordemProducaoService.findEstagiosCriticos(ordemProducao);
+	}
+	    
     @RequestMapping(value = "/find-tags-china", method = RequestMethod.GET)
     public List<OrdemProducao> findAllTagsChina() {
           return ordemProducaoService.findAllTagsExportacaoChina();

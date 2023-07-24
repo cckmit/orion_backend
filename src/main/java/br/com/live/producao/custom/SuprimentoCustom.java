@@ -210,8 +210,11 @@ public class SuprimentoCustom {
 		jdbcTemplate.update(query, numeroRequisicao, sequencia, nivel, grupo, sub, item, qtdeRequisitada, codTransacao, deposito, centroCustoDestino, narrativaProduto);
 	}
 	
-	public Map<String, Object> findDadosPedidoCompraMaisProximoByItem(String nivel, String grupo, String sub, String item) {		
+	public Map<String, Object> findDadosPedidoCompraMaisProximoByItem(String nivel, String grupo, String sub, String item, boolean isMostruario, int periodoMostruario) {		
 		Map<String, Object> registro;				
+
+		String operacaoPeriodo = "<>";
+		if (isMostruario) operacaoPeriodo = "="; 
 		
 		String query = "select * from supr_100 " 
 		+ " where item_100_nivel99 = ? "
@@ -221,6 +224,7 @@ public class SuprimentoCustom {
 		+ " and qtde_saldo_item > 0 "
 		+ " and cod_cancelamento = 0 "
 		+ " and situacao_item < 3 "
+		+ " and periodo_compras " + operacaoPeriodo + " " + periodoMostruario
 		+ " and rownum = 1 "
 		+ " order by data_prev_entr "; 
 
