@@ -15,5 +15,4 @@ public interface AtividadeProjetoRepository extends JpaRepository<AtividadeProje
 
     @Query("SELECT a FROM AtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto ORDER BY a.dataPrevInicio, a.descricao")
     List<AtividadeProjetoEntity> findAllByIdProjeto(@Param("idProjeto") Long idProjeto);
-
 }

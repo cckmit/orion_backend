@@ -12,5 +12,5 @@ public class BodyProjeto {
     public String origemProjeto;
     public String subOrigemProjeto;
     public String status;
-
+    public long copiarCronogramaProjeto;
 }

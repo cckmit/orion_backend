@@ -1,23 +1,16 @@
 package br.com.live.sistema.service;
 
 import br.com.live.sistema.body.BodyProjeto;
-import br.com.live.sistema.entity.AprovadorProjetoEntity;
-import br.com.live.sistema.entity.ProjetoEntity;
-import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
-import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
-import br.com.live.sistema.model.AprovadorProjeto;
-import br.com.live.sistema.model.BriefingProjeto;
-import br.com.live.sistema.model.EscopoProjeto;
-import br.com.live.sistema.model.TermoAberturaProjeto;
-import br.com.live.sistema.repository.AprovadorProjetoRepository;
-import br.com.live.sistema.repository.ProjetoRepository;
-import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
-import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
+import br.com.live.sistema.entity.*;
+import br.com.live.sistema.model.*;
+import br.com.live.sistema.repository.*;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Column;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,16 +21,29 @@ public class ProjetoService {
     AprovadorProjetoRepository aprovadorProjetoRepository;
     RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
     RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
+    AtividadeProjetoRepository atividadeProjetoRepository;
 
-    public ProjetoService(ProjetoRepository projetoRepository, AprovadorProjetoRepository aprovadorProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository) {
+    public ProjetoService(ProjetoRepository projetoRepository, AprovadorProjetoRepository aprovadorProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, AtividadeProjetoRepository atividadeProjetoRepository) {
         this.projetoRepository = projetoRepository;
         this.aprovadorProjetoRepository = aprovadorProjetoRepository;
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
+        this.atividadeProjetoRepository = atividadeProjetoRepository;
+    }
+
+    public List<ProjetoEntity> saveProjeto(BodyProjeto projeto){
+
+        save(projeto);
+
+        if (projeto.copiarCronogramaProjeto > 0) {
+            copiarCronogramaProjeto(projeto.id, projeto.copiarCronogramaProjeto);
+        }
+
+        return projetoRepository.findAllOrderByProjeto();
     }
 
     @Transactional
-    public List<ProjetoEntity> saveProjeto(BodyProjeto projeto){
+    public List<ProjetoEntity> save(BodyProjeto projeto){
 
         if (projeto.id == 0) projeto.id = projetoRepository.findNextId();
 
@@ -52,9 +58,33 @@ public class ProjetoService {
         projetoEntity.setOrigemProjeto(projeto.origemProjeto);
         projetoEntity.setSubOrigemProjeto(projeto.subOrigemProjeto);
         projetoEntity.setStatus(projeto.status);
+
         projetoRepository.save(projetoEntity);
 
         return projetoRepository.findAllOrderByProjeto();
+    }
+
+    @Transactional
+    public void copiarCronogramaProjeto(long idProjeto, long idProjetoCopia){
+
+        List<AtividadeProjetoEntity> atividadeProjetoEntityList = atividadeProjetoRepository.findAllByIdProjeto(idProjetoCopia);
+
+        for (AtividadeProjetoEntity atividadeProjetoCopia : atividadeProjetoEntityList){
+
+            AtividadeProjetoEntity atividadeProjeto = new AtividadeProjetoEntity();
+            atividadeProjeto.setId(atividadeProjetoRepository.findNextId());
+            atividadeProjeto.setIdProjeto(idProjeto);
+            atividadeProjeto.setDescricao(atividadeProjetoCopia.getDescricao());
+            atividadeProjeto.setIdFase(atividadeProjetoCopia.getIdFase());
+            atividadeProjeto.setIdTipoAtividade(atividadeProjetoCopia.getIdTipoAtividade());
+            atividadeProjeto.setIdResponsavel(atividadeProjetoCopia.getIdResponsavel());
+            atividadeProjeto.setDataPrevInicio(atividadeProjetoCopia.getDataPrevInicio());
+            atividadeProjeto.setDataPrevFim(atividadeProjetoCopia.getDataPrevFim());
+            atividadeProjeto.setTempoPrevisto(atividadeProjetoCopia.getTempoPrevisto());
+            atividadeProjeto.setMarco(atividadeProjetoCopia.getMarco());
+
+            atividadeProjetoRepository.save(atividadeProjeto);
+        }
     }
 
     public BriefingProjeto findBriefingProjeto(Long id){
