@@ -994,6 +994,9 @@ public class ExpedicaoService {
 		String hora = dataConcat[1];
 		
 		try {
+			if(tipoDevolucao != 1) {
+				expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao);
+			}
 			dados = new ApontamentoDevolucao(apontamentoDevolucaoRepository.findNextID(), FormataData.parseStringToDate(data), hora, usuario, nfDevolucao, tipoDevolucao,
 					motivo, transacao, codCaixa, codBarrasTag);
 			apontamentoDevolucaoRepository.save(dados);

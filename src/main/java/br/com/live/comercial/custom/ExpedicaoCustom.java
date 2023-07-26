@@ -1881,7 +1881,7 @@ public class ExpedicaoCustom {
 	
 	public List<ConteudoChaveNumerica> findMotivosDevolucao() {
 		
-		String query = " SELECT a.codigo_motivo value, a.descricao label FROM efic_040 a WHERE a.cod_iso = 'D' ORDER BY a.descricao ";
+		String query = " SELECT a.codigo_motivo value, a.descricao label FROM efic_040 a WHERE a.cod_iso = 'D' GROUP BY a.codigo_motivo, a.descricao ORDER BY a.descricao ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
@@ -1981,5 +1981,20 @@ public class ExpedicaoCustom {
 				+ "     AND TO_CHAR(a.data, 'DD/MM/YYYY') BETWEEN '" + dataInicial + "' AND '" + dataFinal + "' ";
 		System.out.println(query);
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaNotasTagsDevolucao.class));
+	}
+	
+	public void updateDepositoByTag(String codBarrasTag, int transacao) {
+		
+		String query = " UPDATE pcpc_330 a "
+				+ "       SET a.deposito = 211, "
+				+ "       a.transacao_cardex = " + transacao + ", "
+				+ "       a.data_cardex = TO_DATE(sysdate),  "
+				+ "       a.estoque_tag = 1 "
+				+ "		WHERE a.periodo_producao = LPAD(SUBSTR(" + codBarrasTag + ", 1, 4),  4, 0) "
+				+ "		AND a.ordem_producao = LPAD(SUBSTR(" + codBarrasTag + ", 5, 9),  9, 0) "
+				+ "		AND a.ordem_confeccao = LPAD(SUBSTR(" + codBarrasTag + ", 14, 5), 5, 0) "
+				+ "		AND a.sequencia = LPAD(SUBSTR(" + codBarrasTag + ", 19, 4), 4, 0) " ;
+		
+		jdbcTemplate.update(query, codBarrasTag);
 	}
 }
