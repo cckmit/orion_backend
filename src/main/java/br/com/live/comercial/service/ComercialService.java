@@ -537,9 +537,13 @@ public class ComercialService {
 
 		String corpoEmail = "<b> " +FormataString.convertUtf8(dadosCliente.loja) + " </b> <br/> " + FormataString.convertUtf8(" Crédito concedido no pedido ") + dadosCliente.pedidoCliente + FormataString.convertUtf8(" no valor de R$") + valorFormatado + " " + FormataString.convertUtf8(" referente ao Cashback + URL.") + " <br/> " + FormataString.convertUtf8("Att, Comercial LIVE!");
 
-		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosCliente.emailCliente);
-		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosUsuario.email);
-		emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, "comercial.franquias@liveoficial.com.br");
+		try {
+			emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosCliente.emailCliente);
+			emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosUsuario.email);
+			emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, "comercial.franquias@liveoficial.com.br");
+		} catch (Exception e) {
+			System.out.println("Ocorreu um Erro Ao Enviar os E-mails!");
+		}
 	}
 
 	public void atualizarControleDesconto(int cnpj9, int cnpj4, int cnpj2, float valorAtual) {

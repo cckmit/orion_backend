@@ -167,6 +167,7 @@ public class ComercialCustom {
 				" and a.cli_ped_cgc_cli2 = " + cnpj2 +
 				" and a.data_entr_venda <> trunc(sysdate) " +
 				" and a.natop_pv_nat_oper in (421,422,0,104,325,175) " +
+				" and REGEXP_LIKE(a.COD_PED_CLIENTE, '^[0-9]+$') " +
 				" and not exists (select 1 from orion_com_291 b " +
 				"                    where b.pedido = a.pedido_venda) " +
 				" order by a.data_entr_venda asc, a.valor_saldo_pedi desc ";
