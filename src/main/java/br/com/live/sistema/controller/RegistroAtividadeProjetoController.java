@@ -48,8 +48,8 @@ public class RegistroAtividadeProjetoController {
         return registroAtividadeProjetoService.saveRegistroAtividadeProjeto(registroAtividadeProjeto);
     }
 
-    @GetMapping("/valida-registro-apontado/{idProjeto}")
-    public int validaRegistroAtividadeProjetoApontado(@PathVariable("idProjeto") Long idProjeto){
-        return registroAtividadeProjetoService.validaRegistroAtividadeProjetoApontado(idProjeto);
+    @GetMapping("/valida-registro-apontado/{idProjeto}/{idAtividade}")
+    public int validaRegistroAtividadeProjetoApontado(@PathVariable("idProjeto") Long idProjeto, @PathVariable("idAtividade") Long idAtividade){
+        return registroAtividadeProjetoService.validaRegistroAtividadeProjetoApontado(idProjeto, idAtividade);
     }
 }

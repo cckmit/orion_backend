@@ -50,11 +50,17 @@ public class RegistroTarefaAtividadeProjetoService {
     @Transactional
     public void saveRegistroTarefaAtividade(BodyRegistroTarefaAtividadeProjeto registroTarefaAtividadeProjeto) throws ParseException {
 
-        if (registroTarefaAtividadeProjeto.id == 0) registroTarefaAtividadeProjeto.id = registroTarefaAtividadeProjetoRepository.findNextId();
-
         SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
 
         RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjetoEntity = new RegistroTarefaAtividadeProjetoEntity();
+
+        if (registroTarefaAtividadeProjeto.id == 0){
+            registroTarefaAtividadeProjeto.id = registroTarefaAtividadeProjetoRepository.findNextId();
+        } else {
+            Optional<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoEntityOptional = registroTarefaAtividadeProjetoRepository.findById(registroTarefaAtividadeProjeto.id);
+            if (registroTarefaAtividadeProjetoEntityOptional.isPresent()) registroTarefaAtividadeProjetoEntity = registroTarefaAtividadeProjetoEntityOptional.get();
+        }
+
         registroTarefaAtividadeProjetoEntity.setId(registroTarefaAtividadeProjeto.id);
         registroTarefaAtividadeProjetoEntity.setIdProjeto(registroTarefaAtividadeProjeto.idProjeto);
         registroTarefaAtividadeProjetoEntity.setIdRegistroAtividade(registroTarefaAtividadeProjeto.idRegistroAtividade);
@@ -135,7 +141,6 @@ public class RegistroTarefaAtividadeProjetoService {
             registroTarefaAtividadeProjeto.idRegistroAtividade = registroTarefaAtividadeProjetoEntity.getIdRegistroAtividade();
             registroTarefaAtividadeProjeto.descricao = registroTarefaAtividadeProjetoEntity.getDescricao();
             registroTarefaAtividadeProjeto.acaoRealizada = registroTarefaAtividadeProjetoEntity.getAcaoRealizada();
-            registroTarefaAtividadeProjeto.idResponsavel = registroTarefaAtividadeProjetoEntity.getIdResponsavel();
             registroTarefaAtividadeProjeto.documentoAssociado = registroTarefaAtividadeProjetoEntity.getDocumentoAssociado();
             registroTarefaAtividadeProjeto.custo = registroTarefaAtividadeProjetoEntity.getCusto();
             registroTarefaAtividadeProjeto.tempoGasto = registroTarefaAtividadeProjetoEntity.getTempoGasto();
@@ -144,6 +149,7 @@ public class RegistroTarefaAtividadeProjetoService {
             if (registroTarefaAtividadeProjetoEntity.getHoraInicio() != null) registroTarefaAtividadeProjeto.horaInicio = timeFormat.format(registroTarefaAtividadeProjetoEntity.getHoraInicio());
             if (registroTarefaAtividadeProjetoEntity.getDataFim() != null) registroTarefaAtividadeProjeto.dataFim = dateFormat.format(registroTarefaAtividadeProjetoEntity.getDataFim());
             if (registroTarefaAtividadeProjetoEntity.getHoraFim() != null) registroTarefaAtividadeProjeto.horaFim = timeFormat.format(registroTarefaAtividadeProjetoEntity.getHoraFim());
+            if (registroTarefaAtividadeProjetoEntity.getIdResponsavel() != null) registroTarefaAtividadeProjeto.idResponsavel = registroTarefaAtividadeProjetoEntity.getIdResponsavel();
 
             registroTarefaAtividadeProjetoBodyList.add(registroTarefaAtividadeProjeto);
         }

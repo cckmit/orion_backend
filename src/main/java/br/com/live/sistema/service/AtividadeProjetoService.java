@@ -4,17 +4,19 @@ import br.com.live.sistema.body.BodyAtividadeProjeto;
 import br.com.live.sistema.entity.AtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
-import br.com.live.sistema.entity.TarefaTipoAtividadeProjetoEntity;
 import br.com.live.sistema.repository.AtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
 import br.com.live.sistema.repository.TarefaTipoAtividadeProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
+
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AtividadeProjetoService {
@@ -36,8 +38,7 @@ public class AtividadeProjetoService {
     public List<BodyAtividadeProjeto> deleteByIdAtividadeProjeto(Long id, Long idProjeto){
 
         atividadeProjetoRepository.deleteById(id);
-        removerRegistrosAtividadesProjeto(idProjeto);
-        gerarRegistrosAtividadesProjeto(idProjeto);
+        projetoService.gerarRegistroAtividadeProjeto(idProjeto, id);
         projetoService.atualizarStatusProjeto(idProjeto);
 
         return findAll(idProjeto);
@@ -64,13 +65,13 @@ public class AtividadeProjetoService {
             atividadeProjeto.descricao = atividadeProjetoEntity.getDescricao();
             atividadeProjeto.idProjeto = atividadeProjetoEntity.getIdProjeto();
             atividadeProjeto.idFase = atividadeProjetoEntity.getIdFase();
-            atividadeProjeto.idResponsavel = atividadeProjetoEntity.getIdResponsavel();
             atividadeProjeto.tempoPrevisto = atividadeProjetoEntity.getTempoPrevisto();
             atividadeProjeto.marco = atividadeProjetoEntity.getMarco();
 
             if (atividadeProjetoEntity.getIdTipoAtividade() != null && atividadeProjetoEntity.getIdTipoAtividade() != 0) atividadeProjeto.idTipoAtividade = atividadeProjetoEntity.getIdTipoAtividade();
             if (atividadeProjetoEntity.getDataPrevInicio() != null) atividadeProjeto.dataPrevInicio = dateFormat.format(atividadeProjetoEntity.getDataPrevInicio());
             if (atividadeProjetoEntity.getDataPrevFim() != null) atividadeProjeto.dataPrevFim = dateFormat.format(atividadeProjetoEntity.getDataPrevFim());
+            if (atividadeProjetoEntity.getIdResponsavel() != null) atividadeProjeto.idResponsavel = atividadeProjetoEntity.getIdResponsavel();
 
             atividadeProjetoBodyList.add(atividadeProjeto);
         }
@@ -80,8 +81,7 @@ public class AtividadeProjetoService {
     public List<BodyAtividadeProjeto> saveAtividadeProjeto(BodyAtividadeProjeto atividadeProjeto){
 
         saveAtividade(atividadeProjeto);
-        removerRegistrosAtividadesProjeto(atividadeProjeto.idProjeto);
-        gerarRegistrosAtividadesProjeto(atividadeProjeto.idProjeto);
+        projetoService.gerarRegistroAtividadeProjeto(atividadeProjeto.idProjeto, atividadeProjeto.id);
         projetoService.atualizarStatusProjeto(atividadeProjeto.idProjeto);
 
         return findAll(atividadeProjeto.idProjeto);
@@ -90,9 +90,15 @@ public class AtividadeProjetoService {
     @Transactional
     public void saveAtividade(BodyAtividadeProjeto atividadeProjeto){
 
-        if (atividadeProjeto.id == 0) atividadeProjeto.id = atividadeProjetoRepository.findNextId();
-
         AtividadeProjetoEntity atividadeProjetoEntity = new AtividadeProjetoEntity();
+
+        if (atividadeProjeto.id == 0) {
+            atividadeProjeto.id = atividadeProjetoRepository.findNextId();
+        } else{
+            Optional<AtividadeProjetoEntity> atividadeProjetoEntityOptional = atividadeProjetoRepository.findById(atividadeProjeto.id);
+            if (atividadeProjetoEntityOptional.isPresent()) atividadeProjetoEntity = atividadeProjetoEntityOptional.get();
+        }
+
         atividadeProjetoEntity.setId(atividadeProjeto.id);
         atividadeProjetoEntity.setDescricao(atividadeProjeto.descricao);
         atividadeProjetoEntity.setIdProjeto(atividadeProjeto.idProjeto);
@@ -106,60 +112,5 @@ public class AtividadeProjetoService {
         if (atividadeProjeto.dataPrevFim != null) atividadeProjetoEntity.setDataPrevFim(FormataData.parseStringToDate(atividadeProjeto.dataPrevFim));
 
         atividadeProjetoRepository.save(atividadeProjetoEntity);
-    }
-
-    @Transactional
-    public void removerRegistrosAtividadesProjeto(long idProjeto) {
-
-        List<RegistroAtividadeProjetoEntity> registroAtividadeProjetoList = registroAtividadeProjetoRepository.findAllByIdProjeto(idProjeto);
-
-        for (RegistroAtividadeProjetoEntity registroAtividadeProjeto : registroAtividadeProjetoList) {
-
-            List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoList = registroTarefaAtividadeProjetoRepository.findAllByRegistroAtividade(idProjeto, registroAtividadeProjeto.getId());
-            for (RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto : registroTarefaAtividadeProjetoList) {
-                registroTarefaAtividadeProjetoRepository.deleteById(registroTarefaAtividadeProjeto.getId());
-            }
-
-            registroAtividadeProjetoRepository.deleteById(registroAtividadeProjeto.getId());
-        }
-    }
-
-    @Transactional
-    public void gerarRegistrosAtividadesProjeto(long idProjeto) {
-
-        List<AtividadeProjetoEntity> atividadeProjetoList = atividadeProjetoRepository.findAllByIdProjeto(idProjeto);
-
-        for (AtividadeProjetoEntity atividadeProjeto : atividadeProjetoList) {
-            RegistroAtividadeProjetoEntity registroAtividadeProjeto = new RegistroAtividadeProjetoEntity();
-            registroAtividadeProjeto.setId(atividadeProjeto.getId());
-            registroAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
-            registroAtividadeProjeto.setDescricao(atividadeProjeto.getDescricao());
-            registroAtividadeProjeto.setAcaoRealizada("");
-            registroAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
-            registroAtividadeProjeto.setCusto(0);
-            registroAtividadeProjeto.setIdFase(atividadeProjeto.getIdFase());
-            registroAtividadeProjeto.setIdAtividade(atividadeProjeto.getId());
-            registroAtividadeProjeto.setMarco(atividadeProjeto.getMarco());
-
-            registroAtividadeProjetoRepository.save(registroAtividadeProjeto);
-
-            if (atividadeProjeto.getIdTipoAtividade() != null) {
-
-                List<TarefaTipoAtividadeProjetoEntity> tarefaTipoAtividadeProjetoList = tarefaTipoAtividadeProjetoRepository.findByTipoAtividadeId(atividadeProjeto.getIdTipoAtividade());
-
-                for (TarefaTipoAtividadeProjetoEntity tarefaTipoAtividadeProjeto : tarefaTipoAtividadeProjetoList) {
-                    RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto = new RegistroTarefaAtividadeProjetoEntity();
-                    registroTarefaAtividadeProjeto.setId(registroTarefaAtividadeProjetoRepository.findNextId());
-                    registroTarefaAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
-                    registroTarefaAtividadeProjeto.setIdRegistroAtividade(registroAtividadeProjeto.getId());
-                    registroTarefaAtividadeProjeto.setDescricao(tarefaTipoAtividadeProjeto.getDescricao());
-                    registroTarefaAtividadeProjeto.setAcaoRealizada("");
-                    registroTarefaAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
-                    registroTarefaAtividadeProjeto.setCusto(0);
-
-                    registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjeto);
-                }
-            }
-        }
     }
 }

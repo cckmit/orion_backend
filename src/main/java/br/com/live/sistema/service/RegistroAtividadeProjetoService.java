@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RegistroAtividadeProjetoService {
@@ -48,11 +49,17 @@ public class RegistroAtividadeProjetoService {
     @Transactional
     public void saveRegistroAtividade(BodyRegistroAtividadeProjeto registroAtividadeProjeto) throws ParseException {
 
-        if (registroAtividadeProjeto.id == 0) registroAtividadeProjeto.id = registroAtividadeProjetoRepository.findNextId();
-
         SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
 
         RegistroAtividadeProjetoEntity registroAtividadeProjetoEntity = new RegistroAtividadeProjetoEntity();
+
+        if (registroAtividadeProjeto.id == 0) {
+            registroAtividadeProjeto.id = registroAtividadeProjetoRepository.findNextId();
+        } else {
+            Optional<RegistroAtividadeProjetoEntity> registroAtividadeProjetoEntityOptional = registroAtividadeProjetoRepository.findById(registroAtividadeProjeto.id);
+            if (registroAtividadeProjetoEntityOptional.isPresent()) registroAtividadeProjetoEntity = registroAtividadeProjetoEntityOptional.get();
+        }
+
         registroAtividadeProjetoEntity.setId(registroAtividadeProjeto.id);
         registroAtividadeProjetoEntity.setIdProjeto(registroAtividadeProjeto.idProjeto);
         registroAtividadeProjetoEntity.setDescricao(registroAtividadeProjeto.descricao);
@@ -94,7 +101,6 @@ public class RegistroAtividadeProjetoService {
             registroAtividadeProjeto.idProjeto = registroAtividadeProjetoEntity.getIdProjeto();
             registroAtividadeProjeto.descricao = registroAtividadeProjetoEntity.getDescricao();
             registroAtividadeProjeto.acaoRealizada = registroAtividadeProjetoEntity.getAcaoRealizada();
-            registroAtividadeProjeto.idResponsavel = registroAtividadeProjetoEntity.getIdResponsavel();
             registroAtividadeProjeto.documentoAssociado = registroAtividadeProjetoEntity.getDocumentoAssociado();
             registroAtividadeProjeto.custo = registroAtividadeProjetoEntity.getCusto();
             registroAtividadeProjeto.idFase = registroAtividadeProjetoEntity.getIdFase();
@@ -105,27 +111,25 @@ public class RegistroAtividadeProjetoService {
             if (registroAtividadeProjetoEntity.getHoraInicio() != null) registroAtividadeProjeto.horaInicio = timeFormat.format(registroAtividadeProjetoEntity.getHoraInicio());
             if (registroAtividadeProjetoEntity.getDataFim() != null) registroAtividadeProjeto.dataFim = dateFormat.format(registroAtividadeProjetoEntity.getDataFim());
             if (registroAtividadeProjetoEntity.getHoraFim() != null) registroAtividadeProjeto.horaFim = timeFormat.format(registroAtividadeProjetoEntity.getHoraFim());
+            if (registroAtividadeProjetoEntity.getIdResponsavel() != null ) registroAtividadeProjeto.idResponsavel = registroAtividadeProjetoEntity.getIdResponsavel();
+            if (registroAtividadeProjetoEntity.getIdAtividade() != null) registroAtividadeProjeto.idAtividade = registroAtividadeProjetoEntity.getIdAtividade();
 
             registroAtividadeProjetoBodyList.add(registroAtividadeProjeto);
         }
         return registroAtividadeProjetoBodyList;
     }
 
-    public int validaRegistroAtividadeProjetoApontado(Long idProjeto){
+    public int validaRegistroAtividadeProjetoApontado(Long idProjeto, Long idAtividade){
 
         int exist = 0;
 
-        List<RegistroAtividadeProjetoEntity> registroAtividadeProjetoEntityList = registroAtividadeProjetoRepository.findAllByIdProjeto(idProjeto);
-
-        for (RegistroAtividadeProjetoEntity registroAtividadeProjeto : registroAtividadeProjetoEntityList){
-            if ((registroAtividadeProjeto.getDataInicio() != null) || (registroAtividadeProjeto.getDataFim() != null) || registroAtividadeProjeto.getTempoGasto() != 0) exist = 1;
-
-            List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoList = registroTarefaAtividadeProjetoRepository.findAllByRegistroAtividade(idProjeto, registroAtividadeProjeto.getId());
-
-            for (RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto : registroTarefaAtividadeProjetoList){
-                if ((registroTarefaAtividadeProjeto.getDataInicio() != null) || (registroTarefaAtividadeProjeto.getDataFim() != null) || registroAtividadeProjeto.getTempoGasto() != 0) exist = 1;
-            }
+        Optional<RegistroAtividadeProjetoEntity> registroAtividadeProjetoEntityOptional = registroAtividadeProjetoRepository.findByIdProjetoIdAtividade(idProjeto, idAtividade);
+        if (registroAtividadeProjetoEntityOptional.isPresent()) {
+            RegistroAtividadeProjetoEntity registroAtividadeProjeto = registroAtividadeProjetoEntityOptional.get();
+            if ((registroAtividadeProjeto.getDataInicio() != null) || (registroAtividadeProjeto.getDataFim() != null) || registroAtividadeProjeto.getTempoGasto() != 0)
+                exist = 1;
         }
+
         return exist;
     }
 }

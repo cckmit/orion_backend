@@ -46,12 +46,12 @@ public class CronogramaRealizadoProjetoService {
             cronogramaRealizadoProjeto.setIdProjeto(registroAtividadeProjetoEntity.getIdProjeto());
             cronogramaRealizadoProjeto.setDescricao(registroAtividadeProjetoEntity.getDescricao());
             cronogramaRealizadoProjeto.setIdFase(registroAtividadeProjetoEntity.getIdFase());
-            cronogramaRealizadoProjeto.setIdResponsavel(registroAtividadeProjetoEntity.getIdResponsavel());
             cronogramaRealizadoProjeto.setTempoReal(registroAtividadeProjetoEntity.getTempoGasto());
             cronogramaRealizadoProjeto.setStatus(obterStatusRegistroAtividadeProjeto(idProjeto, registroAtividadeProjetoEntity.getId()));
             cronogramaRealizadoProjeto.setPercentualConclusao(obterPercentualConclusaoRegistroAtividadeProjeto(idProjeto, registroAtividadeProjetoEntity.getId()));
             cronogramaRealizadoProjeto.setCustoReal(registroAtividadeProjetoEntity.getCusto());
 
+            if (registroAtividadeProjetoEntity.getIdResponsavel() != null) cronogramaRealizadoProjeto.setIdResponsavel(registroAtividadeProjetoEntity.getIdResponsavel());
             if (registroAtividadeProjetoEntity.getDataInicio() != null) cronogramaRealizadoProjeto.setDataInicioReal(dateFormat.format(registroAtividadeProjetoEntity.getDataInicio()));
             if (registroAtividadeProjetoEntity.getDataFim() != null) cronogramaRealizadoProjeto.setDataFimReal(dateFormat.format(registroAtividadeProjetoEntity.getDataFim()));
 

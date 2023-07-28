@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RegistroAtividadeProjetoRepository extends JpaRepository<RegistroAtividadeProjetoEntity, Long> {
@@ -16,4 +17,7 @@ public interface RegistroAtividadeProjetoRepository extends JpaRepository<Regist
 
     @Query("SELECT a FROM RegistroAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto ORDER BY a.dataInicio, a.horaInicio, a.descricao")
     List<RegistroAtividadeProjetoEntity> findAllByIdProjeto(@Param("idProjeto") Long idProjeto);
+
+    @Query("SELECT a FROM RegistroAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idAtividade = :idAtividade ORDER BY a.dataInicio, a.horaInicio, a.descricao")
+    Optional<RegistroAtividadeProjetoEntity> findByIdProjetoIdAtividade(@Param("idProjeto") Long idProjeto, @Param("idAtividade") Long idAtividade);
 }
