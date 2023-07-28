@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static br.com.live.util.FormataData.formatarData;
@@ -42,7 +43,7 @@ public class IntegracaoCigamCustom {
         }
     }
 
-    public void inserirDadosRetornoMovimentos(ListaRetornoApiMovimentos dadosRetorno) {
+    public void inserirDadosRetornoMovimentos(ListaRetornoApiMovimentos dadosRetorno) throws ParseException {
         try {
             String query = " INSERT INTO CIGAM.INTEG_MOVIMENTOS(identificador, portal, loja, cnpj_emp, numorcamento, usuario, numnf, serie, chave_nf, protocolo_aut_nfe, nrecf, " +
                     " modelo_nf, data_lancamento, hora_lancamento, codigo_cliente, doc_cliente, id_cfop, cod_vendedor, cod_barra, qtde, preco_unitario, " +
@@ -62,7 +63,27 @@ public class IntegracaoCigamCustom {
                     dadosRetorno.operacao, dadosRetorno.tipo_transacao, dadosRetorno.cancelado, formatarData(dadosRetorno.datcancel),
                     dadosRetorno.excluido, dadosRetorno.seqitem, dadosRetorno.cod_sefaz_situacao);
         } catch (Exception e) {
-            //System.out.println(e.getMessage());
+            String updateQuery = "UPDATE CIGAM.INTEG_MOVIMENTOS SET portal = ?, loja = ?, cnpj_emp = ?, numorcamento = ?, usuario = ?, " +
+                    "numnf = ?, serie = ?, chave_nf = ?, protocolo_aut_nfe = ?, nrecf = ?, modelo_nf = ?, data_lancamento = ?, " +
+                    "hora_lancamento = ?, codigo_cliente = ?, doc_cliente = ?, id_cfop = ?, cod_vendedor = ?, cod_barra = ?, " +
+                    "qtde = ?, preco_unitario = ?, valor_liquido = ?, desconto = ?, preco_custo = ?, cst_icms = ?, cst_pis = ?, " +
+                    "cst_cofins = ?, cst_ipi = ?, valor_icms = ?, aliquota_icms = ?, base_icms = ?, valor_pis = ?, aliquota_pis = ?, " +
+                    "base_pis = ?, valor_cofins = ?, aliquota_cofins = ?, base_cofins = ?, valor_icms_st = ?, aliquota_icms_st = ?, " +
+                    "base_icms_st = ?, valor_ipi = ?, aliquota_ipi = ?, base_ipi = ?, operacao = ?, tipo_transacao = ?, " +
+                    "cancelado = ?, datcancel = ?, excluido = ?, seqitem = ?, cod_sefaz_situacao = ? " +
+                    "WHERE identificador = ?";
+
+            jdbcTemplate.update(updateQuery, dadosRetorno.portal, dadosRetorno.loja, dadosRetorno.cnpj_emp, dadosRetorno.numorcamento,
+                    dadosRetorno.usuario, dadosRetorno.numnf, dadosRetorno.serie, dadosRetorno.chave_nf, dadosRetorno.protocolo_aut_nfe,
+                    dadosRetorno.nrecf, dadosRetorno.modelo_nf, formatarData(dadosRetorno.data_lancamento), dadosRetorno.hora_lancamento,
+                    dadosRetorno.codigo_cliente, dadosRetorno.doc_cliente, dadosRetorno.id_cfop, dadosRetorno.cod_vendedor, dadosRetorno.cod_barra,
+                    dadosRetorno.qtde, dadosRetorno.preco_unitario, dadosRetorno.valor_liquido, dadosRetorno.desconto, dadosRetorno.preco_custo,
+                    dadosRetorno.cst_icms, dadosRetorno.cst_pis, dadosRetorno.cst_cofins, dadosRetorno.cst_ipi, dadosRetorno.valor_icms,
+                    dadosRetorno.aliquota_icms, dadosRetorno.base_icms, dadosRetorno.valor_pis, dadosRetorno.aliquota_pis, dadosRetorno.base_pis,
+                    dadosRetorno.valor_cofins, dadosRetorno.aliquota_cofins, dadosRetorno.base_cofins, dadosRetorno.valor_icms_st,
+                    dadosRetorno.aliquota_icms_st, dadosRetorno.base_icms_st, dadosRetorno.valor_ipi, dadosRetorno.aliquota_ipi, dadosRetorno.base_ipi,
+                    dadosRetorno.operacao, dadosRetorno.tipo_transacao, dadosRetorno.cancelado, formatarData(dadosRetorno.datcancel),
+                    dadosRetorno.excluido, dadosRetorno.seqitem, dadosRetorno.cod_sefaz_situacao, dadosRetorno.identificador);
         }
    }
 
