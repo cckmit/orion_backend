@@ -272,8 +272,8 @@ public class TarefasCustom {
 
 	public List<ConsultaControleLancamentoHoras> consultaHorasLancadasDia (int idUsuario, String dataInicio, String dataFim){
 
-		DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 		LocalDate dataInicioIn = LocalDate.parse(dataInicio, inputFormatter);
 		LocalDate dataFimIn = LocalDate.parse(dataFim, inputFormatter);
@@ -290,11 +290,11 @@ public class TarefasCustom {
 				" FROM " +
 				"    ( " +
 				"        SELECT " +
-				"            TRUNC(to_date('"+ dataInicioConvert +"', 'dd/mm/yyyy') + level - 1) AS dataLancamento " +
+				"            TRUNC(to_date('"+ dataInicioConvert +"', 'yyyy/mm/dd') + level - 1) AS dataLancamento " +
 				"        FROM " +
 				"            dual " +
 				"        CONNECT BY " +
-				"            level <= (to_date('"+ dataFimConvert +"', 'dd/mm/yyyy') - to_date('"+ dataInicioConvert +"', 'dd/mm/yyyy') + 1) + 1 " +
+				"            level <= (to_date('"+ dataFimConvert +"', 'yyyy/mm/dd') - to_date('"+ dataInicioConvert +"', 'yyyy/mm/dd') + 1) " +
 				"    ) totalHorasLancamentoDia " +
 				" LEFT JOIN " +
 				"    orion_adm_002 oa ON TRUNC(oa.data_lancamento) = totalHorasLancamentoDia.dataLancamento AND oa.id_usuario = " + idUsuario +
