@@ -21,6 +21,10 @@
 --ALTER TABLE orion_ti_045 DROP CONSTRAINT fk_orion_ti_045_responsavel
 --DROP TABLE orion_ti_045
 
+--ALTER TABLE orion_ti_046 DROP CONSTRAINT fk_orion_ti_046_projeto
+--ALTER TABLE orion_ti_046 DROP CONSTRAINT fk_orion_ti_046_atividade
+--DROP TABLE orion_ti_046
+
 --ALTER TABLE orion_ti_055 DROP CONSTRAINT fk_orion_ti_055_projeto
 --ALTER TABLE orion_ti_055 DROP CONSTRAINT fk_orion_ti_055_usuario
 --ALTER TABLE orion_ti_055 DROP CONSTRAINT fk_orion_ti_055_funcao
@@ -218,3 +222,38 @@ ADD MARCO NUMBER(1);
 
 UPDATE orion_ti_070
 SET MARCO = 0
+
+
+-- Cadastro de tarefa de atividade prevista. -- OFICIALIZAR
+
+ALTER TABLE orion_ti_071
+ADD ID_TAREFA_ATIVIDADE NUMBER(9);
+
+-- Tabela: Tarefas Atividades Prevista Projeto
+CREATE TABLE orion_ti_046 (
+  ID NUMBER(9) PRIMARY KEY,
+  ID_PROJETO NUMBER(9),
+  ID_ATIVIDADE NUMBER(9),
+  DESCRICAO VARCHAR2(500),
+  TEMPO_PREVISTO NUMBER(8,2),
+  CONSTRAINT fk_orion_ti_046_projeto FOREIGN KEY (ID_PROJETO) REFERENCES orion_ti_040(ID) ON DELETE CASCADE,
+  CONSTRAINT fk_orion_ti_046_atividade FOREIGN KEY (ID_ATIVIDADE ) REFERENCES orion_ti_045(ID) ON DELETE CASCADE
+);
+
+-- Inicializa a sequencia, e faz a inserção dos dados na tabela nova.
+
+INSERT INTO ORION_TI_046 (ID, ID_PROJETO, ID_ATIVIDADE, DESCRICAO, TEMPO_PREVISTO)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY a.ID_PROJETO, a.ID, b.ORDENACAO) AS ID, -- Gerando um novo ID sequencial usando a função ROW_NUMBER() e incrementando pelo valor máximo atual da coluna ID na tabela ORION_TI_046, ou retornando 1 se for NULL
+    a.ID_PROJETO,
+    a.ID,
+    b.DESCRICAO,
+    b.TEMPO_ESTIMADO
+FROM
+    orion_ti_045 a
+JOIN
+    ORION_TI_036 b ON a.ID_TIPO_ATIVIDADE = b.ID_TIPO_ATIVIDADE
+ORDER BY
+    a.ID_PROJETO,
+    a.ID,
+    b.ORDENACAO;

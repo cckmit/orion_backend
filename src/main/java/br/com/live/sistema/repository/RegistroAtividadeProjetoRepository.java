@@ -15,9 +15,9 @@ public interface RegistroAtividadeProjetoRepository extends JpaRepository<Regist
     @Query(" SELECT nvl(max(a.id),0) + 1 FROM RegistroAtividadeProjetoEntity a")
     long findNextId();
 
-    @Query("SELECT a FROM RegistroAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto ORDER BY a.dataInicio, a.horaInicio, a.descricao")
+    @Query("SELECT a FROM RegistroAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto ORDER BY a.descricao, a.dataInicio, a.horaInicio")
     List<RegistroAtividadeProjetoEntity> findAllByIdProjeto(@Param("idProjeto") Long idProjeto);
 
-    @Query("SELECT a FROM RegistroAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idAtividade = :idAtividade ORDER BY a.dataInicio, a.horaInicio, a.descricao")
+    @Query("SELECT a FROM RegistroAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idAtividade = :idAtividade ORDER BY a.descricao, a.dataInicio, a.horaInicio")
     Optional<RegistroAtividadeProjetoEntity> findByIdProjetoIdAtividade(@Param("idProjeto") Long idProjeto, @Param("idAtividade") Long idAtividade);
 }

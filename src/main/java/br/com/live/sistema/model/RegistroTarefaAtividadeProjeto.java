@@ -17,10 +17,11 @@ public class RegistroTarefaAtividadeProjeto {
     private String documentoAssociado;
     private double custo;
     private double tempoGasto;
+    private long idTarefaAtividade;
 
     public RegistroTarefaAtividadeProjeto(){}
 
-    public RegistroTarefaAtividadeProjeto(Long id, Long idProjeto, Long idRegistroAtividade, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo, double tempoGasto) {
+    public RegistroTarefaAtividadeProjeto(Long id, Long idProjeto, Long idRegistroAtividade, String descricao, String acaoRealizada, Long idResponsavel, Date dataInicio, Date horaInicio, Date dataFim, Date horaFim, String documentoAssociado, double custo, double tempoGasto, long idTarefaAtividade) {
         this.id = id;
         this.idProjeto = idProjeto;
         this.idRegistroAtividade = idRegistroAtividade;
@@ -34,6 +35,7 @@ public class RegistroTarefaAtividadeProjeto {
         this.documentoAssociado = documentoAssociado;
         this.custo = custo;
         this.tempoGasto = tempoGasto;
+        this.idTarefaAtividade = idTarefaAtividade;
     }
 
     public Long getId() {
@@ -138,5 +140,13 @@ public class RegistroTarefaAtividadeProjeto {
 
     public void setTempoGasto(double tempoGasto) {
         this.tempoGasto = tempoGasto;
+    }
+
+    public long getIdTarefaAtividade() {
+        return idTarefaAtividade;
+    }
+
+    public void setIdTarefaAtividade(long idTarefaAtividade) {
+        this.idTarefaAtividade = idTarefaAtividade;
     }
 }

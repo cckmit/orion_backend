@@ -2,12 +2,10 @@ package br.com.live.sistema.service;
 
 import br.com.live.sistema.body.BodyRegistroAtividadeProjeto;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
-import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
 import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.text.ParseException;

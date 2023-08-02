@@ -150,6 +150,7 @@ public class RegistroTarefaAtividadeProjetoService {
             if (registroTarefaAtividadeProjetoEntity.getDataFim() != null) registroTarefaAtividadeProjeto.dataFim = dateFormat.format(registroTarefaAtividadeProjetoEntity.getDataFim());
             if (registroTarefaAtividadeProjetoEntity.getHoraFim() != null) registroTarefaAtividadeProjeto.horaFim = timeFormat.format(registroTarefaAtividadeProjetoEntity.getHoraFim());
             if (registroTarefaAtividadeProjetoEntity.getIdResponsavel() != null) registroTarefaAtividadeProjeto.idResponsavel = registroTarefaAtividadeProjetoEntity.getIdResponsavel();
+            if (registroTarefaAtividadeProjetoEntity.getIdTarefaAtividade() != null) registroTarefaAtividadeProjeto.idTarefaAtividade = registroTarefaAtividadeProjetoEntity.getIdTarefaAtividade();
 
             registroTarefaAtividadeProjetoBodyList.add(registroTarefaAtividadeProjeto);
         }

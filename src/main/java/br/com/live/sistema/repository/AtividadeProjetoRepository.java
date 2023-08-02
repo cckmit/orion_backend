@@ -13,6 +13,6 @@ public interface AtividadeProjetoRepository extends JpaRepository<AtividadeProje
     @Query(" SELECT nvl(max(a.id),0) + 1 FROM AtividadeProjetoEntity a ")
     long findNextId();
 
-    @Query("SELECT a FROM AtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto ORDER BY a.dataPrevInicio, a.descricao")
+    @Query("SELECT a FROM AtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto ORDER BY a.descricao, a.dataPrevInicio")
     List<AtividadeProjetoEntity> findAllByIdProjeto(@Param("idProjeto") Long idProjeto);
 }

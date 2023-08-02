@@ -21,14 +21,16 @@ public class ProjetoService {
     RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
     AtividadeProjetoRepository atividadeProjetoRepository;
     TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository;
+    TarefaAtividadeProjetoRepository tarefaAtividadeProjetoRepository;
 
-    public ProjetoService(ProjetoRepository projetoRepository, AprovadorProjetoRepository aprovadorProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, AtividadeProjetoRepository atividadeProjetoRepository, TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository) {
+    public ProjetoService(ProjetoRepository projetoRepository, AprovadorProjetoRepository aprovadorProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, AtividadeProjetoRepository atividadeProjetoRepository, TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository, TarefaAtividadeProjetoRepository tarefaAtividadeProjetoRepository) {
         this.projetoRepository = projetoRepository;
         this.aprovadorProjetoRepository = aprovadorProjetoRepository;
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
         this.atividadeProjetoRepository = atividadeProjetoRepository;
         this.tarefaTipoAtividadeProjetoRepository = tarefaTipoAtividadeProjetoRepository;
+        this.tarefaAtividadeProjetoRepository = tarefaAtividadeProjetoRepository;
     }
 
     public List<ProjetoEntity> saveProjeto(BodyProjeto projeto){
@@ -94,6 +96,18 @@ public class ProjetoService {
             atividadeProjeto.setMarco(atividadeProjetoCopia.getMarco());
 
             atividadeProjetoRepository.save(atividadeProjeto);
+
+            List<TarefaAtividadeProjetoEntity> tarefaAtividadeProjetoEntityList = tarefaAtividadeProjetoRepository.findAllByAtividade(idProjetoCopia, atividadeProjetoCopia.getId());
+
+            for (TarefaAtividadeProjetoEntity tarefaAtividadeProjetoCopia : tarefaAtividadeProjetoEntityList){
+                TarefaAtividadeProjetoEntity tarefaAtividadeProjeto = new TarefaAtividadeProjetoEntity();
+                tarefaAtividadeProjeto.setId(tarefaAtividadeProjetoRepository.findNextId());
+                tarefaAtividadeProjeto.setIdProjeto(idProjeto);
+                tarefaAtividadeProjeto.setIdAtividade(atividadeProjeto.getId());
+                tarefaAtividadeProjeto.setDescricao(tarefaAtividadeProjetoCopia.getDescricao());
+                tarefaAtividadeProjeto.setTempoPrevisto(tarefaAtividadeProjetoCopia.getTempoPrevisto());
+                tarefaAtividadeProjetoRepository.save(tarefaAtividadeProjeto);
+            }
         }
     }
 
@@ -282,23 +296,21 @@ public class ProjetoService {
 
             registroAtividadeProjetoRepository.save(registroAtividadeProjeto);
 
-            if (atividadeProjeto.getIdTipoAtividade() != null) {
+            List<TarefaAtividadeProjetoEntity> tarefaAtividadeProjetoList = tarefaAtividadeProjetoRepository.findAllByAtividade(atividadeProjeto.getIdProjeto(), atividadeProjeto.getId());
 
-                List<TarefaTipoAtividadeProjetoEntity> tarefaTipoAtividadeProjetoList = tarefaTipoAtividadeProjetoRepository.findByTipoAtividadeId(atividadeProjeto.getIdTipoAtividade());
+            for (TarefaAtividadeProjetoEntity tarefaAtividadeProjeto : tarefaAtividadeProjetoList) {
+                RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto = new RegistroTarefaAtividadeProjetoEntity();
+                registroTarefaAtividadeProjeto.setId(registroTarefaAtividadeProjetoRepository.findNextId());
+                registroTarefaAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
+                registroTarefaAtividadeProjeto.setIdRegistroAtividade(registroAtividadeProjeto.getId());
+                registroTarefaAtividadeProjeto.setDescricao(tarefaAtividadeProjeto.getDescricao());
+                registroTarefaAtividadeProjeto.setIdTarefaAtividade(tarefaAtividadeProjeto.getId());
+                registroTarefaAtividadeProjeto.setAcaoRealizada("");
+                registroTarefaAtividadeProjeto.setCusto(0);
 
-                for (TarefaTipoAtividadeProjetoEntity tarefaTipoAtividadeProjeto : tarefaTipoAtividadeProjetoList) {
-                    RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto = new RegistroTarefaAtividadeProjetoEntity();
-                    registroTarefaAtividadeProjeto.setId(registroTarefaAtividadeProjetoRepository.findNextId());
-                    registroTarefaAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
-                    registroTarefaAtividadeProjeto.setIdRegistroAtividade(registroAtividadeProjeto.getId());
-                    registroTarefaAtividadeProjeto.setDescricao(tarefaTipoAtividadeProjeto.getDescricao());
-                    registroTarefaAtividadeProjeto.setAcaoRealizada("");
-                    registroTarefaAtividadeProjeto.setCusto(0);
+                if (atividadeProjeto.getIdResponsavel() != null) registroTarefaAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
 
-                    if (atividadeProjeto.getIdResponsavel() != null) registroTarefaAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
-
-                    registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjeto);
-                }
+                registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjeto);
             }
         }
     }
@@ -334,24 +346,21 @@ public class ProjetoService {
 
             registroAtividadeProjetoRepository.save(registroAtividadeProjetoEntity);
 
-            if (atividadeProjeto.getIdTipoAtividade() != null) {
+            List<TarefaAtividadeProjetoEntity> tarefaAtividadeProjetoList = tarefaAtividadeProjetoRepository.findAllByAtividade(atividadeProjeto.getIdProjeto(), atividadeProjeto.getId());
 
-                List<TarefaTipoAtividadeProjetoEntity> tarefaTipoAtividadeProjetoList = tarefaTipoAtividadeProjetoRepository.findByTipoAtividadeId(atividadeProjeto.getIdTipoAtividade());
+            for (TarefaAtividadeProjetoEntity tarefaAtividadeProjeto : tarefaAtividadeProjetoList) {
+                RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto = new RegistroTarefaAtividadeProjetoEntity();
+                registroTarefaAtividadeProjeto.setId(registroTarefaAtividadeProjetoRepository.findNextId());
+                registroTarefaAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
+                registroTarefaAtividadeProjeto.setIdRegistroAtividade(registroAtividadeProjetoEntity.getId());
+                registroTarefaAtividadeProjeto.setDescricao(tarefaAtividadeProjeto.getDescricao());
+                registroTarefaAtividadeProjeto.setIdTarefaAtividade(tarefaAtividadeProjeto.getId());
+                registroTarefaAtividadeProjeto.setAcaoRealizada("");
+                registroTarefaAtividadeProjeto.setCusto(0);
 
-                for (TarefaTipoAtividadeProjetoEntity tarefaTipoAtividadeProjeto : tarefaTipoAtividadeProjetoList) {
-                    RegistroTarefaAtividadeProjetoEntity registroTarefaAtividadeProjeto = new RegistroTarefaAtividadeProjetoEntity();
-                    registroTarefaAtividadeProjeto.setId(registroTarefaAtividadeProjetoRepository.findNextId());
-                    registroTarefaAtividadeProjeto.setIdProjeto(atividadeProjeto.getIdProjeto());
-                    registroTarefaAtividadeProjeto.setIdRegistroAtividade(registroAtividadeProjetoEntity.getId());
-                    registroTarefaAtividadeProjeto.setDescricao(tarefaTipoAtividadeProjeto.getDescricao());
-                    registroTarefaAtividadeProjeto.setAcaoRealizada("");
-                    registroTarefaAtividadeProjeto.setCusto(0);
+                if (atividadeProjeto.getIdResponsavel() != null) registroTarefaAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
 
-                    if (atividadeProjeto.getIdResponsavel() != null)
-                        registroTarefaAtividadeProjeto.setIdResponsavel(atividadeProjeto.getIdResponsavel());
-
-                    registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjeto);
-                }
+                registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjeto);
             }
         }
     }

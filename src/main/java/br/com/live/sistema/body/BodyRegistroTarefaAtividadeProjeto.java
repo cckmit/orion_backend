@@ -15,5 +15,6 @@ public class BodyRegistroTarefaAtividadeProjeto {
     public String documentoAssociado;
     public double custo;
     public double tempoGasto;
+    public Long idTarefaAtividade;
 
 }

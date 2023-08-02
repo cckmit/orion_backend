@@ -1,17 +1,11 @@
 package br.com.live.sistema.service;
 
 import br.com.live.sistema.body.BodyAtividadeProjeto;
-import br.com.live.sistema.entity.AtividadeProjetoEntity;
-import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
-import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
-import br.com.live.sistema.repository.AtividadeProjetoRepository;
-import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
-import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
-import br.com.live.sistema.repository.TarefaTipoAtividadeProjetoRepository;
+import br.com.live.sistema.entity.*;
+import br.com.live.sistema.repository.*;
 import br.com.live.util.FormataData;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,13 +17,15 @@ public class AtividadeProjetoService {
 
     AtividadeProjetoRepository atividadeProjetoRepository;
     TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository;
+    TarefaAtividadeProjetoRepository tarefaAtividadeProjetoRepository;
     RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
     RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
     ProjetoService projetoService;
 
-    public AtividadeProjetoService(AtividadeProjetoRepository atividadeProjetoRepository, TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, ProjetoService projetoService) {
+    public AtividadeProjetoService(AtividadeProjetoRepository atividadeProjetoRepository, TarefaTipoAtividadeProjetoRepository tarefaTipoAtividadeProjetoRepository, TarefaAtividadeProjetoRepository tarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, ProjetoService projetoService) {
         this.atividadeProjetoRepository = atividadeProjetoRepository;
         this.tarefaTipoAtividadeProjetoRepository = tarefaTipoAtividadeProjetoRepository;
+        this.tarefaAtividadeProjetoRepository = tarefaAtividadeProjetoRepository;
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
         this.projetoService = projetoService;
@@ -81,6 +77,7 @@ public class AtividadeProjetoService {
     public List<BodyAtividadeProjeto> saveAtividadeProjeto(BodyAtividadeProjeto atividadeProjeto){
 
         saveAtividade(atividadeProjeto);
+        gerarTarefaAtividadeProjeto(atividadeProjeto.id);
         projetoService.gerarRegistroAtividadeProjeto(atividadeProjeto.idProjeto, atividadeProjeto.id);
         projetoService.atualizarStatusProjeto(atividadeProjeto.idProjeto);
 
@@ -103,14 +100,45 @@ public class AtividadeProjetoService {
         atividadeProjetoEntity.setDescricao(atividadeProjeto.descricao);
         atividadeProjetoEntity.setIdProjeto(atividadeProjeto.idProjeto);
         atividadeProjetoEntity.setIdFase(atividadeProjeto.idFase);
-        atividadeProjetoEntity.setIdResponsavel(atividadeProjeto.idResponsavel);
         atividadeProjetoEntity.setTempoPrevisto(atividadeProjeto.tempoPrevisto);
         atividadeProjetoEntity.setMarco(atividadeProjeto.marco);
 
-        if (atividadeProjeto.idTipoAtividade != 0) atividadeProjetoEntity.setIdTipoAtividade(atividadeProjeto.idTipoAtividade);
+        if (atividadeProjeto.idResponsavel != 0) atividadeProjetoEntity.setIdResponsavel(atividadeProjeto.idResponsavel);
         if (atividadeProjeto.dataPrevInicio != null) atividadeProjetoEntity.setDataPrevInicio(FormataData.parseStringToDate(atividadeProjeto.dataPrevInicio));
         if (atividadeProjeto.dataPrevFim != null) atividadeProjetoEntity.setDataPrevFim(FormataData.parseStringToDate(atividadeProjeto.dataPrevFim));
+        if (atividadeProjeto.idTipoAtividade != 0) atividadeProjetoEntity.setIdTipoAtividade(atividadeProjeto.idTipoAtividade);
 
         atividadeProjetoRepository.save(atividadeProjetoEntity);
+    }
+
+    @Transactional
+    public void gerarTarefaAtividadeProjeto(long idAtividade){
+
+        Optional<AtividadeProjetoEntity> atividadeProjetoEntityOptional = atividadeProjetoRepository.findById(idAtividade);
+
+        if (atividadeProjetoEntityOptional.isPresent()) {
+
+            AtividadeProjetoEntity atividadeProjetoEntity = atividadeProjetoEntityOptional.get();
+
+            long idProjeto = atividadeProjetoEntity.getIdProjeto();
+
+            List<TarefaAtividadeProjetoEntity> tarefaAtividadeProjetoEntityList = tarefaAtividadeProjetoRepository.findAllByAtividade(idProjeto, idAtividade);
+
+            if (atividadeProjetoEntity.getIdTipoAtividade() != null && tarefaAtividadeProjetoEntityList.isEmpty()) {
+
+                List<TarefaTipoAtividadeProjetoEntity> tarefaTipoAtividadeProjetoEntityList = tarefaTipoAtividadeProjetoRepository.findByTipoAtividadeId(atividadeProjetoEntity.getIdTipoAtividade());
+
+                for (TarefaTipoAtividadeProjetoEntity tarefaTipoAtividadeProjetoEntity : tarefaTipoAtividadeProjetoEntityList){
+
+                    TarefaAtividadeProjetoEntity tarefaAtividadeProjeto = new TarefaAtividadeProjetoEntity();
+                    tarefaAtividadeProjeto.setId(tarefaAtividadeProjetoRepository.findNextId());
+                    tarefaAtividadeProjeto.setIdProjeto(idProjeto);
+                    tarefaAtividadeProjeto.setIdAtividade(idAtividade);
+                    tarefaAtividadeProjeto.setDescricao(tarefaTipoAtividadeProjetoEntity.getDescricao());
+                    tarefaAtividadeProjeto.setTempoPrevisto(tarefaTipoAtividadeProjetoEntity.getTempoEstimado());
+                    tarefaAtividadeProjetoRepository.save(tarefaAtividadeProjeto);
+                }
+            }
+        }
     }
 }
