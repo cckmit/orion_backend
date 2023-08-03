@@ -35,6 +35,7 @@ public class BodyExpedicao {
 	public String codBarrasTag;
 	public String dtInicial;
 	public String dtFinal;
+	public String tipo;
 	
 	public List<ConsultaCapacidadeArtigosEnderecos> itens;
 	public List<Produto> referencias;
@@ -68,4 +69,6 @@ public class BodyExpedicao {
 	public int tipoCliente;
 	public int prioridade;
 	public List<ConteudoChaveNumerica> artigos;
+	
+	public List<ConteudoChaveNumerica> periodosProducao;
 }

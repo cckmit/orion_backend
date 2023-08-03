@@ -54,6 +54,11 @@ public class OrdemBeneficiamentoController {
     public List<ConteudoChaveNumerica> findAllPeriodo(@PathVariable("periodoProducao") int periodoProducao) {
           return ordemBeneficiamentoCustom.findPeriodo(periodoProducao); 
     }
+ // Encontrar Periodo Producao
+    @RequestMapping(value = "/find-all-periodo-producao-ano/{periodoProducao}", method = RequestMethod.GET)
+    public List<ConteudoChaveNumerica> findAllPeriodoAnoVigente(@PathVariable("periodoProducao") int periodoProducao) {
+          return ordemBeneficiamentoService.findPeriodoProducaoAno(periodoProducao); 
+    }
     // Encontrar Todos os Depositos
     @RequestMapping(value = "/find-all-depositos", method = RequestMethod.GET)
     public List<ConteudoChaveAlfaNum> findAllDepositos() {

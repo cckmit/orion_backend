@@ -19,6 +19,7 @@ import br.com.live.producao.model.OrdemBeneficiamentoItens;
 import br.com.live.producao.repository.OrdemBeneficiamentoItemRepository;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.produto.model.Produto;
+import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.StatusGravacao;
 import br.com.live.util.service.ReportService;
 import net.sf.jasperreports.engine.JRException;
@@ -87,6 +88,10 @@ public class OrdemBeneficiamentoService {
 	public List<OrdemBeneficiamentoItens> deleteItemOrdem(String id, String usuario) {
 		ordemBeneficiamentoItemRepository.deleteById(id);
 		return ordemBeneficiamentoCustom.findAllItensOrdens(usuario);
+	}
+	
+	public List<ConteudoChaveNumerica> findPeriodoProducaoAno(int periodoProducao){
+		return ordemBeneficiamentoCustom.findPeriodoProducaoAno(periodoProducao);
 	}
 	
 	public List<OrdemBeneficiamentoItens> gerarOrdemBeneficiamento(int periodoProducao, Date dataPrograma, Date previsaoTermino, String maquina, int tipoOrdem, String usuario) {

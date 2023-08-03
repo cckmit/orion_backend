@@ -119,6 +119,15 @@ public class OrdemBeneficiamentoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
+	public List<ConteudoChaveNumerica> findPeriodoProducaoAno(int periodoProducao) {
+		String query = " SELECT a.periodo_producao value,"
+				+ "             a.periodo_producao || '  -  Dê: ' || TO_CHAR(a.data_ini_periodo, 'DD/MON/YYYY') || ' Até: ' || TO_CHAR(a.data_fim_periodo, 'DD/MON/YYYY') label "
+				+ "      FROM pcpc_010 a "
+				+ "      WHERE TO_CHAR(a.data_ini_periodo, 'YYYY') = TO_CHAR(sysdate, 'YYYY') "
+				+ "      AND a.periodo_producao LIKE '%" + periodoProducao + "%'";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	}
+	
 	public int findNextOrdemBeneficiamento(){
 		int nextOrdem = 0;
 		

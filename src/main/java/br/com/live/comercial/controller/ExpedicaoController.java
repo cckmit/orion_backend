@@ -33,6 +33,7 @@ import br.com.live.comercial.repository.ParametrosMapaEndRepository;
 import br.com.live.comercial.repository.RegrasPrioridadePedidoRepository;
 import br.com.live.comercial.repository.VolumesMinutaRepository;
 import br.com.live.comercial.service.ExpedicaoService;
+import br.com.live.producao.body.BodyOrdemBeneficiamento;
 import br.com.live.producao.model.DadosTagProd;
 import br.com.live.produto.model.Embarque;
 
@@ -496,6 +497,12 @@ public class ExpedicaoController {
     @RequestMapping(value = "/find-filtro-data-devolucao", method = RequestMethod.POST)
     public List<ConsultaNotasTagsDevolucao> findDadosFiltrados(@RequestBody BodyExpedicao body) {
         return expedicaoService.findDadosFiltrados(body.dtInicial, body.dtFinal);
+    }
+    
+    @RequestMapping(value = "/gerar-pdf-etiqueta", method = RequestMethod.POST)
+    public String gerarPdfEtiqueta(@RequestBody BodyExpedicao body) throws FileNotFoundException, JRException {
+    	System.out.println(body.periodosProducao.size());
+    	return expedicaoService.gerarPdfEtiqueta(body.periodosProducao, body.tipo);
     }
 }
 

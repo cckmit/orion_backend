@@ -330,3 +330,6 @@ values (112, 'Apontamento Devolução', 'Expedição', '/apontamento-devolucao')
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (113, 'Consulta de Devolução', 'Expedição', '/consulta-devolucao');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (115, ' Geração de Etiqueta para Identificação de Caixa', 'Expedição', '/geracao-etiqueta-caixa-azul');

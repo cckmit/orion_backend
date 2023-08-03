@@ -43,6 +43,7 @@ import br.com.live.comercial.repository.ParametrosMapaEndRepository;
 import br.com.live.comercial.repository.RegrasPrioridadePedidoRepository;
 import br.com.live.comercial.repository.VariacaoPesoArtigoRepository;
 import br.com.live.comercial.repository.VolumesMinutaRepository;
+import br.com.live.producao.model.AnaliseQualidade;
 import br.com.live.producao.model.DadosTagProd;
 import br.com.live.produto.model.Embarque;
 import br.com.live.produto.model.Produto;
@@ -52,6 +53,7 @@ import br.com.live.sistema.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 import br.com.live.util.ConverteLista;
 import br.com.live.util.FormataData;
@@ -1016,5 +1018,25 @@ public class ExpedicaoService {
 		return expedicaoCustom.findDadosFiltrados(dataInicial, dataFinal);
 	}
 	
+	public Map<String, Object> setParameters(String periodos, String tipo) {
+		
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("periodos", periodos);
+		parameters.put("tipo", tipo);
+
+		return parameters;
+	}
 	
+	public String gerarPdfEtiqueta(List<ConteudoChaveNumerica> periodosProducao, String tipo) throws FileNotFoundException, JRException {
+		
+		String nomeRelatorioGerado = "";
+		String periodos = ConteudoChaveNumerica.parseValueToString(periodosProducao);
+		
+		Map<String, Object> parameters = setParameters(periodos, tipo);
+
+		nomeRelatorioGerado = reportService.generateReport("pdf", null, "gerar_etiqueta_caixa_azul", parameters, "EtiquetaCaixaAzul", false);
+		
+
+		return nomeRelatorioGerado;
+	}
 }
