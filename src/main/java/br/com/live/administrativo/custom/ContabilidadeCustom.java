@@ -1,5 +1,6 @@
 package br.com.live.administrativo.custom;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -202,21 +203,24 @@ public class ContabilidadeCustom {
 		}
 		return existeLote;
 	}
-	
+
 	public int novoLote(int empresa, int exercicio, int origem, String dataLancto) {
-		
 		int loteNovo = 0;
-		
-		String query = " SELECT MAX(a.lote) + 1 FROM cont_520 a "
-				+ "       WHERE a.cod_empresa = " + empresa
-				+ "       AND a.exercicio = " + exercicio
-				+ "       AND a.origem = " + origem;
 
-		String queryInsert = "INSERT INTO cont_520(cod_empresa, exercicio, origem, lote, data_lote, situacao)VALUES(?, ?, ?, ?, ?, 0)";
+		String query = "SELECT MAX(a.lote) + 1 FROM cont_520 a "
+				+ "WHERE a.cod_empresa = ? "
+				+ "AND a.exercicio = ? "
+				+ "AND a.origem = ?";
+
+		String queryInsert = "INSERT INTO cont_520(cod_empresa, exercicio, origem, lote, data_lote, situacao) VALUES (?, ?, ?, ?, ?, 0)";
+
 		try {
-			loteNovo = jdbcTemplate.queryForObject(query, Integer.class);
-			jdbcTemplate.update(queryInsert, empresa, exercicio, origem, loteNovo, dataLancto);
+			loteNovo = jdbcTemplate.queryForObject(query, Integer.class, empresa, exercicio, origem);
 
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			Date dataLoteFormatada = sdf.parse(dataLancto);
+
+			jdbcTemplate.update(queryInsert, empresa, exercicio, origem, loteNovo, dataLoteFormatada);
 		} catch (Exception e) {
 			loteNovo = 0;
 		}

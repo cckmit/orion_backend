@@ -195,14 +195,18 @@ public class TituloPagamentoService {
                         String valorNrParcela = numeroParcelaElement.getTextContent();
 
                         Element dataVencimentoParcelaElement = (Element) parcelaElement.getElementsByTagName("DataVencimento").item(0);
-                        String valorDataVencimentoParcela = dataVencimentoParcelaElement.getTextContent();
-                        LocalDateTime dateTimeParcela = LocalDateTime.parse(valorDataVencimentoParcela, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                        if (dataVencimentoParcelaElement != null) {
+                            String valorDataVencimentoParcela = dataVencimentoParcelaElement.getTextContent();
+                            LocalDateTime dateTimeParcela = LocalDateTime.parse(valorDataVencimentoParcela, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                            nfseParcelaValues.setDataVencimento(dateTimeParcela.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                        } else {
+                            nfseParcelaValues.setDataVencimento(dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                        }
 
                         Element valorParcelaElement = (Element) parcelaElement.getElementsByTagName("Valor").item(0);
                         String valorParcela = valorParcelaElement.getTextContent();
 
                         nfseParcelaValues.setNrParcela(Integer.parseInt(valorNrParcela));
-                        nfseParcelaValues.setDataVencimento(dateTimeParcela.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
                         nfseParcelaValues.setValorParcela(Double.parseDouble(valorParcela));
 
                         nfseParcelaValuesList.add(nfseParcelaValues);

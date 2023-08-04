@@ -1,13 +1,16 @@
 package br.com.live.administrativo.custom;
 
 import br.com.live.administrativo.model.AtributoRemessaPortadorEmpresa;
+import br.com.live.administrativo.model.ContaContabil;
 import br.com.live.administrativo.model.TituloPagamentoIntegrado;
+import br.com.live.administrativo.service.ContabilidadeService;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -15,12 +18,12 @@ import java.util.List;
 public class TituloPagamentoCustom {
 
     private final JdbcTemplate jdbcTemplate;
-    private ContabilidadeCustom contabilidadeCustom;
+    private ContabilidadeService contabilidadeService;
 
 
-    public TituloPagamentoCustom(JdbcTemplate jdbcTemplate, ContabilidadeCustom contabilidadeCustom) {
+    public TituloPagamentoCustom(JdbcTemplate jdbcTemplate, ContabilidadeService contabilidadeService) {
         this.jdbcTemplate = jdbcTemplate;
-        this.contabilidadeCustom = contabilidadeCustom;
+        this.contabilidadeService = contabilidadeService;
     }
 
     public boolean existsTituloCadastradoSystextil(int codEmpresa, int tipoTitulo, int numDuplicata, int seqDuplicata, String cnpjLive, String cnpjCliente){
@@ -599,5 +602,32 @@ public class TituloPagamentoCustom {
                 " and cli_dup_cgc_cli2 = " + cgc2Tomador;
 
         jdbcTemplate.update(sql);
+    }
+
+    // Método Temporário, Liberado junto com a implementação do código do lote no franchising (Henrique)
+    public void gerarNumeroLote() {
+
+        String query = "SELECT COD_EMPRESA codEmpresa, EXERCICIO exercicio, NUMERO_LANC numeroLancamento, SEQ_LANC seqLancamento, LOTE, DATA_LANCTO dataLancamento FROM cont_600 " +
+                "WHERE COD_EMPRESA = 6 " +
+                "AND exercicio = 2023 " +
+                "AND LOTE = 0 " +
+                "AND ORIGEM = 3 " +
+                "AND PRG_GERADOR = 'Orion' " +
+                "AND USUARIO = 'Integ. Orion'";
+
+        List<ContaContabil> contaContabilList = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ContaContabil.class));
+
+        for (ContaContabil contaContabil : contaContabilList) {
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            String dataFormatada = sdf.format(contaContabil.getDataLancamento());
+
+//            int lote = contabilidadeService.gerarNumLote(6, 2023, 3, dataFormatada, 0);
+//
+//            String updateQuery = "UPDATE cont_600 SET LOTE = " + lote + " WHERE COD_EMPRESA = " + contaContabil.getCodEmpresa() + " AND EXERCICIO = " + contaContabil.getExercicio() + " AND NUMERO_LANC = " + contaContabil.getNumeroLancamento() + " AND SEQ_LANC = " + contaContabil.getSeqLancamento();
+//            jdbcTemplate.update(updateQuery);
+//
+//            System.out.println(lote);
+        }
     }
 }
