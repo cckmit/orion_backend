@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 @Service
@@ -839,17 +840,11 @@ public class DreLojaService {
         contaContabilDre.valReal = Math.round(valorLancamentosMesAnoAtual);
         contaContabilDre.valDiferencaOrcadoReal = Math.round(Math.abs(valorOrcadoMesAnoAtual - valorLancamentosMesAnoAtual));
 
-        if (contaContabil == PRECO_MEDIO){
-
-            DecimalFormat df = new DecimalFormat("#,##0.00");
-
-            double valorLancamentosMesAnoAnteriorFormat = Double.parseDouble(df.format(valorLancamentosMesAnoAnterior).replace(",", "."));
-            double valorLancamentosMesAnoAtualFormat = Double.parseDouble(df.format(valorLancamentosMesAnoAtual).replace(",", "."));
-
-            contaContabilDre.valRealAnoAnt = valorLancamentosMesAnoAnteriorFormat;
+        if (contaContabil == PRECO_MEDIO) {
+            contaContabilDre.valRealAnoAnt = valorLancamentosMesAnoAnterior;
             contaContabilDre.valOrcado = valorOrcadoMesAnoAtual;
-            contaContabilDre.valReal = valorLancamentosMesAnoAtualFormat;
-            contaContabilDre.valDiferencaOrcadoReal = Math.abs(valorOrcadoMesAnoAtual - valorLancamentosMesAnoAtualFormat);
+            contaContabilDre.valReal = valorLancamentosMesAnoAtual;
+            contaContabilDre.valDiferencaOrcadoReal = Math.abs(valorOrcadoMesAnoAtual - valorLancamentosMesAnoAtual);
         }
 
         if (valorFaturamentoMesAnoAnterior != 0) contaContabilDre.percRealAnoAnt = calcularPercentual(valorLancamentosMesAnoAnterior, valorFaturamentoMesAnoAnterior);
