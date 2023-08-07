@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import br.com.live.administrativo.entity.ImportacaoParametroCustoEntity;
+import br.com.live.administrativo.repository.ImportacaoParametroCustoRepository;
+import br.com.live.produto.custom.ProdutoCustom;
 import org.springframework.stereotype.Service;
 
 import br.com.live.administrativo.custom.ContabilidadeCustom;
@@ -20,10 +23,15 @@ public class ContabilidadeService {
 	
 	private final LanctoContabilImportacaoRepository lanctoContabilImportacaoRepository;
 	private final ContabilidadeCustom contabilidadeCustom;
+	private final ImportacaoParametroCustoRepository importacaoParametroCustoRepository;
+	private final ProdutoCustom produtoCustom;
 
-	public ContabilidadeService(LanctoContabilImportacaoRepository lanctoContabilImportacaoRepository, ContabilidadeCustom contabilidadeCustom) {
+	public ContabilidadeService(LanctoContabilImportacaoRepository lanctoContabilImportacaoRepository, ContabilidadeCustom contabilidadeCustom,
+								ImportacaoParametroCustoRepository importacaoParametroCustoRepository, ProdutoCustom produtoCustom) {
 		this.lanctoContabilImportacaoRepository = lanctoContabilImportacaoRepository;
 		this.contabilidadeCustom = contabilidadeCustom;
+		this.importacaoParametroCustoRepository = importacaoParametroCustoRepository;
+		this.produtoCustom = produtoCustom;
 	}
 	
 	public String validarEmpresa(int empresa){
@@ -233,5 +241,57 @@ public class ContabilidadeService {
 		}
 		
 		return mensagem;
+	}
+
+	public String validarParametrosCusto(List<ImportacaoParametroCustoEntity> parametrosCusto) {
+		String mensagemErro = "";
+		int produtoValido = 0;
+		int estagioValido = 0;
+
+		for (ImportacaoParametroCustoEntity parametro : parametrosCusto) {
+			produtoValido = produtoCustom.validateProdutoExists(parametro.nivel, parametro.grupo, parametro.sub, parametro.item);
+			estagioValido = produtoCustom.validateEstagio(parametro.estagio);
+
+			if (produtoValido != 1) {
+				mensagemErro += " Produto " + parametro.nivel + "." + parametro.grupo + "." + parametro.sub + "." + parametro.item + " não cadastrado! \n";
+			}
+
+			if (estagioValido != 1) {
+				mensagemErro += " Estágio " + parametro.estagio + " não cadastrado! \n";
+			}
+		}
+		return mensagemErro;
+	}
+
+	public String carregarArquivoParametrosCusto(List<ImportacaoParametroCustoEntity> parametrosCusto, int usuario) {
+		String mensagemErro = "";
+
+		importacaoParametroCustoRepository.deleteByUsuario(usuario);
+
+		mensagemErro = validarParametrosCusto(parametrosCusto);
+		if (!mensagemErro.equalsIgnoreCase("")) return mensagemErro;
+
+		for (ImportacaoParametroCustoEntity parametro : parametrosCusto) {
+
+			ImportacaoParametroCustoEntity dadosSalvos = new ImportacaoParametroCustoEntity(parametro.usuario, parametro.seqImportacao, parametro.empresa,
+					parametro.nivel,parametro.grupo, parametro.sub, parametro.item, parametro.tipoParametro, parametro.sequencia, parametro.descricao,
+					parametro.consumo, parametro.estagio, parametro.mes, parametro.ano);
+			importacaoParametroCustoRepository.saveAndFlush(dadosSalvos);
+		}
+
+		return mensagemErro;
+	}
+
+	public void gravarParametrosCusto(int usuario) {
+		List<ImportacaoParametroCustoEntity> listIntegrar = importacaoParametroCustoRepository.findByUsuario(usuario);
+
+		for (ImportacaoParametroCustoEntity custoItem : listIntegrar) {
+			contabilidadeCustom.inserirParametrosCusto(custoItem);
+			importacaoParametroCustoRepository.deleteById(custoItem.id);
+		}
+	}
+
+	public List<ImportacaoParametroCustoEntity> findParametrosNaoImportados(int usuario) {
+		return importacaoParametroCustoRepository.findByUsuario(usuario);
 	}
 }
