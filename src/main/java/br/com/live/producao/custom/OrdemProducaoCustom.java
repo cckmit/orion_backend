@@ -399,6 +399,37 @@ public class OrdemProducaoCustom {
 		return estagios;
 	}
 		
+	public List<EstagioProducao> findEstagiosSimultaneos(int OrdemProducao, int codEstagio) {
+		
+		String query = " select p.codigo_estagio estagio, v.descricao, v.est_agrup_est estagioAgrupador from pcpc_040 p, mqop_005 v "
+		+ " where p.ordem_producao = ? "
+		+ " and exists (select 1 from pcpc_040 m "
+		+ " where m.ordem_producao = ? "
+		+ " and m.codigo_estagio = ? "
+		+ " and m.sequencia_estagio = p.sequencia_estagio "
+		+ " and m.estagio_depende = p.estagio_depende "
+		+ " and m.codigo_estagio <> p.codigo_estagio) "
+		+ " and v.codigo_estagio = p.codigo_estagio "
+		+ " group by p.codigo_estagio, v.descricao, v.est_agrup_est ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class), OrdemProducao, OrdemProducao, codEstagio);
+	}
+		
+	public List<EstagioProducao> findEstagiosAProduzirAntesDoEstagio(int OrdemProducao, int codEstagio){
+		String query = " select a.codigo_estagio estagio, v.descricao, v.est_agrup_est from pcpc_040 a, mqop_005 v "
+		+ " where a.ordem_producao = ? "
+		+ " and a.qtde_a_produzir_pacote > 0 "
+		+ " and exists (select 1 from pcpc_040 m "
+		+ " where m.ordem_producao = ? "
+		+ " and m.codigo_estagio = ? "
+		+ " and m.seq_operacao > a.seq_operacao) "		                      
+		+ " and v.codigo_estagio = a.codigo_estagio "              
+		+ " group by a.seq_operacao, a.codigo_estagio, v.descricao, v.est_agrup_est "
+		+ " order by a.seq_operacao ";
+
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class), OrdemProducao, OrdemProducao, codEstagio);
+	}
+	
 	public EstagioProducao getEstagio(int codEstagio) {
 		String query = " select m.codigo_estagio estagio, m.descricao, m.est_agrup_est estagioAgrupador from mqop_005 m  where m.codigo_estagio = ? order by m.codigo_estagio ";
 		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(EstagioProducao.class), codEstagio);				
@@ -1214,6 +1245,5 @@ public class OrdemProducaoCustom {
 	    + " ) entrada_estagio " ;     
 	
 		return jdbcTemplate.queryForObject(query, Date.class, ordemProducao, codEstagio);
-	}
-	
+	}	
 }

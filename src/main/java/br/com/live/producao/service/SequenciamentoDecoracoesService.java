@@ -52,52 +52,31 @@ public class SequenciamentoDecoracoesService {
 		return ordensRetorno;
 	}
 
-	/*
-	 * SEQUENCIA_ESTAGIO CODIGO_ESTAGIO ESTAGIO_ANTERIOR ESTAGIO_DEPENDE 8 31 6 16 8
-	 * 15 6 31 8 9 6 27 8 10 6 9 8 70 6 10 8 52 6 36
-	 * 
-	 * Se o estágio depende for 31 deve desconsiderar os estágios posteriores ao 9
-	 * Quando simultaneo deve trazer uma linha para cada estagio Quando não for
-	 * simultaneo deve trazer apenas o próximo Se houver estágio posteriores deve
-	 * mostrar na coluna agrupador
-	 */
-
-	private String sequenciarEstagios(List<OrdemProducaoEstagio> estagios, List<OrdemProducaoEstagio> proxEstagios) {
-		String estagiosAgrupados = "";
-		int codEstagioDistrib = 0;
-
-		for (OrdemProducaoEstagio estagioOP : estagios) {
-			EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());
-			if ((codEstagioDistrib > 0) && (estagio.estagioAgrupador == 0))
-				break;
-			if (estagio.estagioAgrupador == 0)
-				codEstagioDistrib = estagioOP.getCodEstagio();
-			if (estagio.estagioAgrupador == 0)
-				continue;
-
-			if (estagioOP.getCodEstagioDepende() == codEstagioDistrib)
-				proxEstagios.add(estagioOP);
-			if (estagioOP.getCodEstagioDepende() != codEstagioDistrib) {
-				String concatCodDescEstagio = estagio.getEstagio() + "-" + estagio.descricao;
-				if (estagiosAgrupados.isEmpty())
-					estagiosAgrupados += concatCodDescEstagio;
-				else
-					estagiosAgrupados += " + " + concatCodDescEstagio;
-			}
-		}
-		return estagiosAgrupados;
+	private String concatenarEstagios(List<EstagioProducao> estagios) {		
+		String estagiosConcatenados = "";
+		for (EstagioProducao estagio : estagios) {
+			if (!estagiosConcatenados.isEmpty()) estagiosConcatenados += " + "; 
+			estagiosConcatenados += estagio.getEstagio() + " - " + estagio.getDescricao();			
+		}		
+		return estagiosConcatenados;
 	}
-
+	
+	private String getEstagiosSimultaneosConcatenados(int ordemProducao, int codEstagio) {		
+		List<EstagioProducao> estagios = ordemProducaoCustom.findEstagiosSimultaneos(ordemProducao, codEstagio);					
+		return concatenarEstagios(estagios);
+	}
+	
+	private String getEstagiosAProduzirConcatenados(int ordemProducao, int codEstagio) {
+		List<EstagioProducao> estagios = ordemProducaoCustom.findEstagiosAProduzirAntesDoEstagio(ordemProducao, codEstagio);		
+		return concatenarEstagios(estagios);
+	}
+	
 	private List<DadosSequenciamentoDecoracoes> calcularInformacoesDasOrdens(List<OrdemProducao> ordens,
 			int estagioDistrib) {
 		int seqPrioridade = 0;
 		List<DadosSequenciamentoDecoracoes> listOrdensParaDecoracoes = new ArrayList<DadosSequenciamentoDecoracoes>();
 
 		for (OrdemProducao ordem : ordens) {
-			List<OrdemProducaoEstagio> estagios = sequenciamentoDecoracoesCustom
-					.findEstagiosDecoracoesOrdem(ordem.ordemProducao, estagioDistrib);
-			
-			String estagiosAgrupados = ""; 			
 			List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordem.ordemProducao);
 			
 			if (sequenciamentoDecoracoesCustom.isOrdemSequenciada(ordem.ordemProducao, estagioDistrib))
@@ -122,17 +101,17 @@ public class SequenciamentoDecoracoesService {
 			String cores = ordemProducaoCustom.getCoresOrdem(ordem.getOrdemProducao());
 			String endereco = sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao());
 			Date dataEntrada = ordemProducaoCustom.findDataEntradaNoEstagio(ordem.getOrdemProducao(), estagioDistrib);					
+			String estagiosSimultaneos = getEstagiosSimultaneosConcatenados(ordem.getOrdemProducao(), estagioDistrib);
+			String estagiosAgrupados = getEstagiosAProduzirConcatenados(ordem.getOrdemProducao(), estagioDistrib);
 			
-			System.out.println("OP: " + ordem.getOrdemProducao() + " - DATA ENTRADA: " + dataEntrada);
-			
-			int diasNaFase = 0; FormataData.getDiffInDays(dataEntrada, new Date());
-			
-			DadosSequenciamentoDecoracoes dadosOrdem = new DadosSequenciamentoDecoracoes(seqPrioridade,
-					ordem.getPeriodo(), ordem.getOrdemProducao(), ordem.getReferencia(), ordem.getDescrReferencia(),
-					cores, quantidadeTotal, ordem.getObservacao(), estagioDistrib,
-					estagio.getDescricao(), estagiosAgrupados, endereco, dataEntrada, diasNaFase, tempoUnit, tempoTotal);
-			listOrdensParaDecoracoes.add(dadosOrdem);
-
+ 			if (dataEntrada != null) {
+ 				int diasNaFase = FormataData.getDiffInDays(dataEntrada, new Date());
+				DadosSequenciamentoDecoracoes dadosOrdem = new DadosSequenciamentoDecoracoes(seqPrioridade,
+						ordem.getPeriodo(), ordem.getOrdemProducao(), ordem.getReferencia(), ordem.getDescrReferencia(),
+						cores, quantidadeTotal, ordem.getObservacao(), estagioDistrib,
+						estagio.getDescricao(), estagiosSimultaneos, estagiosAgrupados, endereco, dataEntrada, diasNaFase, tempoUnit, tempoTotal);
+				listOrdensParaDecoracoes.add(dadosOrdem);
+			}
 		}
 
 		return listOrdensParaDecoracoes;
@@ -259,11 +238,6 @@ public class SequenciamentoDecoracoesService {
 			throw new ErrorMessageException("Ordem de produção confirmada para o estágio!");		
 		// não permitir remover ordens com o estágio de distribuição baixado
 		
-		System.out.println("ORDEM: " + ordemSequenciada.getOrdemProducao() + " - EST: " + ordemSequenciada.getCodEstagioProx());
-		System.out.println("RETORNO: " + sequenciamentoDecoracoesCustom.estagioDistribuicaoEmAberto(ordemSequenciada.getOrdemProducao(),ordemSequenciada.getCodEstagioProx()));
-		
-		if (!sequenciamentoDecoracoesCustom.estagioDistribuicaoEmAberto(ordemSequenciada.getOrdemProducao(),ordemSequenciada.getCodEstagioProx()))
-			throw new ErrorMessageException("Ordem de produção não possui estágio de distribuição em aberto!");		
 		sequenciamentoDecoracoesCustom.deleteOrdemProducao(id);
 	}	
 }

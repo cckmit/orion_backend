@@ -19,7 +19,6 @@ import br.com.live.util.repository.ParametrosRepository;
 public class SequenciamentoDecoracoesCustom {
 
 	public static final int ESTAGIO_AGRUPADOR_DECORACOES = 10; 
-	public static final String ESTAGIOS_DISTRIB_DECORACOES = "9,31"; 
 	public static final double MINUTOS_PRODUCAO_DIA = 984; // Turno1: 496 + Turno2: 488 => 984 minutos 	
 	public static final int ORDEM_CONFIRMAR = 0;
 	public static final int ORDEM_CONFIRMADA = 1;
@@ -45,12 +44,14 @@ public class SequenciamentoDecoracoesCustom {
 	}
 	
 	public List<ConteudoChaveAlfaNum> findReferenciasEmOrdensCentroDistrib() {				
+		String estagios = getEstagiosConfiguradosParaSequenciar();
+		
 		String query = " select a.referencia_peca value, a.referencia_peca || ' - ' || c.descr_referencia label "  
 		+ " from pcpc_020 a, basi_030 c "
 		+ " where a.cod_cancelamento = 0 "
     	+ " and exists (select 1 from pcpc_040 b "
         + " where b.ordem_producao = a.ordem_producao " 
-        + " and b.codigo_estagio in (" + ESTAGIOS_DISTRIB_DECORACOES + ") " // CENTRO DISTRIBUIÇÃO - DECORAÇÕES
+        + " and b.codigo_estagio in (" + estagios + ") " 
         + " and b.qtde_disponivel_baixa > 0) "
 		+ " and c.nivel_estrutura = '1' "
 		+ " and c.referencia = a.referencia_peca "
@@ -59,46 +60,6 @@ public class SequenciamentoDecoracoesCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 
-	public List<OrdemProducaoEstagio> findEstagiosDecoracoesOrdem(int ordemProducao, int estagioDistrib) {
-		List<OrdemProducaoEstagio> estagios;
-		String query = "select a.ordem_producao ordemProducao, a.seq_operacao seqEstagio, a.codigo_estagio codEstagio, a.estagio_anterior codEstagioAnterior, a.estagio_depende codEstagioDepende, sum(a.qtde_a_produzir_pacote) qtdeAProduzir from pcpc_040 a "
-		+ " where a.ordem_producao = ? "
-		+ " and a.qtde_a_produzir_pacote > 0 "
-		+ " and (a.codigo_estagio in (select m.codigo_estagio from mqop_005 m where m.est_agrup_est = ?) or a.codigo_estagio = ?)"
-		+ " and a.seq_operacao >= (select min(z.seq_operacao) from pcpc_040 z where z.ordem_producao = a.ordem_producao and z.codigo_estagio = ?) "
-		+ " group by a.ordem_producao, a.seq_operacao, a.codigo_estagio, a.estagio_anterior, a.estagio_depende "
-		+ " order by a.ordem_producao, a.seq_operacao, a.codigo_estagio "; 
-
-		try {
-			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagio.class), ordemProducao, ESTAGIO_AGRUPADOR_DECORACOES, estagioDistrib, estagioDistrib);
-		} catch (Exception e) {
-			estagios = new ArrayList<OrdemProducaoEstagio>();
-		}		
-		return estagios;
-	}		
-	
-	public boolean estagioDistribuicaoEmAberto(int ordemProducao, int codEstagio) {
-		int encontrou;
-
-		String query = "select 1 from pcpc_040 z "
-		+ " where z.ordem_producao = ? "
-		+ " and z.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +") "
-		+ " and z.qtde_em_producao_pacote > 0 "                            
-		+ " and z.seq_operacao <= (select y.seq_operacao from pcpc_040 y "  
-		+ " where y.ordem_producao = z.ordem_producao "
-		+ " and y.ordem_confeccao = z.ordem_confeccao "
-		+ " and y.codigo_estagio = ?) " 
-		+ " and rownum = 1 ";
-
-		try {
-			encontrou = jdbcTemplate.queryForObject(query, Integer.class, ordemProducao, codEstagio);
-		} catch (Exception e) {
-			encontrou = 0;
-		}
-		
-		return (encontrou == 1);		
-	}
-	
 	public String findEnderecoDistribuicao(int ordemProducao) {
 		String query = " select nvl(max(e.box),'') endereco from dist_050 d, dist_052 e "
 		+ " where d.ordem_producao = ? "

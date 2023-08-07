@@ -14,6 +14,7 @@ public class DadosSequenciamentoDecoracoes {
 	private String observacao;
 	private int codEstagioProx;
 	private String descEstagioProx;
+	private String estagiosSimultaneos;
 	private String estagiosAgrupados;
 	private String endereco;
 	private Date dataEntrada;
@@ -28,7 +29,7 @@ public class DadosSequenciamentoDecoracoes {
 	
 	public DadosSequenciamentoDecoracoes(int id, int seqPrioridade, int periodo, int ordemProducao, String referencia,
 			String descricaoReferencia, String cores, int quantidade, String observacao, int codEstagioProx,
-			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, int diasNaFase, double tempoUnitario,
+			String descEstagioProx, String estagiosSimultaneos, String estagiosAgrupados, String endereco, Date dataEntrada, int diasNaFase, double tempoUnitario,
 			double tempoTotal, Date dataInicio, Date dataTermino) {
 		super();		
 		this.id = id;
@@ -42,6 +43,7 @@ public class DadosSequenciamentoDecoracoes {
 		this.observacao = observacao;
 		this.codEstagioProx = codEstagioProx;
 		this.descEstagioProx = descEstagioProx;
+		this.estagiosSimultaneos = estagiosSimultaneos;
 		this.estagiosAgrupados = estagiosAgrupados;
 		this.endereco = endereco;
 		this.dataEntrada = dataEntrada;
@@ -54,7 +56,7 @@ public class DadosSequenciamentoDecoracoes {
 	
 	public DadosSequenciamentoDecoracoes(int seqPrioridade, int periodo, int ordemProducao, String referencia,
 			String descricaoReferencia, String cores, int quantidade, String observacao, int codEstagioProx,
-			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, int diasNaFase, double tempoUnitario,
+			String descEstagioProx, String estagiosSimultaneos, String estagiosAgrupados, String endereco, Date dataEntrada, int diasNaFase, double tempoUnitario,
 			double tempoTotal) {
 		super();
 		this.id = 0;
@@ -68,6 +70,7 @@ public class DadosSequenciamentoDecoracoes {
 		this.observacao = observacao;
 		this.codEstagioProx = codEstagioProx;
 		this.descEstagioProx = descEstagioProx;
+		this.estagiosSimultaneos = estagiosSimultaneos;
 		this.estagiosAgrupados = estagiosAgrupados;
 		this.endereco = endereco;
 		this.dataEntrada = dataEntrada;
@@ -168,6 +171,14 @@ public class DadosSequenciamentoDecoracoes {
 
 	public String getEstagiosAgrupados() {
 		return estagiosAgrupados;
+	}
+
+	public String getEstagiosSimultaneos() {
+		return estagiosSimultaneos;
+	}
+
+	public void setEstagiosSimultaneos(String estagiosSimultaneos) {
+		this.estagiosSimultaneos = estagiosSimultaneos;
 	}
 
 	public void setEstagiosAgrupados(String estagiosAgrupados) {
