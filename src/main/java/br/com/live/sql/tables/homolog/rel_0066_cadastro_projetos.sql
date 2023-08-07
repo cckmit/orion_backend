@@ -47,6 +47,12 @@
 --ALTER TABLE orion_ti_071 DROP CONSTRAINT fk_orion_ti_071_registro_atividade
 --DROP TABLE orion_ti_071
 
+--ALTER TABLE orion_ti_072 DROP CONSTRAINT fk_orion_ti_072_usuario
+--ALTER TABLE orion_ti_072 DROP CONSTRAINT fk_orion_ti_072_projeto
+--ALTER TABLE orion_ti_072 DROP CONSTRAINT fk_orion_ti_072_registro_atividade
+--ALTER TABLE orion_ti_072 DROP CONSTRAINT fk_orion_ti_072_registro_tarefa_atividade
+--DROP TABLE orion_ti_072
+
 -- Tabela Fases
 CREATE TABLE orion_ti_030 (
     ID NUMBER(9) PRIMARY KEY,
@@ -242,18 +248,51 @@ CREATE TABLE orion_ti_046 (
 
 -- Inicializa a sequencia, e faz a inserção dos dados na tabela nova.
 
-INSERT INTO ORION_TI_046 (ID, ID_PROJETO, ID_ATIVIDADE, DESCRICAO, TEMPO_PREVISTO)
-SELECT
-    ROW_NUMBER() OVER (ORDER BY a.ID_PROJETO, a.ID, b.ORDENACAO) AS ID, -- Gerando um novo ID sequencial usando a função ROW_NUMBER() e incrementando pelo valor máximo atual da coluna ID na tabela ORION_TI_046, ou retornando 1 se for NULL
-    a.ID_PROJETO,
-    a.ID,
-    b.DESCRICAO,
-    b.TEMPO_ESTIMADO
-FROM
-    orion_ti_045 a
-JOIN
-    ORION_TI_036 b ON a.ID_TIPO_ATIVIDADE = b.ID_TIPO_ATIVIDADE
-ORDER BY
-    a.ID_PROJETO,
-    a.ID,
-    b.ORDENACAO;
+    INSERT INTO ORION_TI_046 (ID, ID_PROJETO, ID_ATIVIDADE, DESCRICAO, TEMPO_PREVISTO)
+    SELECT
+        ROW_NUMBER() OVER (ORDER BY a.ID_PROJETO, a.ID, b.ORDENACAO) AS ID, -- Gerando um novo ID sequencial usando a função ROW_NUMBER() e incrementando pelo valor máximo atual da coluna ID na tabela ORION_TI_046, ou retornando 1 se for NULL
+        a.ID_PROJETO,
+        a.ID,
+        b.DESCRICAO,
+        b.TEMPO_ESTIMADO
+    FROM
+        orion_ti_045 a
+    JOIN
+        ORION_TI_036 b ON a.ID_TIPO_ATIVIDADE = b.ID_TIPO_ATIVIDADE
+    ORDER BY
+        a.ID_PROJETO,
+        a.ID,
+        b.ORDENACAO;
+
+        UPDATE ORION_TI_071 B
+        SET B.ID_tarefa_atividade = (
+            SELECT A.ID
+            FROM ORION_TI_046 A
+            WHERE B.DESCRICAO = A.DESCRICAO
+            AND B.ID_PROJETO = A.ID_PROJETO
+            AND B.ID_REGISTRO_ATIVIDADE = A.ID_ATIVIDADE
+        );
+
+    -- Cria novo campo Projeto Diretoria e Inicializa com 0
+
+      ALTER TABLE orion_ti_040
+      DROP COLUMN PROJETO_DIRETORIA;
+
+      ALTER TABLE orion_ti_040
+      ADD PROJETO_DIRETORIA NUMBER(1) DEFAULT 0;
+
+      UPDATE orion_ti_040
+      SET PROJETO_DIRETORIA = 0
+
+    -- Tabela de aprovadores do escopo
+        CREATE TABLE orion_ti_072 (
+          ID VARCHAR2(100),
+          ID_USUARIO NUMBER(9),
+          ID_PROJETO NUMBER(9),
+          ID_REGISTRO_ATIVIDADE NUMBER(9),
+          ID_REGISTRO_TAREFA_ATIVIDADE NUMBER(9),
+          CONSTRAINT fk_orion_ti_072_projeto FOREIGN KEY (id_projeto) REFERENCES orion_ti_040(ID) ON DELETE CASCADE,
+          CONSTRAINT fk_orion_ti_072_registro_atividade FOREIGN KEY (ID_REGISTRO_ATIVIDADE ) REFERENCES orion_ti_070(ID) ON DELETE CASCADE,
+          CONSTRAINT fk_orion_ti_072_tarefa_registro_atividade FOREIGN KEY (ID_REGISTRO_TAREFA_ATIVIDADE ) REFERENCES orion_ti_071(ID) ON DELETE CASCADE,
+          CONSTRAINT fk_orion_ti_072_usuario FOREIGN KEY (id_usuario) REFERENCES orion_001(ID)
+        )

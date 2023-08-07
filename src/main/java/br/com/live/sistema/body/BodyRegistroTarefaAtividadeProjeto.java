@@ -1,5 +1,9 @@
 package br.com.live.sistema.body;
 
+import br.com.live.sistema.model.EnvolvidoTarefaProjeto;
+
+import java.util.List;
+
 public class BodyRegistroTarefaAtividadeProjeto {
 
     public Long id;
@@ -16,5 +20,6 @@ public class BodyRegistroTarefaAtividadeProjeto {
     public double custo;
     public double tempoGasto;
     public Long idTarefaAtividade;
+    public List<EnvolvidoTarefaProjeto> envolvidoTarefaProjetoList;
 
 }

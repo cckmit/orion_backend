@@ -68,6 +68,7 @@ public class ProjetoService {
         projetoEntity.setOrigemProjeto(projeto.origemProjeto);
         projetoEntity.setSubOrigemProjeto(projeto.subOrigemProjeto);
         projetoEntity.setStatus(projeto.status);
+        projetoEntity.setProjetoDiretoria(projeto.projetoDiretoria);
 
         projetoRepository.save(projetoEntity);
 

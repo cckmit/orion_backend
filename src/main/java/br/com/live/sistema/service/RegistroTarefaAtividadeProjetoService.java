@@ -1,8 +1,13 @@
 package br.com.live.sistema.service;
 
 import br.com.live.sistema.body.BodyRegistroTarefaAtividadeProjeto;
+import br.com.live.sistema.entity.AprovadorProjetoEntity;
+import br.com.live.sistema.entity.EnvolvidoTarefaProjetoEntity;
 import br.com.live.sistema.entity.RegistroAtividadeProjetoEntity;
 import br.com.live.sistema.entity.RegistroTarefaAtividadeProjetoEntity;
+import br.com.live.sistema.model.AprovadorProjeto;
+import br.com.live.sistema.model.EnvolvidoTarefaProjeto;
+import br.com.live.sistema.repository.EnvolvidoTarefaProjetoRepository;
 import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
 import br.com.live.util.FormataData;
@@ -21,11 +26,13 @@ public class RegistroTarefaAtividadeProjetoService {
     RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
     RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository;
     ProjetoService projetoService;
+    EnvolvidoTarefaProjetoRepository envolvidoTarefaProjetoRepository;
 
-    public RegistroTarefaAtividadeProjetoService(RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, ProjetoService projetoService) {
+    public RegistroTarefaAtividadeProjetoService(RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, ProjetoService projetoService, EnvolvidoTarefaProjetoRepository envolvidoTarefaProjetoRepository) {
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
         this.projetoService = projetoService;
+        this.envolvidoTarefaProjetoRepository = envolvidoTarefaProjetoRepository;
     }
 
     public List<BodyRegistroTarefaAtividadeProjeto> saveRegistroTarefaAtividadeProjeto(BodyRegistroTarefaAtividadeProjeto registroTarefaAtividadeProjeto) throws ParseException {
@@ -77,6 +84,18 @@ public class RegistroTarefaAtividadeProjetoService {
         if (registroTarefaAtividadeProjeto.horaFim != null && !registroTarefaAtividadeProjeto.horaFim.isEmpty()) registroTarefaAtividadeProjetoEntity.setHoraFim(formatoHora.parse(registroTarefaAtividadeProjeto.horaFim));
 
         registroTarefaAtividadeProjetoRepository.save(registroTarefaAtividadeProjetoEntity);
+
+        List<EnvolvidoTarefaProjetoEntity> listEnvolvidosOld = envolvidoTarefaProjetoRepository.findEnvolvidoByTarefaAtividadeProjeto(registroTarefaAtividadeProjeto.idProjeto, registroTarefaAtividadeProjeto.idRegistroAtividade, registroTarefaAtividadeProjeto.id);
+        for (EnvolvidoTarefaProjetoEntity envolvidoOld : listEnvolvidosOld) {
+            envolvidoTarefaProjetoRepository.deleteById(envolvidoOld.getId());
+        }
+
+        List<EnvolvidoTarefaProjeto> listEnvolvidosNew = registroTarefaAtividadeProjeto.envolvidoTarefaProjetoList;
+        for (EnvolvidoTarefaProjeto envolvido : listEnvolvidosNew) {
+            String id = registroTarefaAtividadeProjeto.id + "-" + envolvido.getIdUsuario() + "-" + envolvido.getIdProjeto() + "-" + envolvido.getIdRegistroAtividade() + "-" + envolvido.getIdRegistroTarefaAtividade();
+            EnvolvidoTarefaProjetoEntity envolvidoEntity = new EnvolvidoTarefaProjetoEntity(id, envolvido.getIdUsuario(), envolvido.getIdProjeto(), envolvido.getIdRegistroAtividade(), registroTarefaAtividadeProjeto.id);
+            envolvidoTarefaProjetoRepository.save(envolvidoEntity);
+        }
     }
 
     @Transactional
@@ -151,6 +170,15 @@ public class RegistroTarefaAtividadeProjetoService {
             if (registroTarefaAtividadeProjetoEntity.getHoraFim() != null) registroTarefaAtividadeProjeto.horaFim = timeFormat.format(registroTarefaAtividadeProjetoEntity.getHoraFim());
             if (registroTarefaAtividadeProjetoEntity.getIdResponsavel() != null) registroTarefaAtividadeProjeto.idResponsavel = registroTarefaAtividadeProjetoEntity.getIdResponsavel();
             if (registroTarefaAtividadeProjetoEntity.getIdTarefaAtividade() != null) registroTarefaAtividadeProjeto.idTarefaAtividade = registroTarefaAtividadeProjetoEntity.getIdTarefaAtividade();
+
+            List<EnvolvidoTarefaProjetoEntity> listEnvolvidos = envolvidoTarefaProjetoRepository.findEnvolvidoByTarefaAtividadeProjeto(registroTarefaAtividadeProjeto.idProjeto, registroTarefaAtividadeProjeto.idRegistroAtividade, registroTarefaAtividadeProjeto.id);
+            List<EnvolvidoTarefaProjeto> listEnvolvidoFormat = new ArrayList<>();
+            for (EnvolvidoTarefaProjetoEntity envolvidoEntity : listEnvolvidos){
+                EnvolvidoTarefaProjeto envolvido = new EnvolvidoTarefaProjeto(envolvidoEntity.getId(), envolvidoEntity.getIdUsuario(), envolvidoEntity.getIdProjeto(), envolvidoEntity.getIdRegistroAtividade(), envolvidoEntity.getIdRegistroTarefaAtividade());
+                listEnvolvidoFormat.add(envolvido);
+            }
+
+            registroTarefaAtividadeProjeto.envolvidoTarefaProjetoList = listEnvolvidoFormat;
 
             registroTarefaAtividadeProjetoBodyList.add(registroTarefaAtividadeProjeto);
         }

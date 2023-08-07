@@ -67,11 +67,14 @@ public class ProjetoEntity {
     @Column(name = "exclusao_escopo")
     private String exclusaoEscopo;
 
+    @Column(name = "projeto_diretoria")
+    private int projetoDiretoria;
+
 
     public ProjetoEntity(){
     }
 
-    public ProjetoEntity(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing, String justificativaProjeto, String objetivoSmart, String beneficio, String restricao, String requisito, String entregavel, String riscoAbertura, String mvps, String parteAfetada, String sistemaProcessoAfetado, String exclusaoEscopo) {
+    public ProjetoEntity(Long id, int codProjeto, String descricao, Date dataCriacao, int area, int departamento, int setor, String origemProjeto, String subOrigemProjeto, String status, int projetoDiretoria, String objetivoProjeto, String contextualizacao, String descricaoProblema, String perguntasAberta, String riscosBriefing, String justificativaProjeto, String objetivoSmart, String beneficio, String restricao, String requisito, String entregavel, String riscoAbertura, String mvps, String parteAfetada, String sistemaProcessoAfetado, String exclusaoEscopo) {
         this.id = id;
         this.codProjeto = codProjeto;
         this.descricao = descricao;
@@ -82,6 +85,7 @@ public class ProjetoEntity {
         this.origemProjeto = origemProjeto;
         this.subOrigemProjeto = subOrigemProjeto;
         this.status = status;
+        this.projetoDiretoria = projetoDiretoria;
         this.objetivoProjeto = objetivoProjeto;
         this.contextualizacao = contextualizacao;
         this.descricaoProblema = descricaoProblema;
@@ -306,5 +310,13 @@ public class ProjetoEntity {
 
     public void setExclusaoEscopo(String exclusaoEscopo) {
         this.exclusaoEscopo = exclusaoEscopo;
+    }
+
+    public int getProjetoDiretoria() {
+        return projetoDiretoria;
+    }
+
+    public void setProjetoDiretoria(int projetoDiretoria) {
+        this.projetoDiretoria = projetoDiretoria;
     }
 }
