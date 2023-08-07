@@ -1,5 +1,6 @@
 package br.com.live.administrativo.controller;
 
+import br.com.live.administrativo.entity.ImportacaoParametroCustoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,8 @@ import br.com.live.administrativo.body.BodyContabilidade;
 import br.com.live.administrativo.custom.ContabilidadeCustom;
 import br.com.live.administrativo.model.RetornoLancamentoCont;
 import br.com.live.administrativo.service.ContabilidadeService;
+
+import java.util.List;
 
 
 @RestController
@@ -59,5 +62,20 @@ public class ContabilidadeController {
     public float findTotalDebito(@PathVariable("idUsuario") int idUsuario) {
     	String usuario = contabilidadeCustom.findUserSystextil(idUsuario);
         return contabilidadeCustom.findTotalDebito(usuario);
+    }
+
+    @RequestMapping(value = "/carregar-arquivo-parametros-custo", method = RequestMethod.POST)
+    public String carregarArquivoParametrosCusto(@RequestBody BodyContabilidade body) {
+        return contabilidadeService.carregarArquivoParametrosCusto(body.parametrosCusto, body.usuarioImp);
+    }
+
+    @RequestMapping(value = "/find-parametros-nao-importados/{idUsuario}", method = RequestMethod.GET)
+    public List<ImportacaoParametroCustoEntity> findParamsNotImport(@PathVariable("idUsuario") int idUsuario) {
+        return contabilidadeService.findParametrosNaoImportados(idUsuario);
+    }
+
+    @RequestMapping(value = "/gravar-parametros-systextil", method = RequestMethod.POST)
+    public void gravarParametrosSystextil(@RequestBody BodyContabilidade body) {
+        contabilidadeService.gravarParametrosCusto(body.usuarioImp);
     }
 }

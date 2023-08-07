@@ -1489,4 +1489,34 @@ public class ProdutoCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
+
+	public int validateProdutoExists(String nivel, String grupo, String sub, String item) {
+		int produtoValido = 0;
+
+		String query = "  select 1 from basi_010 a " +
+				" where a.nivel_estrutura = ? " +
+				" and (a.grupo_estrutura = ? or ? = '00000') " +
+				" and (a.subgru_estrutura = ? or ? = '000') " +
+				" and (a.item_estrutura = ? or ? = '000000') " +
+				" group by 1 ";
+		try {
+			produtoValido = jdbcTemplate.queryForObject(query, Integer.class, nivel, grupo, grupo,sub,sub,item,item);
+		} catch (Exception e) {
+			produtoValido = 0;
+		}
+		return produtoValido;
+	}
+
+	public int validateEstagio(int estagio) {
+		int estagioValido = 0;
+
+		String query = " select 1 from mqop_005 w " +
+				" where w.codigo_estagio = " + estagio;
+		try {
+			estagioValido = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			estagioValido = 0;
+		}
+		return estagioValido;
+	}
 }

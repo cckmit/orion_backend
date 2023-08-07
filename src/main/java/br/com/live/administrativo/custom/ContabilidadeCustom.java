@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import br.com.live.administrativo.entity.ImportacaoParametroCustoEntity;
 import br.com.live.util.FormataData;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -376,4 +377,30 @@ public class ContabilidadeCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaLanctoContabeis.class));			
 	}
 
+	public void inserirParametrosCusto(ImportacaoParametroCustoEntity custoItem) {
+
+		try {
+			String query = " insert into rcnb_030 (CODIGO_EMPRESA, NIVEL_ESTRUTURA, GRUPO_ESTRUTURA, SUBGRU_ESTRUTURA, ITEM_ESTRUTURA, " +
+					" TIPO_PARAMETRO, SEQ_PARAMETRO, DESCR_PARAMETRO, CONSUMO, VALOR_PERCENTUAL, APLIC_CONSUMO, ESTAGIO, PERC_AJUSTE, CENTRO_CUSTO, " +
+					" MES_REFERENCIA, ANO_REFERENCIA, COLECAO, VALOR_BASE) " +
+					" values (?, ?, ?, ?, ?, ?, ?, ?, ?, 'V', 4, ?, 0, 0, ?, ?, 0, 0) ";
+			jdbcTemplate.update(query, custoItem.empresa, custoItem.nivel, custoItem.grupo, custoItem.sub, custoItem.item, custoItem.tipoParametro,
+					custoItem.sequencia, custoItem.descricao, custoItem.consumo, custoItem.estagio, custoItem.mes, custoItem.ano);
+		} catch (Exception e) {
+			String queryUpdate = " UPDATE rcnb_030 " +
+					"SET CONSUMO = ? " +
+					"WHERE CODIGO_EMPRESA = ? " +
+					"  AND NIVEL_ESTRUTURA = ? " +
+					"  AND GRUPO_ESTRUTURA = ? " +
+					"  AND SUBGRU_ESTRUTURA = ? " +
+					"  AND ITEM_ESTRUTURA = ? " +
+					"  AND TIPO_PARAMETRO = ? " +
+					"  AND SEQ_PARAMETRO = ? " +
+					"  AND MES_REFERENCIA = ? " +
+					"  AND ANO_REFERENCIA = ? " +
+					"  AND COLECAO = 0 ";
+			jdbcTemplate.update(queryUpdate, custoItem.consumo, custoItem.empresa, custoItem.nivel, custoItem.grupo, custoItem.sub, custoItem.item, custoItem.tipoParametro,
+					custoItem.sequencia, custoItem.mes, custoItem.ano);
+		}
+	}
 }
