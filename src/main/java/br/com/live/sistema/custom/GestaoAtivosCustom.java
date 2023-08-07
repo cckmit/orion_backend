@@ -103,7 +103,8 @@ public class GestaoAtivosCustom {
 				+ "       a.tecnicos_fornecedores tecnicosFornecedores, "
 				+ "       NVL((SELECT COUNT(*) FROM orion_ti_020 b WHERE b.tipo = 4 AND b.id_ativo = a.id), 0) numOportunidades, "
 				+ "       a.gestor_responsavel || ' - ' || c.nome gestorResponsavel, "
-				+ "       a.gestor_responsavel idGestorResponsavel "
+				+ "       a.gestor_responsavel idGestorResponsavel,"
+				+ "       a.status status "
 				+ "		FROM orion_ti_015 a, orion_001 c "
 				+ "     WHERE c.id = a.gestor_responsavel "
 				+ "		ORDER BY a.nome_servico ";
@@ -129,7 +130,8 @@ public class GestaoAtivosCustom {
 				"       a.contextualizacao AS contextualizacao, " +
 				"       a.descricao_problema AS descricaoProblema, " +
 				"       a.perguntas_em_aberto AS perguntasEmAberto, " +
-				"       a.riscos AS riscos " +
+				"       a.riscos AS riscos, " +
+				"       a.status status " +
 				" FROM orion_ti_020 a " +
 				" LEFT JOIN orion_ti_001 s ON a.tipo = 1 AND a.id_ativo= s.id " +
 				" LEFT JOIN orion_ti_005 sis ON a.tipo = 2 AND a.id_ativo= sis.id " +
@@ -158,7 +160,8 @@ public class GestaoAtivosCustom {
 				"       a.contextualizacao AS contextualizacao, " +
 				"       a.descricao_problema AS descricaoProblema, " +
 				"       a.perguntas_em_aberto AS perguntasEmAberto, " +
-				"       a.riscos AS riscos " +
+				"       a.riscos AS riscos, " +
+				"       a.status status " +
 				" FROM orion_ti_020 a " +
 				" LEFT JOIN orion_ti_001 s ON a.tipo = 1 AND a.id_ativo= s.id " +
 				" LEFT JOIN orion_ti_005 sis ON a.tipo = 2 AND a.id_ativo= sis.id " +
@@ -238,6 +241,16 @@ public class GestaoAtivosCustom {
 		}
 		
 		return proximo;
+	}
+	
+	public void updateStatusOportunidade(String id) {
+		
+		try {
+			String query = "update orion_ti_020 set status = 'Em Implantação' where id = ? ";
+			jdbcTemplate.update(query, id);
+        } catch (Exception e) {
+            System.out.println("Deu Erro");
+        }
 	}
 
 }

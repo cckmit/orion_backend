@@ -49,7 +49,7 @@ public class IndicadoresService {
 	
 	public List<ConsultaIndicadores> saveIndicador(long id, String nomeIndicador, int grupoIndicador, int area, int departamento, int setor, int gestorAvaliado, int unidadeMedida,
 			int frequenciaMonitoramento, int fonteDados, int polaridade, int responsavelRegistro, int responsavelPublicacao, String observacao, String formulaCalculo,
-			String variaveis, int idUsuario, int situacao) {
+			String variaveis, int idUsuario, int situacao, int diretoria) {
 		
 		Indicadores dadosIndicador = null;
 		
@@ -58,7 +58,7 @@ public class IndicadoresService {
 		if (dadosIndicador == null) {
 			id = indicadoresRepository.findNextID();
 			dadosIndicador = new Indicadores(id, nomeIndicador, grupoIndicador, area, departamento, setor, gestorAvaliado, unidadeMedida, frequenciaMonitoramento, fonteDados,
-					polaridade, responsavelRegistro, responsavelPublicacao, observacao, formulaCalculo, variaveis, situacao);
+					polaridade, responsavelRegistro, responsavelPublicacao, observacao, formulaCalculo, variaveis, situacao, diretoria);
 		} else {
 			dadosIndicador.nomeIndicador = nomeIndicador;
 			dadosIndicador.grupoIndicador = grupoIndicador;
@@ -76,6 +76,7 @@ public class IndicadoresService {
 			dadosIndicador.formulaCalculo = formulaCalculo;
 			dadosIndicador.variaveis = variaveis;
 			dadosIndicador.situacao = situacao;
+			dadosIndicador.diretoria = diretoria;
 		}
 		indicadoresRepository.save(dadosIndicador);
 		return indicadoresCustom.findAllIndicadores(idUsuario);

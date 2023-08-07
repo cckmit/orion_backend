@@ -37,7 +37,7 @@ public class ServicoController {
     @RequestMapping(value = "/save-servico", method = RequestMethod.POST)
     public void saveServico(@RequestBody Servico servico) {
         servicoService.saveServico(servico.id, servico.nomeServico, servico.objetivo, servico.timeResponsavel, servico.disponibilidade, servico.tecnicosFornecedores,
-        		servico.gestorResponsavel);
+        		servico.gestorResponsavel, servico.status);
     }
 
     @RequestMapping(value = "/delete-servico-by-id/{id}", method = RequestMethod.DELETE)

@@ -42,7 +42,7 @@ public class OportunidadesController {
     @RequestMapping(value = "/save-oportunidade", method = RequestMethod.POST)
     public List<ConsultaGestaoAtivos> saveOportunidade(@RequestBody BodyGestaoAtivos oportunidade) {
     	oportunidadesService.saveOportunidade(oportunidade.id, oportunidade.tipo, oportunidade.dataCadastro, oportunidade.prioridade, oportunidade.descricao, oportunidade.objetivo,
-        		oportunidade.contextualizacao, oportunidade.descricaoProblema, oportunidade.perguntasEmAberto, oportunidade.riscos);
+        		oportunidade.contextualizacao, oportunidade.descricaoProblema, oportunidade.perguntasEmAberto, oportunidade.riscos, oportunidade.status);
         return oportunidadesService.findAllOportunidades();
     }
 
@@ -50,5 +50,10 @@ public class OportunidadesController {
     public List<ConsultaGestaoAtivos> deleteOportunidade(@PathVariable("id") String id ){
         oportunidadeRepository.deleteById(id);
         return oportunidadesService.findAllOportunidades();
+    }
+    
+    @RequestMapping(value = "/update-status", method = RequestMethod.POST)
+    public void updateStatusAtivo(@RequestBody BodyGestaoAtivos oportunidade) {
+    	oportunidadesService.updateStatusAtivo(oportunidade.id);
     }
 }

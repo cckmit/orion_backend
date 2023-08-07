@@ -41,7 +41,7 @@ public class IndicadoresController {
 	public List<ConsultaIndicadores> findAllIndicadores(@PathVariable("idUsuario") int idUsuario) {
 		return indicadoresService.findAllIndicadores(idUsuario);
 	}
-	// Carregar os dados do Botão Pesquisar
+	// Carregar os dados do Indicador
 	@RequestMapping(value = "/find-indicador-select/{id}", method = RequestMethod.GET)
 	public Indicadores findIndicadorSelect(@PathVariable("id") int id) {
 		return indicadoresService.findIndicadorById(id);
@@ -85,7 +85,7 @@ public class IndicadoresController {
     public List<ConsultaIndicadores> saveIndicadores(@RequestBody BodyIndicadores body) {
     	return indicadoresService.saveIndicador(body.id, body.nomeIndicador, body.grupoIndicador, body.area, body.departamento, body.setor, body.gestorAvaliado,
     			body.unidadeMedida, body.frequenciaMonitoramento, body.fonteDados, body.polaridade, body.responsavelRegistro, body.responsavelPublicacao,
-    			body.observacao, body.formulaCalculo, body.variaveis, body.idUsuario, body.situacao);
+    			body.observacao, body.formulaCalculo, body.variaveis, body.idUsuario, body.situacao, body.diretoria);
     }
     // Deletar Indicador
     @RequestMapping(value = "/delete-indicador/{idIndicador}/{idUsuario}", method = RequestMethod.DELETE)

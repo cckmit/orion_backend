@@ -1,0 +1,17 @@
+-- Alterar table Adicionando a coluna Diretoria
+ALTER TABLE orion_ind_110 ADD diretoria NUMBER(1);
+
+
+-- Alterar table Adicionando a coluna Status na Aba Serviços
+ALTER TABLE orion_ti_015 ADD status VARCHAR2(30);
+
+
+-- setar o Campo status pra 1 (Ativo)
+UPDATE orion_ti_015 SET status = 'Ativo';
+
+
+-- Alterar table Adicionando a coluna Status na Aba Oportunidade
+ALTER TABLE orion_ti_020 ADD status VARCHAR2(30);
+
+-- setar o Campo status pra Ativo
+UPDATE orion_ti_020 SET status = 'Ativo';

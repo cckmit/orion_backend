@@ -37,7 +37,7 @@ public class OportunidadesService {
     }
 	
 	public void saveOportunidade(String id, int tipo, String dataCadastro, int prioridade, String descricao, String objetivo, String contextualizacao,
-    		String descricaoProblema, String perguntasEmAberto, String riscos) {
+    		String descricaoProblema, String perguntasEmAberto, String riscos, String status) {
 
 		GestaoAtivosOportunidade oportunidade = null;
 
@@ -48,7 +48,8 @@ public class OportunidadesService {
 			int idInt = Integer.parseInt(id);
 			int nextId = gestaoAtivosCustom.findNextIdByTipo(idInt, tipo);
 
-			oportunidade = new GestaoAtivosOportunidade(tipo + "-" + idInt + "-" + nextId, tipo, idInt, nextId, FormataData.parseStringToDate(dataCadastro), prioridade, descricao, objetivo, contextualizacao, descricaoProblema, perguntasEmAberto, riscos);
+			oportunidade = new GestaoAtivosOportunidade(tipo + "-" + idInt + "-" + nextId, tipo, idInt, nextId, FormataData.parseStringToDate(dataCadastro), prioridade, 
+					descricao, objetivo, contextualizacao, descricaoProblema, perguntasEmAberto, riscos, status);
 
 			gestaoAtivosOportunidadeRepository.save(oportunidade);
 
@@ -61,6 +62,11 @@ public class OportunidadesService {
 			oportunidade.descricaoProblema = descricaoProblema;
 			oportunidade.perguntasEmAberto = perguntasEmAberto;
 			oportunidade.riscos = riscos;
+			oportunidade.status = status;
 		}
     }
+	
+	public void updateStatusAtivo(String id) {
+		gestaoAtivosCustom.updateStatusOportunidade(id);		
+	}
 }

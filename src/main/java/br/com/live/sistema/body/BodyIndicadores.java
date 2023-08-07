@@ -35,6 +35,7 @@ public class BodyIndicadores {
 	public String formulaCalculo;
 	public int idUsuario;
 	public int situacao;
+	public int diretoria;
 	public List<IndicadoresMensal> valoresMensal;
 
 }

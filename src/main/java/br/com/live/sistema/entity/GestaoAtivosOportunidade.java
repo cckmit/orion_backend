@@ -35,6 +35,8 @@ public class GestaoAtivosOportunidade {
 	public String perguntasEmAberto;
 	
 	public String riscos;
+	
+	public String status;
 
 	public String getId() {
 		return id;
@@ -132,12 +134,20 @@ public class GestaoAtivosOportunidade {
 		this.riscos = riscos;
 	}
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public GestaoAtivosOportunidade() {
 		
 	}
 
 	public GestaoAtivosOportunidade(String id, int tipo, int idAtivo, int sequencia, Date dataCadastro, int prioridade, String descricao, String objetivo,
-			String contextualizacao, String descricaoProblema, String perguntasEmAberto, String riscos) {
+			String contextualizacao, String descricaoProblema, String perguntasEmAberto, String riscos, String status) {
 		
 		this.id = id ;
 		this.tipo = tipo;
@@ -151,6 +161,7 @@ public class GestaoAtivosOportunidade {
 		this.descricaoProblema = descricaoProblema;
 		this.perguntasEmAberto = perguntasEmAberto;
 		this.riscos = riscos;
+		this.status = status;
 	}
 
 }

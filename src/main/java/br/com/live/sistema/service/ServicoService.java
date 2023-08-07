@@ -26,14 +26,14 @@ public class ServicoService {
     	return gestaoAtivosCustom.findAllServicos();
     }
 
-    public void saveServico(int id, String nomeServico, String objetivo, String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, int gestorResponsavel){
+    public void saveServico(int id, String nomeServico, String objetivo, String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, int gestorResponsavel, String status){
 
         Servico servico = null;
 
         servico = servicoRepository.findById(id);
 
         if (servico == null){
-            servico = new Servico(servicoRepository.findNextId(), nomeServico, objetivo, timeResponsavel, disponibilidade, tecnicosFornecedores, gestorResponsavel);
+            servico = new Servico(servicoRepository.findNextId(), nomeServico, objetivo, timeResponsavel, disponibilidade, tecnicosFornecedores, gestorResponsavel, status);
         } else {
             servico.nomeServico = nomeServico;
             servico.objetivo = objetivo;
@@ -41,6 +41,7 @@ public class ServicoService {
             servico.disponibilidade = disponibilidade;
             servico.tecnicosFornecedores = tecnicosFornecedores;
             servico.gestorResponsavel = gestorResponsavel;
+            servico.status = status;
         }
         servicoRepository.save(servico);
     }

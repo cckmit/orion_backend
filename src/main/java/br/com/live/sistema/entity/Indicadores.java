@@ -48,6 +48,7 @@ public class Indicadores {
 	public String formulaCalculo;
     public String variaveis;
     public int situacao;
+    public int diretoria;
 
 	public long getId() {
 		return id;
@@ -151,12 +152,20 @@ public class Indicadores {
 	public void setSituacao(int situacao) {
 		this.situacao = situacao;
 	}
+	public int getDiretoria() {
+		return diretoria;
+	}
+	public void setDiretoria(int diretoria) {
+		this.diretoria = diretoria;
+	}
+	
 	public Indicadores() {
     	
     }
+	
 	public Indicadores(long id, String nomeIndicador, int grupoIndicador, int area, int departamento, int setor,
 			int gestorAvaliado, int unidadeMedida, int frequenciaMonitoramento, int fonteDados,
-			int polaridade, int responsavelRegistro, int responsavelPublicacao, String observacao, String formulaCalculo, String variaveis, int situacao) {
+			int polaridade, int responsavelRegistro, int responsavelPublicacao, String observacao, String formulaCalculo, String variaveis, int situacao, int diretoria) {
 		this.id = id;
 		this.nomeIndicador = nomeIndicador;
 		this.grupoIndicador = grupoIndicador;
@@ -174,5 +183,6 @@ public class Indicadores {
 		this.formulaCalculo = formulaCalculo;
 		this.variaveis = variaveis;
 		this.situacao = situacao;
+		this.diretoria = diretoria;
 	}
 }

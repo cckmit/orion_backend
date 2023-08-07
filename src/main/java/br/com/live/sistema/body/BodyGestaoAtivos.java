@@ -12,5 +12,6 @@ public class BodyGestaoAtivos {
 	public String descricaoProblema;
 	public String perguntasEmAberto;
 	public String riscos;
+	public String status;
 
 }

@@ -16,6 +16,7 @@ public class ConsultaIndicadores {
 	public String obs;
 	public String formula;
 	public int situacao;
+	public int diretoria;
 	
 	public int getId() {
 		return id;
@@ -95,19 +96,26 @@ public class ConsultaIndicadores {
 	public void setFormula(String formula) {
 		this.formula = formula;
 	}
-	
 	public int getSituacao() {
 		return situacao;
 	}
 	public void setSituacao(int situacao) {
 		this.situacao = situacao;
 	}
+	public int getDiretoria() {
+		return diretoria;
+	}
+	public void setDiretoria(int diretoria) {
+		this.diretoria = diretoria;
+	}
+	
 	public ConsultaIndicadores() {
 		
 	}
+	
 	public ConsultaIndicadores(int id, String nome, String grupo, String area, String dpto, String setor,
 			String undMedida, int freqMonitoramento, int fonteDados, int polaridade, String respPublic, String obs,
-			String formula, int situacao) {
+			String formula, int situacao, int diretoria) {
 		
 		this.id = id;
 		this.nome = nome;
@@ -123,6 +131,7 @@ public class ConsultaIndicadores {
 		this.obs = obs;
 		this.formula = formula;
 		this.situacao = situacao;
+		this.diretoria = diretoria;
 	}	
 
 }

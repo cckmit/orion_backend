@@ -26,8 +26,10 @@ public class Servico {
     public String tecnicosFornecedores;
     
     public int gestorResponsavel;
+    
+    public String status;
 
-    public Servico(int id, String nomeServico, String objetivo, String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, int gestorResponsavel) {
+    public Servico(int id, String nomeServico, String objetivo, String timeResponsavel, boolean disponibilidade, String tecnicosFornecedores, int gestorResponsavel, String status) {
         this.id = id;
         this.nomeServico = nomeServico;
         this.objetivo = objetivo;
@@ -35,6 +37,7 @@ public class Servico {
         this.disponibilidade = disponibilidade;
         this.tecnicosFornecedores = tecnicosFornecedores;
         this.gestorResponsavel = gestorResponsavel;
+        this.status = status;
     }
 
     public Servico(){
@@ -94,6 +97,14 @@ public class Servico {
 
 	public void setGestorResponsavel(int gestorResponsavel) {
 		this.gestorResponsavel = gestorResponsavel;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
     
 }

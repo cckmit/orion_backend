@@ -38,7 +38,8 @@ public class IndicadoresCustom {
 				+ "       c.nome respPublic, "
 				+ "       a.observacao obs, "
 				+ "       a.formula_calculo formula, "
-				+ "       a.situacao situacao "
+				+ "       a.situacao situacao,"
+				+ "       a.diretoria diretoria "
 				+ "   FROM orion_ind_110 a, orion_001 c "
 				+ "   WHERE c.id = a.responsavel_publicacao "
 				+ "   AND a.responsavel_registro = " + idUsuario
@@ -49,7 +50,7 @@ public class IndicadoresCustom {
 	
 	public List<ConteudoChaveNumerica> findArea(int tipo) {
 		String query = " SELECT a.sequencia value, "
-				+ "	   	 a.sequencia || ' - ' || a.descricao label "
+				+ "	   	 a.descricao label "
 				+ "      FROM orion_ind_020 a "
 				+ "      WHERE a.tipo = '" + tipo + "'"
 				+ "      ORDER BY a.sequencia ";
@@ -65,7 +66,7 @@ public class IndicadoresCustom {
 	}
 	
 	public List<ConteudoChaveNumerica> findUsuarios() {
-		String query = " SELECT a.id value, a.id || ' - ' || UPPER(a.nome) label FROM orion_001 a WHERE a.situacao = 1 GROUP BY a.id, a.nome ORDER BY a.id ";
+		String query = " SELECT a.id value, UPPER(a.nome) label FROM orion_001 a WHERE a.situacao = 1 GROUP BY a.id, a.nome ORDER BY a.nome ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
@@ -109,7 +110,8 @@ public class IndicadoresCustom {
 				+ "       a.observacao observacao, "
 				+ "       a.variaveis variaveis, "
 				+ "       a.formula_calculo formulaCalculo, "
-				+ "       a.situacao situacao "
+				+ "       a.situacao situacao, "
+				+ "       a.diretoria "
 				+ "   FROM orion_ind_110 a "
 				+ "   WHERE a.id = ? ";
 		
