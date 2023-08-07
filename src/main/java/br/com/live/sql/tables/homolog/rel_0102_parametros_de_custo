@@ -1,0 +1,18 @@
+create table orion_cnt_020 (
+	id varchar2(50),
+	usuario number(6),
+	seq_importacao number(9),
+	empresa number(3),
+	nivel varchar2(1),
+	grupo varchar2(5),
+	sub	  varchar2(3),
+	item  varchar2(6),
+	tipo_parametro number(1),
+	sequencia number(2),
+	descricao varchar2(20),
+	consumo number(19,6),
+	estagio number(4),
+	mes number(2),
+	ano number(4),
+	CONSTRAINT orion_cnt_020_pk PRIMARY KEY (ID)
+);

@@ -332,4 +332,7 @@ insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (113, 'Consulta de Devolução', 'Expedição', '/consulta-devolucao');
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (114, 'Importar Parametros de Custo', 'Contabilidade', '/importa-parametros-custo');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (115, ' Geração de Etiqueta para Identificação de Caixa', 'Expedição', '/geracao-etiqueta-caixa-azul');

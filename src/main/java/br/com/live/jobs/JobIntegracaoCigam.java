@@ -41,7 +41,7 @@ public class JobIntegracaoCigam {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
         if (params.valorInt == ATIVO) {
-            envioXmlCigamService.enviarNotas();
+           envioXmlCigamService.enviarNotas();
         } else {
             System.out.println("INTEGRAÇÃO CIGAM INATIVA!");
         }
@@ -65,7 +65,7 @@ public class JobIntegracaoCigam {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
         if (params.valorInt == ATIVO) {
-            retornoDuplicatasCigamService.gravarDadosRetornoDuplicatas();
+           retornoDuplicatasCigamService.gravarDadosRetornoDuplicatas();
         } else {
             System.out.println("INTEGRAÇÃO CIGAM INATIVA!");
         }
@@ -89,7 +89,7 @@ public class JobIntegracaoCigam {
         Parametros params = parametrosRepository.findByIdParametro("INTEGRACAO_CIGAM_ATIVO");
 
         if (params.valorInt == ATIVO) {
-            retornoFuncionariosCigamService.gravarDadosRetornoFuncionarios();
+           retornoFuncionariosCigamService.gravarDadosRetornoFuncionarios();
         } else {
             System.out.println("INTEGRAÇÃO CIGAM INATIVA!");
         }
