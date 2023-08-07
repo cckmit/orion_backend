@@ -123,7 +123,7 @@ public class IntegracaoCigamCustom {
         }
    }
 
-   public void inserirDadosFuncionarios(ListaRetornoApiFuncionarios dadosRetorno) {
+   public void inserirDadosFuncionarios(ListaRetornoApiFuncionarios dadosRetorno) throws ParseException {
         try {
             String query = " INSERT INTO cigam.integ_funcionarios (cod_vendedor, cpf_vendedor, nome_vendedor, cargo, end_usuario, loja, cnpj, status, data_demissao, data_admissao) " +
                     " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
@@ -131,7 +131,20 @@ public class IntegracaoCigamCustom {
                     dadosRetorno.end_usuario, dadosRetorno.loja, dadosRetorno.cnpj, dadosRetorno.status,
                     formatarData(dadosRetorno.datademissao), formatarData(dadosRetorno.dataadmissao));
         } catch (Exception e) {
-            //System.out.println(e.getMessage());
+            String queryUpdate = " UPDATE cigam.integ_funcionarios " +
+                    "SET cpf_vendedor = ?, " +
+                    "    nome_vendedor = ?, " +
+                    "    cargo = ?, " +
+                    "    end_usuario = ?, " +
+                    "    cnpj = ?, " +
+                    "    status = ?, " +
+                    "    data_demissao = ?, " +
+                    "    data_admissao = ? " +
+                    " WHERE cod_vendedor = ? " +
+                    "   and loja = ? ";
+            jdbcTemplate.update(queryUpdate, dadosRetorno.cpf_vendedor, dadosRetorno.nom_vendedor, dadosRetorno.cargo,
+                    dadosRetorno.end_usuario, dadosRetorno.cnpj, dadosRetorno.status,
+                    formatarData(dadosRetorno.datademissao), formatarData(dadosRetorno.dataadmissao), dadosRetorno.cod_vendedor, dadosRetorno.loja);
         }
    }
 

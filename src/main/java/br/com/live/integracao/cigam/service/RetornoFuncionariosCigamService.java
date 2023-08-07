@@ -28,7 +28,7 @@ public class RetornoFuncionariosCigamService {
 
     public void gravarDadosRetornoFuncionarios() {
         LocalDate dataFimLocal = LocalDate.now();
-        LocalDate dataInicioLocal = LocalDate.now().minusDays(5);
+        LocalDate dataInicioLocal = LocalDate.now().minusDays(360);
 
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String dataFim = dataFimLocal.format(dateFormat);
