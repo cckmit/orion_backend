@@ -252,5 +252,15 @@ public class GestaoAtivosCustom {
             System.out.println("Deu Erro");
         }
 	}
+	
+	public void updateStatusOportunidadeNegocios(String id) {
+		
+		try {
+			String query = "update orion_ti_025 set situacao = 2 where id = ? ";
+			jdbcTemplate.update(query, id);
+        } catch (Exception e) {
+            System.out.println("Deu Erro");
+        }
+	}
 
 }

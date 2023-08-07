@@ -69,4 +69,8 @@ public class OportunidadesService {
 	public void updateStatusAtivo(String id) {
 		gestaoAtivosCustom.updateStatusOportunidade(id);		
 	}
+	
+	public void updateStatusAtivoNegocios(String id) {
+		gestaoAtivosCustom.updateStatusOportunidadeNegocios(id);		
+	}
 }
