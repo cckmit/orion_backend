@@ -36,12 +36,12 @@ public class SequenciamentoDecoracoesController {
 	
 	@RequestMapping(value = "/estagios-distrib", method = RequestMethod.GET)
 	public List<ConteudoChaveNumerica> findEstagiosDistribuicao() {
-		return sequenciamentoDecoracoesCustom.findEstagiosDistribuicao();
+		return sequenciamentoDecoracoesCustom.findEstagiosSequenciamento();
 	}
 
 	@RequestMapping(value = "/estagios-sequenciar", method = RequestMethod.GET)
 	public List<ConteudoChaveNumerica> findEstagiosSequenciar() {
-		return sequenciamentoDecoracoesCustom.findEstagiosSequenciar();
+		return sequenciamentoDecoracoesCustom.findEstagiosSequenciamento();
 	}
 
 	@RequestMapping(value = "/referencias", method = RequestMethod.GET)

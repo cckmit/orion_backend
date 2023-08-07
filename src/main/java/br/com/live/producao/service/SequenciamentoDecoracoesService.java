@@ -17,9 +17,10 @@ import br.com.live.producao.model.DadosSequenciamentoDecoracoes;
 import br.com.live.producao.model.EstagioProducao;
 import br.com.live.producao.model.OrdemConfeccao;
 import br.com.live.producao.model.OrdemProducao;
-import br.com.live.producao.model.OrdemProducaoEstagios;
+import br.com.live.producao.model.OrdemProducaoEstagio;
 import br.com.live.produto.custom.ProdutoCustom;
 import br.com.live.util.ErrorMessageException;
+import br.com.live.util.FormataData;
 
 @Service
 @Transactional
@@ -45,10 +46,10 @@ public class SequenciamentoDecoracoesService {
 		List<OrdemProducao> ordens = ordemProducaoCustom.findOrdensOrdenadasPorPrioridade(camposSelParaPriorizacao,
 				periodoInicial, periodoFinal, Integer.toString(estagioDistrib), "", referencias, "", artigos, "",
 				isSomenteFlat, isDiretoCostura, false, isPossuiAgrupador);
-		System.out.println("Sequenciar Ordens");
-		List<DadosSequenciamentoDecoracoes> ordensSequenciadas = calcularInformacoesDasOrdens(ordens, estagioDistrib);
-		System.out.println("fim - consultarOrdens");
-		return ordensSequenciadas;
+		System.out.println("Sequenciar Ordens: " + ordens.size());
+		List<DadosSequenciamentoDecoracoes> ordensRetorno = calcularInformacoesDasOrdens(ordens, estagioDistrib);
+		System.out.println("fim - consultarOrdens: " + ordensRetorno.size());
+		return ordensRetorno;
 	}
 
 	/*
@@ -61,11 +62,11 @@ public class SequenciamentoDecoracoesService {
 	 * mostrar na coluna agrupador
 	 */
 
-	private String sequenciarEstagios(List<OrdemProducaoEstagios> estagios, List<OrdemProducaoEstagios> proxEstagios) {
+	private String sequenciarEstagios(List<OrdemProducaoEstagio> estagios, List<OrdemProducaoEstagio> proxEstagios) {
 		String estagiosAgrupados = "";
 		int codEstagioDistrib = 0;
 
-		for (OrdemProducaoEstagios estagioOP : estagios) {
+		for (OrdemProducaoEstagio estagioOP : estagios) {
 			EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());
 			if ((codEstagioDistrib > 0) && (estagio.estagioAgrupador == 0))
 				break;
@@ -93,43 +94,45 @@ public class SequenciamentoDecoracoesService {
 		List<DadosSequenciamentoDecoracoes> listOrdensParaDecoracoes = new ArrayList<DadosSequenciamentoDecoracoes>();
 
 		for (OrdemProducao ordem : ordens) {
-			List<OrdemProducaoEstagios> estagios = sequenciamentoDecoracoesCustom
+			List<OrdemProducaoEstagio> estagios = sequenciamentoDecoracoesCustom
 					.findEstagiosDecoracoesOrdem(ordem.ordemProducao, estagioDistrib);
-			List<OrdemProducaoEstagios> proxEstagios = new ArrayList<OrdemProducaoEstagios>();
-			String estagiosAgrupados = sequenciarEstagios(estagios, proxEstagios);
+			
+			String estagiosAgrupados = ""; 			
 			List<OrdemConfeccao> pacotes = ordemProducaoCustom.findAllOrdensConfeccao(ordem.ordemProducao);
+			
+			if (sequenciamentoDecoracoesCustom.isOrdemSequenciada(ordem.ordemProducao, estagioDistrib))
+				continue;
 
-			for (OrdemProducaoEstagios estagioOP : proxEstagios) {
-				if (sequenciamentoDecoracoesCustom.isOrdemSequenciada(ordem.ordemProducao, estagioOP.getCodEstagio()))
-					continue;
-
-				int quantidade = 0;
-				int quantidadeTotal = 0;
-				double tempo = 0;
-				double tempoTotal = 0;
-				for (OrdemConfeccao pacote : pacotes) {
-					quantidade = ordemProducaoCustom.getQtdeAProduzirEstagio(pacote.ordemProducao,
-							pacote.ordemConfeccao, estagioOP.getCodEstagio());
-					tempo = produtoCustom.getTempoProducaoEstagio("1", pacote.getReferencia(), pacote.getTamanho(),
-							pacote.getCor(), ordem.getNrAlternativa(), ordem.getNrRoteiro(), estagioOP.getCodEstagio());
-					quantidadeTotal += quantidade;
-					tempoTotal += (quantidade * tempo);
-				}
-				double tempoUnit = tempoTotal / quantidadeTotal;
-
-				seqPrioridade++;
-				EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioOP.getCodEstagio());
-				String cores = ordemProducaoCustom.getCoresOrdem(ordem.getOrdemProducao());
-				String endereco = sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao());
-				Date dataEntrada = sequenciamentoDecoracoesCustom
-						.findDataProducaoEstagioAnterior(ordem.getOrdemProducao());
-
-				DadosSequenciamentoDecoracoes dadosOrdem = new DadosSequenciamentoDecoracoes(seqPrioridade,
-						ordem.getPeriodo(), ordem.getOrdemProducao(), ordem.getReferencia(), ordem.getDescrReferencia(),
-						cores, quantidadeTotal, ordem.getObservacao(), estagioOP.getCodEstagio(),
-						estagio.getDescricao(), estagiosAgrupados, endereco, dataEntrada, tempoUnit, tempoTotal);
-				listOrdensParaDecoracoes.add(dadosOrdem);
+			int quantidade = 0;
+			int quantidadeTotal = 0;
+			double tempo = 0;
+			double tempoTotal = 0;
+			for (OrdemConfeccao pacote : pacotes) {
+				quantidade = ordemProducaoCustom.getQtdeAProduzirEstagio(pacote.ordemProducao,
+						pacote.ordemConfeccao, estagioDistrib);
+				tempo = produtoCustom.getTempoProducaoEstagio("1", pacote.getReferencia(), pacote.getTamanho(),
+						pacote.getCor(), ordem.getNrAlternativa(), ordem.getNrRoteiro(), estagioDistrib);
+				quantidadeTotal += quantidade;
+				tempoTotal += (quantidade * tempo);
 			}
+			double tempoUnit = tempoTotal / quantidadeTotal;
+
+			seqPrioridade++;
+			EstagioProducao estagio = ordemProducaoCustom.getEstagio(estagioDistrib);
+			String cores = ordemProducaoCustom.getCoresOrdem(ordem.getOrdemProducao());
+			String endereco = sequenciamentoDecoracoesCustom.findEnderecoDistribuicao(ordem.getOrdemProducao());
+			Date dataEntrada = ordemProducaoCustom.findDataEntradaNoEstagio(ordem.getOrdemProducao(), estagioDistrib);					
+			
+			System.out.println("OP: " + ordem.getOrdemProducao() + " - DATA ENTRADA: " + dataEntrada);
+			
+			int diasNaFase = 0; FormataData.getDiffInDays(dataEntrada, new Date());
+			
+			DadosSequenciamentoDecoracoes dadosOrdem = new DadosSequenciamentoDecoracoes(seqPrioridade,
+					ordem.getPeriodo(), ordem.getOrdemProducao(), ordem.getReferencia(), ordem.getDescrReferencia(),
+					cores, quantidadeTotal, ordem.getObservacao(), estagioDistrib,
+					estagio.getDescricao(), estagiosAgrupados, endereco, dataEntrada, diasNaFase, tempoUnit, tempoTotal);
+			listOrdensParaDecoracoes.add(dadosOrdem);
+
 		}
 
 		return listOrdensParaDecoracoes;

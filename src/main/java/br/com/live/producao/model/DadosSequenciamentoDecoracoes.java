@@ -17,6 +17,7 @@ public class DadosSequenciamentoDecoracoes {
 	private String estagiosAgrupados;
 	private String endereco;
 	private Date dataEntrada;
+	private int diasNaFase;
 	private double tempoUnitario;
 	private double tempoTotal;
 	private Date dataInicio;
@@ -27,7 +28,7 @@ public class DadosSequenciamentoDecoracoes {
 	
 	public DadosSequenciamentoDecoracoes(int id, int seqPrioridade, int periodo, int ordemProducao, String referencia,
 			String descricaoReferencia, String cores, int quantidade, String observacao, int codEstagioProx,
-			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, double tempoUnitario,
+			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, int diasNaFase, double tempoUnitario,
 			double tempoTotal, Date dataInicio, Date dataTermino) {
 		super();		
 		this.id = id;
@@ -44,6 +45,7 @@ public class DadosSequenciamentoDecoracoes {
 		this.estagiosAgrupados = estagiosAgrupados;
 		this.endereco = endereco;
 		this.dataEntrada = dataEntrada;
+		this.diasNaFase = diasNaFase;
 		this.tempoUnitario = tempoUnitario;
 		this.tempoTotal = tempoTotal;
 		this.dataInicio = dataInicio;
@@ -52,7 +54,7 @@ public class DadosSequenciamentoDecoracoes {
 	
 	public DadosSequenciamentoDecoracoes(int seqPrioridade, int periodo, int ordemProducao, String referencia,
 			String descricaoReferencia, String cores, int quantidade, String observacao, int codEstagioProx,
-			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, double tempoUnitario,
+			String descEstagioProx, String estagiosAgrupados, String endereco, Date dataEntrada, int diasNaFase, double tempoUnitario,
 			double tempoTotal) {
 		super();
 		this.id = 0;
@@ -69,6 +71,7 @@ public class DadosSequenciamentoDecoracoes {
 		this.estagiosAgrupados = estagiosAgrupados;
 		this.endereco = endereco;
 		this.dataEntrada = dataEntrada;
+		this.diasNaFase = diasNaFase;
 		this.tempoUnitario = tempoUnitario;
 		this.tempoTotal = tempoTotal;
 		this.dataInicio = null;
@@ -225,5 +228,13 @@ public class DadosSequenciamentoDecoracoes {
 
 	public void setConfirmado(int confirmado) {
 		this.confirmado = confirmado;
+	}
+
+	public int getDiasNaFase() {
+		return diasNaFase;
+	}
+
+	public void setDiasNaFase(int diasNaFase) {
+		this.diasNaFase = diasNaFase;
 	}
 }

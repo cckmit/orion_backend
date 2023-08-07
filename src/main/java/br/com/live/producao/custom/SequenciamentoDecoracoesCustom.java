@@ -9,34 +9,39 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.live.producao.model.DadosSequenciamentoDecoracoes;
-import br.com.live.producao.model.OrdemProducaoEstagios;
+import br.com.live.producao.model.OrdemProducaoEstagio;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.entity.Parametros;
+import br.com.live.util.repository.ParametrosRepository;
 
 @Repository
 public class SequenciamentoDecoracoesCustom {
 
-	public static final int ESTAGIO_AGRUPADOR_DECORACOES = 10;
-	public static final String ESTAGIOS_DISTRIB_DECORACOES = "9,31";
+	public static final int ESTAGIO_AGRUPADOR_DECORACOES = 10; 
+	public static final String ESTAGIOS_DISTRIB_DECORACOES = "9,31"; 
 	public static final double MINUTOS_PRODUCAO_DIA = 984; // Turno1: 496 + Turno2: 488 => 984 minutos 	
 	public static final int ORDEM_CONFIRMAR = 0;
 	public static final int ORDEM_CONFIRMADA = 1;
-	public static final String CAMPOS_DADOS_SEQUENCIAMENTO = " a.id,a.sequencia seqPrioridade,a.ordem_producao ordemProducao,a.referencia referencia,b.descr_referencia descricaoReferencia,a.cores,a.quantidade,c.observacao,a.cod_estagio codEstagioProx,d.descricao descEstagioProx,a.estagios_agrupados estagiosAgrupados,a.endereco,a.data_entrada dataEntrada,a.tempo_unit tempoUnitario,a.tempo_total tempoTotal,a.data_inicio dataInicio,a.data_termino dataTermino,a.confirmado ";
+	public static final String CAMPOS_DADOS_SEQUENCIAMENTO = " a.id,a.sequencia seqPrioridade,a.ordem_producao ordemProducao,a.referencia referencia,b.descr_referencia descricaoReferencia,a.cores,a.quantidade,c.observacao,a.cod_estagio codEstagioProx,d.descricao descEstagioProx,a.estagios_agrupados estagiosAgrupados,a.endereco,a.data_entrada dataEntrada, (a.data_entrada - trunc(sysdate)) diasNaFase, a.tempo_unit tempoUnitario,a.tempo_total tempoTotal,a.data_inicio dataInicio,a.data_termino dataTermino,a.confirmado ";
 	
 	private final JdbcTemplate jdbcTemplate;
+	private final ParametrosRepository parametrosRepository;
 
-	public SequenciamentoDecoracoesCustom(JdbcTemplate jdbcTemplate) {
+	public SequenciamentoDecoracoesCustom(JdbcTemplate jdbcTemplate, ParametrosRepository parametrosRepository) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.parametrosRepository = parametrosRepository;
 	}
 
-	public List<ConteudoChaveNumerica> findEstagiosDistribuicao() {		
-		String query = "select m.codigo_estagio value, m.codigo_estagio || ' - ' || m.descricao label from mqop_005 m where m.codigo_estagio in ("+ ESTAGIOS_DISTRIB_DECORACOES +") order by m.codigo_estagio";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+	private String getEstagiosConfiguradosParaSequenciar() {
+		Parametros parametros = parametrosRepository.findByIdParametro("SEQ-DECORACOES-ESTAGIOS-PARA-SEQUENCIAR");
+		if (parametros != null) return parametros.getValorStr(); 
+		return "";
 	}
 	
-	public List<ConteudoChaveNumerica> findEstagiosSequenciar() {		
-		String query = "select m.codigo_estagio value, m.codigo_estagio || ' - ' || m.descricao label from mqop_005 m where m.est_agrup_est = ? order by m.codigo_estagio";
-		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class), ESTAGIO_AGRUPADOR_DECORACOES);
+	public List<ConteudoChaveNumerica> findEstagiosSequenciamento() {		
+		String query = "select m.codigo_estagio value, m.codigo_estagio || ' - ' || m.descricao label from mqop_005 m where m.codigo_estagio in ("+ getEstagiosConfiguradosParaSequenciar() +") order by m.codigo_estagio";
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
 	public List<ConteudoChaveAlfaNum> findReferenciasEmOrdensCentroDistrib() {				
@@ -54,8 +59,8 @@ public class SequenciamentoDecoracoesCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 
-	public List<OrdemProducaoEstagios> findEstagiosDecoracoesOrdem(int ordemProducao, int estagioDistrib) {
-		List<OrdemProducaoEstagios> estagios;
+	public List<OrdemProducaoEstagio> findEstagiosDecoracoesOrdem(int ordemProducao, int estagioDistrib) {
+		List<OrdemProducaoEstagio> estagios;
 		String query = "select a.ordem_producao ordemProducao, a.seq_operacao seqEstagio, a.codigo_estagio codEstagio, a.estagio_anterior codEstagioAnterior, a.estagio_depende codEstagioDepende, sum(a.qtde_a_produzir_pacote) qtdeAProduzir from pcpc_040 a "
 		+ " where a.ordem_producao = ? "
 		+ " and a.qtde_a_produzir_pacote > 0 "
@@ -65,9 +70,9 @@ public class SequenciamentoDecoracoesCustom {
 		+ " order by a.ordem_producao, a.seq_operacao, a.codigo_estagio "; 
 
 		try {
-			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagios.class), ordemProducao, ESTAGIO_AGRUPADOR_DECORACOES, estagioDistrib, estagioDistrib);
+			estagios = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoEstagio.class), ordemProducao, ESTAGIO_AGRUPADOR_DECORACOES, estagioDistrib, estagioDistrib);
 		} catch (Exception e) {
-			estagios = new ArrayList<OrdemProducaoEstagios>();
+			estagios = new ArrayList<OrdemProducaoEstagio>();
 		}		
 		return estagios;
 	}		
@@ -101,20 +106,7 @@ public class SequenciamentoDecoracoesCustom {
 
 		return jdbcTemplate.queryForObject(query, String.class, ordemProducao);
 	}
-	
-	public Date findDataProducaoEstagioAnterior(int ordemProducao) {
-		String query = "select max(z.data_producao) data_producao "
-		+ " from pcpc_040 p, pcpc_045 z " 
-		+ " where p.ordem_producao = ? "
-		+ " and p.codigo_estagio in (" + ESTAGIOS_DISTRIB_DECORACOES + ")"
-		+ " and p.qtde_em_producao_pacote > 0 "
-		+ " and z.pcpc040_perconf = p.periodo_producao " 
-		+ " and z.pcpc040_ordconf = p.ordem_confeccao "
-		+ " and z.pcpc040_estconf = p.estagio_anterior ";
 		
-		return jdbcTemplate.queryForObject(query, Date.class, ordemProducao);
-	}
-	
 	public boolean isOrdemSequenciada(int ordemProducao, int codEstagio) {
 		Integer count = 0;		
 		String query = "select count(*) from orion_cfc_300 o where o.ordem_producao = ? and o.cod_estagio = ?";

@@ -1195,5 +1195,25 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
+	public Date findDataEntradaNoEstagio(int ordemProducao, int codEstagio) {
+		String query = " select min(data_entrada) from ( "
+		+ " select " 
+		+ " (select max(f.data_producao) " 
+		+ " from pcpc_045 f " 
+		+ " where f.ordem_producao = a.ordem_producao " 
+	    + " and f.pcpc040_estconf = (select max(g.codigo_estagio) " 
+	    + " from pcpc_040 g " 
+	    + " where g.ordem_producao = a.ordem_producao "
+	    + " and g.seq_operacao = (select max(h.seq_operacao) " 
+	    + " from pcpc_040 h " 
+	    + " where h.ordem_producao = a.ordem_producao "                                                       
+	    + " and h.seq_operacao < a.seq_operacao))) data_entrada " 
+	    + " from pcpc_040 a "
+	    + " where a.ordem_producao = ? "
+	    + " and a.codigo_estagio = ? "
+	    + " ) entrada_estagio " ;     
+	
+		return jdbcTemplate.queryForObject(query, Date.class, ordemProducao, codEstagio);
+	}
 	
 }

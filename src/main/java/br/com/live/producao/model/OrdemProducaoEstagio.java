@@ -1,6 +1,6 @@
 package br.com.live.producao.model;
 
-public class OrdemProducaoEstagios {
+public class OrdemProducaoEstagio {
 
 	private int ordemProducao;
 	private int seqEstagio; 
@@ -9,9 +9,9 @@ public class OrdemProducaoEstagios {
 	private int codEstagioDepende; 
 	private int qtdeAProduzir;
 	
-	public OrdemProducaoEstagios() {}
+	public OrdemProducaoEstagio() {}
 	
-	public OrdemProducaoEstagios(int ordemProducao, int seqEstagio, int codEstagio, int codEstagioAnterior,
+	public OrdemProducaoEstagio(int ordemProducao, int seqEstagio, int codEstagio, int codEstagioAnterior,
 			int codEstagioDepende, int qtdeAProduzir) {
 		super();
 		this.ordemProducao = ordemProducao;
