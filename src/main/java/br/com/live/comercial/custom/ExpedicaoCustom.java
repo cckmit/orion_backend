@@ -1886,14 +1886,14 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
-	public int findQtdePecasLidasByUsuarioNf(int usuario, int notaFiscal) {
+	public int findQtdePecasLidasByUsuarioNf(int usuario) {
 		
 		int qtde = 0;
 
 		String query = " SELECT COUNT(a.id) FROM orion_exp_200 a "
 				+ "    WHERE a.usuario = " + usuario + " "
-				+ "    AND a.nf_devolucao =  " + notaFiscal + " ";
-		System.out.println(query);
+				+ "    AND a.data = TO_DATE(sysdate) ";
+		
 		try {
 			qtde = jdbcTemplate.queryForObject(query, Integer.class);
 		} catch (Exception e) {
@@ -1983,10 +1983,10 @@ public class ExpedicaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaNotasTagsDevolucao.class));
 	}
 	
-	public void updateDepositoByTag(String codBarrasTag, int transacao) {
+	public void updateDepositoByTag(String codBarrasTag, int transacao, int deposito) {
 		
 		String query = " UPDATE pcpc_330 a "
-				+ "       SET a.deposito = 211, "
+				+ "       SET a.deposito = " + deposito + ", "
 				+ "       a.transacao_cardex = " + transacao + ", "
 				+ "       a.data_cardex = TO_DATE(sysdate),  "
 				+ "       a.estoque_tag = 1 "
@@ -1997,4 +1997,5 @@ public class ExpedicaoCustom {
 		
 		jdbcTemplate.update(query, codBarrasTag);
 	}
+	 
 }

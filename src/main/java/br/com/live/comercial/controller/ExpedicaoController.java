@@ -478,15 +478,14 @@ public class ExpedicaoController {
         return expedicaoService.findMotivosDevolucao();
     }
     
-    @RequestMapping(value = "/qtde-pecas-lidas/{usuario}/{notaFiscal}", method = RequestMethod.GET)
-    public int findQtdePecasLidasByUsuarioNf(@PathVariable("usuario") int usuario, @PathVariable("notaFiscal") int notaFiscal) {
-        return expedicaoService.findQtdePecasLidasByUsuarioNf(usuario, notaFiscal);
+    @RequestMapping(value = "/qtde-pecas-lidas/{usuario}", method = RequestMethod.GET)
+    public int findQtdePecasLidasByUsuarioNf(@PathVariable("usuario") int usuario) {
+        return expedicaoService.findQtdePecasLidasByUsuarioNf(usuario);
     }
     
     @RequestMapping(value = "/save-tag-devolucao", method = RequestMethod.POST)
     public boolean saveTagDevolucao(@RequestBody BodyExpedicao body) {
-        return expedicaoService.saveTagDevolucao(body.crachaUsuario, body.nfDevolucao, body.tipoDevolucao, body.motivo, body.transacao, 
-        		body.codCaixa, body.codBarrasTag);
+        return expedicaoService.saveTagDevolucao(body.crachaUsuario, body.nfDevolucao, body.tipoDevolucao, body.motivo, body.transacao, body.codCaixa, body.codBarrasTag);
     }
     
     @RequestMapping(value = "/find-dados-devolucao", method = RequestMethod.GET)
@@ -501,7 +500,6 @@ public class ExpedicaoController {
     
     @RequestMapping(value = "/gerar-pdf-etiqueta", method = RequestMethod.POST)
     public String gerarPdfEtiqueta(@RequestBody BodyExpedicao body) throws FileNotFoundException, JRException {
-    	System.out.println(body.periodosProducao.size());
     	return expedicaoService.gerarPdfEtiqueta(body.periodosProducao, body.tipo);
     }
 }
