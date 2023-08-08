@@ -111,9 +111,9 @@ public class DreLojaService {
             int contaContabil = dadosOrcamentoSequencia.contaContabil;
 
             DreLojaCalculo dreValoresAcumulados = dreLojaCustom.obterDadosDreAcumulado(seqFieldDre, cnpjLoja, mesDre, anoDre);
-            double valPropriedadeMesAnoAnterior = Math.abs(dreValoresAcumulados.valPropriedadeMesAnoAnterior);
-            double valPropriedadeOrcadoMesAnoAtual = Math.abs(dreValoresAcumulados.valPropriedadeOrcadoMesAnoAtual);
-            double valPropriedadeMesAnoAtual = Math.abs(dreValoresAcumulados.valPropriedadeMesAnoAtual);
+            double valPropriedadeMesAnoAnterior = dreValoresAcumulados.valPropriedadeMesAnoAnterior;
+            double valPropriedadeOrcadoMesAnoAtual = dreValoresAcumulados.valPropriedadeOrcadoMesAnoAtual;
+            double valPropriedadeMesAnoAtual = dreValoresAcumulados.valPropriedadeMesAnoAtual;
 
             double valFatMesAnoAnterior = valorFaturamentoMesAnoAnterior;
             double valFatMesAnoAtualOrcado = valorFaturamentoMesAnoAtualOrcado;
@@ -146,40 +146,40 @@ public class DreLojaService {
         OrcamentoLojaDre orcamentoCustoMaterial = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(CUSTO_DOS_MATERIAIS, cnpjLoja, mesDre, anoDre);
         OrcamentoLojaDre orcamentoLucroBruto = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(LUCRO_BRUTO, cnpjLoja, mesDre, anoDre);
 
-        double valorFaturamentoMesAnoAtualOrcado =  (int) Math.abs(orcamentoFaturamento.valPropriedade);
-        double valorFaturamentoMesAnoAnterior =  Math.abs(dadosLancamentoLojaMesAnoAnt.valFaturamento); // TODO: Dados Microvix
-        double valorFaturamentoMesAnoAtual =   Math.abs(dadosLancamentoLojaMesAnoAtual.valFaturamento); // TODO: Dados Microvix
+        double valorFaturamentoMesAnoAtualOrcado =  (int) orcamentoFaturamento.valPropriedade;
+        double valorFaturamentoMesAnoAnterior =  dadosLancamentoLojaMesAnoAnt.valFaturamento; // TODO: Dados Microvix
+        double valorFaturamentoMesAnoAtual =   dadosLancamentoLojaMesAnoAtual.valFaturamento; // TODO: Dados Microvix
 
-        double valorImpostoFaturamentoMesAnoAtualOrcado = (int) Math.abs(orcamentoImpostoFaturamento.valPropriedade);
-        double valorImpostoFaturamentoMesAnoAnterior = Math.abs(dadosLancamentoLojaMesAnoAnt.valImpostoFaturamento); // TODO: Dados Microvix
-        double valorImpostoFaturamentoMesAnoAtual = Math.abs(dadosLancamentoLojaMesAnoAtual.valImpostoFaturamento); // TODO: Dados Microvix
+        double valorImpostoFaturamentoMesAnoAtualOrcado = (int) orcamentoImpostoFaturamento.valPropriedade;
+        double valorImpostoFaturamentoMesAnoAnterior = dadosLancamentoLojaMesAnoAnt.valImpostoFaturamento; // TODO: Dados Microvix
+        double valorImpostoFaturamentoMesAnoAtual = dadosLancamentoLojaMesAnoAtual.valImpostoFaturamento; // TODO: Dados Microvix
 
-        int qtdPecaFaturadaMesAnoAtualOrcado = (int) Math.abs(orcamentoPecasFaturadas.valPropriedade);
+        int qtdPecaFaturadaMesAnoAtualOrcado = (int) orcamentoPecasFaturadas.valPropriedade;
         int qtdPecaFaturadaMesAnoAnterior =  dadosLancamentoLojaMesAnoAnt.qtdPecaFaturada; // TODO: Dados Microvix
         int qtdPecaFaturadaMesAnoAtual =  dadosLancamentoLojaMesAnoAtual.qtdPecaFaturada; // TODO: Dados Microvix
 
-        int qtdPecaConsumoMesAnoAtualOrcado = (int) Math.abs(orcamentoPecaConsumo.valPropriedade);
+        int qtdPecaConsumoMesAnoAtualOrcado = (int) orcamentoPecaConsumo.valPropriedade;
         int qtdPecaConsumoMesAnoAnterior = dadosLancamentoLojaMesAnoAnt.qtdPecaConsumo; // TODO: Dados Microvix
         int qtdPecaConsumoMesAnoAtual = dadosLancamentoLojaMesAnoAtual.qtdPecaConsumo; // TODO: Dados Microvix
 
         double valorPrecoMedioMesAnoAnterior = 0;
         double valorPrecoMedioMesAnoAtual = 0;
 
-        double valorPrecoMedioMesAnoAtualOrcado = Math.abs(orcamentoPrecoMedio.valPropriedade);
+        double valorPrecoMedioMesAnoAtualOrcado = orcamentoPrecoMedio.valPropriedade;
         if (valorFaturamentoMesAnoAnterior > 0) valorPrecoMedioMesAnoAnterior = valorFaturamentoMesAnoAnterior / qtdPecaFaturadaMesAnoAnterior;
         if (valorFaturamentoMesAnoAtual > 0) valorPrecoMedioMesAnoAtual = valorFaturamentoMesAnoAtual / qtdPecaFaturadaMesAnoAtual;
 
         double valorFaturamentoLiquidoMesAnoAtualOrcado = orcamentoFaturamentoLiquido.valPropriedade;
-        double valorFaturamentoLiquidoMesAnoAnterior = valorFaturamentoMesAnoAnterior - valorImpostoFaturamentoMesAnoAnterior;
-        double valorFaturamentoLiquidoMesAnoAtual = valorFaturamentoMesAnoAtual - valorImpostoFaturamentoMesAnoAtual;
+        double valorFaturamentoLiquidoMesAnoAnterior = valorFaturamentoMesAnoAnterior - (valorImpostoFaturamentoMesAnoAnterior * -1);
+        double valorFaturamentoLiquidoMesAnoAtual = valorFaturamentoMesAnoAtual - (valorImpostoFaturamentoMesAnoAtual * -1);
 
-        double valorCustoMaterialMesAnoAtualOrcado = (Math.abs(orcamentoCustoMaterial.valPropriedade));
-        double valorCustoMaterialMesAnoAnterior = ((qtdPecaFaturadaMesAnoAnterior + qtdPecaConsumoMesAnoAnterior) * dadoParametroGeral.valCustoVendaProduto);
-        double valorCustoMaterialMesAnoAtual = ((qtdPecaFaturadaMesAnoAtual + qtdPecaConsumoMesAnoAtual) * dadoParametroGeral.valCustoVendaProduto);
+        double valorCustoMaterialMesAnoAtualOrcado = orcamentoCustoMaterial.valPropriedade;
+        double valorCustoMaterialMesAnoAnterior = (((qtdPecaFaturadaMesAnoAnterior + qtdPecaConsumoMesAnoAnterior) * dadoParametroGeral.valCustoVendaProduto)*-1);
+        double valorCustoMaterialMesAnoAtual = (((qtdPecaFaturadaMesAnoAtual + qtdPecaConsumoMesAnoAtual) * dadoParametroGeral.valCustoVendaProduto)*-1);
 
-        double valorLucroBrutoMesAnoAtualOrcado = Math.abs(orcamentoLucroBruto.valPropriedade);
-        double valorLucroBrutoMesAnoAnterior = valorFaturamentoLiquidoMesAnoAnterior - valorCustoMaterialMesAnoAnterior;
-        double valorLucroBrutoMesAnoAtual = valorFaturamentoLiquidoMesAnoAtual - valorCustoMaterialMesAnoAtual;
+        double valorLucroBrutoMesAnoAtualOrcado = orcamentoLucroBruto.valPropriedade;
+        double valorLucroBrutoMesAnoAnterior = valorFaturamentoLiquidoMesAnoAnterior - (valorCustoMaterialMesAnoAnterior*-1);
+        double valorLucroBrutoMesAnoAtual = valorFaturamentoLiquidoMesAnoAtual - (valorCustoMaterialMesAnoAtual*-1);
 
         for (String seqOrcamento: sequenciasOrcamentoList ) {
             gravarContaContabilSystextil(seqOrcamento, cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorFaturamentoMesAnoAnterior, valorFaturamentoMesAnoAtualOrcado,valorFaturamentoMesAnoAtual);
@@ -204,9 +204,9 @@ public class DreLojaService {
 
         if (dreLojaCustom.validaContaContabilSystextil(codContaContabil) == 1 && codContaContabil > 0){
 
-            double valorOrcadoContaContabilMesAnoAtual = Math.abs(dadosOrcamento.valPropriedade);
-            double valorLancamentosContaContabilMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(codContaContabil, centroCustoLojaConcat, mesDre, anoDre -1));
-            double valorLancamentosContaContabilMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(codContaContabil, centroCustoLojaConcat, mesDre, anoDre));
+            double valorOrcadoContaContabilMesAnoAtual = dadosOrcamento.valPropriedade;
+            double valorLancamentosContaContabilMesAnoAnterior = dreLojaCustom.obterValorLancamentosContaContabilMesAno(codContaContabil, centroCustoLojaConcat, mesDre, anoDre -1);
+            double valorLancamentosContaContabilMesAnoAtual = dreLojaCustom.obterValorLancamentosContaContabilMesAno(codContaContabil, centroCustoLojaConcat, mesDre, anoDre);
 
             gravarContaContabilDre(MESVIGENTE, seqOrcamento, cnpjLoja, mesDre, anoDre, valorLancamentosContaContabilMesAnoAnterior, valorOrcadoContaContabilMesAnoAtual, valorLancamentosContaContabilMesAnoAtual, valorFaturamentoMesAnoAnterior, valorFaturamentoMesAnoAtualOrcado, valorFaturamentoMesAnoAtual);
         }
@@ -475,13 +475,13 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoEncargoComissoes(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat){
 
         ParametroGeralDreEntity dadoParametroGeral = dreLojaCustom.findParametrosDreByMesAno(mesDre, anoDre);
-        double percentEncargoComissoes = Math.abs(dadoParametroGeral.percEncargos);
+        double percentEncargoComissoes = dadoParametroGeral.percEncargos;
 
         OrcamentoLojaDre dadosOrcamentoComissoes = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(COMISSOES, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoComissoesMesAnoAtual = Math.abs(dadosOrcamentoComissoes.valPropriedade);
+        double valorOrcadoComissoesMesAnoAtual = dadosOrcamentoComissoes.valPropriedade;
 
-        double valorLancamentosComissoesMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorLancamentosComissoesMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosComissoesMesAnoAnterior = dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorLancamentosComissoesMesAnoAtual = dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre);
 
         double valorEncargoComissoesMesAnoAnterior = 0;
         double valorOrcadoEncargoComissoesMesAnoAtual = 0;
@@ -502,7 +502,7 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoResultadoLiquido(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat, double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtual){
 
         OrcamentoLojaDre dadosOrcamentoResultadoLiquido = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(RESULTADO_LIQUIDO, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoResultadoLiquidoMesAnoAtual = Math.abs(dadosOrcamentoResultadoLiquido.valPropriedade);
+        double valorOrcadoResultadoLiquidoMesAnoAtual = dadosOrcamentoResultadoLiquido.valPropriedade;
 
         DreLojaCalculo dadosResultadoOperacional = obterValorCalculadoResultadoOperacional(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorLucroBrutoMesAnoAnterior, valorLucroBrutoMesAnoAtual);
         double valorResultadoOperacionalMesAnoAnterior =  dadosResultadoOperacional.valPropriedadeMesAnoAnterior;
@@ -526,13 +526,13 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoTaxaCaptura(String cnpjLoja, int mesDre, int anoDre){
 
         ConciliacaoLojaDre dadosConciliacaoMesAnoAnterior = dreLojaCustom.findConciliacaoLojaDreCnpjMesAno(cnpjLoja, mesDre, anoDre -1);
-        double valorTaxaCapturaMesAnoAnterior = Math.abs(dadosConciliacaoMesAnoAnterior.valTaxaCaptura);
+        double valorTaxaCapturaMesAnoAnterior = dadosConciliacaoMesAnoAnterior.valTaxaCaptura;
 
         OrcamentoLojaDre dadosOrcamentoTaxaCaptura = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(TAXA_CAPTURA, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoTaxaCapturaMesAnoAtual = Math.abs(dadosOrcamentoTaxaCaptura.valPropriedade);
+        double valorOrcadoTaxaCapturaMesAnoAtual = dadosOrcamentoTaxaCaptura.valPropriedade;
 
         ConciliacaoLojaDre dadosConciliacaoMesAnoAtual = dreLojaCustom.findConciliacaoLojaDreCnpjMesAno(cnpjLoja, mesDre, anoDre);
-        double valorTaxaCapturaMesAnoAtual = Math.abs(dadosConciliacaoMesAnoAtual.valTaxaCaptura);
+        double valorTaxaCapturaMesAnoAtual = dadosConciliacaoMesAnoAtual.valTaxaCaptura;
 
         DreLojaCalculo dadosValorCalculadoTaxaCaptura = new DreLojaCalculo();
         dadosValorCalculadoTaxaCaptura.valPropriedadeMesAnoAnterior = valorTaxaCapturaMesAnoAnterior;
@@ -545,18 +545,18 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoCustoAntecipacao(String cnpjLoja, int mesDre, int anoDre){
 
         ConciliacaoLojaDre dadosConciliacaoMesAnoAnterior = dreLojaCustom.findConciliacaoLojaDreCnpjMesAno(cnpjLoja, mesDre, anoDre -1);
-        double valorCustoAntecipacaoMesAnoAnterior = Math.abs(dadosConciliacaoMesAnoAnterior.valCustoAntecipacao);
+        double valorCustoAntecipacaoMesAnoAnterior = dadosConciliacaoMesAnoAnterior.valCustoAntecipacao;
 
         OrcamentoLojaDre dadosOrcamentoCustoAntecipacao = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(CUSTO_ANTECIPACAO, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoCustoAntecipacaoMesAnoAtual = Math.abs(dadosOrcamentoCustoAntecipacao.valPropriedade);
+        double valorOrcadoCustoAntecipacaoMesAnoAtual = dadosOrcamentoCustoAntecipacao.valPropriedade;
 
         ConciliacaoLojaDre dadosConciliacaoMesAnoAtual = dreLojaCustom.findConciliacaoLojaDreCnpjMesAno(cnpjLoja, mesDre, anoDre);
-        double valorCustoAntecipacaoMesAnoAtual = Math.abs(dadosConciliacaoMesAnoAtual.valCustoAntecipacao);
+        double valorCustoAntecipacaoMesAnoAtual = dadosConciliacaoMesAnoAtual.valCustoAntecipacao;
 
         DreLojaCalculo dadosCustoAntecipacao = new DreLojaCalculo();
-        dadosCustoAntecipacao.valPropriedadeMesAnoAnterior = valorCustoAntecipacaoMesAnoAnterior;
-        dadosCustoAntecipacao.valPropriedadeOrcadoMesAnoAtual = valorOrcadoCustoAntecipacaoMesAnoAtual;
-        dadosCustoAntecipacao.valPropriedadeMesAnoAtual = valorCustoAntecipacaoMesAnoAtual;
+        dadosCustoAntecipacao.valPropriedadeMesAnoAnterior = (valorCustoAntecipacaoMesAnoAnterior *-1);
+        dadosCustoAntecipacao.valPropriedadeOrcadoMesAnoAtual = (valorOrcadoCustoAntecipacaoMesAnoAtual *-1);
+        dadosCustoAntecipacao.valPropriedadeMesAnoAtual = (valorCustoAntecipacaoMesAnoAtual *-1);
 
         return dadosCustoAntecipacao;
     }
@@ -574,9 +574,9 @@ public class DreLojaService {
 
         String contaContabilConcat = obterContasContabeisSeqOrcamento(GASTOS_VARIAVEIS, cnpjLoja, mesDre, anoDre);
         OrcamentoLojaDre dadosOrcamentoGastosVariaveis = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(GASTOS_VARIAVEIS, cnpjLoja, mesDre, anoDre);
-        double valorLancamentosContaContabilMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorOrcadoGastosVariaveisMesAnoAtual = Math.abs(dadosOrcamentoGastosVariaveis.valPropriedade);
-        double valorLancamentosContaContabilMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosContaContabilMesAnoAnterior = dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorOrcadoGastosVariaveisMesAnoAtual = dadosOrcamentoGastosVariaveis.valPropriedade;
+        double valorLancamentosContaContabilMesAnoAtual = dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre);
 
         double valorTotalOrcadoLancamentosContaContabilMesAnoAtual = valorOrcadoGastosVariaveisMesAnoAtual + valorOrcadoEncargoComissoesMesAnoAtual; // TODO: NÃO INCLUIR A CAPTURA POIS JÁ CONSIDERA NO ORCAMENTO.
         double valorTotalLancamentosContaContabilMesAnoAnterior = valorLancamentosContaContabilMesAnoAnterior + valorTaxaCapturaMesAnoAnterior + valorEncargoComissoesMesAnoAnterior;
@@ -594,9 +594,9 @@ public class DreLojaService {
 
         String contaContabilConcat = obterContasContabeisSeqOrcamento(DESPESAS_FOLHA, cnpjLoja, mesDre, anoDre);
         OrcamentoLojaDre dadosOrcamentoDespesasFolha = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(DESPESAS_FOLHA, cnpjLoja, mesDre, anoDre);
-        double valorLancamentosContaContabilMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorOrcadoDespesasFolhaMesAnoAtual = Math.abs(dadosOrcamentoDespesasFolha.valPropriedade);
-        double valorLancamentosContaContabilMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosContaContabilMesAnoAnterior = dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorOrcadoDespesasFolhaMesAnoAtual = dadosOrcamentoDespesasFolha.valPropriedade;
+        double valorLancamentosContaContabilMesAnoAtual = dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre);
 
         DreLojaCalculo dadosEncargosComissoes = obterValorCalculadoEncargoComissoes(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
         double valorEstornoComComissoesMesAnoAnterior =  dadosEncargosComissoes.valPropriedadeMesAnoAnterior;
@@ -615,9 +615,9 @@ public class DreLojaService {
 
         String contaContabilConcat = obterContasContabeisSeqOrcamento(DESPESAS_GERAIS, cnpjLoja, mesDre, anoDre);
         OrcamentoLojaDre dadosOrcamentoDespesasGerais = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(DESPESAS_GERAIS, cnpjLoja, mesDre, anoDre);
-        double valorLancamentosContaContabilMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorOrcadoDespesasGeraisMesAnoAtual = Math.abs(dadosOrcamentoDespesasGerais.valPropriedade);
-        double valorLancamentosContaContabilMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosContaContabilMesAnoAnterior = dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorOrcadoDespesasGeraisMesAnoAtual = dadosOrcamentoDespesasGerais.valPropriedade;
+        double valorLancamentosContaContabilMesAnoAtual = dreLojaCustom.obterValorLancamentosContasContabeisMesAno(contaContabilConcat, centroCustoLojaConcat, mesDre, anoDre);
 
         DreLojaCalculo dadosDespesasGerais = new DreLojaCalculo();
         dadosDespesasGerais.valPropriedadeMesAnoAnterior = valorLancamentosContaContabilMesAnoAnterior;
@@ -630,10 +630,10 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoGastosFixos(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat){
 
         OrcamentoLojaDre dadosOrcamentoGastosFixos = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(GASTOS_FIXOS, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoGastosFixosMesAnoAtual = Math.abs(dadosOrcamentoGastosFixos.valPropriedade);
+        double valorOrcadoGastosFixosMesAnoAtual = dadosOrcamentoGastosFixos.valPropriedade;
 
-        double valorLancamentosCustoOcupacaoMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(CUSTO_OCUPACAO, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorLancamentosCustoOcupacaoMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(CUSTO_OCUPACAO, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosCustoOcupacaoMesAnoAnterior = dreLojaCustom.obterValorLancamentosContaContabilMesAno(CUSTO_OCUPACAO, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorLancamentosCustoOcupacaoMesAnoAtual = dreLojaCustom.obterValorLancamentosContaContabilMesAno(CUSTO_OCUPACAO, centroCustoLojaConcat, mesDre, anoDre);
 
         DreLojaCalculo dadosDespesasFolha = obterValorCalculadoDespesasFolha(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
         double valorDespesasFolhaMesAnoAnterior =  dadosDespesasFolha.valPropriedadeMesAnoAnterior;
@@ -664,10 +664,10 @@ public class DreLojaService {
         double valorGastosVariaveisMesAnoAtual =  dadosGastosVariaveis.valPropriedadeMesAnoAtual;
 
         OrcamentoLojaDre dadosOrcamentoMargemContribuicao = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(MARGEM_CONTRIBUICAO, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoMargemContribuicaoMesAnoAtual = Math.abs(dadosOrcamentoMargemContribuicao.valPropriedade);
+        double valorOrcadoMargemContribuicaoMesAnoAtual = dadosOrcamentoMargemContribuicao.valPropriedade;
 
-        double valorMargemContribuicaoMesAnoAnterior = valorLucroBrutoMesAnoAnterior - valorGastosVariaveisMesAnoAnterior;
-        double valorMargemContribuicaoMesAnoAtual =  valorLucroBrutoMesAnoAtual - valorGastosVariaveisMesAnoAtual;
+        double valorMargemContribuicaoMesAnoAnterior = valorLucroBrutoMesAnoAnterior - (valorGastosVariaveisMesAnoAnterior *-1);
+        double valorMargemContribuicaoMesAnoAtual =  valorLucroBrutoMesAnoAtual - (valorGastosVariaveisMesAnoAtual *-1);
 
         DreLojaCalculo dadosMargemContribuicao = new DreLojaCalculo();
         dadosMargemContribuicao.valPropriedadeMesAnoAnterior = valorMargemContribuicaoMesAnoAnterior;
@@ -680,18 +680,18 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoEbitda(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat, double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtual){
 
         OrcamentoLojaDre dadosOrcamentoEbitda = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(EBITDA, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoEbitdaMesAnoAtual = Math.abs(dadosOrcamentoEbitda.valPropriedade);
+        double valorOrcadoEbitdaMesAnoAtual = dadosOrcamentoEbitda.valPropriedade;
 
         DreLojaCalculo dadosMargemContribuicao = obterValorCalculadoMargemContribuicao(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorLucroBrutoMesAnoAnterior, valorLucroBrutoMesAnoAtual);
-        double valorMargemContribuicaoMesAnoAnterior =  dadosMargemContribuicao.valPropriedadeMesAnoAnterior;
-        double valorMargemContribuicaoMesAnoAtual =  dadosMargemContribuicao.valPropriedadeMesAnoAtual;
+        double valorMargemContribuicaoMesAnoAnterior =  (dadosMargemContribuicao.valPropriedadeMesAnoAnterior *-1);
+        double valorMargemContribuicaoMesAnoAtual =  (dadosMargemContribuicao.valPropriedadeMesAnoAtual *-1);
 
         DreLojaCalculo dadosGastosFixos = obterValorCalculadoGastosFixos(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
         double valorGastosFixosMesAnoAnterior =  dadosGastosFixos.valPropriedadeMesAnoAnterior;
         double valorGastosFixosMesAnoAtual =  dadosGastosFixos.valPropriedadeMesAnoAtual;
 
-        double valorEbitdaMesAnoAnterior =  valorMargemContribuicaoMesAnoAnterior - valorGastosFixosMesAnoAnterior;
-        double valorEbitdaMesAnoAtual =  valorMargemContribuicaoMesAnoAtual - valorGastosFixosMesAnoAtual;
+        double valorEbitdaMesAnoAnterior =  ((valorMargemContribuicaoMesAnoAnterior - valorGastosFixosMesAnoAnterior) *-1);
+        double valorEbitdaMesAnoAtual =  ((valorMargemContribuicaoMesAnoAtual - valorGastosFixosMesAnoAtual) *-1);
 
         DreLojaCalculo dadosEbitda = new DreLojaCalculo();
         dadosEbitda.valPropriedadeMesAnoAnterior = valorEbitdaMesAnoAnterior;
@@ -704,7 +704,7 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoResultadoOperacional(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat, double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtual){
 
         OrcamentoLojaDre dadosOrcamentoResultadoOperacional = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(RESULTADO_OPERACIONAL, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoResultadoOperacionalMesAnoAtual = Math.abs(dadosOrcamentoResultadoOperacional.valPropriedade);
+        double valorOrcadoResultadoOperacionalMesAnoAtual = dadosOrcamentoResultadoOperacional.valPropriedade;
 
         DreLojaCalculo dadosEbitda = obterValorCalculadoEbitda(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorLucroBrutoMesAnoAnterior, valorLucroBrutoMesAnoAtual);
         double valorEbitdaMesAnoAnterior =  dadosEbitda.valPropriedadeMesAnoAnterior;
@@ -714,19 +714,19 @@ public class DreLojaService {
         double valorCustoAntecipacaoMesAnoAnterior =  dadosCustoAntecipacao.valPropriedadeMesAnoAnterior;
         double valorCustoAntecipacaoMesAnoAtual =  dadosCustoAntecipacao.valPropriedadeMesAnoAtual;
 
-        double valorLancamentosDepreciacaoMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorLancamentosDepreciacaoMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosDepreciacaoMesAnoAnterior = dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorLancamentosDepreciacaoMesAnoAtual = dreLojaCustom.obterValorLancamentosContaContabilMesAno(DEPRECIACAO, centroCustoLojaConcat, mesDre, anoDre);
 
-        double valorLancamentosAmortizacaoMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(AMORTIZACAO, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorLancamentosAmortizacaoMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(AMORTIZACAO, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosAmortizacaoMesAnoAnterior = dreLojaCustom.obterValorLancamentosContaContabilMesAno(AMORTIZACAO, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorLancamentosAmortizacaoMesAnoAtual = dreLojaCustom.obterValorLancamentosContaContabilMesAno(AMORTIZACAO, centroCustoLojaConcat, mesDre, anoDre);
 
-        double valorResultadoOperacionalMesAnoAnterior = valorEbitdaMesAnoAnterior - valorLancamentosAmortizacaoMesAnoAnterior - valorLancamentosDepreciacaoMesAnoAnterior - valorCustoAntecipacaoMesAnoAnterior;
-        double valorResultadoOperacionalMesAnoAtual = valorEbitdaMesAnoAtual - valorLancamentosAmortizacaoMesAnoAtual - valorLancamentosDepreciacaoMesAnoAtual - valorCustoAntecipacaoMesAnoAtual;
+        double valorResultadoOperacionalMesAnoAnterior = (valorEbitdaMesAnoAnterior*-1) - valorLancamentosAmortizacaoMesAnoAnterior - valorLancamentosDepreciacaoMesAnoAnterior - valorCustoAntecipacaoMesAnoAnterior;
+        double valorResultadoOperacionalMesAnoAtual = (valorEbitdaMesAnoAtual*-1) - valorLancamentosAmortizacaoMesAnoAtual - valorLancamentosDepreciacaoMesAnoAtual - valorCustoAntecipacaoMesAnoAtual;
 
         DreLojaCalculo dadosResultadoOperacional = new DreLojaCalculo();
-        dadosResultadoOperacional.valPropriedadeMesAnoAnterior = valorResultadoOperacionalMesAnoAnterior;
+        dadosResultadoOperacional.valPropriedadeMesAnoAnterior = valorResultadoOperacionalMesAnoAnterior*-1;
         dadosResultadoOperacional.valPropriedadeOrcadoMesAnoAtual = valorOrcadoResultadoOperacionalMesAnoAtual;
-        dadosResultadoOperacional.valPropriedadeMesAnoAtual = valorResultadoOperacionalMesAnoAtual;
+        dadosResultadoOperacional.valPropriedadeMesAnoAtual = valorResultadoOperacionalMesAnoAtual*-1;
 
         return dadosResultadoOperacional;
     }
@@ -737,7 +737,7 @@ public class DreLojaService {
         double valorImpostoPlanejamento = dadoParametroGeral.valImpostoPlanejamento;
 
         OrcamentoLojaDre dadosOrcamentoResultadoOperacional = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(IMPOSTOS_PLANEJAMENTO, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoImpostoPlanejamentoMesAnoAtual = Math.abs(dadosOrcamentoResultadoOperacional.valPropriedade);
+        double valorOrcadoImpostoPlanejamentoMesAnoAtual = dadosOrcamentoResultadoOperacional.valPropriedade;
 
         double valorFaturamentoGeralMesAnoAnterior = dreLojaCustom.obterValorTotalFaturamentoMesAno(mesDre, anoDre -1, null);
         double valorFaturamentoGeralMesAnoAtual = dreLojaCustom.obterValorTotalFaturamentoMesAno(mesDre, anoDre, null);
@@ -766,7 +766,7 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoPontoDeEquilibro(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat, double valorLucroBrutoMesAnoAnterior, double valorLucroBrutoMesAnoAtual, double valorFaturamentoMesAnoAnterior, double valorFaturamentoMesAnoAtual){
 
         OrcamentoLojaDre dadosOrcamentoResultadoOperacional = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(PONTO_DE_EQUILIBRIO, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoPontoEquilibrioMesAnoAtual = Math.abs(dadosOrcamentoResultadoOperacional.valPropriedade);
+        double valorOrcadoPontoEquilibrioMesAnoAtual = dadosOrcamentoResultadoOperacional.valPropriedade;
 
         DreLojaCalculo dadosMargemContribuicao = obterValorCalculadoMargemContribuicao(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat, valorLucroBrutoMesAnoAnterior, valorLucroBrutoMesAnoAtual);
         double valorMargemContribuicaoMesAnoAnterior =  dadosMargemContribuicao.valPropriedadeMesAnoAnterior;
@@ -796,10 +796,10 @@ public class DreLojaService {
     public DreLojaCalculo obterValorCalculadoCustoComPessoal(String cnpjLoja, int mesDre, int anoDre, String centroCustoLojaConcat){
 
         OrcamentoLojaDre dadosOrcamentoCustoComPessoal = orcamentoLojaDreCustom.findOrcamentoByContaContabilCnpjMesAno(CUSTO_COM_PESSOAL, cnpjLoja, mesDre, anoDre);
-        double valorOrcadoCustoComPessoalMesAnoAtual = Math.abs(dadosOrcamentoCustoComPessoal.valPropriedade);
+        double valorOrcadoCustoComPessoalMesAnoAtual = dadosOrcamentoCustoComPessoal.valPropriedade;
 
-        double valorLancamentosComissoesMesAnoAnterior = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre -1));
-        double valorLancamentosComissoesMesAnoAtual = Math.abs(dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre));
+        double valorLancamentosComissoesMesAnoAnterior = dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre -1);
+        double valorLancamentosComissoesMesAnoAtual = dreLojaCustom.obterValorLancamentosContaContabilMesAno(COMISSOES, centroCustoLojaConcat, mesDre, anoDre);
 
         DreLojaCalculo dadosEncargosComissoes = obterValorCalculadoEncargoComissoes(cnpjLoja, mesDre, anoDre, centroCustoLojaConcat);
         double valorEncargoComissoesMesAnoAnterior =  dadosEncargosComissoes.valPropriedadeMesAnoAnterior;
@@ -836,15 +836,15 @@ public class DreLojaService {
         contaContabilDre.propriedade = propriedade;
 
         contaContabilDre.valRealAnoAnt = Math.round(valorLancamentosMesAnoAnterior);
-        contaContabilDre.valOrcado = Math.round(valorOrcadoMesAnoAtual);
+        contaContabilDre.valOrcado = valorOrcadoMesAnoAtual;
         contaContabilDre.valReal = Math.round(valorLancamentosMesAnoAtual);
-        contaContabilDre.valDiferencaOrcadoReal = Math.round(Math.abs(valorOrcadoMesAnoAtual - valorLancamentosMesAnoAtual));
+        contaContabilDre.valDiferencaOrcadoReal = Math.round(valorLancamentosMesAnoAtual - valorOrcadoMesAnoAtual);
 
         if (contaContabil == PRECO_MEDIO) {
             contaContabilDre.valRealAnoAnt = valorLancamentosMesAnoAnterior;
             contaContabilDre.valOrcado = valorOrcadoMesAnoAtual;
             contaContabilDre.valReal = valorLancamentosMesAnoAtual;
-            contaContabilDre.valDiferencaOrcadoReal = Math.abs(valorOrcadoMesAnoAtual - valorLancamentosMesAnoAtual);
+            contaContabilDre.valDiferencaOrcadoReal = valorLancamentosMesAnoAtual - valorOrcadoMesAnoAtual;
         }
 
         if (valorFaturamentoMesAnoAnterior != 0) contaContabilDre.percRealAnoAnt = calcularPercentual(valorLancamentosMesAnoAnterior, valorFaturamentoMesAnoAnterior);
@@ -1013,7 +1013,7 @@ public class DreLojaService {
         LancamentoLojaMesAno lancamentoLojaMesAnoCalculado = new LancamentoLojaMesAno();
         lancamentoLojaMesAnoCalculado.qtdPecaFaturada = lancamentoLojaMesAnoMicrovix.qtdPecaFaturada + lancamentoLojaMesAnoCigam.qtdPecaFaturada;
         lancamentoLojaMesAnoCalculado.valFaturamento = lancamentoLojaMesAnoMicrovix.valFaturamento + lancamentoLojaMesAnoCigam.valFaturamento;
-        lancamentoLojaMesAnoCalculado.valImpostoFaturamento = lancamentoLojaMesAnoMicrovix.valImpostoFaturamento + lancamentoLojaMesAnoCigam.valImpostoFaturamento;
+        lancamentoLojaMesAnoCalculado.valImpostoFaturamento = (lancamentoLojaMesAnoMicrovix.valImpostoFaturamento + lancamentoLojaMesAnoCigam.valImpostoFaturamento) * -1;
         lancamentoLojaMesAnoCalculado.qtdPecaConsumo = lancamentoLojaMesAnoMicrovix.qtdPecaConsumo + lancamentoLojaMesAnoCigam.qtdPecaConsumo;
 
         return lancamentoLojaMesAnoCalculado;
