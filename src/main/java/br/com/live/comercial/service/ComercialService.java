@@ -11,6 +11,8 @@ import br.com.live.sistema.repository.UsuarioRepository;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.FormataData;
 import br.com.live.util.FormataString;
+import br.com.live.util.entity.Parametros;
+import br.com.live.util.repository.ParametrosRepository;
 import br.com.live.util.service.EmailService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +66,7 @@ public class ComercialService {
 	private final AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository;
 	private final EmailService emailService;
 	private final UsuarioRepository usuarioRepository;
+	private final ParametrosRepository parametrosRepository;
   
 	public ComercialService(BloqueioTitulosFornRepository bloqueioTitulosFornRepository, ComercialCustom comercialCustom, ProdutoCustom produtoCustom, 
 			MetasCategoriaRepository metasCategoriaRepository, TpClienteXTabPrecoRepository tpClienteXTabPrecoRepository, TpClienteXTabPrecoItemRepository tpClienteXTabPrecoItemRepository, 
@@ -71,7 +74,7 @@ public class ComercialService {
 			ControleDescontoClienteRepository controleDescontoClienteRepository, FaturamentoLiveClothingRepository faturamentoLiveClothingRepository, 
 			CanalDistribuicaoRepository canalDistribuicaoRepository, TipoClientePorCanalRepository tipoClientePorCanalRepository,	
 			RepresentanteAntigoXNovoRepository representanteAntigoXNovoRepository, AtributosNaturezaDeOperacaoRepository atributosNaturezaDeOperacaoRepository, 
-			EmailService emailService, UsuarioRepository usuarioRepository) {
+			EmailService emailService, UsuarioRepository usuarioRepository, ParametrosRepository parametrosRepository) {
 
 		this.bloqueioTitulosFornRepository = bloqueioTitulosFornRepository;
 		this.comercialCustom = comercialCustom;
@@ -89,6 +92,7 @@ public class ComercialService {
     	this.atributosNaturezaDeOperacaoRepository = atributosNaturezaDeOperacaoRepository;
 		this.emailService = emailService;
 		this.usuarioRepository = usuarioRepository;
+		this.parametrosRepository = parametrosRepository;
 	}
 	
 	public List<ConsultaTitulosBloqForn> findAllFornBloq() {
@@ -537,10 +541,14 @@ public class ComercialService {
 
 		String corpoEmail = "<b> " +FormataString.convertUtf8(dadosCliente.loja) + " </b> <br/> " + FormataString.convertUtf8(" Crédito concedido no pedido ") + dadosCliente.pedidoCliente + FormataString.convertUtf8(" no valor de R$") + valorFormatado + " " + FormataString.convertUtf8(" referente ao Cashback + URL.") + " <br/> " + FormataString.convertUtf8("Att, Comercial LIVE!");
 
+		Parametros params = parametrosRepository.findByIdParametro("EMAIL_TESTE_COMERCIAL");
+		String emailConfig = params.valorStr;
+
 		try {
 			emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosCliente.emailCliente);
 			emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, dadosUsuario.email);
 			emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, "comercial.franquias@liveoficial.com.br");
+			emailService.enviar("Desconto Pedido: " + dadosCliente.pedidoCliente, corpoEmail, emailConfig);
 		} catch (Exception e) {
 			System.out.println("Ocorreu um Erro Ao Enviar os E-mails!");
 		}
