@@ -173,7 +173,7 @@ public class DreLojaService {
         double valorFaturamentoLiquidoMesAnoAnterior = valorFaturamentoMesAnoAnterior - valorImpostoFaturamentoMesAnoAnterior;
         double valorFaturamentoLiquidoMesAnoAtual = valorFaturamentoMesAnoAtual - valorImpostoFaturamentoMesAnoAtual;
 
-        double valorCustoMaterialMesAnoAtualOrcado = (Math.abs(orcamentoCustoMaterial.valPropriedade) * dadoParametroGeral.valCustoVendaProduto);
+        double valorCustoMaterialMesAnoAtualOrcado = (Math.abs(orcamentoCustoMaterial.valPropriedade));
         double valorCustoMaterialMesAnoAnterior = ((qtdPecaFaturadaMesAnoAnterior + qtdPecaConsumoMesAnoAnterior) * dadoParametroGeral.valCustoVendaProduto);
         double valorCustoMaterialMesAnoAtual = ((qtdPecaFaturadaMesAnoAtual + qtdPecaConsumoMesAnoAtual) * dadoParametroGeral.valCustoVendaProduto);
 
