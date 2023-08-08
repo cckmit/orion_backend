@@ -56,4 +56,9 @@ public class OportunidadesController {
     public void updateStatusAtivo(@RequestBody BodyGestaoAtivos oportunidade) {
     	oportunidadesService.updateStatusAtivo(oportunidade.id);
     }
+    
+    @RequestMapping(value = "/update-status-negocios", method = RequestMethod.POST)
+    public void updateStatusAtivoNegocios(@RequestBody BodyGestaoAtivos oportunidade) {
+    	oportunidadesService.updateStatusAtivoNegocios(oportunidade.id);
+    }
 }

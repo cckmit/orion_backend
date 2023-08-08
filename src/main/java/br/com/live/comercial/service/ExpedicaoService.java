@@ -981,8 +981,8 @@ public class ExpedicaoService {
 		return expedicaoCustom.findMotivosDevolucao();
 	}
 	
-	public int findQtdePecasLidasByUsuarioNf(int usuario, int notaFiscal){
-		return expedicaoCustom.findQtdePecasLidasByUsuarioNf(usuario, notaFiscal);
+	public int findQtdePecasLidasByUsuarioNf(int usuario){
+		return expedicaoCustom.findQtdePecasLidasByUsuarioNf(usuario);
 	}
 	
 	public boolean saveTagDevolucao(String usuario, int nfDevolucao, int tipoDevolucao, int motivo, int transacao, int codCaixa, 
@@ -994,10 +994,16 @@ public class ExpedicaoService {
 		String[] dataConcat = sysdate.split("[-]");
 		String data = dataConcat[0];
 		String hora = dataConcat[1];
+		int deposito = 0;
 		
 		try {
-			if(tipoDevolucao != 1) {
-				expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao);
+			if(tipoDevolucao == 2) {
+				deposito = 211;
+				expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao, deposito);
+			}
+			if(tipoDevolucao == 3) {
+				deposito = 6;
+				expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao, deposito);
 			}
 			dados = new ApontamentoDevolucao(apontamentoDevolucaoRepository.findNextID(), FormataData.parseStringToDate(data), hora, usuario, nfDevolucao, tipoDevolucao,
 					motivo, transacao, codCaixa, codBarrasTag);
