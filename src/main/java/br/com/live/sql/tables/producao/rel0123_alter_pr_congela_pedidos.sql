@@ -3,7 +3,8 @@ IS
    CURSOR cur_pedidos IS
       SELECT a.pedido_venda, a.data_entr_venda, a.situacao_venda, a.cod_cancelamento
         FROM pedi_100 a
-       WHERE a.data_entr_venda = TRUNC(SYSDATE-1);
+       WHERE a.data_entr_venda = TRUNC(SYSDATE-1)
+         AND a.qtde_total_pedi > 0;
 
 -- Rodrigo F.
 -- Congela os pedidos com embarque do dia anterior, para conferência e análise em relatórios e BI´s.
