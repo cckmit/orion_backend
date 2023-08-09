@@ -22,6 +22,7 @@ import br.com.live.comercial.model.ConsultaMinutaTransporte;
 import br.com.live.comercial.model.ConsultaNotasTagsDevolucao;
 import br.com.live.comercial.model.ConsultaRegraPrioridadeTipoCliente;
 import br.com.live.comercial.model.ConsultaTag;
+import br.com.live.comercial.model.ConsultaTagsEReferenciasMapa;
 import br.com.live.comercial.model.ConsultaVariacaoArtigo;
 import br.com.live.comercial.model.DadosModalEndereco;
 import br.com.live.comercial.model.EnderecoCount;
@@ -501,6 +502,16 @@ public class ExpedicaoController {
     @RequestMapping(value = "/gerar-pdf-etiqueta", method = RequestMethod.POST)
     public String gerarPdfEtiqueta(@RequestBody BodyExpedicao body) throws FileNotFoundException, JRException {
     	return expedicaoService.gerarPdfEtiqueta(body.periodosProducao, body.tipo);
+    }
+    
+    @RequestMapping(value = "/consulta-referencias", method = RequestMethod.GET)
+    public List<ConsultaTagsEReferenciasMapa> findAllReferenciasPreEnderecadas(){
+    	return expedicaoService.findRefeferenciasPreEnderecadas();    	
+    }
+    
+    @RequestMapping(value = "/consulta-referencias-pre-enderec-by-tag", method = RequestMethod.GET)
+    public List<ConsultaTagsEReferenciasMapa> findReferenciaByTag(){
+    	return expedicaoService.findReferenciaByTag();	
     }
 }
 

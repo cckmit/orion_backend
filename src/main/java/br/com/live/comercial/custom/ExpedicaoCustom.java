@@ -13,6 +13,7 @@ import br.com.live.comercial.model.ConsultaMinutaTransporte;
 import br.com.live.comercial.model.ConsultaNotasTagsDevolucao;
 import br.com.live.comercial.model.ConsultaRegraPrioridadeTipoCliente;
 import br.com.live.comercial.model.ConsultaTag;
+import br.com.live.comercial.model.ConsultaTagsEReferenciasMapa;
 import br.com.live.comercial.model.ConsultaTransportadora;
 import br.com.live.comercial.model.ConsultaVariacaoArtigo;
 import br.com.live.comercial.model.DadosModalEndereco;
@@ -511,19 +512,24 @@ public class ExpedicaoCustom {
 
 		List<ConsultaCaixasNoEndereco> caixas = null;
 
-		String query = " select p.numero_caixa numeroCaixa, l.periodo_producao periodo, l.ordem_producao ordemProducao, l.ordem_confeccao pacote, t.proconf_nivel99 || '.' || t.proconf_grupo || '.' || t.proconf_subgrupo || '.' || t.proconf_item sku from orion_130 p, orion_131 l, pcpc_040 t "
-				+ " where p.endereco = '" + endereco + "' "
-				+ " and l.numero_caixa = p.numero_caixa "
-				+ " and t.periodo_producao = l.periodo_producao "
-				+ " and t.ordem_confeccao = l.ordem_confeccao "
-				+ " and t.ordem_producao = l.ordem_producao "
-				+ " group by p.numero_caixa, l.periodo_producao, l.ordem_producao, l.ordem_confeccao, t.proconf_nivel99, t.proconf_grupo, t.proconf_subgrupo, t.proconf_item ";
+		String query = " SELECT p.numero_caixa numeroCaixa, "
+				+ "		l.periodo_producao periodo, "
+				+ "		l.ordem_producao ordemProducao, "
+				+ "		l.ordem_confeccao pacote, "
+				+ "		t.proconf_nivel99 || '.' || t.proconf_grupo || '.' || t.proconf_subgrupo || '.' || t.proconf_item sku "
+				+ "   FROM orion_130 p, orion_131 l, pcpc_040 t "
+				+ "   WHERE p.endereco = '" + endereco + "' "
+				+ "   AND l.numero_caixa = p.numero_caixa "
+				+ "   AND t.periodo_producao = l.periodo_producao "
+				+ "   AND t.ordem_confeccao = l.ordem_confeccao "
+				+ "   AND t.ordem_producao = l.ordem_producao "
+				+ "   GROUP BY p.numero_caixa, l.periodo_producao, l.ordem_producao, l.ordem_confeccao, t.proconf_nivel99, "
+				+ "            t.proconf_grupo, t.proconf_subgrupo, t.proconf_item ";
 		try {
 			caixas = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaCaixasNoEndereco.class));
 		} catch (Exception e) {
 			caixas = new ArrayList<ConsultaCaixasNoEndereco>();
 		}
-
 		return caixas;
 	}
 
@@ -1997,5 +2003,41 @@ public class ExpedicaoCustom {
 		
 		jdbcTemplate.update(query, codBarrasTag);
 	}
-	 
+	
+	public List<ConsultaTagsEReferenciasMapa> findTagsPreEnderecadas() {
+		
+		String query = " SELECT o.NUMERO_TAG TAG, a.ENDERECO ENDERECO FROM orion_130 a, ORION_131 o "
+				+ "		WHERE o.NUMERO_CAIXA = a.NUMERO_CAIXA "
+				+ "		AND a.ENDERECO IS NOT NULL "
+				+ "		GROUP BY o.NUMERO_TAG , a.ENDERECO " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTagsEReferenciasMapa.class));
+	}
+	
+	public List<ConsultaTagsEReferenciasMapa> findRefeferenciasPreEnderecadas() {
+		
+		String query = " SELECT a.ENDERECO, p.GRUPO referencia FROM orion_130 a, ORION_131 o, PCPC_330 p "
+				+ "	  WHERE o.NUMERO_CAIXA = a.NUMERO_CAIXA "
+				+ "	  AND p.PERIODO_PRODUCAO  = o.PERIODO_PRODUCAO "
+				+ "	  AND p.ORDEM_PRODUCAO = o.ORDEM_PRODUCAO  "
+				+ "   AND p.ORDEM_CONFECCAO = o.ORDEM_CONFECCAO "
+				+ "	  AND p.SEQUENCIA = o.SEQUENCIA "
+				+ "	  AND a.ENDERECO IS NOT NULL "
+				+ "   GROUP BY a.ENDERECO, p.GRUPO " ;
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTagsEReferenciasMapa.class));
+	}
+	
+	public List<ConsultaTagsEReferenciasMapa> findReferenciaByTag() {
+		String query = " SELECT o.numero_tag tag, p.grupo referencia FROM orion_130 a, ORION_131 o, pcpc_330 p "
+				+ " WHERE o.NUMERO_CAIXA = a.NUMERO_CAIXA "
+				+ "  and p.periodo_producao = LPAD(SUBSTR(o.numero_tag, 1, 4),  4, 0) "
+				+ "  AND p.ordem_producao = LPAD(SUBSTR(o.numero_tag, 5, 9),  9, 0) "
+				+ "  AND p.ordem_confeccao = LPAD(SUBSTR(o.numero_tag, 14, 5), 5, 0) "
+				+ "  AND p.sequencia = LPAD(SUBSTR(o.numero_tag, 19, 4), 4, 0) "
+				+ "  AND a.ENDERECO IS NOT NULL "
+				+ "  GROUP BY o.numero_tag, p.grupo ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTagsEReferenciasMapa.class));
+	}
 }

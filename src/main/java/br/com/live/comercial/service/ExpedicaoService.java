@@ -28,6 +28,7 @@ import br.com.live.comercial.model.ConsultaMinutaTransporte;
 import br.com.live.comercial.model.ConsultaNotasTagsDevolucao;
 import br.com.live.comercial.model.ConsultaRegraPrioridadeTipoCliente;
 import br.com.live.comercial.model.ConsultaTag;
+import br.com.live.comercial.model.ConsultaTagsEReferenciasMapa;
 import br.com.live.comercial.model.ConsultaTransportadora;
 import br.com.live.comercial.model.ConsultaVariacaoArtigo;
 import br.com.live.comercial.model.DadosModalEndereco;
@@ -1044,5 +1045,17 @@ public class ExpedicaoService {
 		
 
 		return nomeRelatorioGerado;
+	}
+	
+	public List<ConsultaTagsEReferenciasMapa> findTagsPreEnderecadas(){
+		return expedicaoCustom.findTagsPreEnderecadas();
+	}
+	
+	public List<ConsultaTagsEReferenciasMapa> findRefeferenciasPreEnderecadas(){
+		return expedicaoCustom.findRefeferenciasPreEnderecadas();
+	}
+	
+	public List<ConsultaTagsEReferenciasMapa> findReferenciaByTag(){
+		return expedicaoCustom.findReferenciaByTag();
 	}
 }

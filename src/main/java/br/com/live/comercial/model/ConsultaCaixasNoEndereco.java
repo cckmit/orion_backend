@@ -12,58 +12,46 @@ public class ConsultaCaixasNoEndereco {
 	public int getPeriodo() {
 		return periodo;
 	}
-
 	public void setPeriodo(int periodo) {
 		this.periodo = periodo;
 	}
-
 	public int getOrdemProducao() {
 		return ordemProducao;
 	}
-
 	public void setOrdemProducao(int ordemProducao) {
 		this.ordemProducao = ordemProducao;
 	}
-
 	public int getPacote() {
 		return pacote;
 	}
-
 	public void setPacote(int pacote) {
 		this.pacote = pacote;
 	}
-
 	public String getSku() {
 		return sku;
 	}
-
 	public void setSku(String sku) {
 		this.sku = sku;
 	}
-
 	public int getNumeroCaixa() {
 		return numeroCaixa;
 	}
-	
 	public void setNumeroCaixa(int numeroCaixa) {
 		this.numeroCaixa = numeroCaixa;
 	}
 	public String getEndereco() {
 		return endereco;
 	}
-
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
-
 	public int getQuantidade() {
 		return quantidade;
 	}
-
 	public void setQuantidade(int quantidade) {
 		this.quantidade = quantidade;
 	}
-
+	
 	public ConsultaCaixasNoEndereco() {
 		
 	}
