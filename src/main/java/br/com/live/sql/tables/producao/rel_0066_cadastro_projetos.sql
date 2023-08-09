@@ -9,6 +9,7 @@
 -- orion_ti_065 -- Custos e Orçamentos
 -- orion_ti_070 -- Atividades Realizadas (Acompanhamento do Projeto)
 -- orion_ti_071 -- Tarefas das Atividades Realizadas (Acompanhamento do Projeto)
+-- orion_ti_072 -- Tabela de envolvidos das tarefas
 -- orion_anexos -- Imagens/Documentos relacionados ao Projeto
 
 --DROP
@@ -284,7 +285,7 @@ CREATE TABLE orion_ti_046 (
       UPDATE orion_ti_040
       SET PROJETO_DIRETORIA = 0
 
-    -- Tabela de aprovadores do escopo
+    -- Tabela de envolvidos das tarefas realizadas
         CREATE TABLE orion_ti_072 (
           ID VARCHAR2(100),
           ID_USUARIO NUMBER(9),
