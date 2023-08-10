@@ -1237,7 +1237,7 @@ public class ExpedicaoCustom {
 			query += "where hist.deposito = 111 ";
 		}
 
-		if (tipoMov.equalsIgnoreCase("S")) {
+		if (tipoMov != null && tipoMov.equalsIgnoreCase("S")) {
 			query += " UNION ALL ";
 			query += " select c.periodo_producao || lpad(c.ordem_producao, 9,0) || lpad(c.ordem_confeccao, 5,0) || lpad(c.sequencia, 4,0) numeroTag, " +
 					" c.nivel || '.' || c.grupo || '.' || c.subgrupo || '.' || c.item produto, b.data_montagem, 'S', c.usuario_exped, c.endereco, c.deposito " +
@@ -1247,6 +1247,13 @@ public class ExpedicaoCustom {
 			if (usuario != null && !usuario.equalsIgnoreCase("")) {
 				query += " and c.usuario_exped in (" + usuario + ")";
 			}
+
+			if (deposito == 4) {
+				query += " and c.deposito = 4 ";
+			} else if (deposito == 111) {
+				query += " and c.deposito = 111 ";
+			}
+
 			query += " and b.data_montagem between to_date('" + dataInicio + "', 'dd-MM-yyyy') and  to_date('" + dataFim + "', 'dd-MM-yyyy') " +
 					" and not exists (select 1 from orion_exp_300 d " +
 					"                       where d.periodo = c.periodo_producao " +
@@ -1256,7 +1263,6 @@ public class ExpedicaoCustom {
 					"                       and d.tipo = 'S')";
 		}
 
-		System.out.println("QUERY: " + query);
 		try {
 			historicoEnderecos = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTag.class));
 		} catch (Exception e) {
@@ -1295,7 +1301,7 @@ public class ExpedicaoCustom {
 		}
 		query += " group by a.endereco ";
 
-		if (tipoMov.equalsIgnoreCase("S")) {
+		if (tipoMov != null && tipoMov.equalsIgnoreCase("S")) {
 			query += " UNION ALL ";
 			query += " select count(*), c.deposito" +
 					" from pcpc_330 c, pcpc_320 b " +
@@ -1320,8 +1326,6 @@ public class ExpedicaoCustom {
 		} else if (deposito == 111) {
 			query += " where quantMov.deposito = 111 ";
 		}
-
-		System.out.println("OUTRA QUERY: " + query);
 
 		try {
 			totalMov = jdbcTemplate.queryForObject(query, Integer.class);
