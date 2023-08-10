@@ -535,9 +535,9 @@ public class DreLojaService {
         double valorTaxaCapturaMesAnoAtual = dadosConciliacaoMesAnoAtual.valTaxaCaptura;
 
         DreLojaCalculo dadosValorCalculadoTaxaCaptura = new DreLojaCalculo();
-        dadosValorCalculadoTaxaCaptura.valPropriedadeMesAnoAnterior = valorTaxaCapturaMesAnoAnterior;
+        dadosValorCalculadoTaxaCaptura.valPropriedadeMesAnoAnterior = (valorTaxaCapturaMesAnoAnterior*-1);
         dadosValorCalculadoTaxaCaptura.valPropriedadeOrcadoMesAnoAtual = valorOrcadoTaxaCapturaMesAnoAtual;
-        dadosValorCalculadoTaxaCaptura.valPropriedadeMesAnoAtual = valorTaxaCapturaMesAnoAtual;
+        dadosValorCalculadoTaxaCaptura.valPropriedadeMesAnoAtual = (valorTaxaCapturaMesAnoAtual*-1);
 
         return dadosValorCalculadoTaxaCaptura;
     }

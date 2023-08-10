@@ -53,7 +53,7 @@ public class IndicadoresCustom {
 				+ "	   	 a.descricao label "
 				+ "      FROM orion_ind_020 a "
 				+ "      WHERE a.tipo = '" + tipo + "'"
-				+ "      ORDER BY a.sequencia ";
+				+ "      ORDER BY a.descricao ";
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
 	}
 	
