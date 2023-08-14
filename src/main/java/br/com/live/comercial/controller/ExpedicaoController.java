@@ -485,7 +485,7 @@ public class ExpedicaoController {
     }
     
     @RequestMapping(value = "/save-tag-devolucao", method = RequestMethod.POST)
-    public boolean saveTagDevolucao(@RequestBody BodyExpedicao body) {
+    public String saveTagDevolucao(@RequestBody BodyExpedicao body) {
         return expedicaoService.saveTagDevolucao(body.crachaUsuario, body.nfDevolucao, body.tipoDevolucao, body.motivo, body.transacao, body.codCaixa, body.codBarrasTag);
     }
     

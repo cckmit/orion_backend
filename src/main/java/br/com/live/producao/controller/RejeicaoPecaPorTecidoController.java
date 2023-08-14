@@ -10,13 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.live.administrativo.body.BodyContabilidade;
-import br.com.live.administrativo.model.RetornoLancamentoCont;
 import br.com.live.producao.body.BodyRejeicaoPecaPorTecido;
-import br.com.live.producao.entity.RejeicaoPecaPorTecido;
 import br.com.live.producao.model.ConsultaRejeicaoPecaPorTecido;
 import br.com.live.producao.service.RejeicaoPecaPorTecidoService;
-import br.com.live.sistema.model.ConsultaIndicadores;
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
 
@@ -85,7 +81,7 @@ public class RejeicaoPecaPorTecidoController {
     @RequestMapping(value = "/salvar-rejeicao", method = RequestMethod.POST)
     public List<ConsultaRejeicaoPecaPorTecido> salvarRejeicao(@RequestBody BodyRejeicaoPecaPorTecido body) {                  
     	return rejeicaoPecaPorTecidoService.salvarRejeicao(body.id, body.dataRejeicao, body.usuario, body.estagio, body.turno, body.ordemProducao, body.periodo, 
-    			body.tecido, body.partePeca, body.quantidade, body.codMotivo);	 
+    			body.tecido, body.partePeca, body.quantidade, body.codMotivo, body.referencia, body.tamanho, body.cor);	 
     }
     // Deletar Rejeição
     @RequestMapping(value = "/delete-rejeicao/{idRejeicao}", method = RequestMethod.DELETE)

@@ -15,5 +15,8 @@ public class BodyRejeicaoPecaPorTecido {
 	public int quantidade;
 	public String motivo;
 	public int codMotivo;
+	public String referencia;
+	public String tamanho;
+	public String cor;
 
 }

@@ -5,6 +5,10 @@ public class ConsultaRejeicaoPecaPorTecido {
 	public int id;
 	public String dataRejeicao;
 	public String usuario;
+	public String nivel_tecido;
+	public String grupo_tecido;
+	public String subgru_tecido;
+	public String item_tecido;
 	public String estagio;
 	public int codEstagio;
 	public int turno;
@@ -38,6 +42,30 @@ public class ConsultaRejeicaoPecaPorTecido {
 	}
 	public void setUsuario(String usuario) {
 		this.usuario = usuario;
+	}
+	public String getNivel_tecido() {
+		return nivel_tecido;
+	}
+	public void setNivel_tecido(String nivel_tecido) {
+		this.nivel_tecido = nivel_tecido;
+	}
+	public String getGrupo_tecido() {
+		return grupo_tecido;
+	}
+	public void setGrupo_tecido(String grupo_tecido) {
+		this.grupo_tecido = grupo_tecido;
+	}
+	public String getSubgru_tecido() {
+		return subgru_tecido;
+	}
+	public void setSubgru_tecido(String subgru_tecido) {
+		this.subgru_tecido = subgru_tecido;
+	}
+	public String getItem_tecido() {
+		return item_tecido;
+	}
+	public void setItem_tecido(String item_tecido) {
+		this.item_tecido = item_tecido;
 	}
 	public String getEstagio() {
 		return estagio;
@@ -123,17 +151,25 @@ public class ConsultaRejeicaoPecaPorTecido {
 	public void setCodMotivo(int codMotivo) {
 		this.codMotivo = codMotivo;
 	}
+	
 	public ConsultaRejeicaoPecaPorTecido() {
 		
 	}
-	public ConsultaRejeicaoPecaPorTecido(int id, String dataRejeicao, String usuario, String estagio, int turno,
+	
+	public ConsultaRejeicaoPecaPorTecido(int id, String dataRejeicao, String usuario, String nivel_tecido,
+			String grupo_tecido, String subgru_tecido, String item_tecido, String estagio, int codEstagio, int turno,
 			int ordemProducao, int periodo, String nivelEstrutura, String grupoEstrutura, String subgruEstrutura,
-			String itemEstrutura, String tecido, String partePeca, int quantidade, String motivo, int codMotivo, int codEstagio) {
-		
+			String itemEstrutura, String partePeca, String tecido, int quantidade, String motivo, int codMotivo) {
+		super();
 		this.id = id;
 		this.dataRejeicao = dataRejeicao;
 		this.usuario = usuario;
+		this.nivel_tecido = nivel_tecido;
+		this.grupo_tecido = grupo_tecido;
+		this.subgru_tecido = subgru_tecido;
+		this.item_tecido = item_tecido;
 		this.estagio = estagio;
+		this.codEstagio = codEstagio;
 		this.turno = turno;
 		this.ordemProducao = ordemProducao;
 		this.periodo = periodo;
@@ -141,13 +177,11 @@ public class ConsultaRejeicaoPecaPorTecido {
 		this.grupoEstrutura = grupoEstrutura;
 		this.subgruEstrutura = subgruEstrutura;
 		this.itemEstrutura = itemEstrutura;
-		this.tecido = tecido;
 		this.partePeca = partePeca;
+		this.tecido = tecido;
 		this.quantidade = quantidade;
 		this.motivo = motivo;
 		this.codMotivo = codMotivo;
-		this.codEstagio = codEstagio;
 	}
-
 	
 }

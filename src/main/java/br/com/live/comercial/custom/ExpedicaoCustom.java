@@ -1989,23 +1989,24 @@ public class ExpedicaoCustom {
 				+ "     AND c.codigo_motivo = a.cod_motivo "
 				+ "     AND d.codigo_transacao = a.cod_transacao"
 				+ "     AND TO_CHAR(a.data, 'DD/MM/YYYY') BETWEEN '" + dataInicial + "' AND '" + dataFinal + "' ";
-		System.out.println(query);
+		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaNotasTagsDevolucao.class));
 	}
 	
 	public void updateDepositoByTag(String codBarrasTag, int transacao, int deposito) {
 		
 		String query = " UPDATE pcpc_330 a "
-				+ "       SET a.deposito = " + deposito + ", "
-				+ "       a.transacao_cardex = " + transacao + ", "
-				+ "       a.data_cardex = TO_DATE(sysdate),  "
-				+ "       a.estoque_tag = 1 "
-				+ "		WHERE a.periodo_producao = LPAD(SUBSTR(" + codBarrasTag + ", 1, 4),  4, 0) "
-				+ "		AND a.ordem_producao = LPAD(SUBSTR(" + codBarrasTag + ", 5, 9),  9, 0) "
-				+ "		AND a.ordem_confeccao = LPAD(SUBSTR(" + codBarrasTag + ", 14, 5), 5, 0) "
-				+ "		AND a.sequencia = LPAD(SUBSTR(" + codBarrasTag + ", 19, 4), 4, 0) " ;
+				+ " SET a.deposito = " + deposito + ", "
+				+ " a.transacao_cardex = " + transacao + ", "
+				+ " a.data_cardex = TRUNC(sysdate),  "
+				+ " a.estoque_tag = 1 "
+				+ "	WHERE a.periodo_producao = LPAD(SUBSTR('" + codBarrasTag + "', 1, 4),  4, 0) "
+				+ "	AND a.ordem_producao = LPAD(SUBSTR('" + codBarrasTag + "', 5, 9),  9, 0) "
+				+ "	AND a.ordem_confeccao = LPAD(SUBSTR('" + codBarrasTag + "', 14, 5), 5, 0) "
+				+ "	AND a.sequencia = LPAD(SUBSTR('" + codBarrasTag + "', 19, 4), 4, 0) " ;
 		
-		jdbcTemplate.update(query, codBarrasTag);
+		jdbcTemplate.update(query);
+		
 	}
 	
 	public List<ConsultaTagsEReferenciasMapa> findTagsPreEnderecadas() {
@@ -2030,6 +2031,25 @@ public class ExpedicaoCustom {
 				+ "   GROUP BY a.ENDERECO, p.GRUPO " ;
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaTagsEReferenciasMapa.class));
+	}
+	
+	public int findSituacaoTAGCodBarras(String codBarrasTag) {
+		
+		int situacao = 0;
+
+		String query = " SELECT a.estoque_tag FROM pcpc_330 a "
+				+ "  WHERE a.periodo_producao = LPAD(SUBSTR('" + codBarrasTag + "', 1, 4),  4, 0) "
+				+ "  AND a.ordem_producao = LPAD(SUBSTR('" + codBarrasTag + "', 5, 9),  9, 0) "
+				+ "  AND a.ordem_confeccao = LPAD(SUBSTR('" + codBarrasTag + "', 14, 5), 5, 0) "
+				+ "  AND a.sequencia = LPAD(SUBSTR('" + codBarrasTag + "', 19, 4), 4, 0) ";
+		
+		try {
+			situacao = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			situacao = 0;
+		}
+		return situacao;
+		
 	}
 	
 	public List<ConsultaTagsEReferenciasMapa> findReferenciaByTag() {

@@ -77,21 +77,21 @@ public class RejeicaoPecaPorTecidoService {
 	}
 	
 	public List<ConsultaRejeicaoPecaPorTecido> salvarRejeicao(int id, String dataRejeicao, int usuario, int codEstagio, int turno, int ordemProducao, int periodo, 
-			String tecido, String partePeca, int quantidade, int codMotivo){
+			String tecido, String partePeca, int quantidade, int codMotivo, String referencia, String tamanho, String cor){
 		 
 		String[] tecidoConcat = tecido.split("[.]");
-        String nivel = tecidoConcat[0];
-        String grupo = tecidoConcat[1];
-        String subgrupo = tecidoConcat[2];
-        String item = tecidoConcat[3];
-		
+        String nivelTecido = tecidoConcat[0];
+        String grupoTecido = tecidoConcat[1];
+        String subgruTecido = tecidoConcat[2];
+        String itemTecido = tecidoConcat[3];
+		String nivel = "1";
 		RejeicaoPecaPorTecido motivoRejeicao = null;
 		
 		try {
-			motivoRejeicao = new RejeicaoPecaPorTecido(rejeicaoPecaPorTecidoRepository.findNextId(), FormataData.parseStringToDate(dataRejeicao), usuario, codEstagio, turno,
-					ordemProducao, periodo, nivel, grupo, subgrupo, item, partePeca, quantidade, codMotivo);
+			motivoRejeicao = new RejeicaoPecaPorTecido(rejeicaoPecaPorTecidoRepository.findNextId(), FormataData.parseStringToDate(dataRejeicao), usuario, nivelTecido, 
+					grupoTecido, subgruTecido, itemTecido, codEstagio, turno, ordemProducao, periodo, nivel, referencia, tamanho, cor, partePeca, quantidade, codMotivo);
 			rejeicaoPecaPorTecidoRepository.save(motivoRejeicao);
-			rejeicaoPecaPorTecidoCustom.gravarSystextil(FormataData.parseStringToDate(dataRejeicao), codEstagio, turno, ordemProducao, periodo, nivel, grupo, subgrupo, item, quantidade, codMotivo);
+			rejeicaoPecaPorTecidoCustom.gravarSystextil(FormataData.parseStringToDate(dataRejeicao), codEstagio, turno, ordemProducao, periodo, nivel, referencia, tamanho, cor, quantidade, codMotivo);
 		} catch (Exception e) {
 			System.out.println(e);
 		}

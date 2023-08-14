@@ -993,39 +993,42 @@ public class ExpedicaoService {
 		return expedicaoCustom.findQtdePecasLidasByUsuarioNf(usuario);
 	}
 	
-	public boolean saveTagDevolucao(String usuario, int nfDevolucao, int tipoDevolucao, int motivo, int transacao, int codCaixa, 
+	public String saveTagDevolucao(String usuario, int nfDevolucao, int tipoDevolucao, int motivo, int transacao, int codCaixa, 
 			String codBarrasTag) {
 		
-		boolean resultado = false;
+		String resultado = "";
 		ApontamentoDevolucao dados = null;
 		String sysdate = expedicaoCustom.findDataHora();
 		String[] dataConcat = sysdate.split("[-]");
 		String data = dataConcat[0];
 		String hora = dataConcat[1];
 		int deposito = 0;
+		int situacao = expedicaoCustom.findSituacaoTAGCodBarras(codBarrasTag);
 		
-		try {
-			if(tipoDevolucao == 2) {
-				deposito = 211;
-				expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao, deposito);
+		if (situacao == 0) {
+			resultado = "Erro ao Consultar a Situacao do TAG";
+		} else if(situacao == 1 || situacao == 3) {
+			resultado = "TAG em Estoque";
+		} else {
+			try {
+				if(tipoDevolucao == 2) {
+					deposito = 211;
+					expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao, deposito);
+				}
+				if(tipoDevolucao == 3) {
+					deposito = 6;
+					expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao, deposito);
+				}
+				dados = new ApontamentoDevolucao(apontamentoDevolucaoRepository.findNextID(), FormataData.parseStringToDate(data), hora, usuario, nfDevolucao, tipoDevolucao,
+						motivo, transacao, codCaixa, codBarrasTag);
+				apontamentoDevolucaoRepository.save(dados);
+				resultado = "OK";
+			} catch (Exception e) {
+				resultado = "Erro no Programa";
 			}
-			if(tipoDevolucao == 3) {
-				deposito = 6;
-				expedicaoCustom.updateDepositoByTag(codBarrasTag, transacao, deposito);
-			}
-			dados = new ApontamentoDevolucao(apontamentoDevolucaoRepository.findNextID(), FormataData.parseStringToDate(data), hora, usuario, nfDevolucao, tipoDevolucao,
-					motivo, transacao, codCaixa, codBarrasTag);
-			apontamentoDevolucaoRepository.save(dados);
-			resultado = true;
-		} catch (Exception e) {
-			resultado = false;
-		}
-		
+		};
+		expedicaoCustom.findQtdePecasLidasByUsuarioNf(Integer.parseInt(usuario));
 		return resultado;
-	}
-	
-	public List<ConsultaNotasTagsDevolucao> findDadosDevolucao(){
-		return expedicaoCustom.findAllDevolucao();
 	}
 	
 	public List<ConsultaNotasTagsDevolucao> findDadosFiltrados(String dataInicial, String dataFinal){
@@ -1039,6 +1042,10 @@ public class ExpedicaoService {
 		parameters.put("tipo", tipo);
 
 		return parameters;
+	}
+	
+	public List<ConsultaNotasTagsDevolucao> findDadosDevolucao(){
+		return expedicaoCustom.findAllDevolucao();
 	}
 	
 	public String gerarPdfEtiqueta(List<ConteudoChaveNumerica> periodosProducao, String tipo) throws FileNotFoundException, JRException {
