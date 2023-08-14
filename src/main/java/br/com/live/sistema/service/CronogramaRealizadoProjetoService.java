@@ -7,6 +7,7 @@ import br.com.live.sistema.model.CronogramaRealizadoProjeto;
 import br.com.live.sistema.repository.AtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroAtividadeProjetoRepository;
 import br.com.live.sistema.repository.RegistroTarefaAtividadeProjetoRepository;
+import br.com.live.sistema.repository.TarefaAtividadeProjetoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +24,14 @@ public class CronogramaRealizadoProjetoService {
     RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository;
     AtividadeProjetoRepository atividadeProjetoRepository;
     TipoAtividadeProjetoService tipoAtividadeProjetoService;
+    TarefaAtividadeProjetoRepository tarefaAtividadeProjetoRepository;
 
-    public CronogramaRealizadoProjetoService(RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, AtividadeProjetoRepository atividadeProjetoRepository, TipoAtividadeProjetoService tipoAtividadeProjetoService) {
+    public CronogramaRealizadoProjetoService(RegistroAtividadeProjetoRepository registroAtividadeProjetoRepository, RegistroTarefaAtividadeProjetoRepository registroTarefaAtividadeProjetoRepository, AtividadeProjetoRepository atividadeProjetoRepository, TipoAtividadeProjetoService tipoAtividadeProjetoService, TarefaAtividadeProjetoRepository tarefaAtividadeProjetoRepository) {
         this.registroAtividadeProjetoRepository = registroAtividadeProjetoRepository;
         this.registroTarefaAtividadeProjetoRepository = registroTarefaAtividadeProjetoRepository;
         this.atividadeProjetoRepository = atividadeProjetoRepository;
         this.tipoAtividadeProjetoService = tipoAtividadeProjetoService;
+        this.tarefaAtividadeProjetoRepository = tarefaAtividadeProjetoRepository;
     }
 
     public List<CronogramaRealizadoProjeto> findCronogramaRealizadoProjeto(long idProjeto){
@@ -62,13 +65,12 @@ public class CronogramaRealizadoProjetoService {
                 Optional<AtividadeProjetoEntity> atividadeProjetoOptional = atividadeProjetoRepository.findById(idAtividadePrevista);
                 AtividadeProjetoEntity atividadeProjetoEntity = atividadeProjetoOptional.get();
 
+                double tempoPrevisto = tarefaAtividadeProjetoRepository.calcularTempoPrevistoTarefaAtividade(idProjeto, idAtividadePrevista);
+                cronogramaRealizadoProjeto.setTempoPrev(tempoPrevisto);
+
                 if (atividadeProjetoEntity.getDataPrevInicio() != null) cronogramaRealizadoProjeto.setDataInicioPrev(dateFormat.format(atividadeProjetoEntity.getDataPrevInicio()));
                 if (atividadeProjetoEntity.getDataPrevFim() != null) cronogramaRealizadoProjeto.setDataFimPrev(dateFormat.format(atividadeProjetoEntity.getDataPrevFim()));
 
-                if (atividadeProjetoEntity.getIdTipoAtividade() != null) {
-                    double tempoPrevisto = tipoAtividadeProjetoService.findTempoEstimadoById(atividadeProjetoEntity.getIdTipoAtividade());
-                    cronogramaRealizadoProjeto.setTempoPrev(tempoPrevisto);
-                }
             }
 
             cronogramaRealizadoProjetoList.add(cronogramaRealizadoProjeto);
@@ -99,13 +101,17 @@ public class CronogramaRealizadoProjetoService {
         return status;
     }
 
-    public double obterPercentualConclusaoRegistroAtividadeProjeto(long idProjeto, long idAtividadeProjeto){
+    public double obterPercentualConclusaoRegistroAtividadeProjeto(long idProjeto, long idAtividadeProjeto) {
 
         List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoConcluidaList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadeConcluida(idProjeto, idAtividadeProjeto);
         List<RegistroTarefaAtividadeProjetoEntity> registroTarefaAtividadeProjetoPendenteList = registroTarefaAtividadeProjetoRepository.findTarefaAtividadePendente(idProjeto, idAtividadeProjeto);
 
         int totalTarefas = registroTarefaAtividadeProjetoConcluidaList.size() + registroTarefaAtividadeProjetoPendenteList.size();
         int totalTarefasConcluidas = registroTarefaAtividadeProjetoConcluidaList.size();
+
+        if (totalTarefas == 0) {
+            return 0.0;
+        }
 
         double percentualConcluidas = (double) totalTarefasConcluidas / totalTarefas * 100.0;
 

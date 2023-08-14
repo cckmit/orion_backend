@@ -15,7 +15,7 @@ public interface TarefaTipoAtividadeProjetoRepository extends JpaRepository<Tare
     long findNextId();
 
     @Query(" SELECT nvl(max(a.ordenacao),0) + 1 FROM TarefaTipoAtividadeProjetoEntity a WHERE a.idTipoAtividade = :idTipoAtividade ")
-    int findNextOrdem(@Param("idTipoAtividade") Long idTipoAtividade);;
+    int findNextOrdem(@Param("idTipoAtividade") Long idTipoAtividade);
 
     @Query("SELECT a FROM TarefaTipoAtividadeProjetoEntity a WHERE a.idTipoAtividade = :idTipoAtividade ORDER BY a.ordenacao")
     List<TarefaTipoAtividadeProjetoEntity> findByTipoAtividadeId(@Param("idTipoAtividade") Long idTipoAtividade);
