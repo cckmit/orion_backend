@@ -51,6 +51,8 @@ import br.com.live.produto.model.Produto;
 import br.com.live.sistema.entity.Usuario;
 import br.com.live.sistema.repository.UsuarioRepository;
 
+import br.com.live.util.entity.Parametros;
+import br.com.live.util.repository.ParametrosRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,7 @@ public class ExpedicaoService {
 	private final VolumesMinutaRepository volumesMinutaRepository;
 	private final RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository;
 	private final ApontamentoDevolucaoRepository apontamentoDevolucaoRepository;
+	private final ParametrosRepository parametrosRepository;
 
 	public static final int CAIXA_ABERTA = 0;
 	public static final int CAIXA_FECHADA = 1;
@@ -89,7 +92,7 @@ public class ExpedicaoService {
 			ParametrosEnderecoCaixaRepository parametrosEnderecoCaixaRepository,
 			VariacaoPesoArtigoRepository variacaoPesoArtigoRepository, ReportService reportService,
 			VolumesMinutaRepository volumesMinutaRepository, RegrasPrioridadePedidoRepository regrasPrioridadePedidoRepository,
-			ApontamentoDevolucaoRepository apontamentoDevolucaoRepository) {
+			ApontamentoDevolucaoRepository apontamentoDevolucaoRepository, ParametrosRepository parametrosRepository) {
 		this.expedicaoCustom = expedicaoCustom;
 		this.parametrosMapaEndRepository = parametrosMapaEndRepository;
 		this.capacidadeArtigoEnderecoRepository = capacidadeArtigoEnderecoRepository;
@@ -101,6 +104,7 @@ public class ExpedicaoService {
 		this.volumesMinutaRepository = volumesMinutaRepository;
 		this.regrasPrioridadePedidoRepository = regrasPrioridadePedidoRepository;
 		this.apontamentoDevolucaoRepository = apontamentoDevolucaoRepository;
+		this.parametrosRepository = parametrosRepository;
 	}
 
 	public List<EnderecoCount> findEnderecoRef(int codDeposito) {
@@ -410,9 +414,12 @@ public class ExpedicaoService {
 			}
 		}
 
+		Parametros params = parametrosRepository.findByIdParametro("QTDE_CAIXAS_EMPILHAR_PRE_ENDERECAMENTO");
+		int quantMaxEmpilhamento = params.valorInt;
+
 		quantEndereco = expedicaoCustom.findQuantidadeCaixasNoeEndereco(endereco);
-		if (quantEndereco > 8) {
-			msgErro = "Não é permitido colocar mais de 8 caixas no endereço! ";
+		if (quantEndereco > quantMaxEmpilhamento) {
+			msgErro = "Não é permitido colocar mais de " + quantMaxEmpilhamento + " caixas no endereço! ";
 			return msgErro;
 		}
 
