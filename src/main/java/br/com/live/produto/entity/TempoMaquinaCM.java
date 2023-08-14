@@ -14,7 +14,8 @@ public class TempoMaquinaCM {
 	public String subgrupo;
 	public float medida;
 	public float tempo;
-
+	public float interferencia;
+	
 	public long getId() {
 		return id;
 	}
@@ -54,16 +55,25 @@ public class TempoMaquinaCM {
 	public void setTempo(float tempo) {
 		this.tempo = tempo;
 	}
+	
+	public float getInterferencia() {
+		return interferencia;
+	}
+
+	public void setInterferencia(float interferencia) {
+		this.interferencia = interferencia;
+	}
 
 	public TempoMaquinaCM() {
 
 	}
 
-	public TempoMaquinaCM(long id, String grupo, String subgrupo, float medida, float tempo) {
+	public TempoMaquinaCM(long id, String grupo, String subgrupo, float medida, float tempo, float interferencia) {
 		this.id = id;
 		this.grupo = grupo;
 		this.subgrupo = subgrupo;
 		this.medida = medida;
 		this.tempo = tempo;
+		this.interferencia = interferencia;
 	}
 }

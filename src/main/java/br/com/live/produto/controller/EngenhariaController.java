@@ -386,7 +386,7 @@ public class EngenhariaController {
     
     @RequestMapping(value = "/salvar-tempo-maq", method = RequestMethod.POST)
     public List<ConsultaTempoMaquinaCM> salvarTempoMaquina(@RequestBody BodyEngenharia body) {                  
-    	engenhariaService.saveTempoMaquinaCM(body.idTempoMaquina, body.grupoMaquina, body.subGrupoMaquina, body.medidaMaquina, body.tempoMaquina);
+    	engenhariaService.saveTempoMaquinaCM(body.idTempoMaquina, body.grupoMaquina, body.subGrupoMaquina, body.medidaMaquina, body.tempoMaquina, body.interferencia);
     	return engenhariaCustom.findAllTempoMaquinaCM();
     }
     

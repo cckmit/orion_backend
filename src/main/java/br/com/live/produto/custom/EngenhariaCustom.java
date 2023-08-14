@@ -227,7 +227,7 @@ public class EngenhariaCustom {
 	
 	public List<ConsultaTempoMaquinaCM> findAllTempoMaquinaCM(){
 		
-		String query = "select a.id, a.grupo, b.nome_grupo_maq nomeGrupoMaq, a.subgrupo, c.nome_sbgrupo_maq nomeSbgrupoMaq, a.medida, a.tempo, c.interferencia "
+		String query = "select a.id, a.grupo, b.nome_grupo_maq nomeGrupoMaq, a.subgrupo, c.nome_sbgrupo_maq nomeSbgrupoMaq, a.medida, a.tempo, a.interferencia "
 			+ " FROM orion_eng_240 a, mqop_010 b, mqop_020 c "
 			+ " WHERE b.grupo_maquina = a.grupo "
 			+ " AND c.grupo_maquina = a.grupo "
@@ -246,7 +246,10 @@ public class EngenhariaCustom {
 	
 	public Operacao findOperacaoByCodOperacao (int operacao) {
 	
-		String query = " select a.codigo_operacao codigo,a.nome_operacao descricao,a.grupo_maquinas grupoMaquina,a.sub_maquina subMaquina,b.nome_grupo_maq || ' ' || c.nome_sbgrupo_maq descMaquina,c.interferencia "
+		String query = " select a.codigo_operacao codigo,a.nome_operacao descricao,a.grupo_maquinas grupoMaquina,a.sub_maquina subMaquina,b.nome_grupo_maq || ' ' || c.nome_sbgrupo_maq descMaquina, "
+				+ " nvl((select max(d.interferencia) from orion_eng_240 d "
+				+ " where d.grupo = a.grupo_maquinas "
+		        + " and d.subgrupo = a.sub_maquina),0) interferencia " 				
 				+ " from mqop_040 a, mqop_010 b, mqop_020 c "
 				+ " where a.codigo_operacao = " + operacao  
 				+ " and b.grupo_maquina (+) = a.grupo_maquinas "
@@ -269,12 +272,12 @@ public class EngenhariaCustom {
 		String query = "SELECT a.id, "
 				+ " a.sequencia, "
 				+ " a.tipo, "
-				+ " DECODE(a.tipo, 1, b.id || ' - ' || b.descricao,c.grupo || '.' || c.subgrupo || ' - ' || d.nome_grupo_maq || ' ' || e.nome_sbgrupo_maq || ' - MEDIDA: ' || c.medida || ' CM') informacao, "
+				+ " DECODE(a.tipo, 1, b.id || ' - ' || b.descricao, c.grupo || '.' || c.subgrupo || ' - ' || d.nome_grupo_maq || ' ' || e.nome_sbgrupo_maq || ' - MEDIDA: ' || c.medida || ' CM') informacao, "
 				+ " NVL(DECODE(a.tipo, 1, b.tempo, c.tempo), 0) tempo, "
-				+ " NVL(DECODE(a.tipo, 1, b.interferencia, e.interferencia), 0) interferencia, "
+				+ " NVL(DECODE(a.tipo, 1, b.interferencia, c.interferencia), 0) interferencia, "
 				+ " a.id_micromovimento idMicromovimento, "
 				+ " a.id_tempo_maquina idTempoMaquina, "
-				+ " NVL(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((e.interferencia / 100) * c.tempo) + c.tempo), 0) tempo_normal "
+				+ " NVL(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((c.interferencia / 100) * c.tempo) + c.tempo), 0) tempo_normal "
 				+ " FROM orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_010 d, mqop_020 e "
 				+ " WHERE a.cod_operacao = " + operacao
 				+ " AND b.id (+) = a.id_micromovimento "
@@ -328,26 +331,38 @@ public class EngenhariaCustom {
 		return sequencia;
 	}
 	
+	public void updateMicroMovimentoGenericoSystextil(int codOperacao, float qtdeMinutos) {
+		String queryUpdate = " UPDATE mqop_160 SET tempo = ? WHERE codigo = ? ";
+		String queryInsert = " INSERT INTO mqop_160 (codigo, descricao, utiliza_maquina, tempo, frequencia, quantidade) "
+	    + " VALUES (?, 'MICROMOVIMENTO GENERICO', 0, ?, 1, 1) ";
+		
+		try {
+			jdbcTemplate.update(queryUpdate, qtdeMinutos, codOperacao);
+		} catch (Exception e) {
+			jdbcTemplate.update(queryInsert, codOperacao, qtdeMinutos);
+		}
+	}	
+	
+	public void updateOperacaoXMicroMovimentoGenericoSystextil(int codOperacao, float qtdeMinutos) {
+		
+		String queryUpdate = " UPDATE mqop_045 SET tempo_total = ? WHERE codigo_operacao = ? AND codigo_movimento = ? "; 
+		String queryInsert = " INSERT INTO mqop_045 (codigo_operacao, codigo_movimento, sequencia, quantidade, frequencia, tempo_total) "
+		+ " VALUES (?, ?, 1, 1, 1, ?)";
+
+		try {
+			jdbcTemplate.update(queryUpdate, qtdeMinutos, codOperacao, codOperacao);
+		} catch (Exception e) {
+			jdbcTemplate.update(queryInsert, codOperacao, codOperacao, qtdeMinutos);
+		}		
+	}	
+		
 	public void atualizarTempoHomem(int operacao, float tempoTotal) {
 		
-		String query = " UPDATE mqop_040 a SET a.tempo_homem = ? "
-				+ " WHERE a.codigo_operacao = ? ";		
+		String query = " UPDATE mqop_040 a SET a.tempo_homem = ? WHERE a.codigo_operacao = ? ";
 		
 		jdbcTemplate.update(query, tempoTotal, operacao);
 	}
 	
-	public float findInterferenciaTempoMaq(String grupoMaquina, String subGrupoMaquina) {
-		float interferencia = 0;
-		
-		String query = " SELECT m.interferencia FROM mqop_020 m "
-				+ " WHERE m.grupo_maquina = ? "
-				+ " AND m.subgrupo_maquina = ? ";
-		
-		interferencia = jdbcTemplate.queryForObject(query, Float.class, grupoMaquina, subGrupoMaquina);
-		
-		return interferencia;
-	}
-
 	public float findTempoTotalOperacao(int codOp) {
 		float tempoTotal = 0;
 		
@@ -360,13 +375,11 @@ public class EngenhariaCustom {
 	
 	public float findTempoNormalOperacao(int codOp) {
 		float tempoNormal = 0;
-		String query = "SELECT NVL(SUM(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((e.interferencia / 100) * c.tempo) + c.tempo)), 0) tempo_total "
-				+ "  FROM orion_eng_260 a, orion_eng_230 b, orion_eng_240 c, mqop_020 e "
+		String query = "SELECT NVL(SUM(DECODE(a.tipo, 1, ((b.interferencia / 100) * b.tempo) + b.tempo, ((c.interferencia / 100) * c.tempo) + c.tempo)), 0) tempo_total "
+				+ "  FROM orion_eng_260 a, orion_eng_230 b, orion_eng_240 c "
 				+ "  WHERE a.cod_operacao = " + codOp
 				+ "  AND b.id (+) = a.id_micromovimento "
-				+ "  AND c.id (+) = a.id_tempo_maquina "
-				+ "  AND e.grupo_maquina (+) = c.grupo "
-				+ "  AND e.subgrupo_maquina (+) = c.subgrupo ";
+				+ "  AND c.id (+) = a.id_tempo_maquina " ;
 		
 		tempoNormal = jdbcTemplate.queryForObject(query, Float.class);
 		

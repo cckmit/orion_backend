@@ -344,7 +344,7 @@ public class EngenhariaService {
 		return tempoMaquinaCMRepository.findByidTempoMaqCM(idTempoMaqCM);
 	}
 	
-	public void saveTempoMaquinaCM(long id, String grupo, String subgrupo, float medida, float tempo) {
+	public void saveTempoMaquinaCM(long id, String grupo, String subgrupo, float medida, float tempo, float interferencia) {
 		
 		TempoMaquinaCM dadosTempoMaq = null;
 		
@@ -352,19 +352,20 @@ public class EngenhariaService {
 		else dadosTempoMaq = tempoMaquinaCMRepository.findByMaqSubMaquinaCM(grupo, subgrupo, medida);
 		
 		if (dadosTempoMaq == null) { 
-			dadosTempoMaq = new TempoMaquinaCM(engenhariaCustom.nextId(), grupo, subgrupo, medida, tempo);
+			dadosTempoMaq = new TempoMaquinaCM(engenhariaCustom.nextId(), grupo, subgrupo, medida, tempo, interferencia);
 		} else {
 			dadosTempoMaq.grupo = grupo;
 			dadosTempoMaq.subgrupo = subgrupo;
 			dadosTempoMaq.medida = medida;
 			dadosTempoMaq.tempo = tempo;
+			dadosTempoMaq.interferencia = interferencia;
 		}
 		tempoMaquinaCMRepository.save(dadosTempoMaq);
 	}
 	
 	public void importarTempoMaquinaCM(List<TempoMaquinaCM> tabImportarTempoMaq) {
 		for (TempoMaquinaCM dados : tabImportarTempoMaq) {
-			saveTempoMaquinaCM(0, dados.grupo, dados.subgrupo, dados.medida, dados.tempo);			
+			saveTempoMaquinaCM(0, dados.grupo, dados.subgrupo, dados.medida, dados.tempo, dados.interferencia);			
 		}
 	}
 		
@@ -402,6 +403,7 @@ public class EngenhariaService {
 		operXMicromvRepository.save(dadosOperXMicromv);
 		operXMicromvRepository.flush();
 	}
+	
 	public float atualizaTempoOperacao(int operacao) {
 		float tempoTotal = 0;
 		float tempoMicromv = 0;
@@ -409,8 +411,7 @@ public class EngenhariaService {
 		
 		List<OperacaoXMicromovimentos> listaSequencia = operXMicromvRepository.findByCodOper(operacao);
 		
-		for (OperacaoXMicromovimentos dadosSeq : listaSequencia) {
-			
+		for (OperacaoXMicromovimentos dadosSeq : listaSequencia) {			
 			if (dadosSeq.tipo == MICROMOVIMENTO) {
 				//Buscar Total de Tempo do Micromovimento
 				Micromovimentos dadosMicromv = micromovimentosRepository.findByIdMicroMov(dadosSeq.idMicromovimento);
@@ -419,17 +420,20 @@ public class EngenhariaService {
 					tempoTotal = tempoTotal + tempoMicromv;	
 			} else {
 				// Buscar Total de Tempo Máquina
-				TempoMaquinaCM dadosMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(dadosSeq.idTempoMaquina);
-				float interfMaq = engenhariaCustom.findInterferenciaTempoMaq(dadosMaq.grupo, dadosMaq.subgrupo);
+				TempoMaquinaCM dadosMaq = tempoMaquinaCMRepository.findByidTempoMaqCM(dadosSeq.idTempoMaquina);				
 				if (dadosMaq != null);
-					tempoMaquina = (float) (((interfMaq * dadosMaq.tempo) / 100) + dadosMaq.tempo);					
+					tempoMaquina = (float) (((dadosMaq.interferencia * dadosMaq.tempo) / 100) + dadosMaq.tempo);					
 					tempoTotal = tempoTotal + tempoMaquina;
 			}		
 		}
-		tempoTotal = (float) (tempoTotal + ((1.86 * tempoTotal) / 100));
-		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
-		return tempoTotal;
 		
+		tempoTotal = (float) (tempoTotal + ((1.86 * tempoTotal) / 100));
+		
+		engenhariaCustom.updateMicroMovimentoGenericoSystextil(operacao, tempoTotal);
+		engenhariaCustom.updateOperacaoXMicroMovimentoGenericoSystextil(operacao, tempoTotal);
+		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
+		
+		return tempoTotal;
 	}
 	
 	public void atualizarFichaDigital(List<String> referencias) {		
