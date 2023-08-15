@@ -61,7 +61,7 @@ public class AtividadeProjetoService {
             atividadeProjeto.descricao = atividadeProjetoEntity.getDescricao();
             atividadeProjeto.idProjeto = atividadeProjetoEntity.getIdProjeto();
             atividadeProjeto.idFase = atividadeProjetoEntity.getIdFase();
-            atividadeProjeto.tempoPrevisto = atividadeProjetoEntity.getTempoPrevisto();
+            atividadeProjeto.tempoPrevisto = tarefaAtividadeProjetoRepository.calcularTempoPrevistoTarefaAtividade(idProjeto, atividadeProjetoEntity.getId());
             atividadeProjeto.marco = atividadeProjetoEntity.getMarco();
 
             if (atividadeProjetoEntity.getIdTipoAtividade() != null && atividadeProjetoEntity.getIdTipoAtividade() != 0) atividadeProjeto.idTipoAtividade = atividadeProjetoEntity.getIdTipoAtividade();

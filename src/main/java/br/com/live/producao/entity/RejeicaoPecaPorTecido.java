@@ -18,6 +18,19 @@ public class RejeicaoPecaPorTecido {
 	public Date dataRejeicao;
 	
 	public int usuario;
+	
+	@Column(name = "nivel_tecido")
+	public String nivelTecido;
+	
+	@Column(name = "grupo_tecido")
+	public String grupoTecido;
+	
+	@Column(name = "subgru_tecido")
+	public String subgruTecido;
+	
+	@Column(name = "item_tecido")
+	public String itemTecido;
+	
 	public int estagio;
 	public int turno;
 	
@@ -62,6 +75,30 @@ public class RejeicaoPecaPorTecido {
 	}
 	public void setUsuario(int usuario) {
 		this.usuario = usuario;
+	}
+	public String getNivelTecido() {
+		return nivelTecido;
+	}
+	public void setNivelTecido(String nivelTecido) {
+		this.nivelTecido = nivelTecido;
+	}
+	public String getGrupoTecido() {
+		return grupoTecido;
+	}
+	public void setGrupoTecido(String grupoTecido) {
+		this.grupoTecido = grupoTecido;
+	}
+	public String getSubgruTecido() {
+		return subgruTecido;
+	}
+	public void setSubgruTecido(String subgruTecido) {
+		this.subgruTecido = subgruTecido;
+	}
+	public String getItemTecido() {
+		return itemTecido;
+	}
+	public void setItemTecido(String itemTecido) {
+		this.itemTecido = itemTecido;
 	}
 	public int getEstagio() {
 		return estagio;
@@ -133,13 +170,18 @@ public class RejeicaoPecaPorTecido {
 	public RejeicaoPecaPorTecido() {
 		
 	}
-	public RejeicaoPecaPorTecido(int id, Date dataRejeicao, int usuario, int estagio, int turno, int ordemProducao,
-			int periodo, String nivelEstrutura, String grupoEstrutura, String subgruEstrutura, String itemEstrutura,
+	public RejeicaoPecaPorTecido(int id, Date dataRejeicao, int usuario, String nivelTecido, String grupoTecido,
+			String subgruTecido, String itemTecido, int estagio, int turno, int ordemProducao, int periodo,
+			String nivelEstrutura, String grupoEstrutura, String subgruEstrutura, String itemEstrutura,
 			String partePeca, int quantidade, int motivo) {
 		
 		this.id = id;
 		this.dataRejeicao = dataRejeicao;
 		this.usuario = usuario;
+		this.nivelTecido = nivelTecido;
+		this.grupoTecido = grupoTecido;
+		this.subgruTecido = subgruTecido;
+		this.itemTecido = itemTecido;
 		this.estagio = estagio;
 		this.turno = turno;
 		this.ordemProducao = ordemProducao;
@@ -152,5 +194,5 @@ public class RejeicaoPecaPorTecido {
 		this.quantidade = quantidade;
 		this.motivo = motivo;
 	}
-
+		
 }

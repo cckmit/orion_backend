@@ -20,6 +20,6 @@ public interface TarefaAtividadeProjetoRepository extends JpaRepository<TarefaAt
     @Query("SELECT a FROM TarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idAtividade = :idAtividade ORDER BY a.id, a.descricao")
     List<TarefaAtividadeProjetoEntity> findAllByAtividade(@Param("idProjeto") Long idProjeto, @Param("idAtividade") Long idAtividade);
 
-    @Query("SELECT SUM(a.tempoPrevisto) FROM TarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idAtividade = :idAtividade")
+    @Query("SELECT COALESCE(SUM(a.tempoPrevisto), 0) FROM TarefaAtividadeProjetoEntity a WHERE a.idProjeto = :idProjeto and a.idAtividade = :idAtividade")
     Double calcularTempoPrevistoTarefaAtividade(@Param("idProjeto") Long idProjeto, @Param("idAtividade") Long idAtividade);
 }

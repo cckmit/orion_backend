@@ -79,7 +79,7 @@ public class RejeicaoPecaPorTecidoCustom {
 				+ "       a.grupo_estrutura grupoEstrutura, "
 				+ "       a.subgru_estrutura subgruEstrutura, "
 				+ "       a.item_estrutura itemEstrutura, "
-				+ "       d.narrativa tecido, "
+				+ "       a.nivel_tecido || '.' || grupo_tecido || '.' || a.subgru_tecido || '.' || a.item_tecido || ' - ' || d.narrativa tecido, "
 				+ "       a.parte_peca partePeca, "
 				+ "       a.quantidade quantidade, "
 				+ "       e.descricao motivo "
@@ -158,20 +158,19 @@ public class RejeicaoPecaPorTecidoCustom {
 	
 	public List<ConteudoChaveAlfaNum> findTamanhosByReferenciaOrdemProd(int ordem) {
 		
-		String query = " SELECT i.subgru_estrutura value, i.subgru_estrutura label FROM pcpc_020 h, basi_010 i "
-				+ "		WHERE i.grupo_estrutura = h.referencia_peca "
-				+ "		AND h.ordem_producao = " + ordem
-				+ "	  GROUP BY i.subgru_estrutura ";
+		String query = " SELECT i.tamanho value, i.tamanho label FROM pcpc_020 h, pcpc_021 i "
+				+ "   WHERE i.ordem_producao = h.ordem_producao "
+				+ "   AND h.ordem_producao = " + ordem
+				+ "   GROUP BY i.tamanho ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 	
 	public List<ConteudoChaveAlfaNum> findCorByReferenciaOrdemProd(int ordem) {
 		
-		String query = " SELECT i.item_estrutura value, i.item_estrutura label FROM pcpc_020 h, basi_010 i "
-				+ "		WHERE i.grupo_estrutura = h.referencia_peca "
-				+ "		AND h.ordem_producao = " + ordem
-				+ "	  GROUP BY i.item_estrutura ";
+		String query = " SELECT i.sortimento value, i.sortimento label FROM pcpc_020 h, pcpc_021 i "
+				+ "   WHERE i.ordem_producao = h.ordem_producao "
+				+ "   AND h.ordem_producao = " + ordem;
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
