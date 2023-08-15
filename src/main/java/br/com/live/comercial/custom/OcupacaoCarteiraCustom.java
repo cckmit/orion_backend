@@ -187,7 +187,7 @@ public class OcupacaoCarteiraCustom {
 				
 		List<ResumoOcupacaoCarteiraPorPedido> listResumoOcupacaoCarteiraPorCanalVenda;
 		
-		String query = " select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_pedida) valorConfirmar "
+		String query = " select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_pedida / 100) valorConfirmar "
 		+ " from inte_100 a, inte_110 b, pedi_010 c, pedi_085 d "
 		+ " where a.data_entrega between ? and ? "
 		+ " and b.pedido_venda = a.pedido_venda ";
@@ -267,7 +267,7 @@ public class OcupacaoCarteiraCustom {
 				
 		String query = "select d.live_agrup_tipo_cliente canal, a.pedido_venda pedidoVenda, sum(b.qtde_tempo_producao) valorConfirmar "
 		+ " from inte_100 a, pedi_010 c, pedi_085 d, "		  
-		+ " (select z.pedido_venda, z.seq_item_pedido, z.item_grupo, z.item_sub, z.item_item, z.qtde_pedida, nvl(max(w.tempo),0) tempo, (z.qtde_pedida * nvl(max(w.tempo),0)) qtde_tempo_producao "  
+		+ " (select z.pedido_venda, z.seq_item_pedido, z.item_grupo, z.item_sub, z.item_item, z.qtde_pedida, nvl(max(w.tempo),0) tempo, ((z.qtde_pedida / 100) * nvl(max(w.tempo),0)) qtde_tempo_producao "  
 		+ " from inte_110 z, orion_vi_itens_x_tempo_estagio w "
 		+ " where w.estagio (+) = " + OrdemProducaoCustom.ESTAGIO_COSTURA
 		+ " and w.nivel   (+) = z.item_nivel99 "
