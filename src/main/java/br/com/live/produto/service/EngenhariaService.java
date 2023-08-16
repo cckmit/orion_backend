@@ -429,8 +429,9 @@ public class EngenhariaService {
 		
 		tempoTotal = (float) (tempoTotal + ((1.86 * tempoTotal) / 100));
 		
-		engenhariaCustom.updateMicroMovimentoGenericoSystextil(operacao, tempoTotal);
-		engenhariaCustom.updateOperacaoXMicroMovimentoGenericoSystextil(operacao, tempoTotal);
+		// TODO - REMOVIDO TEMPORARIAMENTE
+		//engenhariaCustom.updateMicroMovimentoGenericoSystextil(operacao, tempoTotal);
+		//engenhariaCustom.updateOperacaoXMicroMovimentoGenericoSystextil(operacao, tempoTotal);
 		engenhariaCustom.atualizarTempoHomem(operacao, tempoTotal);
 		
 		return tempoTotal;
