@@ -336,3 +336,6 @@ values (114, 'Importar Parametros de Custo', 'Contabilidade', '/importa-parametr
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (115, ' Geração de Etiqueta para Identificação de Caixa', 'Expedição', '/geracao-etiqueta-caixa-azul');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (116, 'Envio de Notas de Franchising - Portal da Prefeitura', 'Financeiro', '/integrador-nota-franchising');
