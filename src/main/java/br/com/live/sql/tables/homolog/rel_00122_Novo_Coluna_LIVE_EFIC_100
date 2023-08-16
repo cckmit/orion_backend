@@ -1,0 +1,7 @@
+-- Criar Coluna na Efic_100 Campo LIVE
+-- Não faz Cagada
+ALTER TABLE efic_100 ADD live_origem VARCHAR2(10) DEFAULT 'SYSTEXTIL'
+
+
+-- Alterar TRIGGER "LIVE_TR_EFIC_100"
+--  if (v_processo_systextil = 'efic_f101' or (v_processo_systextil = 'SQL' and :new.live_origem = 'SYSTEXTIL'))

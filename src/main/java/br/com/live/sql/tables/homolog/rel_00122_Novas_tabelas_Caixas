@@ -1,0 +1,34 @@
+-- Criando Tabela De cadastro das Caixas (Engradados)
+CREATE TABLE ORION_CFC_340 (
+  ID               NUMBER(6),
+  CENTRO_CUSTO     NUMBER(6),
+  DESCRICAO        VARCHAR2(100),
+  DATA_CADASTRO    DATE,
+  ULTIMA_ALTERACAO DATE,
+  SITUACAO         NUMBER(1),
+  CONSTRAINT ORION_CFC_340 PRIMARY KEY (ID)
+);
+
+
+-- Criando Tabela De cadastro dos Locais
+CREATE TABLE ORION_CFC_345 (
+  ID               NUMBER(6),
+  DESCRICAO        VARCHAR2(100),
+  DATA_CADASTRO    DATE,
+  ULTIMA_ALTERACAO DATE,
+  SITUACAO         NUMBER(1),
+  CONSTRAINT ORION_CFC_345 PRIMARY KEY (ID)
+);
+
+
+-- Criando Tabela de Cadastro das Movimentações da Caixa
+CREATE TABLE ORION_CFC_350 (
+  ID               NUMBER(6),
+  USUARIO          NUMBER(6),
+  ID_CAIXA         NUMBER(3),
+  CENTRO_CUSTO     NUMBER(6),
+  DATA             DATE,
+  HORA             VARCHAR2(20),
+  ID_LOCAL         NUMBER(6),
+  CONSTRAINT ORION_CFC_350 PRIMARY KEY (ID)
+);

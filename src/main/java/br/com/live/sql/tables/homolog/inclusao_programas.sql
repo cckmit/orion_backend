@@ -339,3 +339,9 @@ values (115, ' Geração de Etiqueta para Identificação de Caixa', 'Expediçã
 
 insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
 values (116, 'Envio de Notas de Franchising - Portal da Prefeitura', 'Financeiro', '/integrador-nota-franchising');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (117, 'Rejeição de Peça por Tecido', 'Confecção', '/rejeicao-peca-por-tecidog');
+
+insert into orion_002 (ID, DESCRICAO, MODULO, PATH)
+values (118, 'Gerenciamento de Caixas', 'Confecção', '/gerenciamento-de-caixas');

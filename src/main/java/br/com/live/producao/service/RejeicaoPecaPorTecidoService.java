@@ -56,6 +56,10 @@ public class RejeicaoPecaPorTecidoService {
 		
 		if(listaRetorno.size() == 0) {
 			listaRetorno = rejeicaoPecaPorTecidoCustom.findTecidosByOrdemDest(ordem);
+			if (listaRetorno.size() == 0) {
+				int alternativa = rejeicaoPecaPorTecidoCustom.findAlternativaByOrdem(ordem);
+				listaRetorno = rejeicaoPecaPorTecidoCustom.findTecidosByStrutura(ordem, alternativa);
+			}
 		}		
 		return listaRetorno;
 	}

@@ -79,17 +79,17 @@ public class RejeicaoPecaPorTecidoCustom {
 				+ "       a.grupo_estrutura grupoEstrutura, "
 				+ "       a.subgru_estrutura subgruEstrutura, "
 				+ "       a.item_estrutura itemEstrutura, "
-				+ "       a.nivel_tecido || '.' || grupo_tecido || '.' || a.subgru_tecido || '.' || a.item_tecido || ' - ' || d.narrativa tecido, "
+				+ "       a.nivel_tecido || '.' || a.grupo_tecido || '.' || a.subgru_tecido || '.' || a.item_tecido || ' - ' || d.narrativa tecido, "
 				+ "       a.parte_peca partePeca, "
 				+ "       a.quantidade quantidade, "
 				+ "       e.descricao motivo "
 				+ "		FROM orion_cfc_330 a, orion_001 b, mqop_005 c, basi_010 d, efic_040 e "
 				+ "		WHERE b.id = a.usuario "
 				+ "		AND c.codigo_estagio = a.estagio "
-				+ "		AND d.nivel_estrutura = a.nivel_estrutura "
-				+ "		AND d.grupo_estrutura = a.grupo_estrutura "
-				+ "		AND d.subgru_estrutura = a.subgru_estrutura "
-				+ "		AND d.item_estrutura = a.item_estrutura "
+				+ "     AND d.nivel_estrutura = a.nivel_tecido "
+				+ "     AND d.grupo_estrutura = a.grupo_tecido  "
+				+ "     AND d.subgru_estrutura = a.subgru_tecido  "
+				+ "     AND d.item_estrutura = a.item_tecido "
 				+ "		AND e.codigo_motivo = a.motivo "
 				+ "		AND e.codigo_estagio = a.estagio ";
 		
@@ -170,7 +170,8 @@ public class RejeicaoPecaPorTecidoCustom {
 		
 		String query = " SELECT i.sortimento value, i.sortimento label FROM pcpc_020 h, pcpc_021 i "
 				+ "   WHERE i.ordem_producao = h.ordem_producao "
-				+ "   AND h.ordem_producao = " + ordem;
+				+ "   AND h.ordem_producao = " + ordem
+				+ "   GROUP BY i.sortimento ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
@@ -180,7 +181,7 @@ public class RejeicaoPecaPorTecidoCustom {
 		
 		String query = " INSERT INTO efic_100 (DATA_REJEICAO, PROD_REJ_NIVEL99, PROD_REJ_GRUPO, PROD_REJ_SUBGRUPO, PROD_REJ_ITEM, " +
                 " CODIGO_ESTAGIO, CODIGO_MOTIVO, CLASSIFICACAO, PERIODO_PRODUCAO, NUMERO_ORDEM, QUANTIDADE, AREA_PRODUCAO, HORA_INICIO, TURNO, " +
-                " ESTAGIO_DIGITACAO, LIVE_TIPO_LCTO) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, 1, sysdate, ?, 55, '2A_QUALIDADE') ";
+                " ESTAGIO_DIGITACAO, LIVE_TIPO_LCTO, LIVE_ORIGEM) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, 1, sysdate, ?, 55, '2A_QUALIDADE', 'ORION') ";
 		
         jdbcTemplate.update(query, dataRejeicao, nivel, grupo, subgrupo, item, codEstagio, codMotivo, periodo, ordemProducao, quantidade, turno);
 	}
@@ -201,6 +202,38 @@ public class RejeicaoPecaPorTecidoCustom {
 				+ "   AND TURNO = " + turno +"";
 		
 		jdbcTemplate.update(query);		
+	}
+	
+	public int findAlternativaByOrdem(int ordem) {
+		
+		int alternativa = 0;
+		
+		String query = "SELECT e.alternativa_peca FROM pcpc_020 e WHERE e.ordem_producao = " + ordem;
+		
+		try {
+			alternativa = jdbcTemplate.queryForObject(query, Integer.class);
+		} catch (Exception e) {
+			alternativa = 0;
+		}
+		return alternativa;
+	}
+	
+	public List<ConteudoChaveAlfaNum> findTecidosByStrutura (int ordem, int alternativa){
+		
+		String  query = " SELECT b.nivel_comp, b.grupo_comp, b.sub_comp, b.item_comp, c.narrativa FROM pcpc_020 a, pcpc_021 d, BASI_050 b, basi_010 c "
+				+ "   WHERE a.referencia_peca = b.grupo_item "
+				+ "   AND a.alternativa_peca = b.alternativa_item "
+				+ "   AND c.nivel_estrutura = b.nivel_comp "
+				+ "   AND c.grupo_estrutura = b.grupo_comp "
+				+ "   AND c.item_estrutura = b.item_comp "
+				+ "   AND d.ordem_producao = a.ordem_producao "
+				+ "   AND d.sortimento = b.item_comp "
+				+ "   AND a.ordem_producao = " + ordem
+				+ "   AND b.nivel_comp = '2' "
+				+ "   AND a.alternativa_peca = " + alternativa
+				+ "   GROUP BY b.nivel_comp, b.grupo_comp, b.sub_comp, b.item_comp, c.narrativa";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveAlfaNum.class));
 	}
 
 }
