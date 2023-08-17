@@ -42,7 +42,8 @@ public class ExpedicaoCustom {
 
 	private JdbcTemplate jdbcTemplate;
 	private UsuarioRepository usuarioRepository;
-
+	private static final int ATACADO = 1; 
+	
 	public ExpedicaoCustom(JdbcTemplate jdbcTemplate, UsuarioRepository usuarioRepository) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.usuarioRepository = usuarioRepository;
@@ -416,9 +417,7 @@ public class ExpedicaoCustom {
 		try {
 			cesto = jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(CestoEndereco.class));
 		} catch (Exception e) {
-
 			System.out.println(e.getMessage());
-
 			cesto = null;
 		}
 
@@ -887,7 +886,9 @@ public class ExpedicaoCustom {
 			query += " and ((a.cond_pgto_venda in (200,67,267)) and (f.usuario_liberador in ('WEB.SOLANGE.O', 'WEB.JENEFER.T'))) ";
 		}
 		query += " and not exists (select 1 from orion_exp_320 y " +
-				"					where y.nota = a.num_nota_fiscal) ";
+				"					where y.nota = a.num_nota_fiscal " +
+				"                     and y.serie = a.serie_nota_fisc " + 
+				"                     and y.tipo_minuta = " + ATACADO + ") " ;
 
 		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 		query += " UNION ";
@@ -926,13 +927,14 @@ public class ExpedicaoCustom {
 					+ transportadora + "' ";
 		}
 		query += " and not exists (select 1 from orion_exp_320 y " +
-				"					where y.nota = a.num_nota_fiscal) ";
+				"					where y.nota = a.num_nota_fiscal " +
+				"                     and y.serie = a.serie_nota_fisc " + 
+				"                     and y.tipo_minuta = " + ATACADO + ") " ;
 
+		
 		query += " group by a.num_nota_fiscal, a.serie_nota_fisc, a.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 
 		query += ") minuta order by minuta.nota ";
-
-		System.out.println("query: " + query);
 
 		return query;
 	}
@@ -1009,7 +1011,9 @@ public class ExpedicaoCustom {
 					+ transportadora + "') ";
 		}
 		query += " and not exists (select 1 from orion_exp_320 y " +
-				"					where y.nota = i.num_nota_fiscal) ";
+				"					where y.nota = i.num_nota_fiscal " +
+				"                     and y.serie = i.serie_nota_fisc " + 
+				"                     and y.tipo_minuta = " + ATACADO + ") " ;
 
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 		query += " UNION ";
@@ -1072,13 +1076,11 @@ public class ExpedicaoCustom {
 					+ transportadora + "') ";
 		}
 
-		//if (!dataLibPaypalIni.equals("NaN-NaN-NaN")) {
-		//	query += " and to_char(f.data_liberacao) between TO_DATE('" + dataLibPaypalIni.replace("-", "/")
-		//				+ "', 'DD/MM/YYYY') and TO_DATE('" + dataLibPaypalFim.replace("-", "/") + "', 'DD/MM/YYYY') ";
-		//}
-
 		query += " and not exists (select 1 from orion_exp_320 y " +
-				"					where y.nota = i.num_nota_fiscal) ";
+				"					where y.nota = i.num_nota_fiscal " +
+				"                     and y.serie = i.serie_nota_fisc " + 
+				"                     and y.tipo_minuta = " + ATACADO + ") " ;
+
 		query += " group by i.num_nota_fiscal, i.serie_nota_fisc, i.data_emissao, a.pedido_venda, c.nome_cliente, a.peso_bruto, a.valor_itens_nfis, f.data_liberacao, g.cidade, g.estado ";
 
 		query += ") minuta order by minuta.nota ";
