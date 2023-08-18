@@ -1,14 +1,21 @@
 package br.com.live.producao.service;
 
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Comparator;
 import br.com.live.producao.custom.CalendarioCustom;
 import br.com.live.producao.custom.ConfeccaoCustom;
 import br.com.live.producao.custom.OrdemProducaoCustom;
+import br.com.live.producao.entity.CaixaPretaConfeccao;
+import br.com.live.producao.entity.CaixaPretaLocalConfeccao;
+import br.com.live.producao.entity.CaixaPretaMovimentacao;
 import br.com.live.producao.entity.EncolhimentoCad;
 import br.com.live.producao.entity.MetasProducao;
 import br.com.live.producao.entity.MetasProducaoSemana;
@@ -18,9 +25,13 @@ import br.com.live.producao.entity.RestricoesRolo;
 import br.com.live.producao.entity.TipoObservacao;
 import br.com.live.producao.model.CalendarioSemana;
 import br.com.live.producao.model.ConsultaEncolhimentoCad;
+import br.com.live.producao.model.ConsultaMovimentacoesCaixaPreta;
 import br.com.live.producao.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.producao.model.EtiquetasDecoracao;
 import br.com.live.producao.model.OrdemConfeccao;
+import br.com.live.producao.repository.CaixaPretaConfeccaoRepository;
+import br.com.live.producao.repository.CaixaPretaLocalConfeccaoRepository;
+import br.com.live.producao.repository.CaixaPretaMovimentacaoRepository;
 import br.com.live.producao.repository.EncolhimentoCadRepository;
 import br.com.live.producao.repository.MetasProducaoRepository;
 import br.com.live.producao.repository.MetasProducaoSemanaRepository;
@@ -35,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.live.util.ConteudoChaveAlfaNum;
 import br.com.live.util.ConteudoChaveNumerica;
+import br.com.live.util.FormataData;
 import br.com.live.util.service.ReportService;
 
 @Service
@@ -51,11 +63,16 @@ public class ConfeccaoService {
 	private final ReportService reportService;
 	private final EncolhimentoCadRepository encolhimentoCadRepository;
 	private final OrdemProducaoCustom ordemProducaoCustom;
+	private final CaixaPretaConfeccaoRepository caixaPretaConfeccaoRepository;
+	private final CaixaPretaLocalConfeccaoRepository caixaPretaLocalConfeccaoRepository;
+	private final CaixaPretaMovimentacaoRepository caixaPretaMovimentacaoRepository;
 
 	public ConfeccaoService(TipoObservacaoRepository tipoObservacaoRepository, ConfeccaoCustom confeccaoCustom,
 			ObservacaoOrdemPacoteRepository observacaoOrdemPacoteRepository, RestricoesRepository restricoesRepository, RestricoesRoloRepository restricoesRoloRepository,
 			MetasProducaoRepository metasProducaoRepository, MetasProducaoSemanaRepository metasProducaoSemanaRepository, CalendarioCustom calendarioCustom, 
-			ReportService reportService, EncolhimentoCadRepository encolhimentoCadRepository, OrdemProducaoCustom ordemProducaoCustom) {
+			ReportService reportService, EncolhimentoCadRepository encolhimentoCadRepository, OrdemProducaoCustom ordemProducaoCustom,
+			CaixaPretaConfeccaoRepository caixaPretaConfeccaoRepository, CaixaPretaLocalConfeccaoRepository caixaPretaLocalConfeccaoRepository,
+			CaixaPretaMovimentacaoRepository caixaPretaMovimentacaoRepository) {
 		this.tipoObservacaoRepository = tipoObservacaoRepository;
 		this.confeccaoCustom = confeccaoCustom;
 		this.observacaoOrdemPacoteRepository = observacaoOrdemPacoteRepository;
@@ -67,6 +84,9 @@ public class ConfeccaoService {
 		this.reportService = reportService;
 		this.encolhimentoCadRepository = encolhimentoCadRepository;
 		this.ordemProducaoCustom = ordemProducaoCustom; 
+		this.caixaPretaConfeccaoRepository = caixaPretaConfeccaoRepository;
+		this.caixaPretaLocalConfeccaoRepository = caixaPretaLocalConfeccaoRepository;
+		this.caixaPretaMovimentacaoRepository = caixaPretaMovimentacaoRepository;
 	}
 
 	public TipoObservacao saveTipoObservacao(long id, String descricao) {
@@ -312,5 +332,138 @@ public class ConfeccaoService {
 		String subgrupo = prodConcat[2];
 		
 		return confeccaoCustom.consultaMediaPorGrupoSubGrupo(nivel, grupo, subgrupo, tipo);
+	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findAllCaixa(){
+		return confeccaoCustom.findAllCaixa();
+	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findAllLocais(){
+		return confeccaoCustom.findAllLocais();
+	}
+	
+	public List<ConteudoChaveNumerica> findCentroCusto(int centroCusto){
+		return confeccaoCustom.findCentroCusto(centroCusto);
+	}
+	
+	public List<ConteudoChaveNumerica> findAllLocaisSelect(){
+		return confeccaoCustom.findAllLocaisSelect();
+	}
+	
+	public int findNextIdCaixa() {
+		return caixaPretaConfeccaoRepository.findNextId();
+	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findAllMovimentacoesCaixas(){
+		return confeccaoCustom.findAllMovimentacoesCaixas();
+	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findLocalizacaoCaixas(){
+		return confeccaoCustom.findLocalizacaoCaixas();
+	}
+	
+	public void saveCaixaPreta(int idCaixa, int centroCusto, String descricao, int forma) {
+		
+		CaixaPretaConfeccao dadosCaixa = caixaPretaConfeccaoRepository.findByidCaixa(idCaixa);
+		// Obtém a data e hora atual
+        Date agora = new Date();
+        Date dataCadastro = agora;
+        Date ultimaAlteracao = agora;
+        
+		if(forma == 1) {			
+	        ultimaAlteracao = null;
+		} 
+		
+		if (dadosCaixa == null) {
+			int idNew = caixaPretaConfeccaoRepository.findNextId();
+			dadosCaixa = new CaixaPretaConfeccao(idNew, centroCusto, descricao, dataCadastro, ultimaAlteracao, 0);
+		} else {
+			dadosCaixa.centroCusto = centroCusto; 
+			dadosCaixa.descricao = descricao;
+			dadosCaixa.ultimaAlteracao = ultimaAlteracao;
+			dadosCaixa.situacao = 0;
+			
+		}						
+		caixaPretaConfeccaoRepository.save(dadosCaixa);		
+	}
+	
+	public void saveLocalCaixa(int id, String descricao, int forma) {
+		
+		CaixaPretaLocalConfeccao dadosLocal = caixaPretaLocalConfeccaoRepository.findByid(id);
+		// Obtém a data e hora atual
+        Date agora = new Date();
+        Date dataCadastro = agora;
+        Date ultimaAlteracao = agora;
+        
+		if(forma == 1) {			
+	        ultimaAlteracao = null;
+		} 
+		
+		if (dadosLocal == null) {
+			int idNew = caixaPretaLocalConfeccaoRepository.findNextId();
+			dadosLocal = new CaixaPretaLocalConfeccao(idNew, descricao, dataCadastro, ultimaAlteracao, 0);
+		} else {
+			dadosLocal.descricao = descricao;
+			dadosLocal.ultimaAlteracao = ultimaAlteracao;
+			dadosLocal.situacao = 0;
+			
+		}						
+		caixaPretaLocalConfeccaoRepository.save(dadosLocal);		
+	}
+	
+	public CaixaPretaConfeccao findCaixaById(int id) {
+		return caixaPretaConfeccaoRepository.findByidCaixa(id);
+	}
+	
+	public CaixaPretaLocalConfeccao findLocalById(int id) {
+		return caixaPretaLocalConfeccaoRepository.findByid(id);
+	}
+	
+	public void deleteCaixaPretaById(int id) {
+		caixaPretaConfeccaoRepository.deleteById(id);
+	}
+	
+	public void deleteLocalCaixaPreta(int id) {
+		caixaPretaLocalConfeccaoRepository.deleteById(id);
+	}
+	
+	public Map<String, Object> setParameters(String codCaixa) {
+		
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("codCaixa", codCaixa);
+
+		return parameters;
+	}
+	
+	public String gerarEtiquetaCaixaPreta(String idCaixa) throws FileNotFoundException, JRException {
+		
+		String codCaixa = confeccaoCustom.findCodCaixaCentroCusto(idCaixa);
+		System.out.println(codCaixa);
+		String nomeRelatorioGerado = "";
+		
+		Map<String, Object> parameters = setParameters(codCaixa);
+
+		nomeRelatorioGerado = reportService.generateReport("pdf", null, "gerar_etiqueta_caixa_preta", parameters, "EtiquetaCaixaPreta", false);
+		
+
+		return nomeRelatorioGerado;
+	}
+	
+	public String findCodCaixaPreta(String codCaixa) {
+		return confeccaoCustom.findCodCaixaPreta(codCaixa);
+	}
+	
+	public void saveMovimentacaoCaixaPreta(String codCaixa, int centroCusto, int localDestino, int idUsuario) {
+		
+		CaixaPretaMovimentacao dadosMovimentacao = null;
+		String primeiroQuatroDigitos = codCaixa.substring(0, 4);
+		int caixa = Integer.parseInt(primeiroQuatroDigitos);
+		
+		// Obtém a data e hora atual
+        Date agora = new Date();
+        String hora =  agora.getHours() + ":" + agora.getMinutes() + ":" + agora.getSeconds();
+        
+    	dadosMovimentacao = new CaixaPretaMovimentacao(caixaPretaMovimentacaoRepository.findNextId(), idUsuario, caixa, centroCusto, agora, hora, localDestino);
+		caixaPretaMovimentacaoRepository.save(dadosMovimentacao);
 	}
 }

@@ -8,6 +8,8 @@ import br.com.live.producao.body.BodyObservacaoPorOp;
 import br.com.live.producao.body.BodyTipoObservacao;
 import br.com.live.producao.custom.CalendarioCustom;
 import br.com.live.producao.custom.ConfeccaoCustom;
+import br.com.live.producao.entity.CaixaPretaConfeccao;
+import br.com.live.producao.entity.CaixaPretaLocalConfeccao;
 import br.com.live.producao.entity.EncolhimentoCad;
 import br.com.live.producao.entity.MetasProducao;
 import br.com.live.producao.entity.MetasProducaoSemana;
@@ -15,6 +17,7 @@ import br.com.live.producao.entity.ObservacaoOrdemPacote;
 import br.com.live.producao.entity.Restricoes;
 import br.com.live.producao.entity.TipoObservacao;
 import br.com.live.producao.model.ConsultaEncolhimentoCad;
+import br.com.live.producao.model.ConsultaMovimentacoesCaixaPreta;
 import br.com.live.producao.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.producao.model.ConsultaRestricoesRolo;
 import br.com.live.producao.model.EstagioProducao;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.live.comercial.body.BodyExpedicao;
 import br.com.live.comercial.entity.PedidoCustomizado;
 import br.com.live.comercial.model.ConsultaPedidoCustomizado;
 import br.com.live.comercial.service.PedidosCustomizadosService;
@@ -305,6 +309,87 @@ public class ConfeccaoController {
 	@RequestMapping(value = "/calcula-media-por-produto/{produto}/{tipo}", method = RequestMethod.GET)
 	public List<ConsultaEncolhimentoCad> findAllById(@PathVariable("produto") String produto, @PathVariable("tipo") int tipo) {
 		return confeccaoService.calcularMediaPorProduto(produto, tipo);
+	}
+	
+	@RequestMapping(value = "/find-caixa-by-id/{id}", method = RequestMethod.GET)
+	public CaixaPretaConfeccao findCaixaById(@PathVariable("id") int id) {
+		return confeccaoService.findCaixaById(id);
+	}
+	
+	@RequestMapping(value = "/find-local-by-id/{id}", method = RequestMethod.GET)
+	public CaixaPretaLocalConfeccao findLocalById(@PathVariable("id") int id) {
+		System.out.println(id);
+		return confeccaoService.findLocalById(id);
+	}
+	
+	@RequestMapping(value = "/find-all-caixas", method = RequestMethod.GET)
+	public List<ConsultaMovimentacoesCaixaPreta> findAllCaixas() {
+		return confeccaoService.findAllCaixa();
+	}
+	
+	@RequestMapping(value = "/find-all-locais", method = RequestMethod.GET)
+	public List<ConsultaMovimentacoesCaixaPreta> findAllLocais() {
+		return confeccaoService.findAllLocais();
+	}
+	
+	@RequestMapping(value = "/find-centro-custos/{centroCusto}", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findCentroCusto(@PathVariable("centroCusto") int centroCusto) {
+		return confeccaoService.findCentroCusto(centroCusto);
+	}
+	
+	@RequestMapping(value = "/find-next-id-caixa", method = RequestMethod.GET)
+	public int findNextIdCaixa() {
+		return confeccaoService.findNextIdCaixa();
+	}
+	
+	@RequestMapping(value = "/find-movimentacoes-caixas", method = RequestMethod.GET)
+	public List<ConsultaMovimentacoesCaixaPreta> findAllMovimentacoesCaixas() {
+		return confeccaoService.findAllMovimentacoesCaixas();
+	}
+	
+	@RequestMapping(value = "/find-localizacao-caixa-preta", method = RequestMethod.GET)
+	public List<ConsultaMovimentacoesCaixaPreta> findLocalizacaoCaixas() {
+		return confeccaoService.findLocalizacaoCaixas();
+	}
+	
+	@RequestMapping(value = "/save-caixa-preta", method = RequestMethod.POST)
+	public void saveCaixaPreta(@RequestBody BodyConfeccao body) {
+		confeccaoService.saveCaixaPreta(body.idCaixa, body.centroCusto, body.descricao, body.forma);
+	}
+	
+	@RequestMapping(value = "/save-local-caixa", method = RequestMethod.POST)
+	public void saveLocalCaixa(@RequestBody BodyConfeccao body) {
+		confeccaoService.saveLocalCaixa(body.idLocal, body.descricao, body.forma);
+	}
+	
+	@RequestMapping(value = "/delete-caixa-preta/{id}", method = RequestMethod.DELETE)
+    public void deleteCaixaPreta(@PathVariable("id") int id) {                  
+        confeccaoService.deleteCaixaPretaById(id);
+    }
+	
+	@RequestMapping(value = "/delete-local-caixa-preta/{id}", method = RequestMethod.DELETE)
+    public void deleteLocalCaixaPreta(@PathVariable("id") int id) {                  
+        confeccaoService.deleteLocalCaixaPreta(id);
+    }
+	
+	@RequestMapping(value = "/gerar-etiqueta-caixa-preta", method = RequestMethod.POST)
+    public String gerarEtiqueta(@RequestBody BodyConfeccao body) throws FileNotFoundException, JRException {
+    	return confeccaoService.gerarEtiquetaCaixaPreta(body.codCaixa);
+    }
+	
+	@RequestMapping(value = "/find-all-locais-select", method = RequestMethod.GET)
+	public List<ConteudoChaveNumerica> findAllLocaisSelect() {
+		return confeccaoService.findAllLocaisSelect();
+	}
+	
+	@RequestMapping(value = "/find-centro-custo-caixa-preta", method = RequestMethod.POST)
+	public String findCodCaixaPreta(@RequestBody BodyConfeccao body) {
+		return confeccaoService.findCodCaixaPreta(body.codCaixa);
+	}
+	
+	@RequestMapping(value = "/save-movimentacao-caixa-preta", method = RequestMethod.POST)
+	public void saveMovimentacaoCaixaPreta(@RequestBody BodyConfeccao body) {
+		confeccaoService.saveMovimentacaoCaixaPreta(body.codCaixa, body.centroCusto, body.localDestino, body.idUsuario);
 	}
 
 }

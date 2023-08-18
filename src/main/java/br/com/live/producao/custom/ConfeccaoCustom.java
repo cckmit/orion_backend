@@ -2,8 +2,10 @@ package br.com.live.producao.custom;
 
 import java.util.List;
 
+import br.com.live.producao.entity.CaixaPretaMovimentacao;
 import br.com.live.producao.entity.EncolhimentoCad;
 import br.com.live.producao.model.ConsultaEncolhimentoCad;
+import br.com.live.producao.model.ConsultaMovimentacoesCaixaPreta;
 import br.com.live.producao.model.ConsultaObservacaoOrdemPacote;
 import br.com.live.producao.model.ConsultaRestricoesRolo;
 import br.com.live.producao.model.EstagioProducao;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.live.comercial.entity.PedidoCustomizado;
 import br.com.live.comercial.model.ConsultaPedidoCustomizado;
+import br.com.live.comercial.model.ConsultaTpClienteXTabPreco;
 import br.com.live.util.ConteudoChaveNumerica;
 
 @Repository
@@ -346,5 +349,117 @@ public class ConfeccaoCustom {
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaEncolhimentoCad.class));
 	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findAllCaixa(){
+		
+		String query = " SELECT LPAD(a.id, 4, 0) idCaixa, "
+				+ "       a.centro_custo || ' - ' || b.descricao centroCusto, "
+				+ "       a.descricao descricao, "
+				+ "       TO_CHAR(a.data_cadastro, 'DD/MM/YYYY') dataCadastro, "
+				+ "       a.ultima_alteracao ultimaAlteracao, "
+				+ "       DECODE(a.situacao, 0, 'Ativo', 'Inativo') situacao "
+				+ "    FROM orion_cfc_340 a, basi_185 b "
+				+ "    WHERE b.centro_custo = a.centro_custo"
+				+ "    ORDER BY a.id ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMovimentacoesCaixaPreta.class));
+		
+	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findAllLocais(){
+		
+		String query = " SELECT a.id id, "
+				+ "   a.descricao descricao, "
+				+ "   TO_CHAR(a.data_cadastro, 'DD/MM/YYYY') dataCadastro, "
+				+ "   a.ultima_alteracao ultimaAlteracao, "
+				+ "   DECODE(a.situacao, 0, 'Ativo', 'Inativo') situacao "
+				+ "   FROM orion_cfc_345 a ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMovimentacoesCaixaPreta.class));
+		
+	}
+	
+	public List<ConteudoChaveNumerica> findAllLocaisSelect(){
+		
+		String query = " SELECT a.id value, a.descricao label from orion_cfc_345 a ORDER BY a.descricao ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+		
+	}
+	
+	public List<ConteudoChaveNumerica> findCentroCusto(int centroCusto){
+		
+		String query = " SELECT t.centro_custo value, t.centro_custo || ' - ' || t.descricao label "
+				+ "FROM basi_185 t "
+				+ "WHERE t.descricao NOT LIKE '%(IN)%' "
+				+ "AND t.centro_custo LIKE '%" + centroCusto + "%' ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));
+		
+	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findAllMovimentacoesCaixas(){
+		
+		String query = " SELECT a.id id, "
+				+ "       LPAD(a.id_caixa, 4, 0) || LPAD(a.centro_custo, 6, 0) codCaixa, "
+				+ "       c.descricao descricao, "
+				+ "       a.centro_custo || ' - ' || b.descricao centroCusto, "
+				+ "       d.descricao localDestino, "
+				+ "       TO_CHAR(a.data, 'DD/MM/YYYY') data, "
+				+ "       a.hora hora, "
+				+ "       e.nome usuario "
+				+ "  FROM orion_cfc_350 a, basi_185 b, orion_cfc_340 c, orion_cfc_345 d, orion_001 e "
+				+ "  WHERE b.centro_custo = a.centro_custo "
+				+ "  AND c.id = a.id_caixa "
+				+ "  AND d.id = a.id_local "
+				+ "  AND e.id = a.usuario ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMovimentacoesCaixaPreta.class));
+		
+	}
+	
+	public List<ConsultaMovimentacoesCaixaPreta> findLocalizacaoCaixas(){
+		
+		String query = " SELECT LPAD(a.id, 4, 0) || LPAD(a.centro_custo, 6, 0) || ' - ' ||  a.descricao codCaixa, "
+				+ "     (SELECT b.descricao "
+				+ "          FROM orion_cfc_345 b, orion_cfc_350 c "
+				+ "          WHERE c.id_local = b.id "
+				+ "          AND c.id = (SELECT MAX(e.id) "
+				+ "                       FROM orion_cfc_350 e "
+				+ "                       WHERE e.id_caixa = a.id)) localDestino "
+				+ "    FROM orion_cfc_340 a "
+				+ "    ORDER BY a.id ";
+		
+		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaMovimentacoesCaixaPreta.class));
+		
+	}
+	
+	public String findCodCaixaCentroCusto(String idCaixa) {
+		String codCaixa = "";
+
+		String query = " SELECT LPAD(a.id, 4, 0) || LPAD(a.centro_custo, 6, 0) "
+				+ "   FROM orion_cfc_340 a "
+				+ "   WHERE a.id = " + idCaixa ;
+		try {
+			codCaixa = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			codCaixa = "";
+		}
+		return codCaixa;
+	}
+	
+	public String findCodCaixaPreta(String codCaixa) {
+		
+		String centroCusto = "";
+		
+		String query = " SELECT a.centro_custo FROM orion_cfc_340 a WHERE LPAD(a.id, 4, 0) || LPAD(a.centro_custo, 6, 0) = " + codCaixa ;
+		try {
+			centroCusto = jdbcTemplate.queryForObject(query, String.class);
+		} catch (Exception e) {
+			centroCusto = "";
+		}
+		return centroCusto;
+	}
+	
 }
  

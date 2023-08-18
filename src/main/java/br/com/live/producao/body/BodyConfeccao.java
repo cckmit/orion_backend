@@ -7,6 +7,10 @@ import java.util.List;
 
 public class BodyConfeccao {
     public long id;
+    public int idCaixa;
+    public int idUsuario;
+    public String codCaixa;
+    public int idLocal;
     public int idCadastro;
     public String descricao;
     public List<ConteudoChaveNumerica> restricoes;
@@ -52,7 +56,9 @@ public class BodyConfeccao {
 	public float compEstampaPrensa;
 	public String observacao;
 	public int tipo;
-
+	public int centroCusto;
+    public int forma;
+    public int localDestino;
 	public int ordemProducao;
 	public List<ConteudoChaveNumerica> pacotes;
 	public List<ConteudoChaveNumerica> estagios;
