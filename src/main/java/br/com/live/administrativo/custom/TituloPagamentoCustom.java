@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -480,6 +481,23 @@ public class TituloPagamentoCustom {
         }
 
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(TituloPagamentoIntegrado.class));
+    }
+
+    public String obterUltimaDataImportacao(){
+
+        LocalDate dataAtual = LocalDate.now();
+        String dataInicial;
+
+        String query = "SELECT TO_CHAR(MAX(data_emissao_duplicata), 'YYYY-MM-DD') AS ultima_data_emissao\n" +
+                "FROM orion_integ_nfservico_001";
+
+        try {
+            dataInicial = jdbcTemplate.queryForObject(query, String.class);
+        } catch (Exception e) {
+            dataInicial = dataAtual.minusDays(1).toString();
+        }
+
+        return dataInicial;
     }
 
     public List<ConteudoChaveAlfaNum> findAllLojas() {

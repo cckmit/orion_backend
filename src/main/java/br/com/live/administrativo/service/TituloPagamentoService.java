@@ -56,7 +56,7 @@ public class TituloPagamentoService {
     public String obterBodyTitulosNFSePrefeitura(){
 
         LocalDate dataAtual = LocalDate.now();
-        String dataInicial = dataAtual.minusDays(1).toString();
+        String dataInicial = tituloPagamentoCustom.obterUltimaDataImportacao();
         String dataFinal = dataAtual.toString();
         String cnpj = "20026913000194";
 
@@ -68,7 +68,7 @@ public class TituloPagamentoService {
                 + "            <Cnpj>" + cnpj + "</Cnpj>\n"
                 + "         </Prestador>\n"
                 + "         <PeriodoEmissao>\n"
-                + "            <DataInicial> " + dataInicial + "</DataInicial>\n"
+                + "            <DataInicial>" + dataInicial + "</DataInicial>\n"
                 + "            <DataFinal> " + dataFinal + " </DataFinal>\n"
                 + "         </PeriodoEmissao>\n"
                 + "      </e:ConsultarNfseEnvio>\n"
@@ -92,6 +92,8 @@ public class TituloPagamentoService {
             System.out.println("Não possui usuários configurados na tabela orion_005 / tipo 3. A integração não será executada!");
             return;
         }
+
+        System.out.println("Executou gerarTitulosNFSePrefeituraJob.");
 
         String url = "http://e-gov.betha.com.br/e-nota-contribuinte-ws/consultarNfseV110";
         String body = obterBodyTitulosNFSePrefeitura();
