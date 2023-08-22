@@ -65,7 +65,7 @@ public class FechamentoComissoesController {
 	
 	@RequestMapping(value = "/find-bonus", method = RequestMethod.POST)
     public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(@RequestBody BodyFinanceiro body) {
-        return financeiroService.findBonusPorRepresentante(body.mes, body.ano, body.listRepresentante);
+        return financeiroService.findBonusPorRepresentante(body.mes, body.ano, body.listRepresentante, body.estacao);
     }
 	
 	@RequestMapping(value = "/find-devolucao", method = RequestMethod.POST)

@@ -24,7 +24,7 @@ public class RejeicaoPecaPorTecidoCustom {
 	
 	public List<ConteudoChaveNumerica> findAllEstagios() {
 		
-		String query = " SELECT a.codigo_estagio value, a.codigo_estagio || ' - ' || a.descricao label FROM mqop_005 a GROUP BY a.codigo_estagio, a.descricao "
+		String query = " SELECT a.codigo_estagio value, a.codigo_estagio || ' - ' || a.descricao label FROM mqop_005 a WHERE a.area_producao = 1 GROUP BY a.codigo_estagio, a.descricao "
 				+ " ORDER BY a.codigo_estagio ";
 		
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConteudoChaveNumerica.class));

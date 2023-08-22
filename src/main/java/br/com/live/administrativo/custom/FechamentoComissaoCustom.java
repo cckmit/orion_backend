@@ -119,6 +119,7 @@ public class FechamentoComissaoCustom {
 				+ "		AND c.cli_ped_cgc_cli4 (+) = b.cli_dup_cgc_cli4 "
 				+ "		AND c.cli_ped_cgc_cli2 (+) = b.cli_dup_cgc_cli2 "
 				+ "		AND c.pedido_venda (+) = b.pedido_venda "
+				+ "     AND c.cod_rep_cliente = a.codigo_repr "
 				+ "		AND d.cgc_9 (+) = a.cgc_cli9 "
 				+ "		AND d.cgc_4 (+) = a.cgc_cli4 "
 				+ "		AND d.cgc_2 (+) = a.cgc_cli2 "
@@ -156,6 +157,7 @@ public class FechamentoComissaoCustom {
 				+ "		AND c.cli_ped_cgc_cli4 (+) = b.cli_dup_cgc_cli4 "
 				+ "		AND c.cli_ped_cgc_cli2 (+) = b.cli_dup_cgc_cli2 "
 				+ "		AND c.pedido_venda (+) = b.pedido_venda "
+				+ "     AND c.cod_rep_cliente = a.codigo_repr "
 				+ "		AND d.cgc_9 (+) = a.cgc_cli9 "
 				+ "		AND d.cgc_4 (+) = a.cgc_cli4 "
 				+ "		AND d.cgc_2 (+) = a.cgc_cli2 "
@@ -200,12 +202,12 @@ public class FechamentoComissaoCustom {
 		} catch (Exception e) {
 			total = 0;
 		}
-		return total;
+		return total;                          
 	}
 	
 	public String findTabPrecoEstacao(String estacao) {
 		
-		String tabPreco = "";
+		String tabPreco = "0-0-0";
 		
 		String query = " SELECT a.col_tab || '-' || a.mes_tab || '-' || a.seq_tab tabela "
 				+ "		FROM orion_073 a, pedi_090 b "
@@ -547,7 +549,7 @@ public class FechamentoComissaoCustom {
 		return listSubRegiao;
 	}
 	
-	public float findPercAtingidoFitness(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
+	public float findPercAtingidoFitness(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, int tabCol, int tabMes, int tabSeq) {
 		
 		float percentualFitness = 0;
 		
@@ -569,9 +571,9 @@ public class FechamentoComissaoCustom {
 				+ "       AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")" 
 				+ "       AND c.linha_produto = 52 "
 				+ "       AND TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
-				+ "       AND a.colecao_tabela = 1 "
-				+ "       AND a.mes_tabela = 1 "
-				+ "       AND a.sequencia_tabela = 23 "
+				+ "       AND a.colecao_tabela = " + tabCol
+				+ "       AND a.mes_tabela = " + tabMes
+				+ "       AND a.sequencia_tabela = " + tabSeq
 				+ "       AND b.cod_cancelamento = 0 "
 				+ "       GROUP BY a.cod_rep_cliente ";
 		
@@ -584,7 +586,7 @@ public class FechamentoComissaoCustom {
 		
 	}
 	
-	public float findPercAtingidoBeach(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
+	public float findPercAtingidoBeach(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, int tabCol, int tabMes, int tabSeq) {
 		
 		float percentualBeach = 0;
 		
@@ -606,9 +608,9 @@ public class FechamentoComissaoCustom {
 				+ "       AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")" 
 				+ "       AND c.linha_produto = 53 "
 				+ "       AND TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
-				+ "       AND a.colecao_tabela = 1 "
-				+ "       AND a.mes_tabela = 1 "
-				+ "       AND a.sequencia_tabela = 23 "
+				+ "       AND a.colecao_tabela = " + tabCol
+				+ "       AND a.mes_tabela = " + tabMes
+				+ "       AND a.sequencia_tabela = " + tabSeq
 				+ "       AND b.cod_cancelamento = 0 "
 				+ "       GROUP BY a.cod_rep_cliente ";
 		
@@ -679,8 +681,9 @@ public class FechamentoComissaoCustom {
 		
 	}
 	
-	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, float totalFaturado, 
-			float porcLinhaFitness, float porcLinhaBeach, float percAtingidoFitness, float percAtingidoBeach, float valorProporcional, String estado, String regiao, float metaFitness, float metaBeach){
+	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(String mesComZero, int ano, List<ConteudoChaveAlfaNum> listRepresentante, float totalFaturado,  float totalFitness,
+			float totalBeach, float porcLinhaFitness, float porcLinhaBeach, float percAtingidoFitness, float percAtingidoBeach, String estado, String regiao, 
+			float metaFitness, float metaBeach, int tabCol, int tabMes, int tabSeq){
 		
 		List<ConsultaFechamentoComissoes> listComissao = null;
 		
@@ -693,8 +696,7 @@ public class FechamentoComissaoCustom {
 				+ "      SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) vendas, "
 				+ "      NVL(" + percAtingidoFitness + ", 0) porcAtingido, "
 				+ "      NVL(" + totalFaturado + ", 0) totalFaturado, "
-				+ "      NVL(" + totalFaturado * 0.0025 + ", 0) valor, "
-				+ "      NVL(" + valorProporcional * 0.0025 + ", 0) valorProporcional " 
+				+ "      " + totalFitness + " valor " 
 				+ "		FROM pedi_100 a, pedi_110 b, basi_030 c "
 				+ "		where a.pedido_venda = b.pedido_venda "
 				+ "		AND b.cd_it_pe_nivel99 = c.nivel_estrutura "
@@ -702,9 +704,9 @@ public class FechamentoComissaoCustom {
 				+ "		AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")" 
 				+ "		AND c.linha_produto = 52 "
 				+ "		AND TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
-				+ "     AND a.colecao_tabela = 1 "
-				+ "     AND a.mes_tabela = 1 "
-				+ "     AND a.sequencia_tabela = 23 "
+				+ "     AND a.colecao_tabela = " + tabCol
+				+ "     AND a.mes_tabela = " + tabMes
+				+ "     AND a.sequencia_tabela = " + tabSeq
 				+ "		AND b.cod_cancelamento = 0 "
 				+ "		GROUP BY a.cod_rep_cliente "
 				+ "     UNION "
@@ -717,8 +719,7 @@ public class FechamentoComissaoCustom {
 				+ "		SUM(((b.qtde_pedida * b.valor_unitario) - (((b.qtde_pedida * b.valor_unitario) * b.percentual_desc)/100))) vendas, "
 				+ "		NVL(" + percAtingidoBeach + ", 0) porcAtingido, "
 				+ "     NVL(" + totalFaturado + ", 0) totalFaturado, "
-				+ "     NVL(" + totalFaturado * 0.0025 + ", 0) valor, "
-				+ "     NVL(" + valorProporcional + ", 0) valorProporcional "
+				+ "     " + totalBeach + " valor "
 				+ "		FROM pedi_100 a, pedi_110 b, basi_030 c "
 				+ "		WHERE a.pedido_venda = b.pedido_venda "
 				+ "		AND b.cd_it_pe_nivel99 = c.nivel_estrutura  "
@@ -726,12 +727,12 @@ public class FechamentoComissaoCustom {
 				+ "		AND a.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")" 
 				+ "		AND c.linha_produto = 53 "
 				+ "		AND TO_CHAR(TO_DATE(a.data_entr_venda), 'MM/YYYY') = '" + mesComZero + "/" + ano + "'"
-				+ "     AND a.colecao_tabela = 1 "
-				+ "     AND a.mes_tabela = 1 "
-				+ "     AND a.sequencia_tabela = 23 "
+				+ "     AND a.colecao_tabela = " + tabCol
+				+ "     AND a.mes_tabela = " + tabMes
+				+ "     AND a.sequencia_tabela = " + tabSeq
 				+ "		AND b.cod_cancelamento = 0 "
 				+ "		GROUP BY a.cod_rep_cliente ";
-	
+		
 		try {
 			listComissao = jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 		} catch (Exception e) {
@@ -955,7 +956,7 @@ public class FechamentoComissaoCustom {
 				+ "       AND a.cod_forma_pagto <> 99 "
 				+ "       AND b.cod_rep_cliente IN (" + ConteudoChaveAlfaNum.parseValueToString(listRepresentante) + ")"
 				+ "  AND TO_DATE(TO_CHAR(a.data_emis_venda, 'DD/MM/YYYY'), 'DD/MM/YYYY') BETWEEN TO_DATE('" + dataInicial + "', 'DD/MM/YYYY') AND TO_DATE('" + dataFinal +"', 'DD/MM/YYYY')";
-		
+		System.out.println(query);
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(ConsultaFechamentoComissoes.class));
 	}
 	

@@ -154,51 +154,62 @@ public class FechamentoComissaoService {
 		return financeiroCustom.findAllEstacoes();
 	}
 
-	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
+	public List<ConsultaFechamentoComissoes> findBonusPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
 
 		float totalFaturado = 0;
-		float valorProporcional = 0;
+		float totalFitness = 0;
+		float totalBeach = 0;
 		String mesComZero = "";
 		if (mes < 10) {
 			mesComZero = "0" + mes;
-		}
-		;
-		float metaFitness = financeiroCustom.findMetaPorRespresentanteFitness(listRepresentante, mesComZero, ano); 
+		};
+		if (estacao != null && estacao.contains("Ã")) {
+            estacao = estacao.replace("Ã", "A");
+        }
+		String tabPreco = financeiroCustom.findTabPrecoEstacao(estacao);
+		String[] tabPrecoConcat = tabPreco.split("[-]");
+		int tabCol = Integer.parseInt(tabPrecoConcat[0]);
+		int tabMes = Integer.parseInt(tabPrecoConcat[1]);
+		int tabSeq = Integer.parseInt(tabPrecoConcat[2]);	
+		
+		float metaFitness = financeiroCustom.findMetaPorRespresentanteFitness(listRepresentante, mesComZero, ano);
 		// Buscando a Meta do Representante pra coleção na linha Fitness
 		float metaBeach = financeiroCustom.findMetaPorRespresentanteBeach(listRepresentante, mesComZero, ano); 
 		// Buscando a Meta do Representante pra coleção na linha Beach
 		// Descobrindo a porcentagem de cada meta representa na meta total
-		float totalMeta = metaFitness + metaBeach;
-		float porcLinhaFitness = (metaFitness * 100) / totalMeta;
-		float porcLinhaBeach = 100 - porcLinhaFitness;
+		float totalMeta = metaFitness + metaBeach; 
+		float porcLinhaFitness = (metaFitness * 100) / totalMeta; 
+		float porcLinhaBeach = 100 - porcLinhaFitness; 
 		// ------------------------------------------------
-		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, listRepresentante);
-		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, listRepresentante);
-
-		if (percAtingidoFitness >= 100) {
+		float percAtingidoFitness = financeiroCustom.findPercAtingidoFitness(mesComZero, ano, listRepresentante, tabCol, tabMes, tabSeq); 
+		float percAtingidoBeach = financeiroCustom.findPercAtingidoBeach(mesComZero, ano, listRepresentante, tabCol, tabMes, tabSeq); 
+		
+		if(percAtingidoFitness >= 100 && percAtingidoBeach >= 100) {
 			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, listRepresentante);
-			valorProporcional = totalFaturado * (percAtingidoFitness / 100);
-		}
-		if (percAtingidoBeach >= 100) {
+			totalFitness = (float) ((totalFaturado / 2) * 0.0025);
+			totalBeach = (float) ((totalFaturado / 2) * 0.0025);
+		} else if(percAtingidoFitness >= 100 && percAtingidoBeach < 100) {
 			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, listRepresentante);
-			valorProporcional = totalFaturado * (percAtingidoBeach / 100);
-		}
-		if (percAtingidoFitness >= 100 && percAtingidoBeach >= 100) {
+			totalFitness = (float) (totalFaturado * 0.0025);
+			totalBeach = 0;
+		} else if(percAtingidoBeach >= 100 && percAtingidoFitness < 100) {
 			totalFaturado = financeiroCustom.findTotalFaturadoPorRepresentanteNoMes(mesComZero, ano, listRepresentante);
-			valorProporcional = totalFaturado;
+			totalFitness = 0;
+			totalBeach = (float) (totalFaturado * 0.0025);
 		}
-		List<ConteudoChaveAlfaNum> listEstados = financeiroCustom.findUf(listRepresentante);
+		
+		
+		List<ConteudoChaveAlfaNum> listEstados = financeiroCustom.findUf(listRepresentante); 
 		List<ConteudoChaveAlfaNum> listSubRegiao = financeiroCustom.findSubRegiao(listRepresentante);
-
+		
 		String estado = ConteudoChaveAlfaNum.parseValueToString(listEstados).replace(",", " /");
 		estado = estado.replace("'", "");
-
+		
 		String regiao = ConteudoChaveAlfaNum.parseValueToString(listSubRegiao).replace(",", " /");
 		regiao = regiao.replace("'", "");
-
-		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, listRepresentante, totalFaturado,
-				porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, percAtingidoBeach, valorProporcional, estado,
-				regiao, metaFitness, metaBeach);
+		
+		return financeiroCustom.findBonusPorRepresentante(mesComZero, ano, listRepresentante, totalFaturado, totalFitness, totalBeach,
+				porcLinhaFitness, porcLinhaBeach, percAtingidoFitness, percAtingidoBeach, estado, regiao, metaFitness, metaBeach, tabCol, tabMes, tabSeq);
 	}
 
 	public List<ConsultaFechamentoComissoes> findDevolucaoPorRepresentante(int mes, int ano, List<ConteudoChaveAlfaNum> listRepresentante) {
@@ -232,6 +243,9 @@ public class FechamentoComissaoService {
 
 	public List<ConsultaFechamentoComissoes> findMostruarioAdquirido(int mes, int ano,	List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
 		
+		if (estacao != null && estacao.contains("Ã")) {
+            estacao = estacao.replace("Ã", "A");
+        }
 		String tabPreco = financeiroCustom.findTabPrecoEstacao(estacao);
 		String[] tabPrecoConcat = tabPreco.split("[-]");
 		int tabCol = Integer.parseInt(tabPrecoConcat[0]);
@@ -249,14 +263,24 @@ public class FechamentoComissaoService {
 	}
 
 	public List<ConsultaFechamentoComissoes> findMostruarioDevolvido(List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
+		if (estacao != null && estacao.contains("Ã")) {
+            estacao = estacao.replace("Ã", "A");
+        }
 		return financeiroCustom.findItensDevolvidos(listRepresentante, estacao);
 	}
 	
 	public List<ConsultaFechamentoComissoes> findMostruarioSintetico(List<ConteudoChaveAlfaNum> listRepresentante, String estacao) {
+		if (estacao != null && estacao.contains("Ã")) {
+            estacao = estacao.replace("Ã", "A");
+        }
 		return financeiroCustom.findMostruarioSintetico(listRepresentante, estacao);
 	}
 	
 	public List<ConsultaFechamentoComissoes> ExistsMostruarioDevolvido(List<ConteudoChaveAlfaNum> listRepresentante, int mes, int ano, String estacao) {
+		
+		if (estacao != null && estacao.contains("Ã")) {
+            estacao = estacao.replace("Ã", "A");
+        }
 		
 		int registros = financeiroCustom.findMostruarioEstacaoPorRepres(listRepresentante, estacao);
 		
