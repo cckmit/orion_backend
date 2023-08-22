@@ -31,3 +31,4 @@ insert into orion_parametros (id, valor_int) values ('INTEGRACAO_CIGAM_ATIVO', 1
 insert into orion_parametros (id, valor_str) values ('SEQ-DECORACOES-ESTAGIOS-PARA-SEQUENCIAR', '07,24,25,52,56,82,10,70,15,53,61,59');
 insert into orion_parametros (id, valor_str) values ('EMAIL_TESTE_COMERCIAL', 'joao.ti@liveoficial.ind.br');
 insert into orion_parametros (id, valor_int) values ('QTDE_CAIXAS_EMPILHAR_PRE_ENDERECAMENTO', 9);
+insert into orion_parametros (id, valor_int) values ('INTEGRACAO_RETORNO_TITULO_FRANCHISING', 0);

@@ -21,7 +21,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 		"br.com.live.producao.controller", "br.com.live.producao.service", "br.com.live.producao.custom",
 		"br.com.live.produto.controller", "br.com.live.produto.service", "br.com.live.produto.custom",
 		"br.com.live.sistema.controller", "br.com.live.sistema.service", "br.com.live.sistema.custom",
-		"br.com.live.util.controller", "br.com.live.util.service", "br.com.live.integracao.cigam.custom", "br.com.live.integracao.cigam.service"})
+		"br.com.live.util.controller", "br.com.live.util.service", "br.com.live.util.custom",
+		"br.com.live.integracao.cigam.custom", "br.com.live.integracao.cigam.service"})
 public class BackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);

@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -212,5 +214,17 @@ public class FormataData {
 		Date data = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(dataSemFormato);
 
 		return formatoData.format(data);
+	}
+
+	public static String obterDataHoraAtualFormatada() {
+		LocalDateTime dataHoraAtual = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+		return dataHoraAtual.format(formatter);
+	}
+
+	// Recebe string 2023-08-16T15:29:02.640-03:00, e converte para objeto Date
+	public static Date parseStringToDateFuso(String dateTimeStr) {
+		OffsetDateTime odt = OffsetDateTime.parse(dateTimeStr);
+		return Date.from(odt.toInstant());
 	}
 }
