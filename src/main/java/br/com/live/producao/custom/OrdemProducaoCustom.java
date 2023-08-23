@@ -751,6 +751,24 @@ public class OrdemProducaoCustom {
 		return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(OrdemProducaoItem.class));
 	}
 	
+	public OrdemProducao findOrdemProducao(int ordemProducao) {
+
+		String query = " select a.ordem_producao ordemProducao, " 
+        + " a.referencia_peca referencia, "
+        + " a.periodo_producao periodo, "
+        + " a.qtde_programada qtdePecasProgramada, "
+        + " a.alternativa_peca nrAlternativa, "
+        + " a.roteiro_peca nrRoteiro, "
+        + " b.descr_referencia descrReferencia, "
+        + " a.observacao "
+        + " from pcpc_020 a, basi_030 b "
+        + " where a.ordem_producao = ? "
+        + " and b.nivel_estrutura = '1' "
+        + " and b.referencia = a.referencia_peca ";
+
+		return jdbcTemplate.queryForObject(query, BeanPropertyRowMapper.newInstance(OrdemProducao.class), ordemProducao);		
+	}
+	
 	public List<OrdemProducao> findOrdensOrdenadasPorPrioridade(List<String> camposSelParaPriorizacao, int periodoInicial, int periodoFinal, String estagiosEmProducao, String embarques, String referencias, String estagios, String artigos, String tecidos, boolean isSomenteFlat, boolean isDiretoCostura, boolean isOrdensSemTecido, boolean isPossuiAgrupadorEstamp) { 
 
 		String query = " select pre_ordens_priorizadas.ordem_producao ordemProducao, "  
